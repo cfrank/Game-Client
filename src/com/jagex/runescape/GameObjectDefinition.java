@@ -2,6 +2,7 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.jagex.runescape.cache.cfg.Varbit;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
@@ -29,7 +30,7 @@ public class GameObjectDefinition {
 		int j = -1;
 		if (varbitId != -1) {
 			Varbit class49 = Varbit.cache[varbitId];
-			int k = class49.varpId;
+			int k = class49.configId;
 			int l = class49.leastSignificantBit;
 			int i1 = class49.mostSignificantBit;
 			int j1 = client.BITFIELD_MAX_VALUE[i1 - l];
@@ -54,14 +55,14 @@ public class GameObjectDefinition {
 	}
 
 	public static void load(Archive archive) {
-		buf = new Buffer(archive.get("loc.dat"));
-		Buffer buf = new Buffer(archive.get("loc.idx"));
-		count = buf.getShort();
+		buf = new Buffer(archive.getFile("loc.dat"));
+		Buffer buf = new Buffer(archive.getFile("loc.idx"));
+		count = buf.getUnsignedLEShort();
 		indices = new int[count];
 		int pos = 2;
 		for (int id = 0; id < count; id++) {
 			indices[id] = pos;
-			pos += buf.getShort();
+			pos += buf.getUnsignedLEShort();
 		}
 
 		cache = new GameObjectDefinition[20];
@@ -233,7 +234,7 @@ public class GameObjectDefinition {
 							modelTypes = new int[k];
 							modelIds = new int[k];
 							for (int k1 = 0; k1 < k; k1++) {
-								modelIds[k1] = buf.getShort();
+								modelIds[k1] = buf.getUnsignedLEShort();
 								modelTypes[k1] = buf.getUnsignedByte();
 							}
 
@@ -251,7 +252,7 @@ public class GameObjectDefinition {
 							modelTypes = null;
 							modelIds = new int[l];
 							for (int l1 = 0; l1 < l; l1++)
-								modelIds[l1] = buf.getShort();
+								modelIds[l1] = buf.getUnsignedLEShort();
 
 						} else {
 							buf.offset += l * 2;
@@ -275,7 +276,7 @@ public class GameObjectDefinition {
 				else if (attribute == 23)
 					aBoolean797 = true;
 				else if (attribute == 24) {
-					anInt803 = buf.getShort();
+					anInt803 = buf.getUnsignedLEShort();
 					if (anInt803 == 65535)
 						anInt803 = -1;
 				} else if (attribute == 28)
@@ -295,24 +296,24 @@ public class GameObjectDefinition {
 					anIntArray799 = new int[i1];
 					anIntArray792 = new int[i1];
 					for (int i2 = 0; i2 < i1; i2++) {
-						anIntArray799[i2] = buf.getShort();
-						anIntArray792[i2] = buf.getShort();
+						anIntArray799[i2] = buf.getUnsignedLEShort();
+						anIntArray792[i2] = buf.getUnsignedLEShort();
 					}
 
 				} else if (attribute == 60)
-					icon = buf.getShort();
+					icon = buf.getUnsignedLEShort();
 				else if (attribute == 62)
 					unknown3 = true;
 				else if (attribute == 64)
 					aBoolean807 = false;
 				else if (attribute == 65)
-					modelSizeX = buf.getShort();
+					modelSizeX = buf.getUnsignedLEShort();
 				else if (attribute == 66)
-					modelSizeY = buf.getShort();
+					modelSizeY = buf.getUnsignedLEShort();
 				else if (attribute == 67)
-					modelSizeZ = buf.getShort();
+					modelSizeZ = buf.getUnsignedLEShort();
 				else if (attribute == 68)
-					anInt795 = buf.getShort();
+					anInt795 = buf.getUnsignedLEShort();
 				else if (attribute == 69)
 					anInt764 = buf.getUnsignedByte();
 				else if (attribute == 70)
@@ -332,16 +333,16 @@ public class GameObjectDefinition {
 				}
 				continue label0;
 			} while (attribute != 77);
-			varbitId = buf.getShort();
+			varbitId = buf.getUnsignedLEShort();
 			if (varbitId == 65535)
 				varbitId = -1;
-			configId = buf.getShort();
+			configId = buf.getUnsignedLEShort();
 			if (configId == 65535)
 				configId = -1;
 			int j1 = buf.getUnsignedByte();
 			childrenIds = new int[j1 + 1];
 			for (int j2 = 0; j2 <= j1; j2++) {
-				childrenIds[j2] = buf.getShort();
+				childrenIds[j2] = buf.getUnsignedLEShort();
 				if (childrenIds[j2] == 65535)
 					childrenIds[j2] = -1;
 			}

@@ -21,9 +21,9 @@ public class TypeFace extends Rasterizer {
 		anIntArray1505 = new int[256];
 		aRandom1507 = new Random();
 		strikethrough = false;
-		Buffer buf = new Buffer(archive.get(name + ".dat"));
-		Buffer indexBuf = new Buffer(archive.get("index.dat"));
-		indexBuf.offset = buf.getShort() + 4;
+		Buffer buf = new Buffer(archive.getFile(name + ".dat"));
+		Buffer indexBuf = new Buffer(archive.getFile("index.dat"));
+		indexBuf.offset = buf.getUnsignedLEShort() + 4;
 		while (i >= 0)
 			aBoolean1496 = !aBoolean1496;
 		int k = indexBuf.getUnsignedByte();
@@ -32,8 +32,8 @@ public class TypeFace extends Rasterizer {
 		for (int l = 0; l < 256; l++) {
 			anIntArray1503[l] = indexBuf.getUnsignedByte();
 			anIntArray1504[l] = indexBuf.getUnsignedByte();
-			int i1 = anIntArray1501[l] = indexBuf.getShort();
-			int j1 = anIntArray1502[l] = indexBuf.getShort();
+			int i1 = anIntArray1501[l] = indexBuf.getUnsignedLEShort();
+			int j1 = anIntArray1502[l] = indexBuf.getUnsignedLEShort();
 			int k1 = indexBuf.getUnsignedByte();
 			int l1 = i1 * j1;
 			aByteArrayArray1500[l] = new byte[l1];

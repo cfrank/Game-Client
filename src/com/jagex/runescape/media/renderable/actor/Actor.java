@@ -2,7 +2,7 @@ package com.jagex.runescape.media.renderable.actor;// Decompiled by Jad v1.5.8f.
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import com.jagex.runescape.AnimationSequence;
+import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.media.renderable.Renderable;
 
 public abstract class Actor extends Renderable {
@@ -98,7 +98,7 @@ public abstract class Actor extends Renderable {
 			x++;
 			y--;
 		}
-		if (animation != -1 && AnimationSequence.animations[animation].priority == 1)
+		if (animation != -1 && AnimationSequence.cache[animation].priority == 1)
 			animation = -1;
 		if (pathLength < 9)
 			pathLength++;
@@ -125,7 +125,7 @@ public abstract class Actor extends Renderable {
 	}
 
 	public void setPosition(int x, int y, boolean discard) {
-		if (animation != -1 && AnimationSequence.animations[animation].priority == 1)
+		if (animation != -1 && AnimationSequence.cache[animation].priority == 1)
 			animation = -1;
 		if (!discard) {
 			int k = x - pathX[0];

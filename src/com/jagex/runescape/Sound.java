@@ -17,7 +17,7 @@ public class Sound {
 		buf = new Buffer(data);
 		SoundTrack.init();
 		do {
-			int id = _buf.getShort();
+			int id = _buf.getUnsignedLEShort();
 			if (id == 65535)
 				return;
 			sounds[id] = new Sound(-524);
@@ -45,8 +45,8 @@ public class Sound {
 			}
 		}
 
-		anInt673 = buf.getShort();
-		anInt674 = buf.getShort();
+		anInt673 = buf.getUnsignedLEShort();
+		anInt674 = buf.getUnsignedLEShort();
 		if (byte0 == 6) {
 			byte0 = 0;
 			return;

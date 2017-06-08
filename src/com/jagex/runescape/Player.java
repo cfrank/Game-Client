@@ -2,6 +2,9 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.jagex.runescape.cache.def.ActorDefinition;
+import com.jagex.runescape.cache.media.AnimationSequence;
+import com.jagex.runescape.cache.media.IdentityKit;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
@@ -50,7 +53,7 @@ public class Player extends Actor {
 		boolean flag1 = false;
 		for (int i = 0; i < 12; i++) {
 			int j = equipment[i];
-			if (j >= 256 && j < 512 && !IdentityKit.identityKits[j - 256].isHeadDownloaded())
+			if (j >= 256 && j < 512 && !IdentityKit.cache[j - 256].isHeadModelCached())
 				flag1 = true;
 			if (j >= 512 && !ItemDefinition.forId(j - 512).method211(gender))
 				flag1 = true;
@@ -63,7 +66,7 @@ public class Player extends Actor {
 		for (int l = 0; l < 12; l++) {
 			int i1 = equipment[l];
 			if (i1 >= 256 && i1 < 512) {
-				Model model = IdentityKit.identityKits[i1 - 256].getHeadModel();
+				Model model = IdentityKit.cache[i1 - 256].getHeadModel();
 				if (model != null)
 					subModels[k++] = model;
 			}
@@ -90,10 +93,10 @@ public class Player extends Actor {
 		if (npc != null) {
 			int i = -1;
 			if (super.animation >= 0 && super.animationDelay == 0)
-				i = AnimationSequence.animations[super.animation].frame2Ids[super.anInt1625];
+				i = AnimationSequence.cache[super.animation].frame2Ids[super.anInt1625];
 			else if (super.anInt1588 >= 0)
-				i = AnimationSequence.animations[super.anInt1588].frame2Ids[super.anInt1589];
-			Model class50_sub1_sub4_sub4 = npc.getChildModel(i, -1, 0, null);
+				i = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
+			Model class50_sub1_sub4_sub4 = npc.getChildModel(i, -1, null);
 			return class50_sub1_sub4_sub4;
 		}
 		long l = appearanceHash;
@@ -104,10 +107,10 @@ public class Player extends Actor {
 		if (byte0 != 122)
 			aBoolean1767 = !aBoolean1767;
 		if (super.animation >= 0 && super.animationDelay == 0) {
-			AnimationSequence class14 = AnimationSequence.animations[super.animation];
+			AnimationSequence class14 = AnimationSequence.cache[super.animation];
 			j = class14.frame2Ids[super.anInt1625];
 			if (super.anInt1588 >= 0 && super.anInt1588 != super.standAnimationId)
-				k = AnimationSequence.animations[super.anInt1588].frame2Ids[super.anInt1589];
+				k = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
 			if (class14.anInt302 >= 0) {
 				i1 = class14.anInt302;
 				l += i1 - equipment[5] << 40;
@@ -117,7 +120,7 @@ public class Player extends Actor {
 				l += j1 - equipment[3] << 48;
 			}
 		} else if (super.anInt1588 >= 0)
-			j = AnimationSequence.animations[super.anInt1588].frame2Ids[super.anInt1589];
+			j = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
 		Model class50_sub1_sub4_sub4_1 = (Model) modelCache.get(l);
 		if (class50_sub1_sub4_sub4_1 == null) {
 			boolean flag = false;
@@ -127,7 +130,7 @@ public class Player extends Actor {
 					i2 = j1;
 				if (i1 >= 0 && k1 == 5)
 					i2 = i1;
-				if (i2 >= 256 && i2 < 512 && !IdentityKit.identityKits[i2 - 256].isBodyDownloaded())
+				if (i2 >= 256 && i2 < 512 && !IdentityKit.cache[i2 - 256].isBodyModelCached())
 					flag = true;
 				if (i2 >= 512 && !ItemDefinition.forId(i2 - 512).method216(-861, gender))
 					flag = true;
@@ -150,7 +153,7 @@ public class Player extends Actor {
 				if (i1 >= 0 && j2 == 5)
 					k2 = i1;
 				if (k2 >= 256 && k2 < 512) {
-					Model class50_sub1_sub4_sub4_3 = IdentityKit.identityKits[k2 - 256]
+					Model class50_sub1_sub4_sub4_3 = IdentityKit.cache[k2 - 256]
 							.getBodyModel();
 					if (class50_sub1_sub4_sub4_3 != null)
 						aclass50_sub1_sub4_sub4[l1++] = class50_sub1_sub4_sub4_3;
@@ -179,11 +182,11 @@ public class Player extends Actor {
 		}
 		if (aBoolean1763)
 			return class50_sub1_sub4_sub4_1;
-		Model class50_sub1_sub4_sub4_2 = Model.aClass50_Sub1_Sub4_Sub4_1643;
+		Model class50_sub1_sub4_sub4_2 = Model.aModel1614;
 		class50_sub1_sub4_sub4_2.replaceWithModel(class50_sub1_sub4_sub4_1, Animation.exists(j) & Animation.exists(k)
 		);
 		if (j != -1 && k != -1)
-			class50_sub1_sub4_sub4_2.mixAnimationFrames(k, 0, j, AnimationSequence.animations[super.animation].flowControl);
+			class50_sub1_sub4_sub4_2.mixAnimationFrames(k, 0, j, AnimationSequence.cache[super.animation].flowControl);
 		else if (j != -1)
 			class50_sub1_sub4_sub4_2.applyTransform(j);
 		class50_sub1_sub4_sub4_2.calculateDiagonals();
@@ -278,7 +281,7 @@ public class Player extends Actor {
 			int lowerByte = buf.getUnsignedByte();
 			equipment[slot] = (upperByte << 8) + lowerByte;
 			if (slot == 0 && equipment[0] == 65535) {
-				npc = ActorDefinition.forId(buf.getShort());
+				npc = ActorDefinition.getDefinition(buf.getUnsignedLEShort());
 				break;
 			}
 			if (equipment[slot] >= 512 && equipment[slot] - 512 < ItemDefinition.count) {
@@ -295,30 +298,30 @@ public class Player extends Actor {
 			colors[l] = j1;
 		}
 
-		super.standAnimationId = buf.getShort();
+		super.standAnimationId = buf.getUnsignedLEShort();
 		if (super.standAnimationId == 65535)
 			super.standAnimationId = -1;
-		super.anInt1635 = buf.getShort();
+		super.anInt1635 = buf.getUnsignedLEShort();
 		if (super.anInt1635 == 65535)
 			super.anInt1635 = -1;
-		super.anInt1619 = buf.getShort();
+		super.anInt1619 = buf.getUnsignedLEShort();
 		if (super.anInt1619 == 65535)
 			super.anInt1619 = -1;
-		super.anInt1620 = buf.getShort();
+		super.anInt1620 = buf.getUnsignedLEShort();
 		if (super.anInt1620 == 65535)
 			super.anInt1620 = -1;
-		super.anInt1621 = buf.getShort();
+		super.anInt1621 = buf.getUnsignedLEShort();
 		if (super.anInt1621 == 65535)
 			super.anInt1621 = -1;
-		super.anInt1622 = buf.getShort();
+		super.anInt1622 = buf.getUnsignedLEShort();
 		if (super.anInt1622 == 65535)
 			super.anInt1622 = -1;
-		super.anInt1629 = buf.getShort();
+		super.anInt1629 = buf.getUnsignedLEShort();
 		if (super.anInt1629 == 65535)
 			super.anInt1629 = -1;
 		username = TextUtils.formatName(TextUtils.longToName(buf.getLong()));
 		anInt1753 = buf.getUnsignedByte();
-		anInt1759 = buf.getShort();
+		anInt1759 = buf.getUnsignedLEShort();
 		visible = true;
 		appearanceHash = 0L;
 		int k1 = equipment[5];

@@ -379,19 +379,19 @@ public class OnDemandFetcher extends Requester implements Runnable {
 	public void init(Archive archive, Game client1) {
 		String as[] = { "model_version", "anim_version", "midi_version", "map_version" };
 		for (int i = 0; i < 4; i++) {
-			byte abyte0[] = archive.get(as[i]);
+			byte abyte0[] = archive.getFile(as[i]);
 			int j = abyte0.length / 2;
 			Buffer class50_sub1_sub2 = new Buffer(abyte0);
 			anIntArrayArray1377[i] = new int[j];
 			aByteArrayArray1337[i] = new byte[j];
 			for (int l = 0; l < j; l++)
-				anIntArrayArray1377[i][l] = class50_sub1_sub2.getShort();
+				anIntArrayArray1377[i][l] = class50_sub1_sub2.getUnsignedLEShort();
 
 		}
 
 		String as1[] = { "model_crc", "anim_crc", "midi_crc", "map_crc" };
 		for (int k = 0; k < 4; k++) {
-			byte abyte1[] = archive.get(as1[k]);
+			byte abyte1[] = archive.getFile(as1[k]);
 			int i1 = abyte1.length / 4;
 			Buffer class50_sub1_sub2_1 = new Buffer(abyte1);
 			anIntArrayArray1344[k] = new int[i1];
@@ -400,7 +400,7 @@ public class OnDemandFetcher extends Requester implements Runnable {
 
 		}
 
-		byte abyte2[] = archive.get("model_index");
+		byte abyte2[] = archive.getFile("model_index");
 		int j1 = anIntArrayArray1377[0].length;
 		aByteArray1335 = new byte[j1];
 		for (int k1 = 0; k1 < j1; k1++)
@@ -409,7 +409,7 @@ public class OnDemandFetcher extends Requester implements Runnable {
 			else
 				aByteArray1335[k1] = 0;
 
-		abyte2 = archive.get("map_index");
+		abyte2 = archive.getFile("map_index");
 		Buffer class50_sub1_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 7;
 		anIntArray1346 = new int[j1];
@@ -417,20 +417,20 @@ public class OnDemandFetcher extends Requester implements Runnable {
 		anIntArray1365 = new int[j1];
 		anIntArray1336 = new int[j1];
 		for (int i2 = 0; i2 < j1; i2++) {
-			anIntArray1346[i2] = class50_sub1_sub2_2.getShort();
-			anIntArray1360[i2] = class50_sub1_sub2_2.getShort();
-			anIntArray1365[i2] = class50_sub1_sub2_2.getShort();
+			anIntArray1346[i2] = class50_sub1_sub2_2.getUnsignedLEShort();
+			anIntArray1360[i2] = class50_sub1_sub2_2.getUnsignedLEShort();
+			anIntArray1365[i2] = class50_sub1_sub2_2.getUnsignedLEShort();
 			anIntArray1336[i2] = class50_sub1_sub2_2.getUnsignedByte();
 		}
 
-		abyte2 = archive.get("anim_index");
+		abyte2 = archive.getFile("anim_index");
 		class50_sub1_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length / 2;
 		anIntArray1376 = new int[j1];
 		for (int j2 = 0; j2 < j1; j2++)
-			anIntArray1376[j2] = class50_sub1_sub2_2.getShort();
+			anIntArray1376[j2] = class50_sub1_sub2_2.getUnsignedLEShort();
 
-		abyte2 = archive.get("midi_index");
+		abyte2 = archive.getFile("midi_index");
 		class50_sub1_sub2_2 = new Buffer(abyte2);
 		j1 = abyte2.length;
 		anIntArray1366 = new int[j1];

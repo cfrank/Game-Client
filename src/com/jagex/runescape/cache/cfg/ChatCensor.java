@@ -1,154 +1,154 @@
-package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+package com.jagex.runescape.cache.cfg;
 
-public class ChatFilter {
+import com.jagex.runescape.Archive;
+import com.jagex.runescape.Buffer;
 
-	public static void unpack(Archive archive) {
-		Buffer class50_sub1_sub2 = new Buffer(archive.get("fragmentsenc.txt"));
-		Buffer class50_sub1_sub2_1 = new Buffer(archive.get("badenc.txt"));
-		Buffer class50_sub1_sub2_2 = new Buffer(archive.get("domainenc.txt"));
-		Buffer class50_sub1_sub2_3 = new Buffer(archive.get("tldlist.txt"));
-		method374(class50_sub1_sub2, class50_sub1_sub2_1, class50_sub1_sub2_2, class50_sub1_sub2_3);
+public class ChatCensor {
+
+
+	public static int anInt728 = 3;
+	public static int anInt729;
+	public static boolean aBoolean731;
+	public static boolean aBoolean732;
+	public static int anInt733 = -48545;
+	public static int anInt734;
+	public static byte aByte735 = -113;
+	public static int anInt736 = 3;
+	public static boolean aBoolean738;
+	public static int fragments[];
+	public static char badWords[][];
+	public static byte badBytes[][][];
+	public static char domains[][];
+	public static char topLevelDomains[][];
+	public static int topLevelDomainsType[];
+	public static final String toCharArray[] = { "cook", "cook's", "cooks", "seeks", "sheet", "woop", "woops",
+			"faq", "noob", "noobs" };
+
+	public static void load(Archive archive) {
+		Buffer fragmentsEnc = new Buffer(archive.getFile("fragmentsenc.txt"));
+		Buffer badEnc = new Buffer(archive.getFile("badenc.txt"));
+		Buffer domainEnc = new Buffer(archive.getFile("domainenc.txt"));
+		Buffer topLevelDomainsBuffer = new Buffer(archive.getFile("tldlist.txt"));
+		loadDictionaries(fragmentsEnc, badEnc, domainEnc, topLevelDomainsBuffer);
 	}
 
-	public static void method374(Buffer class50_sub1_sub2, Buffer class50_sub1_sub2_1,
-								 Buffer class50_sub1_sub2_2, Buffer class50_sub1_sub2_3) {
-		method376(true, class50_sub1_sub2_1);
-		method377(20529, class50_sub1_sub2_2);
-		method378(class50_sub1_sub2, 21901);
-		method375(class50_sub1_sub2_3, -7305);
+	public static void loadDictionaries(Buffer fragmentsEnc, Buffer badEnc,
+										Buffer domainEnc, Buffer topLevelDomainsBuffer) {
+		loadBadEnc(badEnc);
+		loadDomainEnc(domainEnc);
+		loadFragmentsEnc(fragmentsEnc);
+		loadTopLevelDomains(topLevelDomainsBuffer);
 	}
 
-	public static void method375(Buffer class50_sub1_sub2, int i) {
-		int j = class50_sub1_sub2.getInt();
-		aCharArrayArray744 = new char[j][];
-		anIntArray745 = new int[j];
-		for (int k = 0; k < j; k++) {
-			anIntArray745[k] = class50_sub1_sub2.getUnsignedByte();
-			char ac[] = new char[class50_sub1_sub2.getUnsignedByte()];
-			for (int l = 0; l < ac.length; l++)
-				ac[l] = (char) class50_sub1_sub2.getUnsignedByte();
+	public static void loadTopLevelDomains(Buffer buffer) {
+		int length = buffer.getInt();
+		topLevelDomains = new char[length][];
+		topLevelDomainsType = new int[length];
+		for (int index = 0; index < length; index++) {
+			topLevelDomainsType[index] = buffer.getUnsignedByte();
+			char[] topLevelDomain = new char[buffer.getUnsignedByte()];
+			for (int character = 0; character < topLevelDomain.length; character++)
+				topLevelDomain[character] = (char) buffer.getUnsignedByte();
 
-			aCharArrayArray744[k] = ac;
+			topLevelDomains[index] = topLevelDomain;
 		}
 
-		if (i != -7305)
-			aBoolean732 = !aBoolean732;
 	}
 
-	public static void method376(boolean flag, Buffer class50_sub1_sub2) {
-		if (!flag) {
-			return;
-		} else {
-			int i = class50_sub1_sub2.getInt();
-			aCharArrayArray741 = new char[i][];
-			aByteArrayArrayArray742 = new byte[i][][];
-			method379(34541, class50_sub1_sub2, aCharArrayArray741, aByteArrayArrayArray742);
-			return;
-		}
-	}
-
-	public static void method377(int i, Buffer class50_sub1_sub2) {
-		int j = class50_sub1_sub2.getInt();
-		aCharArrayArray743 = new char[j][];
-		method380(class50_sub1_sub2, aCharArrayArray743, -37125);
-		if (i != 20529)
-			anInt729 = 311;
-	}
-
-	public static void method378(Buffer class50_sub1_sub2, int i) {
-		if (i != 21901)
-			return;
-		anIntArray740 = new int[class50_sub1_sub2.getInt()];
-		for (int j = 0; j < anIntArray740.length; j++)
-			anIntArray740[j] = class50_sub1_sub2.getShort();
+	public static void loadBadEnc(Buffer buffer) {
+		int length = buffer.getInt();
+		badWords = new char[length][];
+		badBytes = new byte[length][][];
+		loadBadWords(buffer, badWords, badBytes);
 
 	}
 
-	public static void method379(int i, Buffer class50_sub1_sub2, char ac[][], byte abyte0[][][]) {
-		for (int j = 0; j < ac.length; j++) {
-			char ac1[] = new char[class50_sub1_sub2.getUnsignedByte()];
-			for (int k = 0; k < ac1.length; k++)
-				ac1[k] = (char) class50_sub1_sub2.getUnsignedByte();
+	public static void loadDomainEnc(Buffer buffer) {
+		int length = buffer.getInt();
+		domains = new char[length][];
+		loadDomains(buffer, domains);
+	}
 
-			ac[j] = ac1;
-			byte abyte1[][] = new byte[class50_sub1_sub2.getUnsignedByte()][2];
-			for (int l = 0; l < abyte1.length; l++) {
-				abyte1[l][0] = (byte) class50_sub1_sub2.getUnsignedByte();
-				abyte1[l][1] = (byte) class50_sub1_sub2.getUnsignedByte();
+	public static void loadFragmentsEnc(Buffer buffer) {
+		fragments = new int[buffer.getInt()];
+		for (int index = 0; index < fragments.length; index++)
+			fragments[index] = buffer.getUnsignedLEShort();
+
+	}
+
+	public static void loadBadWords(Buffer buffer, char[][] badWords, byte[][][] badBytes) {
+		for (int index = 0; index < badWords.length; index++) {
+			char[] badWord = new char[buffer.getUnsignedByte()];
+			for (int k = 0; k < badWord.length; k++)
+				badWord[k] = (char) buffer.getUnsignedByte();
+
+			badWords[index] = badWord;
+			byte[][] badByte = new byte[buffer.getUnsignedByte()][2];
+			for (int l = 0; l < badByte.length; l++) {
+				badByte[l][0] = (byte) buffer.getUnsignedByte();
+				badByte[l][1] = (byte) buffer.getUnsignedByte();
 			}
 
-			if (abyte1.length > 0)
-				abyte0[j] = abyte1;
-		}
-
-		if (i == 34541)
-			;
-	}
-
-	public static void method380(Buffer class50_sub1_sub2, char ac[][], int i) {
-		if (i != -37125)
-			anInt728 = 218;
-		for (int j = 0; j < ac.length; j++) {
-			char ac1[] = new char[class50_sub1_sub2.getUnsignedByte()];
-			for (int k = 0; k < ac1.length; k++)
-				ac1[k] = (char) class50_sub1_sub2.getUnsignedByte();
-
-			ac[j] = ac1;
+			if (badByte.length > 0)
+				badBytes[index] = badByte;
 		}
 
 	}
 
-	public static void method381(char ac[], byte byte0) {
-		int i = 0;
-		for (int j = 0; j < ac.length; j++) {
-			if (method382(ac[j], 0))
-				ac[i] = ac[j];
+	public static void loadDomains(Buffer buffer, char[][] cs) {
+		for (int index = 0; index < cs.length; index++) {
+			char[] domainEnc = new char[buffer.getUnsignedByte()];
+			for (int character = 0; character < domainEnc.length; character++)
+				domainEnc[character] = (char) buffer.getUnsignedByte();
+
+			cs[index] = domainEnc;
+		}
+
+	}
+
+	public static void formatLegalCharacters(char[] characters) {
+		int character = 0;
+		for (int index = 0; index < characters.length; index++) {
+			if (isLegalCharacter(characters[index]))
+				characters[character] = characters[index];
 			else
-				ac[i] = ' ';
-			if (i == 0 || ac[i] != ' ' || ac[i - 1] != ' ')
-				i++;
+				characters[character] = ' ';
+			if (character == 0 || characters[character] != ' ' || characters[character - 1] != ' ')
+				character++;
 		}
 
-		for (int k = i; k < ac.length; k++)
-			ac[k] = ' ';
+		for (int characterIndex = character; characterIndex < characters.length; characterIndex++)
+			characters[characterIndex] = ' ';
 
-		if (byte0 == 6)
-			;
 	}
 
-	public static boolean method382(char c, int i) {
-		if (i != 0)
-			throw new NullPointerException();
-		return c >= ' ' && c <= '\177' || c == ' ' || c == '\n' || c == '\t' || c == '\243' || c == '\u20AC';
+	public static boolean isLegalCharacter(char character) {
+		return character >= ' ' && character <= '\177' || character == ' ' || character == '\n' || character == '\t' || character == '\243' || character == '\u20AC';
 	}
 
-	public static String method383(byte byte0, String s) {
-		char ac[] = s.toCharArray();
-		method381(ac, (byte) 6);
-		String s1 = (new String(ac)).trim();
-		ac = s1.toLowerCase().toCharArray();
-		String s2 = s1.toLowerCase();
-		method391(ac, 0);
-		method386(ac, anInt733);
-		method387(3, ac);
-		if (byte0 != 0)
-			throw new NullPointerException();
-		method400(3, ac);
-		for (int i = 0; i < aStringArray746.length; i++) {
-			for (int j = -1; (j = s2.indexOf(aStringArray746[i], j + 1)) != -1;) {
-				char ac1[] = aStringArray746[i].toCharArray();
+	public static String censorString(String string) {
+		char[] censoredString = string.toCharArray();
+		formatLegalCharacters(censoredString);
+		String censoredStringTrimmed = (new String(censoredString)).trim();
+		censoredString = censoredStringTrimmed.toLowerCase().toCharArray();
+		String censoredStringLowercased = censoredStringTrimmed.toLowerCase();
+		method391(censoredString, 0);
+		method386(censoredString, anInt733);
+		method387(3, censoredString);
+		method400(3, censoredString);
+		for (int i = 0; i < toCharArray.length; i++) {
+			for (int j = -1; (j = censoredStringLowercased.indexOf(toCharArray[i], j + 1)) != -1;) {
+				char ac1[] = toCharArray[i].toCharArray();
 				for (int k = 0; k < ac1.length; k++)
-					ac[k + j] = ac1[k];
+					censoredString[k + j] = ac1[k];
 
 			}
 
 		}
 
-		method384(0, ac, s1.toCharArray());
-		method385(1, ac);
-		return (new String(ac)).trim();
+		method384(0, censoredString, censoredStringTrimmed.toCharArray());
+		method385(1, censoredString);
+		return (new String(censoredString)).trim();
 	}
 
 	public static void method384(int i, char ac[], char ac1[]) {
@@ -181,8 +181,8 @@ public class ChatFilter {
 
 	public static void method386(char ac[], int i) {
 		for (int j = 0; j < 2; j++) {
-			for (int k = aCharArrayArray741.length - 1; k >= 0; k--)
-				method395(aByteArrayArrayArray742[k], -939, aCharArrayArray741[k], ac);
+			for (int k = badWords.length - 1; k >= 0; k--)
+				method395(badBytes[k], -939, badWords[k], ac);
 
 		}
 
@@ -199,8 +199,8 @@ public class ChatFilter {
 		char ac3[] = ac.clone();
 		char ac4[] = { 'd', 'o', 't' };
 		method395(null, -939, ac4, ac3);
-		for (int j = aCharArrayArray743.length - 1; j >= 0; j--)
-			method388(ac, ac3, ac1, -65, aCharArrayArray743[j]);
+		for (int j = domains.length - 1; j >= 0; j--)
+			method388(ac, ac3, ac1, -65, domains[j]);
 
 	}
 
@@ -312,8 +312,8 @@ public class ChatFilter {
 		if (i != 0)
 			aBoolean732 = !aBoolean732;
 		method395(null, -939, ac4, ac3);
-		for (int j = 0; j < aCharArrayArray744.length; j++)
-			method392(ac, (byte) 7, ac1, anIntArray745[j], aCharArrayArray744[j], ac3);
+		for (int j = 0; j < topLevelDomains.length; j++)
+			method392(ac, (byte) 7, ac1, topLevelDomainsType[j], topLevelDomains[j], ac3);
 
 	}
 
@@ -856,14 +856,14 @@ public class ChatFilter {
 			return true;
 		int k = method410(ac, (byte) 5);
 		int l = 0;
-		int i1 = anIntArray740.length - 1;
-		if (k == anIntArray740[l] || k == anIntArray740[i1])
+		int i1 = fragments.length - 1;
+		if (k == fragments[l] || k == fragments[i1])
 			return true;
 		do {
 			int j1 = (l + i1) / 2;
-			if (k == anIntArray740[j1])
+			if (k == fragments[j1])
 				return true;
-			if (k < anIntArray740[j1])
+			if (k < fragments[j1])
 				i1 = j1;
 			else
 				l = j1;
@@ -894,26 +894,5 @@ public class ChatFilter {
 		return i;
 	}
 
-	public static int anInt728 = 3;
-	public static int anInt729;
-	public static int anInt730 = -761;
-	public static boolean aBoolean731;
-	public static boolean aBoolean732;
-	public static int anInt733 = -48545;
-	public static int anInt734;
-	public static byte aByte735 = -113;
-	public static int anInt736 = 3;
-	public static int anInt737 = -939;
-	public static boolean aBoolean738;
-	public static boolean aBoolean739 = true;
-	public static int anIntArray740[];
-	public static char aCharArrayArray741[][];
-	public static byte aByteArrayArrayArray742[][][];
-	public static char aCharArrayArray743[][];
-	public static char aCharArrayArray744[][];
-	public static int anIntArray745[];
-	public static final String aStringArray746[] = { "cook", "cook's", "cooks", "seeks", "sheet", "woop", "woops",
-			"faq", "noob", "noobs" };
-	public static boolean aBoolean747;
 
 }

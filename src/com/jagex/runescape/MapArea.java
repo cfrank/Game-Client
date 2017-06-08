@@ -2,6 +2,7 @@ package com.jagex.runescape;/* Class8 - Decompiled by JODE
  * Visit http://jode.sourceforge.net/
  */
 
+import com.jagex.runescape.cache.def.FloorDefinition;
 import com.jagex.runescape.media.Rasterizer3D;
 import com.jagex.runescape.media.renderable.GameObject;
 import com.jagex.runescape.media.renderable.Model;
@@ -350,11 +351,11 @@ public class MapArea {
 					if (i_71_ >= 0 && i_71_ < anInt151) {
 						int i_72_ = aByteArrayArrayArray159[i_50_][i_71_][i_70_] & 0xff;
 						if (i_72_ > 0) {
-							FloorDefinition class15 = FloorDefinition.aClass15Array314[i_72_ - 1];
-							anIntArray144[i_70_] += class15.anInt323;
-							anIntArray145[i_70_] += class15.anInt321;
-							anIntArray146[i_70_] += class15.anInt322;
-							anIntArray147[i_70_] += class15.anInt324;
+							FloorDefinition class15 = FloorDefinition.cache[i_72_ - 1];
+							anIntArray144[i_70_] += class15.hue;
+							anIntArray145[i_70_] += class15.saturation;
+							anIntArray146[i_70_] += class15.lightness;
+							anIntArray147[i_70_] += class15.hueDivisor;
 							anIntArray148[i_70_]++;
 						}
 					}
@@ -362,11 +363,11 @@ public class MapArea {
 					if (i_73_ >= 0 && i_73_ < anInt151) {
 						int i_74_ = aByteArrayArrayArray159[i_50_][i_73_][i_70_] & 0xff;
 						if (i_74_ > 0) {
-							FloorDefinition class15 = FloorDefinition.aClass15Array314[i_74_ - 1];
-							anIntArray144[i_70_] -= class15.anInt323;
-							anIntArray145[i_70_] -= class15.anInt321;
-							anIntArray146[i_70_] -= class15.anInt322;
-							anIntArray147[i_70_] -= class15.anInt324;
+							FloorDefinition class15 = FloorDefinition.cache[i_74_ - 1];
+							anIntArray144[i_70_] -= class15.hue;
+							anIntArray145[i_70_] -= class15.saturation;
+							anIntArray146[i_70_] -= class15.lightness;
+							anIntArray147[i_70_] -= class15.hueDivisor;
 							anIntArray148[i_70_]--;
 						}
 					}
@@ -430,7 +431,7 @@ public class MapArea {
 									boolean bool = true;
 									if (i_83_ == 0 && (aByteArrayArrayArray153[i_50_][i_69_][i_80_]) != 0)
 										bool = false;
-									if (i_84_ > 0 && !(FloorDefinition.aClass15Array314[i_84_ - 1].aBoolean319))
+									if (i_84_ > 0 && !(FloorDefinition.cache[i_84_ - 1].occlude))
 										bool = false;
 									if (bool && i_85_ == i_86_ && i_85_ == i_87_ && i_85_ == i_88_)
 										anIntArrayArrayArray168[i_50_][i_69_][i_80_] |= 0x924;
@@ -445,20 +446,20 @@ public class MapArea {
 								else {
 									int i_99_ = ((aByteArrayArrayArray153[i_50_][i_69_][i_80_]) + 1);
 									byte i_100_ = (aByteArrayArrayArray142[i_50_][i_69_][i_80_]);
-									FloorDefinition class15 = FloorDefinition.aClass15Array314[i_84_ - 1];
-									int i_101_ = class15.anInt317;
+									FloorDefinition class15 = FloorDefinition.cache[i_84_ - 1];
+									int i_101_ = class15.textureId;
 									int i_102_;
 									int i_103_;
 									if (i_101_ >= 0) {
 										i_103_ = Rasterizer3D.method498(i_101_, 0);
 										i_102_ = -1;
-									} else if (class15.anInt316 == 16711935) {
+									} else if (class15.rgbColor == 16711935) {
 										i_102_ = -2;
 										i_101_ = -1;
-										i_103_ = (Rasterizer3D.anIntArray1548[method182(class15.anInt325, 96)]);
+										i_103_ = (Rasterizer3D.anIntArray1548[method182(class15.hslColor2, 96)]);
 									} else {
-										i_102_ = method177(class15.anInt320, class15.anInt321, class15.anInt322);
-										i_103_ = (Rasterizer3D.anIntArray1548[method182(class15.anInt325, 96)]);
+										i_102_ = method177(class15.hue2, class15.saturation, class15.lightness);
+										i_103_ = (Rasterizer3D.anIntArray1548[method182(class15.hslColor2, 96)]);
 									}
 									class22.method246(i_50_, i_69_, i_80_, i_99_, i_100_, i_101_, i_85_, i_86_, i_87_,
 											i_88_, method171(i_93_, i_89_), method171(i_93_, i_90_), method171(i_93_,

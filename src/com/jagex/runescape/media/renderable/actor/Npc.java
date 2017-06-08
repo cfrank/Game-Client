@@ -2,28 +2,27 @@ package com.jagex.runescape.media.renderable.actor;// Decompiled by Jad v1.5.8f.
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import com.jagex.runescape.ActorDefinition;
-import com.jagex.runescape.AnimationSequence;
+import com.jagex.runescape.cache.def.ActorDefinition;
+import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.SpotAnimation;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
-import com.jagex.runescape.media.renderable.actor.Actor;
 
 public class Npc extends Actor {
 	public ActorDefinition npcDefinition;
 
 	public Model getChildModel() {
 		if (super.animation >= 0 && super.animationDelay == 0) {
-			int frameId = AnimationSequence.animations[super.animation].frame2Ids[super.anInt1625];
+			int frameId = AnimationSequence.cache[super.animation].frame2Ids[super.anInt1625];
 			int frameId2 = -1;
 			if (super.anInt1588 >= 0 && super.anInt1588 != super.standAnimationId)
-				frameId2 = AnimationSequence.animations[super.anInt1588].frame2Ids[super.anInt1589];
-			return npcDefinition.getChildModel(frameId, frameId2, 0, AnimationSequence.animations[super.animation].flowControl);
+				frameId2 = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
+			return npcDefinition.getChildModel(frameId, frameId2, AnimationSequence.cache[super.animation].flowControl);
 		}
 		int j = -1;
 		if (super.anInt1588 >= 0)
-			j = AnimationSequence.animations[super.anInt1588].frame2Ids[super.anInt1589];
-		return npcDefinition.getChildModel(j, -1, 0, null);
+			j = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
+		return npcDefinition.getChildModel(j, -1, null);
 	}
 
 	@Override

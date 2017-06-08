@@ -2,14 +2,15 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.renderable.Model;
 
 public class SpotAnimation {
 
 	public static void load(Archive archive) {
-		Buffer buf = new Buffer(archive.get("spotanim.dat"));
-		count = buf.getShort();
+		Buffer buf = new Buffer(archive.getFile("spotanim.dat"));
+		count = buf.getUnsignedLEShort();
 		if (cache == null)
 			cache = new SpotAnimation[count];
 		for (int id = 0; id < count; id++) {
@@ -27,25 +28,25 @@ public class SpotAnimation {
 			if (attribute == 0)
 				return;
 			if (attribute == 1)
-				modelId = buf.getShort();
+				modelId = buf.getUnsignedLEShort();
 			else if (attribute == 2) {
-				animId = buf.getShort();
-				if (AnimationSequence.animations != null)
-					sequences = AnimationSequence.animations[animId];
+				animId = buf.getUnsignedLEShort();
+				if (AnimationSequence.cache != null)
+					sequences = AnimationSequence.cache[animId];
 			} else if (attribute == 4)
-				resizeXY = buf.getShort();
+				resizeXY = buf.getUnsignedLEShort();
 			else if (attribute == 5)
-				resizeZ = buf.getShort();
+				resizeZ = buf.getUnsignedLEShort();
 			else if (attribute == 6)
-				rotation = buf.getShort();
+				rotation = buf.getUnsignedLEShort();
 			else if (attribute == 7)
 				modelLightFalloff = buf.getUnsignedByte();
 			else if (attribute == 8)
 				modelLightAmbient = buf.getUnsignedByte();
 			else if (attribute >= 40 && attribute < 50)
-				srcColors[attribute - 40] = buf.getShort();
+				srcColors[attribute - 40] = buf.getUnsignedLEShort();
 			else if (attribute >= 50 && attribute < 60)
-				destColors[attribute - 50] = buf.getShort();
+				destColors[attribute - 50] = buf.getUnsignedLEShort();
 			else
 				System.out.println("Error unrecognised spotanim config code: " + attribute);
 		} while (true);

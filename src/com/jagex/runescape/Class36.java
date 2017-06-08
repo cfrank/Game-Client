@@ -76,13 +76,13 @@ public class Class36 {
 		}
 		anIntArray613[1] = j & 0xf;
 		if (j != 0) {
-			anIntArray616[0] = class50_sub1_sub2.getShort();
-			anIntArray616[1] = class50_sub1_sub2.getShort();
+			anIntArray616[0] = class50_sub1_sub2.getUnsignedLEShort();
+			anIntArray616[1] = class50_sub1_sub2.getUnsignedLEShort();
 			int l = class50_sub1_sub2.getUnsignedByte();
 			for (int i1 = 0; i1 < 2; i1++) {
 				for (int j1 = 0; j1 < anIntArray613[i1]; j1++) {
-					anIntArrayArrayArray614[i1][0][j1] = class50_sub1_sub2.getShort();
-					anIntArrayArrayArray615[i1][0][j1] = class50_sub1_sub2.getShort();
+					anIntArrayArrayArray614[i1][0][j1] = class50_sub1_sub2.getUnsignedLEShort();
+					anIntArrayArrayArray615[i1][0][j1] = class50_sub1_sub2.getUnsignedLEShort();
 				}
 
 			}
@@ -90,8 +90,8 @@ public class Class36 {
 			for (int k1 = 0; k1 < 2; k1++) {
 				for (int l1 = 0; l1 < anIntArray613[k1]; l1++)
 					if ((l & 1 << k1 * 4 << l1) != 0) {
-						anIntArrayArrayArray614[k1][1][l1] = class50_sub1_sub2.getShort();
-						anIntArrayArrayArray615[k1][1][l1] = class50_sub1_sub2.getShort();
+						anIntArrayArrayArray614[k1][1][l1] = class50_sub1_sub2.getUnsignedLEShort();
+						anIntArrayArrayArray615[k1][1][l1] = class50_sub1_sub2.getUnsignedLEShort();
 					} else {
 						anIntArrayArrayArray614[k1][1][l1] = anIntArrayArrayArray614[k1][0][l1];
 						anIntArrayArrayArray615[k1][1][l1] = anIntArrayArrayArray615[k1][0][l1];

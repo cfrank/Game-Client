@@ -22,8 +22,8 @@ public class Class29 {
 		if (i != 0)
 			return;
 		for (int j = 0; j < anInt574; j++) {
-			anIntArray575[j] = buf.getShort();
-			anIntArray576[j] = buf.getShort();
+			anIntArray575[j] = buf.getUnsignedLEShort();
+			anIntArray576[j] = buf.getUnsignedLEShort();
 		}
 
 	}

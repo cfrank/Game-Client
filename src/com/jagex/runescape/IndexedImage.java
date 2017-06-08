@@ -13,26 +13,26 @@ public class IndexedImage extends Rasterizer {
         aByte1513 = 5;
         anInt1514 = -3539;
         aBoolean1515 = true;
-        Buffer class50_sub1_sub2 = new Buffer(class2.get(s + ".dat"));
-        Buffer class50_sub1_sub2_1 = new Buffer(class2.get("index.dat"));
-        class50_sub1_sub2_1.offset = class50_sub1_sub2.getShort();
-        anInt1522 = class50_sub1_sub2_1.getShort();
-        anInt1523 = class50_sub1_sub2_1.getShort();
+        Buffer class50_sub1_sub2 = new Buffer(class2.getFile(s + ".dat"));
+        Buffer class50_sub1_sub2_1 = new Buffer(class2.getFile("index.dat"));
+        class50_sub1_sub2_1.offset = class50_sub1_sub2.getUnsignedLEShort();
+        anInt1522 = class50_sub1_sub2_1.getUnsignedLEShort();
+        anInt1523 = class50_sub1_sub2_1.getUnsignedLEShort();
         int j = class50_sub1_sub2_1.getUnsignedByte();
         anIntArray1517 = new int[j];
         for (int k = 0; k < j - 1; k++)
-            anIntArray1517[k + 1] = class50_sub1_sub2_1.getTriByte();
+            anIntArray1517[k + 1] = class50_sub1_sub2_1.get24BitInt();
 
         for (int l = 0; l < i; l++) {
             class50_sub1_sub2_1.offset += 2;
-            class50_sub1_sub2.offset += class50_sub1_sub2_1.getShort() * class50_sub1_sub2_1.getShort();
+            class50_sub1_sub2.offset += class50_sub1_sub2_1.getUnsignedLEShort() * class50_sub1_sub2_1.getUnsignedLEShort();
             class50_sub1_sub2_1.offset++;
         }
 
         anInt1520 = class50_sub1_sub2_1.getUnsignedByte();
         anInt1521 = class50_sub1_sub2_1.getUnsignedByte();
-        width2 = class50_sub1_sub2_1.getShort();
-        anInt1519 = class50_sub1_sub2_1.getShort();
+        width2 = class50_sub1_sub2_1.getUnsignedLEShort();
+        anInt1519 = class50_sub1_sub2_1.getUnsignedLEShort();
         int i1 = class50_sub1_sub2_1.getUnsignedByte();
         int j1 = width2 * anInt1519;
         pixels = new byte[j1];

@@ -2,6 +2,8 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.jagex.runescape.cache.bzip.BZip2Decompressor;
+
 public class Archive {
 
 	public Archive(byte _data[]) {
@@ -10,11 +12,11 @@ public class Archive {
 
 	public void init(byte _data[]) {
 		Buffer buf = new Buffer(_data);
-		int extractedSize = buf.getTriByte();
-		int size = buf.getTriByte();
+		int extractedSize = buf.get24BitInt();
+		int size = buf.get24BitInt();
 		if (size != extractedSize) {
 			byte extractedBuf[] = new byte[extractedSize];
-			Bzip2.decompress(extractedBuf, extractedSize, _data, size, 6);
+			BZip2Decompressor.decompress(extractedBuf, extractedSize, _data, size, 6);
 			data = extractedBuf;
 			buf = new Buffer(data);
 			extracted = true;
@@ -22,7 +24,7 @@ public class Archive {
 			data = _data;
 			extracted = false;
 		}
-		entries = buf.getShort();
+		entries = buf.getUnsignedLEShort();
 		hashes = new int[entries];
 		extractedSizes = new int[entries];
 		sizes = new int[entries];
@@ -30,14 +32,14 @@ public class Archive {
 		int offset = buf.offset + entries * 10;
 		for (int pos = 0; pos < entries; pos++) {
 			hashes[pos] = buf.getInt();
-			extractedSizes[pos] = buf.getTriByte();
-			sizes[pos] = buf.getTriByte();
+			extractedSizes[pos] = buf.get24BitInt();
+			sizes[pos] = buf.get24BitInt();
 			offsets[pos] = offset;
 			offset += sizes[pos];
 		}
 	}
 
-	public byte[] get(String name) {
+	public byte[] getFile(String name) {
 		byte[] dest = null;
 		int hash = 0;
 		name = name.toUpperCase();
@@ -51,7 +53,7 @@ public class Archive {
 					dest = new byte[extractedSizes[entry]];
 
 				if (!extracted) {
-					Bzip2.decompress(dest, extractedSizes[entry], data, sizes[entry], offsets[entry]);
+					BZip2Decompressor.decompress(dest, extractedSizes[entry], data, sizes[entry], offsets[entry]);
 				} else {
 					for (int pos = 0; pos < extractedSizes[entry]; pos++)
 						dest[pos] = data[offsets[entry] + pos];

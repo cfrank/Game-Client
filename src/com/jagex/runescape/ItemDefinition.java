@@ -89,14 +89,14 @@ public class ItemDefinition {
 	}
 
 	public static void load(Archive archive) {
-		buf = new Buffer(archive.get("obj.dat"));
-		Buffer objectIndexVector = new Buffer(archive.get("obj.idx"));
-		count = objectIndexVector.getShort();
+		buf = new Buffer(archive.getFile("obj.dat"));
+		Buffer objectIndexVector = new Buffer(archive.getFile("obj.idx"));
+		count = objectIndexVector.getUnsignedLEShort();
 		indices = new int[count];
 		int index = 2;
 		for (int j = 0; j < count; j++) {
 			indices[j] = index;
-			index += objectIndexVector.getShort();
+			index += objectIndexVector.getUnsignedLEShort();
 		}
 
 		cache = new ItemDefinition[10];
@@ -178,27 +178,27 @@ public class ItemDefinition {
 			if (i == 0)
 				return;
 			if (i == 1)
-				modelId = vec.getShort();
+				modelId = vec.getUnsignedLEShort();
 			else if (i == 2)
 				name = vec.getString();
 			else if (i == 3)
 				description = vec.getStringBytes();
 			else if (i == 4)
-				modelScale = vec.getShort();
+				modelScale = vec.getUnsignedLEShort();
 			else if (i == 5)
-				modelRotationX = vec.getShort();
+				modelRotationX = vec.getUnsignedLEShort();
 			else if (i == 6)
-				modelRotationY = vec.getShort();
+				modelRotationY = vec.getUnsignedLEShort();
 			else if (i == 7) {
-				modelOffsetX = vec.getShort();
+				modelOffsetX = vec.getUnsignedLEShort();
 				if (modelOffsetX > 32767)
 					modelOffsetX -= 0x10000;
 			} else if (i == 8) {
-				modelOffsetY = vec.getShort();
+				modelOffsetY = vec.getUnsignedLEShort();
 				if (modelOffsetY > 32767)
 					modelOffsetY -= 0x10000;
 			} else if (i == 10)
-				anInt372 = vec.getShort();
+				anInt372 = vec.getUnsignedLEShort();
 			else if (i == 11)
 				stackable = true;
 			else if (i == 12)
@@ -206,15 +206,15 @@ public class ItemDefinition {
 			else if (i == 16)
 				members = true;
 			else if (i == 23) {
-				anInt353 = vec.getShort();
+				anInt353 = vec.getUnsignedLEShort();
 				aByte378 = vec.getSignedByte();
 			} else if (i == 24)
-				anInt331 = vec.getShort();
+				anInt331 = vec.getUnsignedLEShort();
 			else if (i == 25) {
-				anInt326 = vec.getShort();
+				anInt326 = vec.getUnsignedLEShort();
 				aByte330 = vec.getSignedByte();
 			} else if (i == 26)
-				anInt355 = vec.getShort();
+				anInt355 = vec.getUnsignedLEShort();
 			else if (i >= 30 && i < 35) {
 				if (groundActions == null)
 					groundActions = new String[5];
@@ -230,41 +230,41 @@ public class ItemDefinition {
 				srcColors = new int[colorCount];
 				destColors = new int[colorCount];
 				for (int k = 0; k < colorCount; k++) {
-					srcColors[k] = vec.getShort();
-					destColors[k] = vec.getShort();
+					srcColors[k] = vec.getUnsignedLEShort();
+					destColors[k] = vec.getUnsignedLEShort();
 				}
 
 			} else if (i == 78)
-				anInt370 = vec.getShort();
+				anInt370 = vec.getUnsignedLEShort();
 			else if (i == 79)
-				anInt367 = vec.getShort();
+				anInt367 = vec.getUnsignedLEShort();
 			else if (i == 90)
-				anInt334 = vec.getShort();
+				anInt334 = vec.getUnsignedLEShort();
 			else if (i == 91)
-				anInt375 = vec.getShort();
+				anInt375 = vec.getUnsignedLEShort();
 			else if (i == 92)
-				anInt361 = vec.getShort();
+				anInt361 = vec.getUnsignedLEShort();
 			else if (i == 93)
-				anInt362 = vec.getShort();
+				anInt362 = vec.getUnsignedLEShort();
 			else if (i == 95)
-				anInt339 = vec.getShort();
+				anInt339 = vec.getUnsignedLEShort();
 			else if (i == 97)
-				notedInfoId = vec.getShort();
+				notedInfoId = vec.getUnsignedLEShort();
 			else if (i == 98)
-				notedGraphicsId = vec.getShort();
+				notedGraphicsId = vec.getUnsignedLEShort();
 			else if (i >= 100 && i < 110) {
 				if (stackIds == null) {
 					stackIds = new int[10];
 					stackAmounts = new int[10];
 				}
-				stackIds[i - 100] = vec.getShort();
-				stackAmounts[i - 100] = vec.getShort();
+				stackIds[i - 100] = vec.getUnsignedLEShort();
+				stackAmounts[i - 100] = vec.getUnsignedLEShort();
 			} else if (i == 110)
-				anInt366 = vec.getShort();
+				anInt366 = vec.getUnsignedLEShort();
 			else if (i == 111)
-				anInt357 = vec.getShort();
+				anInt357 = vec.getUnsignedLEShort();
 			else if (i == 112)
-				anInt368 = vec.getShort();
+				anInt368 = vec.getUnsignedLEShort();
 			else if (i == 113)
 				anInt354 = vec.getSignedByte();
 			else if (i == 114)

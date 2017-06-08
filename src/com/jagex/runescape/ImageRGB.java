@@ -78,29 +78,29 @@ public class ImageRGB extends Rasterizer {
 		aBoolean1486 = false;
 		aBoolean1487 = true;
 		anInt1488 = 3600;
-		Buffer class50_sub1_sub2 = new Buffer(class2.get(s + ".dat"));
-		Buffer class50_sub1_sub2_1 = new Buffer(class2.get("index.dat"));
-		class50_sub1_sub2_1.offset = class50_sub1_sub2.getShort();
-		anInt1494 = class50_sub1_sub2_1.getShort();
-		anInt1495 = class50_sub1_sub2_1.getShort();
+		Buffer class50_sub1_sub2 = new Buffer(class2.getFile(s + ".dat"));
+		Buffer class50_sub1_sub2_1 = new Buffer(class2.getFile("index.dat"));
+		class50_sub1_sub2_1.offset = class50_sub1_sub2.getUnsignedLEShort();
+		anInt1494 = class50_sub1_sub2_1.getUnsignedLEShort();
+		anInt1495 = class50_sub1_sub2_1.getUnsignedLEShort();
 		int j = class50_sub1_sub2_1.getUnsignedByte();
 		int ai[] = new int[j];
 		for (int k = 0; k < j - 1; k++) {
-			ai[k + 1] = class50_sub1_sub2_1.getTriByte();
+			ai[k + 1] = class50_sub1_sub2_1.get24BitInt();
 			if (ai[k + 1] == 0)
 				ai[k + 1] = 1;
 		}
 
 		for (int l = 0; l < i; l++) {
 			class50_sub1_sub2_1.offset += 2;
-			class50_sub1_sub2.offset += class50_sub1_sub2_1.getShort() * class50_sub1_sub2_1.getShort();
+			class50_sub1_sub2.offset += class50_sub1_sub2_1.getUnsignedLEShort() * class50_sub1_sub2_1.getUnsignedLEShort();
 			class50_sub1_sub2_1.offset++;
 		}
 
 		anInt1492 = class50_sub1_sub2_1.getUnsignedByte();
 		anInt1493 = class50_sub1_sub2_1.getUnsignedByte();
-		width1 = class50_sub1_sub2_1.getShort();
-		height1 = class50_sub1_sub2_1.getShort();
+		width1 = class50_sub1_sub2_1.getUnsignedLEShort();
+		height1 = class50_sub1_sub2_1.getUnsignedLEShort();
 		int i1 = class50_sub1_sub2_1.getUnsignedByte();
 		int j1 = width1 * height1;
 		pixels = new int[j1];

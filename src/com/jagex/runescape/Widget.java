@@ -2,6 +2,7 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
@@ -30,7 +31,7 @@ public class Widget {
 	public static Widget forId(int id) {
 		if (interfaces[id] == null) {
 			Buffer buf = new Buffer(data[id]);
-			int j = buf.getShort();
+			int j = buf.getUnsignedLEShort();
 			interfaces[id] = parse(j, buf, id);
 		}
 		return interfaces[id];
@@ -58,7 +59,7 @@ public class Widget {
 		if (type == 1)
 			model = Model.getModel(id);
 		if (type == 2)
-			model = ActorDefinition.forId(id).getHeadModel();
+			model = ActorDefinition.getDefinition(id).getHeadModel();
 		if (type == 3)
 			model = Game.thisPlayer.getHeadModel();
 		if (type == 4)
@@ -76,9 +77,9 @@ public class Widget {
 		inter.anInt248 = i;
 		inter.anInt236 = buf.getUnsignedByte();
 		inter.anInt289 = buf.getUnsignedByte();
-		inter.contentType = buf.getShort();
-		inter.anInt241 = buf.getShort();
-		inter.anInt238 = buf.getShort();
+		inter.contentType = buf.getUnsignedLEShort();
+		inter.anInt241 = buf.getUnsignedLEShort();
+		inter.anInt238 = buf.getUnsignedLEShort();
 		inter.aByte220 = (byte) buf.getUnsignedByte();
 		inter.anInt254 = buf.getUnsignedByte();
 		if (inter.anInt254 != 0)
@@ -97,7 +98,7 @@ public class Widget {
 			inter.anIntArray256 = new int[l];
 			for (int i1 = 0; i1 < l; i1++) {
 				inter.anIntArray273[i1] = buf.getUnsignedByte();
-				inter.anIntArray256[i1] = buf.getShort();
+				inter.anIntArray256[i1] = buf.getUnsignedLEShort();
 			}
 
 		}
@@ -105,30 +106,30 @@ public class Widget {
 		if (j1 > 0) {
 			inter.anIntArrayArray234 = new int[j1][];
 			for (int k1 = 0; k1 < j1; k1++) {
-				int l2 = buf.getShort();
+				int l2 = buf.getUnsignedLEShort();
 				inter.anIntArrayArray234[k1] = new int[l2];
 				for (int k4 = 0; k4 < l2; k4++)
-					inter.anIntArrayArray234[k1][k4] = buf.getShort();
+					inter.anIntArrayArray234[k1][k4] = buf.getUnsignedLEShort();
 
 			}
 
 		}
 		if (inter.anInt236 == 0) {
-			inter.anInt285 = buf.getShort();
+			inter.anInt285 = buf.getUnsignedLEShort();
 			inter.aBoolean219 = buf.getUnsignedByte() == 1;
-			int l1 = buf.getShort();
+			int l1 = buf.getUnsignedLEShort();
 			inter.anIntArray258 = new int[l1];
 			inter.anIntArray232 = new int[l1];
 			inter.anIntArray276 = new int[l1];
 			for (int i3 = 0; i3 < l1; i3++) {
-				inter.anIntArray258[i3] = buf.getShort();
+				inter.anIntArray258[i3] = buf.getUnsignedLEShort();
 				inter.anIntArray232[i3] = buf.getSignedShort();
 				inter.anIntArray276[i3] = buf.getSignedShort();
 			}
 
 		}
 		if (inter.anInt236 == 1) {
-			inter.anInt225 = buf.getShort();
+			inter.anInt225 = buf.getUnsignedLEShort();
 			inter.aBoolean233 = buf.getUnsignedByte() == 1;
 		}
 		if (inter.anInt236 == 2) {
@@ -220,9 +221,9 @@ public class Widget {
 				inter.anInt287 = (id - 1 << 8) + buf.getUnsignedByte();
 			else
 				inter.anInt287 = -1;
-			inter.anInt251 = buf.getShort();
-			inter.anInt252 = buf.getShort();
-			inter.anInt253 = buf.getShort();
+			inter.anInt251 = buf.getUnsignedLEShort();
+			inter.anInt252 = buf.getUnsignedLEShort();
+			inter.anInt253 = buf.getUnsignedLEShort();
 		}
 		if (inter.anInt236 == 7) {
 			inter.itemIds = new int[inter.anInt241 * inter.anInt238];
@@ -249,7 +250,7 @@ public class Widget {
 		if (inter.anInt289 == 2 || inter.anInt236 == 2) {
 			inter.aString281 = buf.getString();
 			inter.aString211 = buf.getString();
-			inter.anInt222 = buf.getShort();
+			inter.anInt222 = buf.getUnsignedLEShort();
 		}
 		if (inter.anInt289 == 1 || inter.anInt289 == 4 || inter.anInt289 == 5 || inter.anInt289 == 6) {
 			inter.tooltip = buf.getString();
@@ -272,15 +273,15 @@ public class Widget {
 		aClass2_214 = class2_1;
 		aClass50_Sub1_Sub1_Sub2Array223 = aclass50_sub1_sub1_sub2;
 		int j = -1;
-		Buffer buf = new Buffer(archive.get("data"));
-		int count = buf.getShort();
+		Buffer buf = new Buffer(archive.getFile("data"));
+		int count = buf.getUnsignedLEShort();
 		interfaces = new Widget[count];
 		data = new byte[count][];
 		while (buf.offset < buf.buffer.length) {
-			int l = buf.getShort();
+			int l = buf.getUnsignedLEShort();
 			if (l == 65535) {
-				j = buf.getShort();
-				l = buf.getShort();
+				j = buf.getUnsignedLEShort();
+				l = buf.getUnsignedLEShort();
 			}
 			int i1 = buf.offset;
 			Widget inter = parse(j, buf, l);

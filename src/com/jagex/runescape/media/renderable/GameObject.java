@@ -1,6 +1,8 @@
 package com.jagex.runescape.media.renderable;
 
 import com.jagex.runescape.*;
+import com.jagex.runescape.cache.cfg.Varbit;
+import com.jagex.runescape.cache.media.AnimationSequence;
 
 public class GameObject extends Renderable {
 	public int vertexHeight;
@@ -27,7 +29,7 @@ public class GameObject extends Renderable {
 		this.vertexHeightTopRight = vertexHeightTopRight;
 		this.vertexHeightTop = vertexHeightTop;
 		if (animationId != -1) {
-			animationSequence = AnimationSequence.animations[animationId];
+			animationSequence = AnimationSequence.cache[animationId];
 			animationFrame = 0;
 			animationCycleDelay = client.pulseCycle - 1;
 			if (flag && animationSequence.frameStep != -1) {
@@ -45,7 +47,7 @@ public class GameObject extends Renderable {
 		int child = -1;
 		if (varbitId != -1) {
 			Varbit varbit = Varbit.cache[varbitId];
-			int configId = varbit.varpId;
+			int configId = varbit.configId;
 			int leastSignificantBit = varbit.leastSignificantBit;
 			int mostSignificantBit = varbit.mostSignificantBit;
 			int bit = client.BITFIELD_MAX_VALUE[mostSignificantBit - leastSignificantBit];

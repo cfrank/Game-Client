@@ -151,7 +151,7 @@ public class Buffer extends CacheableNode {
 		return buffer[offset++];
 	}
 
-	public int getShort() {
+	public int getUnsignedLEShort() {
 		offset += 2;
 		return ((buffer[offset - 2] & 0xff) << 8) + (buffer[offset - 1] & 0xff);
 	}
@@ -164,7 +164,7 @@ public class Buffer extends CacheableNode {
 		return i;
 	}
 
-	public int getTriByte() {
+	public int get24BitInt() {
 		offset += 3;
 		return ((buffer[offset - 3] & 0xff) << 16) + ((buffer[offset - 2] & 0xff) << 8)
 				+ (buffer[offset - 1] & 0xff);
@@ -232,7 +232,7 @@ public class Buffer extends CacheableNode {
 		if (peek < 128)
 			return getUnsignedByte() - 64;
 		else
-			return getShort() - 49152;
+			return getUnsignedLEShort() - 49152;
 	}
 
 	public int getSmart() {
@@ -240,7 +240,7 @@ public class Buffer extends CacheableNode {
 		if (peek < 128)
 			return getUnsignedByte();
 		else
-			return getShort() - 32768;
+			return getUnsignedLEShort() - 32768;
 	}
 
 	public void rsa(BigInteger modulus, BigInteger key) {

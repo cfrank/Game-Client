@@ -242,8 +242,8 @@ public class SoundTrack {
 
 		anInt194 = buf.getSmart();
 		anInt195 = buf.getSmart();
-		soundMillis = buf.getShort();
-		pauseMillis = buf.getShort();
+		soundMillis = buf.getUnsignedLEShort();
+		pauseMillis = buf.getUnsignedLEShort();
 		aClass36_196 = new Class36();
 		aClass29_197 = new Class29();
 		aClass36_196.method356(-954, aClass29_197, buf);
