@@ -15,203 +15,202 @@ public class Rasterizer extends CacheableNode {
 	public static int centerX;
 	public static int centerY;
 
+
 	public static void createRasterizer(int[] pixels, int width, int height) {
 		Rasterizer.pixels = pixels;
 		Rasterizer.width = width;
 		Rasterizer.height = height;
-		Rasterizer.setCoordinates(0, 0, width, height);
+		setCoordinates(0, 0, height, width);
 	}
 
 	public static void resetCoordinates() {
-		Rasterizer.topX = 0;
-		Rasterizer.topY = 0;
-		Rasterizer.bottomX = Rasterizer.width;
-		Rasterizer.bottomY = Rasterizer.height;
-		Rasterizer.virtualBottomX = Rasterizer.bottomX;
-		Rasterizer.centerX = Rasterizer.bottomX / 2;
+		topX = 0;
+		topY = 0;
+		bottomX = width;
+		bottomY = height;
+		virtualBottomX = bottomX - 1;
+		centerX = bottomX / 2;
 	}
 
-	public static void setCoordinates(int x, int y, int width, int height) {
-		if (x < 0) {
+	public static void setCoordinates(int y, int x, int height, int width) {
+		if (x < 0)
 			x = 0;
-		}
-		if (y < 0) {
+		if (y < 0)
 			y = 0;
-		}
-		if (width > Rasterizer.width) {
+		if (width > Rasterizer.width)
 			width = Rasterizer.width;
-		}
-		if (height > Rasterizer.height) {
+		if (height > Rasterizer.height)
 			height = Rasterizer.height;
-		}
-		Rasterizer.topX = x;
-		Rasterizer.topY = y;
-		Rasterizer.bottomX = width;
-		Rasterizer.bottomY = height;
-		Rasterizer.virtualBottomX = Rasterizer.bottomX;
-		Rasterizer.centerX = Rasterizer.bottomX / 2;
-		Rasterizer.centerY = Rasterizer.bottomY / 2;
+		topX = x;
+		topY = y;
+		bottomX = width;
+		bottomY = height;
+		virtualBottomX = bottomX - 1;
+		centerX = bottomX / 2;
+		centerY = bottomY / 2;
+
 	}
 
 	public static void resetPixels() {
-		int pixelCount = Rasterizer.width * Rasterizer.height;
-		for (int pixel = 0; pixel < pixelCount; pixel++) {
-			Rasterizer.pixels[pixel] = 0;
-		}
+		int pixelCount = width * height;
+		for (int pixel = 0; pixel < pixelCount; pixel++)
+			pixels[pixel] = 0;
+
 	}
 
-	public static void drawFilledRectangleAlhpa(int x, int y, int width, int height, int color, int alpha) {
-		if (x < Rasterizer.topX) {
-			width -= Rasterizer.topX - x;
-			x = Rasterizer.topX;
+	public static void drawFilledRectangleAlhpa(int x, int y, int width, int height, int colour, int alpha) {
+		if (x < topX) {
+			width -= topX - x;
+			x = topX;
 		}
-		if (y < Rasterizer.topY) {
-			height -= Rasterizer.topY - y;
-			y = Rasterizer.topY;
+		if (y < topY) {
+			height -= topY - y;
+			y = topY;
 		}
-		if (x + width > Rasterizer.bottomX) {
-			width = Rasterizer.bottomX - x;
-		}
-		if (y + height > Rasterizer.bottomY) {
-			height = Rasterizer.bottomY - y;
-		}
+		if (x + width > bottomX)
+			width = bottomX - x;
+		if (y + height > bottomY)
+			height = bottomY - y;
 		int a = 256 - alpha;
-		int r = (color >> 16 & 0xff) * alpha;
-		int g = (color >> 8 & 0xff) * alpha;
-		int b = (color & 0xff) * alpha;
+		int r = (colour >> 16 & 0xff) * alpha;
+		int g = (colour >> 8 & 0xff) * alpha;
+		int b = (colour & 0xff) * alpha;
 		int widthOffset = Rasterizer.width - width;
 		int pixel = x + y * Rasterizer.width;
 		for (int heightCounter = 0; heightCounter < height; heightCounter++) {
 			for (int widthCounter = -width; widthCounter < 0; widthCounter++) {
-				int red = (Rasterizer.pixels[pixel] >> 16 & 0xff) * a;
-				int green = (Rasterizer.pixels[pixel] >> 8 & 0xff) * a;
-				int blue = (Rasterizer.pixels[pixel] & 0xff) * a;
-				int rgba = (r + red >> 8 << 16) + (g + green >> 8 << 8) + (b + blue >> 8);
-				Rasterizer.pixels[pixel++] = rgba;
+				int red = (pixels[pixel] >> 16 & 0xff) * a;
+				int green	 = (pixels[pixel] >> 8 & 0xff) * a;
+				int blue = (pixels[pixel] & 0xff) * a;
+				int rgba = ((r + red >> 8) << 16) + ((g + green >> 8) << 8) + (b + blue >> 8);
+				pixels[pixel++] = rgba;
 			}
+
 			pixel += widthOffset;
 		}
+
 	}
 
-	public static void drawFilledRectangle(int x, int y, int width, int height, int color) {
-		if (x < Rasterizer.topX) {
-			width -= Rasterizer.topX - x;
-			x = Rasterizer.topX;
+	public static void drawFilledRectangle(int x, int y, int width, int height, int colour) {
+		if (x < topX) {
+			width -= topX - x;
+			x = topX;
 		}
-		if (y < Rasterizer.topY) {
-			height -= Rasterizer.topY - y;
-			y = Rasterizer.topY;
+		if (y < topY) {
+			height -= topY - y;
+			y = topY;
 		}
-		if (x + width > Rasterizer.bottomX) {
-			width = Rasterizer.bottomX - x;
-		}
-		if (y + height > Rasterizer.bottomY) {
-			height = Rasterizer.bottomY - y;
-		}
+		if (x + width > bottomX)
+			width = bottomX - x;
+		if (y + height > bottomY)
+			height = bottomY - y;
 		int pixelOffset = Rasterizer.width - width;
 		int pixel = x + y * Rasterizer.width;
 		for (int heightCounter = -height; heightCounter < 0; heightCounter++) {
-			for (int widthCounter = -width; widthCounter < 0; widthCounter++) {
-				Rasterizer.pixels[pixel++] = color;
-			}
+			for (int widthCounter = -width; widthCounter < 0; widthCounter++)
+				pixels[pixel++] = colour;
+
 			pixel += pixelOffset;
 		}
 	}
 
 	public static void drawUnfilledRectangle(int x, int y, int width, int height, int color) {
-		Rasterizer.drawHorizontalLine(x, y, width, color);
-		Rasterizer.drawHorizontalLine(x, y + height - 1, width, color);
-		Rasterizer.drawVerticalLine(x, y, height, color);
-		Rasterizer.drawVerticalLine(x + width - 1, y, height, color);
+		drawHorizontalLine(x, y, width, color);
+		drawHorizontalLine(x, (y + height) - 1, width, color);
+		drawVerticalLine(x, y, height, color);
+		drawVerticalLine((x + width) - 1, y, height, color);
 	}
 
-	public static void drawUnfilledRectangleAlpha(int x, int y, int width, int height, int color, int alpha) {
-		Rasterizer.drawHorizontalLineAlpha(x, y, width, color, alpha);
-		Rasterizer.drawHorizontalLineAlpha(x, y + height - 1, width, color, alpha);
-		if (height < 3) {
-			Rasterizer.drawVerticalLineAlpha(x, y + 1, height - 2, color, alpha);
-			Rasterizer.drawVerticalLineAlpha(x + width - 1, y + 1, height - 2, color, alpha);
+	public static void drawUnfilledRectangleAlpha(int x, int y, int width, int height, int colour, int alpha) {
+		drawHorizontalLineAlpha(x, y, width, colour, alpha);
+		drawHorizontalLineAlpha(x, (y + height) - 1, width, colour, alpha);
+		if (height >= 3) {
+			drawVerticalLineAlpha(x, y + 1, height - 2, colour, alpha);
+			drawVerticalLineAlpha((x + width) - 1, y + 1, height - 2, colour, alpha);
 		}
 	}
 
-	public static void drawHorizontalLine(int x, int y, int length, int color) {
-		if (y >= Rasterizer.topY && y < Rasterizer.bottomY) {
-			if (x < Rasterizer.topX) {
-				length -= Rasterizer.topX - x;
-				x = Rasterizer.topX;
-			}
-			if (x + length > Rasterizer.bottomX) {
-				length = Rasterizer.bottomX - x;
-			}
-			int pixelOffset = x + y * Rasterizer.width;
-			for (int pixel = 0; pixel < length; pixel++) {
-				Rasterizer.pixels[pixelOffset + pixel] = color;
-			}
+	public static void drawHorizontalLine(int x, int y, int lenght, int colour) {
+		if (y < topY || y >= bottomY)
+			return;
+		if (x < topX) {
+			lenght -= topX - x;
+			x = topX;
+		}
+		if (x + lenght > bottomX)
+			lenght = bottomX - x;
+		int pixelOffset = x + y * width;
+		for (int pixel = 0; pixel < lenght; pixel++)
+			pixels[pixelOffset + pixel] = colour;
+
+	}
+
+	public static void drawHorizontalLineAlpha(int x, int y, int length, int colour, int alpha) {
+		if (y < topY || y >= bottomY)
+			return;
+		if (x < topX) {
+			length -= topX - x;
+			x = topX;
+		}
+		if (x + length > bottomX)
+			length = bottomX - x;
+		int a = 256 - alpha;
+		int r = (colour >> 16 & 0xff) * alpha;
+		int g = (colour >> 8 & 0xff) * alpha;
+		int b = (colour & 0xff) * alpha;
+		int pixelOffset = x + y * width;
+		for (int lengthCounter = 0; lengthCounter < length; lengthCounter++) {
+			int red = (pixels[pixelOffset] >> 16 & 0xff) * a;
+			int green = (pixels[pixelOffset] >> 8 & 0xff) * a;
+			int blue = (pixels[pixelOffset] & 0xff) * a;
+			int rgba = ((r + red >> 8) << 16) + ((g + green >> 8) << 8) + (b + blue >> 8);
+			pixels[pixelOffset++] = rgba;
 		}
 	}
 
-	public static void drawHorizontalLineAlpha(int x, int y, int length, int color, int alpha) {
-		if (y >= Rasterizer.topY && y < Rasterizer.bottomY) {
-			if (x < Rasterizer.topX) {
-				length -= Rasterizer.topX - x;
-				x = Rasterizer.topX;
-			}
-			if (x + length > Rasterizer.bottomX) {
-				length = Rasterizer.bottomX - x;
-			}
-			int a = 256 - alpha;
-			int r = (color >> 16 & 0xff) * alpha;
-			int g = (color >> 8 & 0xff) * alpha;
-			int b = (color & 0xff) * alpha;
-			int pixelOffset = x + y * Rasterizer.width;
-			for (int lengthCounter = 0; lengthCounter < length; lengthCounter++) {
-				int red = (Rasterizer.pixels[pixelOffset] >> 16 & 0xff) * a;
-				int green = (Rasterizer.pixels[pixelOffset] >> 8 & 0xff) * a;
-				int blue = (Rasterizer.pixels[pixelOffset] & 0xff) * a;
-				int rgba = (r + red >> 8 << 16) + (g + green >> 8 << 8) + (b + blue >> 8);
-				Rasterizer.pixels[pixelOffset++] = rgba;
-			}
+	public static void drawVerticalLine(int x, int y, int lenght, int colour) {
+		if (x < topX || x >= bottomX)
+			return;
+		if (y < topY) {
+			lenght -= topY - y;
+			y = topY;
 		}
+		if (y + lenght > bottomY)
+			lenght = bottomY - y;
+		int pixelOffset = x + y * width;
+		for (int pixel = 0; pixel < lenght; pixel++)
+			pixels[pixelOffset + pixel * width] = colour;
+
 	}
 
-	public static void drawVerticalLine(int x, int y, int length, int color) {
-		if (x >= Rasterizer.topX && x < Rasterizer.bottomX) {
-			if (y < Rasterizer.topY) {
-				length -= Rasterizer.topY - y;
-				y = Rasterizer.topY;
-			}
-			if (y + length > Rasterizer.bottomY) {
-				length = Rasterizer.bottomY - y;
-			}
-			int pixelOffset = x + y * Rasterizer.width;
-			for (int pixel = 0; pixel < length; pixel++) {
-				Rasterizer.pixels[pixelOffset + pixel * Rasterizer.width] = color;
-			}
+	public static void drawVerticalLineAlpha(int x, int y, int lenght, int colour, int alpha) {
+		if (x < topX || x >= bottomX)
+			return;
+		if (y < topY) {
+			lenght -= topY - y;
+			y = topY;
 		}
+		if (y + lenght > bottomY)
+			lenght = bottomY - y;
+		int a = 256 - alpha;
+		int r = (colour >> 16 & 0xff) * alpha;
+		int g = (colour >> 8 & 0xff) * alpha;
+		int b = (colour & 0xff) * alpha;
+		int pixel = x + y * width;
+		for (int lengthCounter = 0; lengthCounter < lenght; lengthCounter++) {
+			int red = (pixels[pixel] >> 16 & 0xff) * a;
+			int blue = (pixels[pixel] >> 8 & 0xff) * a;
+			int green = (pixels[pixel] & 0xff) * a;
+			int rgba = ((r + red >> 8) << 16) + ((g + blue >> 8) << 8) + (b + green >> 8);
+			pixels[pixel] = rgba;
+			pixel += width;
+		}
+
 	}
 
-	public static void drawVerticalLineAlpha(int x, int y, int length, int color, int alpha) {
-		if (x >= Rasterizer.topX && x < Rasterizer.bottomX) {
-			if (y < Rasterizer.topY) {
-				length -= Rasterizer.topY - y;
-				y = Rasterizer.topY;
-			}
-			if (y + length > Rasterizer.bottomY) {
-				length = Rasterizer.bottomY - y;
-			}
-			int a = 256 - alpha;
-			int r = (color >> 16 & 0xff) * alpha;
-			int g = (color >> 8 & 0xff) * alpha;
-			int b = (color & 0xff) * alpha;
-			int pixel = x + y * Rasterizer.width;
-			for (int lengthCounter = 0; lengthCounter < length; lengthCounter++) {
-				int red = (Rasterizer.pixels[pixel] >> 16 & 0xff) * a;
-				int blue = (Rasterizer.pixels[pixel] >> 8 & 0xff) * a;
-				int green = (Rasterizer.pixels[pixel] & 0xff) * a;
-				int rgba = (r + red >> 8 << 16) + (g + blue >> 8 << 8) + (b + green >> 8);
-				Rasterizer.pixels[pixel] = rgba;
-				pixel += Rasterizer.width;
-			}
-		}
+	public Rasterizer() {
 	}
+
+
+
 }

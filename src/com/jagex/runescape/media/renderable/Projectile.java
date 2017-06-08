@@ -1,84 +1,104 @@
-package com.jagex.runescape.media.renderable;
+package com.jagex.runescape.media.renderable;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
 
-import com.jagex.runescape.cache.media.SpotAnimation;
+import com.jagex.runescape.SpotAnimation;
 import com.jagex.runescape.media.Animation;
 
 public class Projectile extends Renderable {
-
-	public int delay;
-	public int endCycle;
-	private double speedVectorX;
-	private double speedVectorY;
-	private double speedVectorScalar;
-	private double speedVectorZ;
-	private double heightOffset;
-	public boolean moving = false;
-	public int startX;
-	public int startY;
-	public int startHeight;
-	public int endHeight;
+	public SpotAnimation animation;
+	public int sceneId;
 	public double currentX;
 	public double currentY;
 	public double currentHeight;
 	public int startSlope;
 	public int startDistanceFromTarget;
 	public int targetedEntityId;
-	private final SpotAnimation animation;
-	private int animationFrame;
-	private int duration;
-	public int modelRotationY;
-	public int modelRotationX;
-	public int sceneId;
+	public boolean aBoolean1561;
+	public int anInt1562;
+	public int anInt1563;
+	public int delay;
+	public int endCycle;
+	public int animationFrame;
+	public int duration;
+	public double speedVectorX;
+	public double speedVectorY;
+	public double speedVectorScalar;
+	public double speedVectorZ;
+	public boolean aBoolean1573;
+	public double heightOffset;
+	public boolean moving;
+	public int startX;
+	public int startY;
+	public int startHeight;
+	public int endHeight;
 
-	public final void trackTarget(int loopCycle, int targetY, int targetZ, int targetX) {
+	public void trackTarget(int targetX, int targetY, int k, int loopCycle) {
 		if (!moving) {
 			double distanceX = targetX - startX;
 			double distanceY = targetY - startY;
 			double distanceScalar = Math.sqrt(distanceX * distanceX + distanceY * distanceY);
-			currentX = startX + distanceX * startDistanceFromTarget / distanceScalar;
-			currentY = startY + distanceY * startDistanceFromTarget / distanceScalar;
+			currentX = startX + (distanceX * startDistanceFromTarget) / distanceScalar;
+			currentY = startY + (distanceY * startDistanceFromTarget) / distanceScalar;
 			currentHeight = startHeight;
 		}
-		double cyclesRemaining = endCycle + 1 - loopCycle;
+		double cyclesRemaining = (endCycle + 1) - loopCycle;
 		speedVectorX = (targetX - currentX) / cyclesRemaining;
 		speedVectorY = (targetY - currentY) / cyclesRemaining;
 		speedVectorScalar = Math.sqrt(speedVectorX * speedVectorX + speedVectorY * speedVectorY);
-		if (!moving) {
-			speedVectorZ = -speedVectorScalar * Math.tan(startSlope * 0.02454369);
-		}
-		heightOffset = 2.0 * (targetZ - currentHeight - speedVectorZ * cyclesRemaining)
-				/ (cyclesRemaining * cyclesRemaining);
+		if (!moving)
+			speedVectorZ = -speedVectorScalar * Math.tan(startSlope * 0.02454369D);
+		heightOffset = (2D * (k - currentHeight - speedVectorZ * cyclesRemaining)) / (cyclesRemaining * cyclesRemaining);
+	}
+
+	public void move(int time) {
+		moving = true;
+		currentX += speedVectorX * time;
+		currentY += speedVectorY * time;
+		currentHeight += speedVectorZ * time + 0.5D * heightOffset * time * time;
+		speedVectorZ += heightOffset * time;
+		anInt1562 = (int) (Math.atan2(speedVectorX, speedVectorY) * 325.94900000000001D) + 1024 & 0x7ff;
+		anInt1563 = (int) (Math.atan2(speedVectorZ, speedVectorScalar) * 325.94900000000001D) & 0x7ff;
+		if (animation.sequences != null)
+			for (duration += time; duration > animation.sequences.getFrameLength(animationFrame);) {
+				duration -= animation.sequences.getFrameLength(animationFrame);
+				animationFrame++;
+				if (animationFrame >= animation.sequences.frameCount)
+					animationFrame = 0;
+			}
+
 	}
 
 	@Override
-	public final Model getRotatedModel() {
+	public Model getRotatedModel() {
 		Model model = animation.getModel();
-		if (model == null) {
+		if (model == null)
 			return null;
-		}
 		int frameId = -1;
-		if (animation.sequences != null) {
+		if (animation.sequences != null)
 			frameId = animation.sequences.frame2Ids[animationFrame];
-		}
-		Model projectileModel = new Model(true, Animation.exists(frameId), false, model);
+		Model projectileModel = new Model(true,
+				model, Animation.exists(frameId));
 		if (frameId != -1) {
 			projectileModel.createBones();
 			projectileModel.applyTransform(frameId);
 			projectileModel.triangleSkin = null;
 			projectileModel.vectorSkin = null;
 		}
-		if (animation.resizeXY != 128 || animation.resizeZ != 128) {
-			projectileModel.scaleT(animation.resizeXY, animation.resizeXY, animation.resizeZ);
-		}
-		projectileModel.rotateX(modelRotationX, 1);
-		projectileModel.applyLighting(64 + animation.modelLightFalloff, 850 + animation.modelLightAmbient, -30, -50,
-				-30, true);
+		if (animation.resizeXY != 128 || animation.resizeZ != 128)
+			projectileModel.scaleT(animation.resizeZ, animation.resizeXY, 9,
+					animation.resizeXY);
+		projectileModel.rotateX(anInt1563);
+		projectileModel.applyLighting(64 + animation.modelLightFalloff, 850 + animation.modelLightAmbient, -30, -50, -30,
+				true);
 		return projectileModel;
 	}
 
-	public Projectile(int startSlope, int endHeight, int delay, int speed, int startDistanceFromTarget, int sceneId,
-			int height, int projectileY, int projectileX, int targetedEntityIndex, int spotAnimationId) {
-		this.animation = SpotAnimation.cache[spotAnimationId];
+	public Projectile(int sceneId, int endHeight, int startDistanceFromTarget, int projectileY, int i1, int speed, int startSlope, int targetedEntityIndex, int height, int projectileX,
+			int delay) {
+		this.aBoolean1561 = false;
+		this.aBoolean1573 = true;
+		this.animation = SpotAnimation.cache[i1];
 		this.sceneId = sceneId;
 		this.startX = projectileX;
 		this.startY = projectileY;
@@ -92,24 +112,5 @@ public class Projectile extends Renderable {
 		this.moving = false;
 	}
 
-	public final void move(int time) {
-		moving = true;
-		currentX += speedVectorX * time;
-		currentY += speedVectorY * time;
-		currentHeight += speedVectorZ * time + 0.5 * heightOffset * time * time;
-		speedVectorZ += heightOffset * time;
-		modelRotationY = (int) (Math.atan2(speedVectorX, speedVectorY) * 325.949) + 1024 & 0x7ff;
-		modelRotationX = (int) (Math.atan2(speedVectorZ, speedVectorScalar) * 325.949) & 0x7ff;
-		if (animation.sequences == null) {
-			return;
-		}
-		duration += time;
-		while (duration > animation.sequences.getFrameLength(animationFrame)) {
-			duration -= animation.sequences.getFrameLength(animationFrame) + 1;
-			animationFrame++;
-			if (animationFrame >= animation.sequences.frameCount) {
-				animationFrame = 0;
-			}
-		}
-	}
+
 }

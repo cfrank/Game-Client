@@ -1,2474 +1,3717 @@
-package com.jagex.runescape;
+package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
 
 import java.applet.AppletContext;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.awt.event.KeyEvent;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.zip.CRC32;
 
-import com.jagex.runescape.cache.Archive;
-import com.jagex.runescape.cache.cfg.ChatCensor;
-import com.jagex.runescape.cache.cfg.VarBit;
-import com.jagex.runescape.cache.cfg.Varp;
-import com.jagex.runescape.cache.def.ActorDefinition;
-import com.jagex.runescape.cache.def.FloorDefinition;
-import com.jagex.runescape.cache.def.GameObjectDefinition;
-import com.jagex.runescape.cache.def.ItemDefinition;
-import com.jagex.runescape.collection.LinkedList;
+import com.jagex.runescape.collection.Node;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.ProducingGraphicsBuffer;
 import com.jagex.runescape.media.Rasterizer;
 import com.jagex.runescape.media.Rasterizer3D;
+import com.jagex.runescape.media.renderable.*;
 import com.jagex.runescape.media.renderable.actor.Actor;
 import com.jagex.runescape.media.renderable.actor.Npc;
-import com.jagex.runescape.net.BufferedConnection;
-import com.jagex.runescape.net.ISAACCipher;
-import com.jagex.runescape.net.requester.OnDemandNode;
-import com.jagex.runescape.net.requester.OnDemandRequester;
-import com.jagex.runescape.scene.Region;
-import com.jagex.runescape.scene.Scene;
-import com.jagex.runescape.scene.SceneSpawnRequest;
-import com.jagex.runescape.scene.SpawnObjectNode;
-import com.jagex.runescape.scene.tile.FloorDecoration;
-import com.jagex.runescape.scene.tile.Wall;
-import com.jagex.runescape.scene.tile.WallDecoration;
-import com.jagex.runescape.scene.util.CollisionMap;
-import com.jagex.runescape.sound.SoundTrack;
-import com.jagex.runescape.cache.Index;
-import com.jagex.runescape.cache.media.AnimationSequence;
-import com.jagex.runescape.cache.media.IdentityKit;
-import com.jagex.runescape.cache.media.ImageRGB;
-import com.jagex.runescape.cache.media.IndexedImage;
-import com.jagex.runescape.cache.media.SpotAnimation;
-import com.jagex.runescape.cache.media.TypeFace;
-import com.jagex.runescape.cache.media.Widget;
-import com.jagex.runescape.media.renderable.GameAnimableObject;
-import com.jagex.runescape.media.renderable.GameObject;
-import com.jagex.runescape.media.renderable.Item;
-import com.jagex.runescape.media.renderable.Model;
-import com.jagex.runescape.media.renderable.Projectile;
-import com.jagex.runescape.media.renderable.actor.Player;
-import com.jagex.runescape.net.Buffer;
-import com.jagex.runescape.util.ChatEncoder;
-import com.jagex.runescape.util.MouseCapturer;
-import com.jagex.runescape.util.PacketConstants;
-import com.jagex.runescape.util.SignLink;
-import com.jagex.runescape.util.SkillConstants;
-import com.jagex.runescape.util.TextUtils;
+import com.jagex.runescape.util.*;
 
 @SuppressWarnings("serial")
 public class Game extends GameShell {
 
-	private int ignoreListCount;
-	private long aLong849;
-	private int[][] distanceValues = new int[104][104];
-	private int[] friendsListWorlds = new int[200];
-	private LinkedList[][][] groundItemNodes = new LinkedList[4][104][104];
-	private int[] anIntArray853;
-	private int[] anIntArray854;
-	private volatile boolean aBoolean856 = false;
-	private Socket jaggrabSocket;
-	private int loginScreenState;
-	private Buffer aBuffer859 = new Buffer(new byte[5000]);
-	private Npc[] localNpcs = new Npc[16384];
-	private int actorCount;
-	protected int[] anIntArray862 = new int[16384];
-	private int anInt864;
-	protected int[] anIntArray865 = new int[1000];
-	private int anInt866;
-	private int anInt867;
-	private int anInt868;
-	private String aString869;
-	private int privateChatSetting;
-	private static int anInt871;
-	private Buffer aBuffer872 = Buffer.newPooledBuffer(1);
-	private boolean aBoolean873 = true;
-	private int[] anIntArray875;
-	private int[] anIntArray876;
-	private int[] anIntArray877;
-	private int[] anIntArray878;
-	private static int anInt879;
-	private int hintIconType;
-	private static BigInteger RSA_MODULUS = new BigInteger(
-			"7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
-	private int openWidgetId = -1;
-	private int anInt883;
-	private int anInt884;
-	private int anInt885;
-	private int anInt886;
-	private int anInt887;
-	private int playerRights;
-	private final int[] skillExperience = new int[SkillConstants.SKILL_COUNT];
-	private IndexedImage anIndexedImage890;
-	private IndexedImage anIndexedImage891;
-	private IndexedImage anIndexedImage892;
-	private IndexedImage anIndexedImage893;
-	private IndexedImage anIndexedImage894;
-	private ImageRGB mapFlagMarker;
-	private ImageRGB anImageRGB896;
-	private boolean aBoolean897 = false;
-	private final int[] anIntArray898 = new int[5];
-	private int anInt899 = -1;
-	private final int anInt900 = -680;
-	private final boolean[] aBooleanArray901 = new boolean[5];
-	private int playerWeight;
-	protected MouseCapturer mouseCapturer;
-	private volatile boolean aBoolean905 = false;
-	private String reportedName = "";
-	private int anInt909 = -1;
-	private boolean actionMenuOpen = false;
-	private int anInt911;
-	private String chatboxInput = "";
-	private final int MAX_PLAYERS = 2048;
-	private final int localPlayerId = 2047;
-	private Player[] players = new Player[MAX_PLAYERS];
-	private int playerCount;
-	protected int[] anIntArray917 = new int[MAX_PLAYERS];
-	private int anInt918;
-	private int[] anIntArray919 = new int[MAX_PLAYERS];
-	private Buffer[] playerBuffer = new Buffer[MAX_PLAYERS];
-	private int anInt921;
-	private int anInt922 = 1;
-	private int friendsListCount;
-	private int friendListStatus;
-	private int[][] wayPoints = new int[104][104];
-	private final int anInt927 = 7759444;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer928;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer929;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer930;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer931;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer932;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer933;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer934;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer935;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer936;
-	private byte[] aByteArray937 = new byte[16384];
-	private int anInt938;
-	private int lastClickX;
-	private int lastClickY;
-	private int anInt941;
-	private int lastClickType;
-	private int currentSceneId;
-	private static boolean aBoolean944 = true;
-	private final int[] skillLevel = new int[SkillConstants.SKILL_COUNT];
-	private static int anInt949;
-	private final long[] ignoreList = new long[100];
-	private boolean aBoolean951 = false;
-	private final int anInt952 = 3353893;
-	private final int[] anIntArray953 = new int[5];
-	private int[][] anIntArrayArray954 = new int[104][104];
-	private final CRC32 crc32 = new CRC32();
-	private ImageRGB anImageRGB956;
-	private ImageRGB anImageRGB957;
-	private int hintIconId;
-	private int hintIconX;
-	private int hintIconY;
-	private int hintIconOffset;
-	private int anInt962;
-	private int anInt963;
-	private final int[] chatboxMessageTypes = new int[100];
-	private final String[] chatboxMessageNames = new String[100];
-	private final String[] chatboxMessages = new String[100];
-	private int anInt970;
-	private Scene currentScene;
-	private IndexedImage[] tabIcon = new IndexedImage[13];
-	private int actionMenuArea;
-	private int anInt974;
-	private int anInt975;
-	private int anInt976;
-	private int anInt977;
-	private long aLong978;
-	protected boolean aBoolean979 = true;
-	private long[] friendsListLongs = new long[200];
-	private int songId = -1;
-	private static int nodeId = 10;
-	public static int portOffset;
-	private static boolean membersWorld = true;
-	private static boolean lowMemory;
-	private volatile boolean aBoolean987 = false;
-	private int anInt988 = -1;
-	private int anInt989 = -1;
-	private final int[] anIntArray990 = { 0xFFFF00, 0xFF0000, 0x00FF00, 0xFFFF, 16711935, 0xFFFFFF };
-	private IndexedImage titleboxImage;
-	private IndexedImage titleboxButtonImage;
-	private final int[] anIntArray993 = new int[33];
-	private final int[] anIntArray994 = new int[256];
-	public Index[] stores = new Index[5];
-	public int[] widgetSettings = new int[2000];
-	private boolean aBoolean997 = false;
-	private int anInt999;
-	private final int anInt1000 = 50;
-	private final int[] anIntArray1001 = new int[anInt1000];
-	private final int[] anIntArray1002 = new int[anInt1000];
-	private final int[] anIntArray1003 = new int[anInt1000];
-	private final int[] anIntArray1004 = new int[anInt1000];
-	private final int[] anIntArray1005 = new int[anInt1000];
-	private final int[] anIntArray1006 = new int[anInt1000];
-	private final int[] anIntArray1007 = new int[anInt1000];
-	private final String[] aStringArray1008 = new String[anInt1000];
-	private int anInt1009;
-	private int lastSceneId = -1;
-	private static int anInt1011;
-	private ImageRGB[] anImageRGBArray1012 = new ImageRGB[20];
-	private int anInt1013;
-	private int anInt1014;
-	private final int[] characterEditColors = new int[5];
-	private int anInt1017;
-	private int anInt1020;
-	private int anInt1021;
-	private int anInt1022;
-	private int anInt1023;
-	private int anInt1024;
-	private ISAACCipher isaacCipher;
-	private ImageRGB minimapEdge;
-	private final int anInt1027 = 2301979;
-	public static final int[][] anIntArrayArray1028 = {
-			{ 6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193 },
-			{ 8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239 },
-			{ 25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003 },
-			{ 4626, 11146, 6439, 12, 4758, 10270 }, { 4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574 } };
-	private String inputInputMessage = "";
-	private static int anInt1030;
-	private int lastLogin;
-	private int packetSize;
-	private int opcode;
-	private int anInt1034;
-	private int anInt1035;
-	private int anInt1036;
-	private final byte aByte1037 = 24;
-	private LinkedList projectileList = new LinkedList();
-	private int anInt1039;
-	private int anInt1040;
-	private int anInt1041;
-	private boolean aBoolean1042 = false;
-	private int walkableWidgetId = -1;
-	private static int[] xpForSkillLevel = new int[99];
-	private int minimapState;
-	protected int anInt1047;
-	private int anInt1048;
-	private IndexedImage scrollbarUp;
-	private IndexedImage scrollbarDown;
-	private int anInt1051;
-	private IndexedImage anIndexedImage1052;
-	private IndexedImage anIndexedImage1053;
-	private IndexedImage anIndexedImage1054;
-	private final int[] anIntArray1055 = new int[5];
-	private boolean aBoolean1056 = false;
-	private static BigInteger RSA_EXPONENT;
-	private ImageRGB[] worldMapHintIcons = new ImageRGB[100];
-	private int regionAbsoluteBaseX;
-	private int regionAbsoluteBaseY;
-	private int anInt1061;
-	private int anInt1062;
-	private int anInt1063;
-	private int anInt1064;
-	private int anInt1065;
-	private int anInt1066;
-	private int anInt1067 = -1;
-	private final int[] skillMaxLevel = new int[SkillConstants.SKILL_COUNT];
-	private final int[] defaultSettings = new int[2000];
-	private int anInt1071;
-	private boolean characterEditChangeGenger = true;
-	private int anInt1073;
-	private String aString1074;
-	private static int anInt1076;
-	private final int[] anIntArray1077 = new int[151];
-	private Archive anArchive1078;
-	private int flashingSidebar = -1;
-	private int anInt1080;
-	private LinkedList aLinkedList1081 = new LinkedList();
-	private final int[] anIntArray1082 = new int[33];
-	private final Widget aWidget1084 = new Widget();
-	private IndexedImage[] anIndexedImageArray1085 = new IndexedImage[100];
-	static int anInt1086;
-	private int trackCount;
-	private final int anInt1088 = 5063219;
-	private int friendsListAction;
-	private final int[] characterEditIdentityKits = new int[7];
-	private int anInt1091;
-	private int anInt1092;
-	private OnDemandRequester onDemandRequester;
-	private int anInt1094;
-	private int anInt1095;
-	private int minimapHintCount;
-	private int[] minimapHintX = new int[1000];
-	private int[] minimapHintY = new int[1000];
-	private ImageRGB mapdotItem;
-	private ImageRGB mapdotActor;
-	private ImageRGB mapdotPlayer;
-	private ImageRGB mapdotFriend;
-	private ImageRGB mapdotTeammate;
-	private int anInt1104;
-	private boolean aBoolean1105 = false;
-	private final int anInt1106 = -733;
-	private String[] friendsListNames = new String[200];
-	private Buffer inBuffer = Buffer.newPooledBuffer(1);
-	private int anInt1109;
-	private int anInt1110;
-	private int anInt1111;
-	private int anInt1112;
-	private int anInt1113;
-	private int anInt1114;
-	private final int[] crcValues = new int[9];
-	private int[] menuActionIds2 = new int[500];
-	private int[] menuActionIds3 = new int[500];
-	private int[] menuActionIds = new int[500];
-	private int[] menuActionIds1 = new int[500];
-	private ImageRGB[] anImageRGBArray1120 = new ImageRGB[20];
-	private static int anInt1122;
-	private int anInt1123;
-	private int anInt1124;
-	private int anInt1125;
-	private int anInt1126;
-	private int anInt1127;
-	private boolean drawTabIcons = false;
-	private int systemUpdateTime;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1132;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1133;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1134;
-	private ProducingGraphicsBuffer flameLeftBackground;
-	private ProducingGraphicsBuffer flameRightBackground;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1137;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1138;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1139;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1140;
-	private static int anInt1142;
-	private int anInt1144 = -77;
-	private int membershipAdviser;
-	private String chatboxInputMessage = "";
-	private ImageRGB minimapCompass;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1148;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1149;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1150;
-	public static Player localPlayer;
-	private final String[] playerActions = new String[5];
-	private final boolean[] aBooleanArray1153 = new boolean[5];
-	private final int[][][] constructMapTiles = new int[4][13][13];
-	private final int[] tabWidgetIds = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-	private int anInt1156;
-	private int anInt1157 = 2;
-	private int menuActionRow;
-	private static int anInt1159;
-	private int anInt1161;
-	private int spellId;
-	private int anInt1163;
-	protected String aString1164;
-	private ImageRGB[] minimapHint = new ImageRGB[1000];
-	private boolean aBoolean1166 = false;
-	private static int anInt1167;
-	private IndexedImage anIndexedImage1168;
-	private IndexedImage anIndexedImage1169;
-	private IndexedImage anIndexedImage1170;
-	private IndexedImage anIndexedImage1171;
-	private IndexedImage anIndexedImage1172;
-	private int playerEnergy;
-	private boolean aBoolean1174 = false;
-	private ImageRGB[] cursorCross = new ImageRGB[8];
-	private boolean musicEnabled = true;
-	private IndexedImage[] titleFlameEmblem;
-	private boolean redrawTab = false;
-	private int unreadMessages;
-	private static int anInt1180;
-	static boolean debug;
-	public boolean loggedIn = false;
-	private boolean reportMutePlayer = false;
-	private boolean aBoolean1184 = false;
-	private boolean aBoolean1185 = false;
-	public static int currentCycle;
-	private static String VALID_CHARACTERS;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1188;
-	private ProducingGraphicsBuffer aProducingGraphicsBuffer1189;
-	private ProducingGraphicsBuffer currentSceneBuffer;
-	private ProducingGraphicsBuffer chatboxProducingGraphicsBuffer;
-	private int lastRecoveryChange;
-	private BufferedConnection bufferedConnection;
-	private int anInt1194;
-	private int anInt1195;
-	private int anInt1196 = 1;
-	private long aLong1197;
-	private String username = "";
-	private String password = "";
-	private static int anInt1200;
-	private final boolean aBoolean1201 = false;
-	private final int[] anIntArray1202 = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3 };
-	private int anInt1203 = -1;
-	private LinkedList spawnObjectNodeList = new LinkedList();
-	private int[] chatboxLineOffsets;
-	private int[] anIntArray1206;
-	private int[] anIntArray1207;
-	private byte[][] aByteArrayArray1208;
-	private int anInt1209 = 128;
-	private int anInt1210;
-	private int anInt1211;
-	private int anInt1212;
-	private static int anInt1213;
-	private int anInt1214 = -1;
-	private int[] anIntArray1215;
-	private int[] anIntArray1216;
-	private Buffer outBuffer = Buffer.newPooledBuffer(1);
-	private int lastAddress;
-	private int anInt1220;
-	private IndexedImage inventoryBackgroundImage;
-	private IndexedImage minimapBackgroundImage;
-	private IndexedImage chatboxBackgroundImage;
-	private String[] menuActionNames = new String[500];
-	private ImageRGB anImageRGB1226;
-	private ImageRGB anImageRGB1227;
-	private final int[] anIntArray1228 = new int[5];
-	public static final int[] anIntArray1229;
-	public static boolean flagged;
-	private final int[] trackIds = new int[50];
-	private int anInt1233;
-	private int anInt1234;
-	private int anInt1235 = 2;
-	private int anInt1236 = 78;
-	private String chatMessage = "";
-	private int anInt1238;
-	private int[][][] anIntArrayArrayArray1239;
-	private long aLong1240;
-	private int anInt1241;
-	private final IndexedImage[] moderatorIcon = new IndexedImage[2];
-	protected long aLong1245;
-	private int currentTabId = 3;
-	private int hintIconActorId;
-	private boolean redrawChatbox = false;
-	private int inputType;
-	private static int anInt1251;
-	private int onDemandRequesterId;
-	private boolean midiFade = true;
-	private final int[] anIntArray1254 = new int[151];
-	private CollisionMap[] currentCollisionMap = new CollisionMap[4];
-	private static boolean aBoolean1256;
-	public static int[] BITFIELD_MAX_VALUE;
-	private boolean redrawChatSettings = false;
-	private int[] anIntArray1259;
-	private int[] anIntArray1260;
-	private int[] anIntArray1261;
-	protected int anInt1262;
-	protected int anInt1263;
-	private final int[] anIntArray1265 = new int[100];
-	private final int[] trackLoop = new int[50];
-	private boolean aBoolean1267 = false;
-	private int anInt1268;
-	private int anInt1269;
-	private int anInt1270;
-	private int anInt1271;
-	private byte[][] aByteArrayArray1272;
-	private int tradeSetting;
-	private int anInt1274;
-	private final int[] trackDelay = new int[50];
-	private int inTutorial;
-	private final boolean aBoolean1277 = false;
-	private int anInt1278;
-	private int anInt1279;
-	private boolean redraw = false;
-	private boolean messagePromptRaised = false;
-	private int anInt1282;
-	private byte[][][] currentSceneTileFlags;
-	private int songFadeCycle;
-	private int destinationX;
-	private int destinationY;
-	private ImageRGB minimapImage;
-	private int arbitraryDestination;
-	private int anInt1290;
-	private String loginMessage1 = "";
-	private String loginMessage2 = "";
-	private int playerPositionX;
-	private int playerPositionY;
-	private TypeFace fontSmall;
-	private TypeFace fontNormal;
-	private TypeFace fontBold;
-	private TypeFace fontFancy;
-	private int anInt1300;
-	private int chatboxWidgetId = -1;
-	private int anInt1303;
-	private int anInt1304 = 2;
-	private int[] walkingQueueX = new int[4000];
-	private int[] walkingQueueY = new int[4000];
-	private int anInt1307;
-	private int anInt1308;
-	private int anInt1309;
-	private int anInt1310;
-	protected String aString1311;
-	private int publicChatSetting;
-	private static int currentWalkingQueueSize;
-	private int anInt1314 = -1;
+	public void method14(String s, int i) {
+		if (s == null || s.length() == 0) {
+			anInt862 = 0;
+			return;
+		}
+		String s1 = s;
+		String as[] = new String[100];
+		int j = 0;
+		do {
+			int k = s1.indexOf(" ");
+			if (k == -1)
+				break;
+			String s2 = s1.substring(0, k).trim();
+			if (s2.length() > 0)
+				as[j++] = s2.toLowerCase();
+			s1 = s1.substring(k + 1);
+		} while (true);
+		s1 = s1.trim();
+		if (s1.length() > 0)
+			as[j++] = s1.toLowerCase();
+		anInt862 = 0;
+		if (i != 2)
+			aBoolean959 = !aBoolean959;
+		label0: for (int l = 0; l < ItemDefinition.count; l++) {
+			ItemDefinition class16 = ItemDefinition.forId(l);
+			if (class16.notedGraphicsId != -1 || class16.name == null)
+				continue;
+			String s3 = class16.name.toLowerCase();
+			for (int i1 = 0; i1 < j; i1++)
+				if (s3.indexOf(as[i1]) == -1)
+					continue label0;
 
-	private static final String formatAmount(int amount) {
-		String formatedAmount = String.valueOf(amount);
-		for (int i = formatedAmount.length() - 3; i > 0; i -= 3) {
-			formatedAmount = formatedAmount.substring(0, i) + "," + formatedAmount.substring(i);
+			aStringArray863[anInt862] = s3;
+			anIntArray864[anInt862] = l;
+			anInt862++;
+			if (anInt862 >= aStringArray863.length)
+				return;
 		}
-		if (formatedAmount.length() > 8) {
-			formatedAmount = "@gre@" + formatedAmount.substring(0, formatedAmount.length() - 8) + " million @whi@("
-					+ formatedAmount + ")";
-		} else if (formatedAmount.length() > 4) {
-			formatedAmount = "@cya@" + formatedAmount.substring(0, formatedAmount.length() - 4) + "K @whi@("
-					+ formatedAmount + ")";
-		}
-		return " " + formatedAmount;
+
 	}
 
-	public final void stopMidi() {
-		SignLink.midiFade = 0;
-		SignLink.midi = "stop";
+	public void closeWidgets() {
+		outBuffer.putOpcode(110);
+		if (anInt1089 != -1) {
+			method44(aBoolean1190, anInt1089);
+			anInt1089 = -1;
+			aBoolean1181 = true;
+			aBoolean1239 = false;
+			aBoolean950 = true;
+		}
+		if (anInt988 != -1) {
+			method44(aBoolean1190, anInt988);
+			anInt988 = -1;
+			redrawChatbox = true;
+			aBoolean1239 = false;
+		}
+		if (anInt1053 != -1) {
+			method44(aBoolean1190, anInt1053);
+			anInt1053 = -1;
+			aBoolean1046 = true;
+		}
+		if (anInt960 != -1) {
+			method44(aBoolean1190, anInt960);
+			anInt960 = -1;
+		}
+		if (openWidgetId != -1) {
+			method44(aBoolean1190, openWidgetId);
+			openWidgetId = -1;
+		}
 	}
 
-	public final void connectWebServer() {
-		int waitTime = 5;
-		crcValues[8] = 0;
-		int errors = 0;
-		while (crcValues[8] == 0) {
-			String problem = "Unknown problem";
-			drawLoadingText(20, "Connecting to web server");
+	public void addNewPlayers(int newPlayers, Buffer buf) {
+		while (buf.bitPosition + 10 < newPlayers * 8) {
+			int id = buf.getBits(11);
+			if (id == 2047)
+				break;
+			if (players[id] == null) {
+				players[id] = new Player();
+				if (cachedAppearances[id] != null)
+					players[id].updateAppearance(cachedAppearances[id], 0);
+			}
+			localPlayers[localPlayerCount++] = id;
+			Player plr = players[id];
+			plr.pulseCycle = pulseCycle;
+			int x = buf.getBits(5);
+			if (x > 15)
+				x -= 32;
+			int updated = buf.getBits(1);
+			if (updated == 1)
+				updatedPlayers[updatedPlayerCount++] = id;
+			int discardQueue = buf.getBits(1);
+			int y = buf.getBits(5);
+			if (y > 15)
+				y -= 32;
+			plr.setPosition(((Actor) (thisPlayer)).pathX[0] + x, ((Actor) (thisPlayer)).pathY[0] + y,
+					discardQueue == 1);
+		}
+		buf.finishBitAccess();
+	}
+
+	public static void main(String args[]) {
+		try {
+			System.out.println("RS2 user client - release #" + 377);
+			world = 0;
+			portOffset = 0;
+			switchToHighMem();
+			memberServer = true;
+			SignLink.storeid = 32;
+			SignLink.initialize(InetAddress.getLocalHost());
+			Game cl = new Game();
+			cl.initializeApplication(765, 503);
+			return;
+		} catch (Exception exception) {
+			return;
+		}
+	}
+
+	public void method17(byte byte0) {
+		aBoolean1320 = true;
+		if (byte0 == 4)
+			byte0 = 0;
+		else
+			groundItems = null;
+		try {
+			long l = System.currentTimeMillis();
+			int i = 0;
+			int j = 20;
+			while (aBoolean1243) {
+				anInt1101++;
+				method81((byte) 1);
+				method81((byte) 1);
+				method98(47);
+				if (++i > 10) {
+					long l1 = System.currentTimeMillis();
+					int k = (int) (l1 - l) / 10 - j;
+					j = 40 - k;
+					if (j < 5)
+						j = 5;
+					i = 0;
+					l = l1;
+				}
+				try {
+					Thread.sleep(j);
+				} catch (Exception _ex) {
+				}
+			}
+		} catch (Exception _ex) {
+		}
+		aBoolean1320 = false;
+	}
+
+	public void method18(byte byte0) {
+		if (byte0 != 3)
+			return;
+		for (Class50_Sub2 class50_sub2 = (Class50_Sub2) aClass6_1261.first(); class50_sub2 != null; class50_sub2 = (Class50_Sub2) aClass6_1261
+				.next())
+			if (class50_sub2.anInt1390 == -1) {
+				class50_sub2.anInt1395 = 0;
+				method140((byte) -61, class50_sub2);
+			} else {
+				class50_sub2.remove();
+			}
+
+	}
+
+	public void method19(String s) {
+		System.out.println(s);
+		try {
+			getAppletContext().showDocument(new URL(getCodeBase(), "loaderror_" + s + ".html"));
+		} catch (Exception exception) {
+			exception.printStackTrace();
+		}
+		do
 			try {
-				DataInputStream in = jaggrabRequest("crc" + (int) (Math.random() * 9.9999999E7) + "-" + 317);
-				Buffer buffer = new Buffer(new byte[40]);
-				in.readFully(buffer.payload, 0, 40);
-				in.close();
-				for (int crcValue = 0; crcValue < 9; crcValue++) {
-					crcValues[crcValue] = buffer.getInt();
+				Thread.sleep(1000L);
+			} catch (Exception _ex) {
+			}
+		while (true);
+	}
+
+	public static String addMoneySuffix(int coins, int j) {
+		if (j >= 0)
+			throw new NullPointerException();
+		if (coins < 0x186a0)
+			return String.valueOf(coins);
+		if (coins < 0x989680)
+			return coins / 1000 + "K";
+		else
+			return coins / 0xf4240 + "M";
+	}
+
+	public void shutdown() {
+		players = null;
+		localPlayers = null;
+		updatedPlayers = null;
+		cachedAppearances = null;
+		removePlayers = null;
+		aClass18_906 = null;
+		aClass18_907 = null;
+		aClass18_908 = null;
+		aClass18_909 = null;
+		aClass50_Sub1_Sub1_Sub3_880 = null;
+		aClass50_Sub1_Sub1_Sub3_881 = null;
+		aClass50_Sub1_Sub1_Sub3_882 = null;
+		aClass50_Sub1_Sub1_Sub3_883 = null;
+		aClass50_Sub1_Sub1_Sub3_884 = null;
+		aClass50_Sub1_Sub1_Sub3_983 = null;
+		aClass50_Sub1_Sub1_Sub3_984 = null;
+		aClass50_Sub1_Sub1_Sub3_985 = null;
+		aClass50_Sub1_Sub1_Sub3_986 = null;
+		aClass50_Sub1_Sub1_Sub3_987 = null;
+		friendsListNames = null;
+		friends = null;
+		anIntArray1267 = null;
+		aClass18_1108 = null;
+		aClass18_1109 = null;
+		aClass18_1110 = null;
+		widgetSettings = null;
+		coordinates = null;
+		aByteArrayArray838 = null;
+		aByteArrayArray1232 = null;
+		anIntArray857 = null;
+		anIntArray858 = null;
+		aClass18_1203 = null;
+		aClass18_1204 = null;
+		aClass18_1205 = null;
+		aClass18_1206 = null;
+		anIntArrayArray885 = null;
+		cost = null;
+		anIntArray1123 = null;
+		anIntArray1124 = null;
+		mapdotItem = null;
+		mapdotActor = null;
+		mapdotPlayer = null;
+		mapdotFriend = null;
+		mapdotTeammate = null;
+		if (mouseCapturer != null)
+			mouseCapturer.capturing = false;
+		mouseCapturer = null;
+		anIndexedImage1052 = null;
+		anIndexedImage1053 = null;
+		anIndexedImage1054 = null;
+		aClass18_910 = null;
+		aClass18_911 = null;
+		aClass18_912 = null;
+		aClass18_913 = null;
+		aClass18_914 = null;
+		anIntArrayArrayArray891 = null;
+		currentSceneTileFlags = null;
+		currentScene = null;
+		currentCollisionMap = null;
+		minimapImage = null;
+		flameLeftBackground = null;
+		flameRightBackground = null;
+		aClass18_1198 = null;
+		aClass18_1199 = null;
+		aClass18_1200 = null;
+		minimapCompass = null;
+		aClass50_Sub1_Sub1_Sub1Array1182 = null;
+		aClass50_Sub1_Sub1_Sub1Array1288 = null;
+		aClass50_Sub1_Sub1_Sub1Array1079 = null;
+		aClass50_Sub1_Sub1_Sub1Array954 = null;
+		cursorCross = null;
+		stopMidi();
+		outBuffer = null;
+		tempBuffer = null;
+		buffer = null;
+		aClass18_1156 = null;
+		aClass18_1157 = null;
+		aClass18_1158 = null;
+		chatboxProducingGraphicsBuffer = null;
+		inventoryBackgroundImage = null;
+		minimapBackgroundImage = null;
+		chatboxBackgroundImage = null;
+		try {
+			if (bufferedConnection != null)
+				bufferedConnection.close();
+		} catch (Exception _ex) {
+		}
+		bufferedConnection = null;
+		minimapHintX = null;
+		minimapHintY = null;
+		minimapHint = null;
+		npcs = null;
+		anIntArray1134 = null;
+		aByteArray1245 = null;
+		aClass50_Sub1_Sub2_1131 = null;
+		aClass50_Sub1_Sub1_Sub3Array1153 = null;
+		worldMapHintIcons = null;
+		anIntArrayArray886 = null;
+		tabIcon = null;
+		aClass6_1282 = null;
+		aClass6_1210 = null;
+		aClass50_Sub1_Sub1_Sub1_1086 = null;
+		if (onDemandFetcher != null)
+			onDemandFetcher.method339();
+		onDemandFetcher = null;
+		anIntArray979 = null;
+		anIntArray980 = null;
+		anIntArray981 = null;
+		anIntArray982 = null;
+		aStringArray1184 = null;
+		groundItems = null;
+		aClass6_1261 = null;
+		method141();
+		GameObjectDefinition.method433(false);
+		ActorDefinition.method358(false);
+		ItemDefinition.method222(false);
+		Widget.method202(false);
+		FloorDefinition.aClass15Array314 = null;
+		IdentityKit.identityKits = null;
+		Class4.aClass4Array103 = null;
+		AnimationSequence.animations = null;
+		SpotAnimation.cache = null;
+		SpotAnimation.models = null;
+		Varp.aClass43Array704 = null;
+		super.imageProducer = null;
+		Player.modelCache = null;
+		Rasterizer3D.reset();
+		SceneGraph.method240(false);
+		Model.reset();
+		Animation.reset();
+		System.gc();
+	}
+
+	public void method21(boolean flag) {
+		if (flag)
+			return;
+		if (super.clickType == 1) {
+			if (super.clickX >= 539 && super.clickX <= 573 && super.clickY >= 169 && super.clickY < 205
+					&& anIntArray1081[0] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 0;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 569 && super.clickX <= 599 && super.clickY >= 168 && super.clickY < 205
+					&& anIntArray1081[1] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 1;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 597 && super.clickX <= 627 && super.clickY >= 168 && super.clickY < 205
+					&& anIntArray1081[2] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 2;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 625 && super.clickX <= 669 && super.clickY >= 168 && super.clickY < 203
+					&& anIntArray1081[3] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 3;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 666 && super.clickX <= 696 && super.clickY >= 168 && super.clickY < 205
+					&& anIntArray1081[4] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 4;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 694 && super.clickX <= 724 && super.clickY >= 168 && super.clickY < 205
+					&& anIntArray1081[5] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 5;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 722 && super.clickX <= 756 && super.clickY >= 169 && super.clickY < 205
+					&& anIntArray1081[6] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 6;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 540 && super.clickX <= 574 && super.clickY >= 466 && super.clickY < 502
+					&& anIntArray1081[7] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 7;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 572 && super.clickX <= 602 && super.clickY >= 466 && super.clickY < 503
+					&& anIntArray1081[8] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 8;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 599 && super.clickX <= 629 && super.clickY >= 466 && super.clickY < 503
+					&& anIntArray1081[9] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 9;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 627 && super.clickX <= 671 && super.clickY >= 467 && super.clickY < 502
+					&& anIntArray1081[10] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 10;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 669 && super.clickX <= 699 && super.clickY >= 466 && super.clickY < 503
+					&& anIntArray1081[11] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 11;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 696 && super.clickX <= 726 && super.clickY >= 466 && super.clickY < 503
+					&& anIntArray1081[12] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 12;
+				aBoolean950 = true;
+			}
+			if (super.clickX >= 724 && super.clickX <= 758 && super.clickY >= 466 && super.clickY < 502
+					&& anIntArray1081[13] != -1) {
+				aBoolean1181 = true;
+				anInt1285 = 13;
+				aBoolean950 = true;
+			}
+		}
+	}
+
+	public void method22(int i) {
+		i = 61 / i;
+		try {
+			int j = ((Actor) (thisPlayer)).unitX + anInt853;
+			int k = ((Actor) (thisPlayer)).unitY + anInt1009;
+			if (anInt1262 - j < -500 || anInt1262 - j > 500 || anInt1263 - k < -500 || anInt1263 - k > 500) {
+				anInt1262 = j;
+				anInt1263 = k;
+			}
+			if (anInt1262 != j)
+				anInt1262 += (j - anInt1262) / 16;
+			if (anInt1263 != k)
+				anInt1263 += (k - anInt1263) / 16;
+			if (super.keyStatus[1] == 1)
+				anInt1253 += (-24 - anInt1253) / 2;
+			else if (super.keyStatus[2] == 1)
+				anInt1253 += (24 - anInt1253) / 2;
+			else
+				anInt1253 /= 2;
+			if (super.keyStatus[3] == 1)
+				anInt1254 += (12 - anInt1254) / 2;
+			else if (super.keyStatus[4] == 1)
+				anInt1254 += (-12 - anInt1254) / 2;
+			else
+				anInt1254 /= 2;
+			anInt1252 = anInt1252 + anInt1253 / 2 & 0x7ff;
+			anInt1251 += anInt1254 / 2;
+			if (anInt1251 < 128)
+				anInt1251 = 128;
+			if (anInt1251 > 383)
+				anInt1251 = 383;
+			int l = anInt1262 >> 7;
+			int i1 = anInt1263 >> 7;
+			int j1 = method110(anInt1263, anInt1262, (byte) 9, plane);
+			int k1 = 0;
+			if (l > 3 && i1 > 3 && l < 100 && i1 < 100) {
+				for (int l1 = l - 4; l1 <= l + 4; l1++) {
+					for (int j2 = i1 - 4; j2 <= i1 + 4; j2++) {
+						int k2 = plane;
+						if (k2 < 3 && (currentSceneTileFlags[1][l1][j2] & 2) == 2)
+							k2++;
+						int l2 = j1 - anIntArrayArrayArray891[k2][l1][j2];
+						if (l2 > k1)
+							k1 = l2;
+					}
+
 				}
-				int servercrcValues = buffer.getInt();
-				int clientCrcValues = 1234;
-				for (int crcValue = 0; crcValue < 9; crcValue++) {
-					clientCrcValues = (clientCrcValues << 1) + crcValues[crcValue];
+
+			}
+			int i2 = k1 * 192;
+			if (i2 > 0x17f00)
+				i2 = 0x17f00;
+			if (i2 < 32768)
+				i2 = 32768;
+			if (i2 > anInt1289) {
+				anInt1289 += (i2 - anInt1289) / 24;
+				return;
+			}
+			if (i2 < anInt1289) {
+				anInt1289 += (i2 - anInt1289) / 80;
+				return;
+			}
+		} catch (Exception _ex) {
+			SignLink.reporterror("glfc_ex " + ((Actor) (thisPlayer)).unitX + ","
+					+ ((Actor) (thisPlayer)).unitY + "," + anInt1262 + "," + anInt1263 + "," + chunkX + ","
+					+ chunkY + "," + nextTopLeftTileX + "," + nextTopRightTileY);
+			throw new RuntimeException("eek");
+		}
+	}
+
+	public boolean method23(Widget class13, int i) {
+		i = 98 / i;
+		int j = class13.contentType;
+		if (j >= 1 && j <= 200 || j >= 701 && j <= 900) {
+			if (j >= 801)
+				j -= 701;
+			else if (j >= 701)
+				j -= 601;
+			else if (j >= 101)
+				j -= 101;
+			else
+				j--;
+			aStringArray1184[anInt1183] = "Remove @whi@" + friendsListNames[j];
+			anIntArray981[anInt1183] = 775;
+			anInt1183++;
+			aStringArray1184[anInt1183] = "Message @whi@" + friendsListNames[j];
+			anIntArray981[anInt1183] = 984;
+			anInt1183++;
+			return true;
+		}
+		if (j >= 401 && j <= 500) {
+			aStringArray1184[anInt1183] = "Remove @whi@" + class13.aString230;
+			anIntArray981[anInt1183] = 859;
+			anInt1183++;
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	public void method24(boolean flag, byte abyte0[], int i) {
+		if (!musicEnabled) {
+			return;
+		} else {
+			SignLink.fadeMidi = flag ? 1 : 0;
+			SignLink.saveMidi(abyte0, abyte0.length);
+			i = 71 / i;
+			return;
+		}
+	}
+
+	public void method25(int i) {
+		if (i != 0)
+			outBuffer.putByte(186);
+		aBoolean1277 = true;
+		for (int j = 0; j < 7; j++) {
+			characterEditIdentityKits[j] = -1;
+			for (int k = 0; k < IdentityKit.count; k++) {
+				if (IdentityKit.identityKits[k].notSelectable
+						|| IdentityKit.identityKits[k].part != j + (characterEditChangeGenger ? 0 : 7))
+					continue;
+				characterEditIdentityKits[j] = k;
+				break;
+			}
+
+		}
+
+	}
+
+	public void method26(int x, int y) {
+		LinkedList class6 = groundItems[plane][x][y];
+		if (class6 == null) {
+			currentScene.method262(plane, x, y);
+			return;
+		}
+		int k = 0xfa0a1f01;
+		Object obj = null;
+		for (GroundItem class50_sub1_sub4_sub1 = (GroundItem) class6.first(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (GroundItem) class6
+				.next()) {
+			ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.id);
+			int l = class16.value;
+			if (class16.stackable)
+				l *= class50_sub1_sub4_sub1.amount + 1;
+			if (l > k) {
+				k = l;
+				obj = class50_sub1_sub4_sub1;
+			}
+		}
+
+		class6.addFirst(((Node) (obj)));
+		Object obj1 = null;
+		Object obj2 = null;
+		for (GroundItem class50_sub1_sub4_sub1_1 = (GroundItem) class6.first(); class50_sub1_sub4_sub1_1 != null; class50_sub1_sub4_sub1_1 = (GroundItem) class6
+				.next()) {
+			if (class50_sub1_sub4_sub1_1.id != ((GroundItem) (obj)).id && obj1 == null)
+				obj1 = class50_sub1_sub4_sub1_1;
+			if (class50_sub1_sub4_sub1_1.id != ((GroundItem) (obj)).id
+					&& class50_sub1_sub4_sub1_1.id != ((GroundItem) (obj1)).id
+					&& obj2 == null)
+				obj2 = class50_sub1_sub4_sub1_1;
+		}
+
+		int i1 = x + (y << 7) + 0x60000000;
+		currentScene.method248(method110(y * 128 + 64, x * 128 + 64, (byte) 9, plane), plane,
+				((Renderable) (obj)), ((Renderable) (obj1)), i1, ((Renderable) (obj2)), 2, y, x);
+	}
+
+	public static void switchToHighMem() {
+		SceneGraph.lowMemory = false;
+		Rasterizer3D.lowMemory = false;
+		lowMemory = false;
+		MapArea.lowMemory = false;
+		GameObjectDefinition.lowMemory = false;
+	}
+
+	public void method28(byte byte0) {
+		if (anInt1057 > 1)
+			anInt1057--;
+		if (anInt873 > 0)
+			anInt873--;
+		for (int i = 0; i < 5; i++)
+			if (!parseIncomingPacket())
+				break;
+
+		if (!loggedIn)
+			return;
+		synchronized (mouseCapturer.objectLock) {
+			if (accountFlagged) {
+				if (super.clickType != 0 || mouseCapturer.coord >= 40) {
+					outBuffer.putOpcode(171);
+					outBuffer.putByte(0);
+					int i2 = outBuffer.offset;
+					int i3 = 0;
+					for (int i4 = 0; i4 < mouseCapturer.coord; i4++) {
+						if (i2 - outBuffer.offset >= 240)
+							break;
+						i3++;
+						int k4 = mouseCapturer.coordsY[i4];
+						if (k4 < 0)
+							k4 = 0;
+						else if (k4 > 502)
+							k4 = 502;
+						int j5 = mouseCapturer.coordsX[i4];
+						if (j5 < 0)
+							j5 = 0;
+						else if (j5 > 764)
+							j5 = 764;
+						int l5 = k4 * 765 + j5;
+						if (mouseCapturer.coordsY[i4] == -1 && mouseCapturer.coordsX[i4] == -1) {
+							j5 = -1;
+							k4 = -1;
+							l5 = 0x7ffff;
+						}
+						if (j5 == anInt1011 && k4 == anInt1012) {
+							if (anInt1299 < 2047)
+								anInt1299++;
+						} else {
+							int i6 = j5 - anInt1011;
+							anInt1011 = j5;
+							int j6 = k4 - anInt1012;
+							anInt1012 = k4;
+							if (anInt1299 < 8 && i6 >= -32 && i6 <= 31 && j6 >= -32 && j6 <= 31) {
+								i6 += 32;
+								j6 += 32;
+								outBuffer.putShort((anInt1299 << 12) + (i6 << 6) + j6);
+								anInt1299 = 0;
+							} else if (anInt1299 < 8) {
+								outBuffer.putTriByte(0x800000 + (anInt1299 << 19) + l5);
+								anInt1299 = 0;
+							} else {
+								outBuffer.putInt(0xc0000000 + (anInt1299 << 19) + l5);
+								anInt1299 = 0;
+							}
+						}
+					}
+
+					outBuffer.putLength(outBuffer.offset - i2);
+					if (i3 >= mouseCapturer.coord) {
+						mouseCapturer.coord = 0;
+					} else {
+						mouseCapturer.coord -= i3;
+						for (int l4 = 0; l4 < mouseCapturer.coord; l4++) {
+							mouseCapturer.coordsX[l4] = mouseCapturer.coordsX[l4 + i3];
+							mouseCapturer.coordsY[l4] = mouseCapturer.coordsY[l4 + i3];
+						}
+
+					}
 				}
-				if (servercrcValues != clientCrcValues) {
-					problem = "checksum problem";
-					crcValues[8] = 0;
+			} else {
+				mouseCapturer.coord = 0;
+			}
+		}
+		if (super.clickType != 0) {
+			long l = (super.clickTime - aLong902) / 50L;
+			if (l > 4095L)
+				l = 4095L;
+			aLong902 = super.clickTime;
+			int j2 = super.clickY;
+			if (j2 < 0)
+				j2 = 0;
+			else if (j2 > 502)
+				j2 = 502;
+			int j3 = super.clickX;
+			if (j3 < 0)
+				j3 = 0;
+			else if (j3 > 764)
+				j3 = 764;
+			int j4 = j2 * 765 + j3;
+			int i5 = 0;
+			if (super.clickType == 2)
+				i5 = 1;
+			int k5 = (int) l;
+			outBuffer.putOpcode(19);
+			outBuffer.putInt((k5 << 20) + (i5 << 19) + j4);
+		}
+		if (anInt1264 > 0)
+			anInt1264--;
+		if (super.keyStatus[1] == 1 || super.keyStatus[2] == 1 || super.keyStatus[3] == 1
+				|| super.keyStatus[4] == 1)
+			aBoolean1265 = true;
+		if (aBoolean1265 && anInt1264 <= 0) {
+			anInt1264 = 20;
+			aBoolean1265 = false;
+			outBuffer.putOpcode(140);
+			outBuffer.putLEShortDup(anInt1251);
+			outBuffer.putLEShortDup(anInt1252);
+		}
+		if (super.awtFocus && !aBoolean1275) {
+			aBoolean1275 = true;
+			outBuffer.putOpcode(187);
+			outBuffer.putByte(1);
+		}
+		if (!super.awtFocus && aBoolean1275) {
+			aBoolean1275 = false;
+			outBuffer.putOpcode(187);
+			outBuffer.putByte(0);
+		}
+		method143((byte) -40);
+		method36(16220);
+		method152();
+		anInt871++;
+		if (anInt871 > 750)
+			method59();
+		method100(0);
+		method67(-37214);
+		method85(0);
+		anInt951++;
+		if (anInt1023 != 0) {
+			anInt1022 += 20;
+			if (anInt1022 >= 400)
+				anInt1023 = 0;
+		}
+		if (anInt1332 != 0) {
+			anInt1329++;
+			if (anInt1329 >= 15) {
+				if (anInt1332 == 2)
+					aBoolean1181 = true;
+				if (anInt1332 == 3)
+					redrawChatbox = true;
+				anInt1332 = 0;
+			}
+		}
+		if (anInt1113 != 0) {
+			anInt1269++;
+			if (super.mouseX > anInt1114 + 5 || super.mouseX < anInt1114 - 5 || super.mouseY > anInt1115 + 5
+					|| super.mouseY < anInt1115 - 5)
+				aBoolean1155 = true;
+			if (super.mouseButtonPressed == 0) {
+				if (anInt1113 == 2)
+					aBoolean1181 = true;
+				if (anInt1113 == 3)
+					redrawChatbox = true;
+				anInt1113 = 0;
+				if (aBoolean1155 && anInt1269 >= 5) {
+					anInt1064 = -1;
+					method91(-521);
+					if (anInt1064 == anInt1111 && anInt1063 != anInt1112) {
+						Widget class13 = Widget.forId(anInt1111);
+						int i1 = 0;
+						if (anInt955 == 1 && class13.contentType == 206)
+							i1 = 1;
+						if (class13.itemIds[anInt1063] <= 0)
+							i1 = 0;
+						if (class13.aBoolean217) {
+							int k2 = anInt1112;
+							int k3 = anInt1063;
+							class13.itemIds[k3] = class13.itemIds[k2];
+							class13.itemAmounts[k3] = class13.itemAmounts[k2];
+							class13.itemIds[k2] = -1;
+							class13.itemAmounts[k2] = 0;
+						} else if (i1 == 1) {
+							int l2 = anInt1112;
+							for (int l3 = anInt1063; l2 != l3;)
+								if (l2 > l3) {
+									class13.swapItems(l2 - 1, l2);
+									l2--;
+								} else if (l2 < l3) {
+									class13.swapItems(l2 + 1, l2);
+									l2++;
+								}
+
+						} else {
+							class13.swapItems(anInt1063, anInt1112);
+						}
+						outBuffer.putOpcode(123);
+						outBuffer.putLEShortAdded(anInt1063);
+						outBuffer.putByteAdded(i1);
+						outBuffer.putShortAdded(anInt1111);
+						outBuffer.putLEShortDup(anInt1112);
+					}
+				} else if ((anInt1300 == 1 || method126(anInt1183 - 1, aByte1161)) && anInt1183 > 2)
+					method108(811);
+				else if (anInt1183 > 0)
+					method120(anInt1183 - 1, 8);
+				anInt1329 = 10;
+				super.clickType = 0;
+			}
+		}
+		if (SceneGraph.anInt485 != -1) {
+			int dstX = SceneGraph.anInt485;
+			int dstY = SceneGraph.anInt486;
+			boolean flag = walk(true, false, dstY, ((Actor) (thisPlayer)).pathY[0], 0, 0, 0, 0, dstX, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			SceneGraph.anInt485 = -1;
+			if (flag) {
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 1;
+				anInt1022 = 0;
+			}
+		}
+		if (super.clickType == 1 && aString1058 != null) {
+			aString1058 = null;
+			redrawChatbox = true;
+			super.clickType = 0;
+		}
+		method54(0);
+		if (anInt1053 == -1) {
+			method146((byte) 4);
+			method21(false);
+			method39(true);
+		}
+		if (super.mouseButtonPressed == 1 || super.clickType == 1)
+			anInt1094++;
+		if (anInt1284 != 0 || anInt1044 != 0 || anInt1129 != 0) {
+			if (anInt893 < 100) {
+				anInt893++;
+				if (anInt893 == 100) {
+					if (anInt1284 != 0)
+						redrawChatbox = true;
+					if (anInt1044 != 0)
+						aBoolean1181 = true;
 				}
-			} catch (java.io.EOFException eofexception) {
-				problem = "EOF problem";
-				crcValues[8] = 0;
-			} catch (IOException ioexception) {
-				problem = "connection problem";
-				crcValues[8] = 0;
-			} catch (Exception exception) {
-				problem = "logic problem";
-				crcValues[8] = 0;
-				if (!SignLink.reportError) {
+			}
+		} else if (anInt893 > 0)
+			anInt893--;
+		if (anInt1071 == 2)
+			method22(409);
+		if (anInt1071 == 2 && aBoolean1211)
+			method29(aBoolean959);
+		for (int k = 0; k < 5; k++)
+			anIntArray1145[k]++;
+
+		method30((byte) 2);
+		super.idleTime++;
+		if (super.idleTime > 4500) {
+			anInt873 = 250;
+			super.idleTime -= 500;
+			outBuffer.putOpcode(202);
+		}
+		anInt1118++;
+		if (anInt1118 > 500) {
+			anInt1118 = 0;
+			int k1 = (int) (Math.random() * 8D);
+			if ((k1 & 1) == 1)
+				anInt853 += anInt854;
+			if ((k1 & 2) == 2)
+				anInt1009 += anInt1010;
+			if ((k1 & 4) == 4)
+				anInt1255 += anInt1256;
+		}
+		if (anInt853 < -50)
+			anInt854 = 2;
+		if (anInt853 > 50)
+			anInt854 = -2;
+		if (anInt1009 < -55)
+			anInt1010 = 2;
+		if (anInt1009 > 55)
+			anInt1010 = -2;
+		if (anInt1255 < -40)
+			anInt1256 = 1;
+		if (anInt1255 > 40)
+			anInt1256 = -1;
+		anInt1045++;
+		if (anInt1045 > 500) {
+			anInt1045 = 0;
+			int l1 = (int) (Math.random() * 8D);
+			if ((l1 & 1) == 1)
+				anInt916 += anInt917;
+			if ((l1 & 2) == 2)
+				anInt1233 += anInt1234;
+		}
+		if (anInt916 < -60)
+			anInt917 = 2;
+		if (anInt916 > 60)
+			anInt917 = -2;
+		if (anInt1233 < -20)
+			anInt1234 = 1;
+		if (anInt1233 > 10)
+			anInt1234 = -1;
+		anInt872++;
+		if (byte0 != 4)
+			opcode = buffer.getUnsignedByte();
+		if (anInt872 > 50)
+			outBuffer.putOpcode(40);
+		try {
+			if (bufferedConnection != null && outBuffer.offset > 0) {
+				bufferedConnection.putBytes(0, outBuffer.offset, 0, outBuffer.buffer);
+				outBuffer.offset = 0;
+				anInt872 = 0;
+				return;
+			}
+		} catch (IOException _ex) {
+			method59();
+			return;
+		} catch (Exception exception) {
+			logout();
+		}
+	}
+
+	public void method29(boolean flag) {
+		int i = anInt874 * 128 + 64;
+		int j = anInt875 * 128 + 64;
+		int k = method110(j, i, (byte) 9, plane) - anInt876;
+		if (anInt1216 < i) {
+			anInt1216 += anInt877 + ((i - anInt1216) * anInt878) / 1000;
+			if (anInt1216 > i)
+				anInt1216 = i;
+		}
+		if (anInt1216 > i) {
+			anInt1216 -= anInt877 + ((anInt1216 - i) * anInt878) / 1000;
+			if (anInt1216 < i)
+				anInt1216 = i;
+		}
+		if (anInt1217 < k) {
+			anInt1217 += anInt877 + ((k - anInt1217) * anInt878) / 1000;
+			if (anInt1217 > k)
+				anInt1217 = k;
+		}
+		if (anInt1217 > k) {
+			anInt1217 -= anInt877 + ((anInt1217 - k) * anInt878) / 1000;
+			if (anInt1217 < k)
+				anInt1217 = k;
+		}
+		if (anInt1218 < j) {
+			anInt1218 += anInt877 + ((j - anInt1218) * anInt878) / 1000;
+			if (anInt1218 > j)
+				anInt1218 = j;
+		}
+		if (anInt1218 > j) {
+			anInt1218 -= anInt877 + ((anInt1218 - j) * anInt878) / 1000;
+			if (anInt1218 < j)
+				anInt1218 = j;
+		}
+		i = anInt993 * 128 + 64;
+		j = anInt994 * 128 + 64;
+		k = method110(j, i, (byte) 9, plane) - anInt995;
+		int l = i - anInt1216;
+		int i1 = k - anInt1217;
+		int j1 = j - anInt1218;
+		int k1 = (int) Math.sqrt(l * l + j1 * j1);
+		int l1 = (int) (Math.atan2(i1, k1) * 325.94900000000001D) & 0x7ff;
+		if (!flag) {
+			for (int i2 = 1; i2 > 0; i2++);
+		}
+		int j2 = (int) (Math.atan2(l, j1) * -325.94900000000001D) & 0x7ff;
+		if (l1 < 128)
+			l1 = 128;
+		if (l1 > 383)
+			l1 = 383;
+		if (anInt1219 < l1) {
+			anInt1219 += anInt996 + ((l1 - anInt1219) * anInt997) / 1000;
+			if (anInt1219 > l1)
+				anInt1219 = l1;
+		}
+		if (anInt1219 > l1) {
+			anInt1219 -= anInt996 + ((anInt1219 - l1) * anInt997) / 1000;
+			if (anInt1219 < l1)
+				anInt1219 = l1;
+		}
+		int k2 = j2 - anInt1220;
+		if (k2 > 1024)
+			k2 -= 2048;
+		if (k2 < -1024)
+			k2 += 2048;
+		if (k2 > 0) {
+			anInt1220 += anInt996 + (k2 * anInt997) / 1000;
+			anInt1220 &= 0x7ff;
+		}
+		if (k2 < 0) {
+			anInt1220 -= anInt996 + (-k2 * anInt997) / 1000;
+			anInt1220 &= 0x7ff;
+		}
+		int l2 = j2 - anInt1220;
+		if (l2 > 1024)
+			l2 -= 2048;
+		if (l2 < -1024)
+			l2 += 2048;
+		if (l2 < 0 && k2 > 0 || l2 > 0 && k2 < 0)
+			anInt1220 = j2;
+	}
+
+	public void method30(byte byte0) {
+		if (byte0 == 2)
+			byte0 = 0;
+		else
+			return;
+		do {
+			int key = readCharacter();
+			if (key == -1)
+				break;
+			if (openWidgetId != -1 && openWidgetId == anInt1231) {
+				if (key == 8 && reportedName.length() > 0)
+					reportedName = reportedName.substring(0, reportedName.length() - 1);
+				if ((key >= 97 && key <= 122 || key >= 65 && key <= 90 || key >= 48 && key <= 57 || key == 32)
+						&& reportedName.length() < 12)
+					reportedName += (char) key;
+			} else if (messagePromptRaised) {
+				if (key >= 32 && key <= 122 && chatMessage.length() < 80) {
+					chatMessage += (char) key;
+					redrawChatbox = true;
+				}
+				if (key == 8 && chatMessage.length() > 0) {
+					chatMessage = chatMessage.substring(0, chatMessage.length() - 1);
+					redrawChatbox = true;
+				}
+				if (key == 13 || key == 10) {
+					messagePromptRaised = false;
+					redrawChatbox = true;
+					if (friendsListAction == 1) {
+						long l = TextUtils.nameToLong(chatMessage);
+						method102(l, -45229);
+					}
+					if (friendsListAction == 2 && friendsCount > 0) {
+						long l1 = TextUtils.nameToLong(chatMessage);
+						method53(l1, 0);
+					}
+					if (friendsListAction == 3 && chatMessage.length() > 0) {
+						outBuffer.putOpcode(227);
+						outBuffer.putByte(0);
+						int j = outBuffer.offset;
+						outBuffer.putLong(aLong1141);
+						ChatEncoder.put(chatMessage, outBuffer);
+						outBuffer.putLength(outBuffer.offset - j);
+						chatMessage = ChatEncoder.formatChatMessage(chatMessage);
+						chatMessage = ChatFilter.method383((byte) 0, chatMessage);
+						pushMessage(TextUtils.formatName(TextUtils.longToName(aLong1141)), (byte) -123,
+								chatMessage, 6);
+						if (anInt887 == 2) {
+							anInt887 = 1;
+							aBoolean1212 = true;
+							outBuffer.putOpcode(176);
+							outBuffer.putByte(anInt1006);
+							outBuffer.putByte(anInt887);
+							outBuffer.putByte(anInt1227);
+						}
+					}
+					if (friendsListAction == 4 && ignoresCount < 100) {
+						long l2 = TextUtils.nameToLong(chatMessage);
+						method90(anInt1154, l2);
+					}
+					if (friendsListAction == 5 && ignoresCount > 0) {
+						long l3 = TextUtils.nameToLong(chatMessage);
+						method97(325, l3);
+					}
+				}
+			} else if (inputType == 1) {
+				if (key >= 48 && key <= 57 && inputInputMessage.length() < 10) {
+					inputInputMessage += (char) key;
+					redrawChatbox = true;
+				}
+				if (key == 8 && inputInputMessage.length() > 0) {
+					inputInputMessage = inputInputMessage.substring(0, inputInputMessage.length() - 1);
+					redrawChatbox = true;
+				}
+				if (key == 13 || key == 10) {
+					if (inputInputMessage.length() > 0) {
+						int k = 0;
+						try {
+							k = Integer.parseInt(inputInputMessage);
+						} catch (Exception _ex) {
+						}
+						outBuffer.putOpcode(75);
+						outBuffer.putInt(k);
+					}
+					inputType = 0;
+					redrawChatbox = true;
+				}
+			} else if (inputType == 2) {
+				if (key >= 32 && key <= 122 && inputInputMessage.length() < 12) {
+					inputInputMessage += (char) key;
+					redrawChatbox = true;
+				}
+				if (key == 8 && inputInputMessage.length() > 0) {
+					inputInputMessage = inputInputMessage.substring(0, inputInputMessage.length() - 1);
+					redrawChatbox = true;
+				}
+				if (key == 13 || key == 10) {
+					if (inputInputMessage.length() > 0) {
+						outBuffer.putOpcode(206);
+						outBuffer.putLong(TextUtils.nameToLong(inputInputMessage));
+					}
+					inputType = 0;
+					redrawChatbox = true;
+				}
+			} else if (inputType == 3) {
+				if (key >= 32 && key <= 122 && inputInputMessage.length() < 40) {
+					inputInputMessage += (char) key;
+					redrawChatbox = true;
+				}
+				if (key == 8 && inputInputMessage.length() > 0) {
+					inputInputMessage = inputInputMessage.substring(0, inputInputMessage.length() - 1);
+					redrawChatbox = true;
+				}
+			} else if (anInt988 == -1 && anInt1053 == -1) {
+				if (key >= 32 && key <= 122 && chatboxInput.length() < 80) {
+					chatboxInput += (char) key;
+					redrawChatbox = true;
+				}
+				if (key == 8 && chatboxInput.length() > 0) {
+					chatboxInput = chatboxInput.substring(0, chatboxInput.length() - 1);
+					redrawChatbox = true;
+				}
+				if ((key == 13 || key == 10) && chatboxInput.length() > 0) {
+					if (playerRights == 2) {
+						if (chatboxInput.equals("::clientdrop"))
+							method59();
+						if (chatboxInput.equals("::lag"))
+							method138();
+						if (chatboxInput.equals("::prefetchmusic")) {
+							for (int i_417_ = 0; i_417_ < onDemandFetcher.fileCount(2); i_417_++)
+								onDemandFetcher.setPriority((byte) 1, 2, i_417_);
+
+						}
+						if (chatboxInput.equals("::fpson"))
+							fps = true;
+						if (chatboxInput.equals("::fpsoff"))
+							fps = false;
+						if (chatboxInput.equals("::noclip")) {
+							for (int j1 = 0; j1 < 4; j1++) {
+								for (int k1 = 1; k1 < 103; k1++) {
+									for (int j2 = 1; j2 < 103; j2++)
+										currentCollisionMap[j1].adjacency[k1][j2] = 0;
+
+								}
+
+							}
+
+						}
+					}
+					if (chatboxInput.startsWith("::")) {
+						outBuffer.putOpcode(56);
+						outBuffer.putByte(chatboxInput.length() - 1);
+						outBuffer.putString(chatboxInput.substring(2));
+					} else {
+						String s = chatboxInput.toLowerCase();
+						int colour = 0;
+						if (s.startsWith("yellow:")) {
+							colour = 0;
+							chatboxInput = chatboxInput.substring(7);
+						} else if (s.startsWith("red:")) {
+							colour = 1;
+							chatboxInput = chatboxInput.substring(4);
+						} else if (s.startsWith("green:")) {
+							colour = 2;
+							chatboxInput = chatboxInput.substring(6);
+						} else if (s.startsWith("cyan:")) {
+							colour = 3;
+							chatboxInput = chatboxInput.substring(5);
+						} else if (s.startsWith("purple:")) {
+							colour = 4;
+							chatboxInput = chatboxInput.substring(7);
+						} else if (s.startsWith("white:")) {
+							colour = 5;
+							chatboxInput = chatboxInput.substring(6);
+						} else if (s.startsWith("flash1:")) {
+							colour = 6;
+							chatboxInput = chatboxInput.substring(7);
+						} else if (s.startsWith("flash2:")) {
+							colour = 7;
+							chatboxInput = chatboxInput.substring(7);
+						} else if (s.startsWith("flash3:")) {
+							colour = 8;
+							chatboxInput = chatboxInput.substring(7);
+						} else if (s.startsWith("glow1:")) {
+							colour = 9;
+							chatboxInput = chatboxInput.substring(6);
+						} else if (s.startsWith("glow2:")) {
+							colour = 10;
+							chatboxInput = chatboxInput.substring(6);
+						} else if (s.startsWith("glow3:")) {
+							colour = 11;
+							chatboxInput = chatboxInput.substring(6);
+						}
+						s = chatboxInput.toLowerCase();
+						int movement = 0;
+						if (s.startsWith("wave:")) {
+							movement = 1;
+							chatboxInput = chatboxInput.substring(5);
+						} else if (s.startsWith("wave2:")) {
+							movement = 2;
+							chatboxInput = chatboxInput.substring(6);
+						} else if (s.startsWith("shake:")) {
+							movement = 3;
+							chatboxInput = chatboxInput.substring(6);
+						} else if (s.startsWith("scroll:")) {
+							movement = 4;
+							chatboxInput = chatboxInput.substring(7);
+						} else if (s.startsWith("slide:")) {
+							movement = 5;
+							chatboxInput = chatboxInput.substring(6);
+						}
+						outBuffer.putOpcode(49);
+						outBuffer.putByte(0);
+						int i3 = outBuffer.offset;
+						outBuffer.putByteNegated(colour);
+						outBuffer.putByteAdded(movement);
+						aClass50_Sub1_Sub2_1131.offset = 0;
+						ChatEncoder.put(chatboxInput, aClass50_Sub1_Sub2_1131);
+						outBuffer.putBytes(aClass50_Sub1_Sub2_1131.buffer, 0,
+								aClass50_Sub1_Sub2_1131.offset);
+						outBuffer.putLength(outBuffer.offset - i3);
+						chatboxInput = ChatEncoder.formatChatMessage(chatboxInput);
+						chatboxInput = ChatFilter.method383((byte) 0, chatboxInput);
+						thisPlayer.forcedChat = chatboxInput;
+						thisPlayer.anInt1583 = colour;
+						thisPlayer.anInt1593 = movement;
+						thisPlayer.anInt1582 = 150;
+						if (playerRights == 2)
+							pushMessage("@cr2@" + thisPlayer.username, (byte) -123,
+									((Actor) (thisPlayer)).forcedChat, 2);
+						else if (playerRights == 1)
+							pushMessage("@cr1@" + thisPlayer.username, (byte) -123,
+									((Actor) (thisPlayer)).forcedChat, 2);
+						else
+							pushMessage(thisPlayer.username, (byte) -123, ((Actor) (thisPlayer)).forcedChat, 2);
+						if (anInt1006 == 2) {
+							anInt1006 = 3;
+							aBoolean1212 = true;
+							outBuffer.putOpcode(176);
+							outBuffer.putByte(anInt1006);
+							outBuffer.putByte(anInt887);
+							outBuffer.putByte(anInt1227);
+						}
+					}
+					chatboxInput = "";
+					redrawChatbox = true;
+				}
+			}
+		} while (true);
+	}
+
+	public DataInputStream method31(String s) throws IOException {
+		if (!aBoolean900)
+			if (SignLink.mainapp != null)
+				return SignLink.openURL(s);
+			else
+				return new DataInputStream((new URL(getCodeBase(), s)).openStream());
+		if (aSocket1224 != null) {
+			try {
+				aSocket1224.close();
+			} catch (Exception _ex) {
+			}
+			aSocket1224 = null;
+		}
+		aSocket1224 = openSocket(43595);
+		aSocket1224.setSoTimeout(10000);
+		InputStream inputstream = aSocket1224.getInputStream();
+		OutputStream outputstream = aSocket1224.getOutputStream();
+		outputstream.write(("JAGGRAB /" + s + "\n\n").getBytes());
+		return new DataInputStream(inputstream);
+	}
+
+	public Socket openSocket(int i) throws IOException {
+		if (SignLink.mainapp != null)
+			return SignLink.openSocket(i);
+		else
+			return new Socket(InetAddress.getByName(getCodeBase().getHost()), i);
+	}
+
+	public boolean parseIncomingPacket() {
+		if (bufferedConnection == null)
+			return false;
+		try {
+			int avail = bufferedConnection.available();
+			if (avail == 0)
+				return false;
+			if (opcode == -1) {
+				bufferedConnection.getBytes(buffer.buffer, 0, 1);
+				opcode = buffer.buffer[0] & 0xff;
+				if (incomingRandom != null)
+					opcode = opcode - incomingRandom.nextInt() & 0xff;
+				size = PacketConstants.PACKET_SIZES[opcode];
+				avail--;
+			}
+			if (size == -1)
+				if (avail > 0) {
+					bufferedConnection.getBytes(buffer.buffer, 0, 1);
+					size = buffer.buffer[0] & 0xff;
+					avail--;
+				} else {
+					return false;
+				}
+			if (size == -2)
+				if (avail > 1) {
+					bufferedConnection.getBytes(buffer.buffer, 0, 2);
+					buffer.offset = 0;
+					size = buffer.getShort();
+					avail -= 2;
+				} else {
+					return false;
+				}
+			if (avail < size)
+				return false;
+			buffer.offset = 0;
+			bufferedConnection.getBytes(buffer.buffer, 0, size);
+			anInt871 = 0;
+			anInt905 = anInt904;
+			anInt904 = anInt903;
+			anInt903 = opcode;
+			if (opcode == 166) {
+				int l = buffer.method552();
+				int l10 = buffer.method552();
+				int interfaceId = buffer.getShort();
+				Widget class13_5 = Widget.forId(interfaceId);
+				class13_5.anInt228 = l10;
+				class13_5.anInt259 = l;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 186) {
+				int i1 = buffer.method550();
+				int interfaceId = buffer.getLittleShortA();
+				int l16 = buffer.method550();
+				int i22 = buffer.method549();
+				Widget.forId(interfaceId).anInt252 = i1;
+				Widget.forId(interfaceId).anInt253 = i22;
+				Widget.forId(interfaceId).anInt251 = l16;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 216) {
+				int j1 = buffer.getLittleShortA();
+				int interfaceId = buffer.getLittleShortA();
+				Widget.forId(interfaceId).anInt283 = 1;
+				Widget.forId(interfaceId).anInt284 = j1;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 26) {
+				int k1 = buffer.getShort();
+				int k11 = buffer.getUnsignedByte();
+				int i17 = buffer.getShort();
+				if (i17 == 65535) {
+					if (currentSound < 50) {
+						sound[currentSound] = (short) k1;
+						soundType[currentSound] = k11;
+						soundDelay[currentSound] = 0;
+						currentSound++;
+					}
+				} else if (aBoolean1301 && !lowMemory && currentSound < 50) {
+					sound[currentSound] = k1;
+					soundType[currentSound] = k11;
+					soundDelay[currentSound] = i17 + Sound.anIntArray669[k1];
+					currentSound++;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 182) {
+				int l1 = buffer.method550();
+				byte byte0 = buffer.getSignedByteSubtracted();
+				anIntArray1005[l1] = byte0;
+				if (widgetSettings[l1] != byte0) {
+					widgetSettings[l1] = byte0;
+					method105(0, l1);
+					aBoolean1181 = true;
+					if (anInt1191 != -1)
+						redrawChatbox = true;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 13) {
+				for (int i2 = 0; i2 < players.length; i2++)
+					if (players[i2] != null)
+						players[i2].animation = -1;
+
+				for (int l11 = 0; l11 < npcs.length; l11++)
+					if (npcs[l11] != null)
+						npcs[l11].animation = -1;
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 156) {
+				minimapState = buffer.getUnsignedByte();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 162) {
+				int j2 = buffer.method550();
+				int interfaceId = buffer.method549();
+				Widget.forId(interfaceId).anInt283 = 2;
+				Widget.forId(interfaceId).anInt284 = j2;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 109) {
+				int k2 = buffer.getShort();
+				method112((byte) 36, k2);
+				if (anInt1089 != -1) {
+					method44(aBoolean1190, anInt1089);
+					anInt1089 = -1;
+					aBoolean1181 = true;
+					aBoolean950 = true;
+				}
+				if (anInt1053 != -1) {
+					method44(aBoolean1190, anInt1053);
+					anInt1053 = -1;
+					aBoolean1046 = true;
+				}
+				if (anInt960 != -1) {
+					method44(aBoolean1190, anInt960);
+					anInt960 = -1;
+				}
+				if (openWidgetId != -1) {
+					method44(aBoolean1190, openWidgetId);
+					openWidgetId = -1;
+				}
+				if (anInt988 != k2) {
+					method44(aBoolean1190, anInt988);
+					anInt988 = k2;
+				}
+				aBoolean1239 = false;
+				redrawChatbox = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 220) {
+				int songID = buffer.getLittleShortA();
+				if (songID == 65535)
+					songID = -1;
+				if (songID != currentSong && musicEnabled && !lowMemory && previousSong == 0) {
+					nextSong = songID;
+					songChanging = true;
+					onDemandFetcher.request(2, nextSong);
+				}
+				currentSong = songID;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 249) {
+				int fileId = buffer.method549();
+				int j12 = buffer.method554();
+				if (musicEnabled && !lowMemory) {
+					nextSong = fileId;
+					songChanging = false;
+					onDemandFetcher.request(2, nextSong); // request something from cache!?!
+					previousSong = j12;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 158) {
+				int j3 = buffer.method552();
+				if (j3 != anInt1191) {
+					method44(aBoolean1190, anInt1191);
+					anInt1191 = j3;
+				}
+				redrawChatbox = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 218) { // set interface colour(?)
+				int interfaceId = buffer.getShort();
+				int rgb = buffer.method550();
+				int j17 = rgb >> 10 & 0x1f;
+				int j22 = rgb >> 5 & 0x1f;
+				int l24 = rgb & 0x1f;
+				Widget.forId(interfaceId).anInt240 = (j17 << 19) + (j22 << 11) + (l24 << 3);
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 157) { // update player option
+				int slot = buffer.getByteNegated();
+				String option = buffer.getString();
+				int alwaysOnTop = buffer.getUnsignedByte();
+				if (slot >= 1 && slot <= 5) {
+					if (option.equalsIgnoreCase("null"))
+						option = null;
+					aStringArray1069[slot - 1] = option;
+					aBooleanArray1070[slot - 1] = alwaysOnTop == 0;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 6) {
+				messagePromptRaised = false;
+				inputType = 2;
+				inputInputMessage = "";
+				redrawChatbox = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 201) {
+				anInt1006 = buffer.getUnsignedByte();
+				anInt887 = buffer.getUnsignedByte();
+				anInt1227 = buffer.getUnsignedByte();
+				aBoolean1212 = true;
+				redrawChatbox = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 199) {
+				anInt1197 = buffer.getUnsignedByte();
+				if (anInt1197 == 1)
+					anInt1226 = buffer.getShort();
+				if (anInt1197 >= 2 && anInt1197 <= 6) {
+					if (anInt1197 == 2) {
+						anInt847 = 64;
+						anInt848 = 64;
+					}
+					if (anInt1197 == 3) {
+						anInt847 = 0;
+						anInt848 = 64;
+					}
+					if (anInt1197 == 4) {
+						anInt847 = 128;
+						anInt848 = 64;
+					}
+					if (anInt1197 == 5) {
+						anInt847 = 64;
+						anInt848 = 0;
+					}
+					if (anInt1197 == 6) {
+						anInt847 = 64;
+						anInt848 = 128;
+					}
+					anInt1197 = 2;
+					anInt844 = buffer.getShort();
+					anInt845 = buffer.getShort();
+					anInt846 = buffer.getUnsignedByte();
+				}
+				if (anInt1197 == 10)
+					anInt1151 = buffer.getShort();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 167) {
+				aBoolean1211 = true;
+				anInt993 = buffer.getUnsignedByte();
+				anInt994 = buffer.getUnsignedByte();
+				anInt995 = buffer.getShort();
+				anInt996 = buffer.getUnsignedByte();
+				anInt997 = buffer.getUnsignedByte();
+				if (anInt997 >= 100) {
+					int i4 = anInt993 * 128 + 64;
+					int l12 = anInt994 * 128 + 64;
+					int l17 = method110(l12, i4, (byte) 9, plane) - anInt995;
+					int k22 = i4 - anInt1216;
+					int i25 = l17 - anInt1217;
+					int k27 = l12 - anInt1218;
+					int i30 = (int) Math.sqrt(k22 * k22 + k27 * k27);
+					anInt1219 = (int) (Math.atan2(i25, i30) * 325.94900000000001D) & 0x7ff;
+					anInt1220 = (int) (Math.atan2(k22, k27) * -325.94900000000001D) & 0x7ff;
+					if (anInt1219 < 128)
+						anInt1219 = 128;
+					if (anInt1219 > 383)
+						anInt1219 = 383;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 5) {
+				logout(); // simulate a crash??
+				opcode = -1;
+				return false;
+			}
+			if (opcode == 115) {
+				int j4 = buffer.method557();
+				int i13 = buffer.method549();
+				anIntArray1005[i13] = j4;
+				if (widgetSettings[i13] != j4) {
+					widgetSettings[i13] = j4;
+					method105(0, i13);
+					aBoolean1181 = true;
+					if (anInt1191 != -1)
+						redrawChatbox = true;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 29) { // close open interfaces??
+				if (anInt1089 != -1) {
+					method44(aBoolean1190, anInt1089);
+					anInt1089 = -1;
+					aBoolean1181 = true;
+					aBoolean950 = true;
+				}
+				if (anInt988 != -1) {
+					method44(aBoolean1190, anInt988);
+					anInt988 = -1;
+					redrawChatbox = true;
+				}
+				if (anInt1053 != -1) {
+					method44(aBoolean1190, anInt1053);
+					anInt1053 = -1;
+					aBoolean1046 = true;
+				}
+				if (anInt960 != -1) {
+					method44(aBoolean1190, anInt960);
+					anInt960 = -1;
+				}
+				if (openWidgetId != -1) {
+					method44(aBoolean1190, openWidgetId);
+					openWidgetId = -1;
+				}
+				if (inputType != 0) {
+					inputType = 0;
+					redrawChatbox = true;
+				}
+				aBoolean1239 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 76) { // open welcome screen
+				anInt1083 = buffer.method549();
+				anInt1075 = buffer.getLittleShortA();
+				buffer.getShort();
+				anInt1208 = buffer.getShort();
+				anInt1170 = buffer.method549();
+				anInt1273 = buffer.method550();
+				anInt1215 = buffer.method550();
+				anInt992 = buffer.getShort();
+				lastAddress = buffer.method555();
+				anInt1034 = buffer.getLittleShortA();
+				buffer.getByteAdded();
+				SignLink.dnslookup(TextUtils.decodeAddress(lastAddress));
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 63) { // server message
+				String message = buffer.getString();
+				if (message.endsWith(":tradereq:")) {
+					String s3 = message.substring(0, message.indexOf(":"));
+					long l18 = TextUtils.nameToLong(s3);
+					boolean flag1 = false;
+					for (int l27 = 0; l27 < ignoresCount; l27++) {
+						if (ignores[l27] != l18)
+							continue;
+						flag1 = true;
+						break;
+					}
+
+					if (!flag1 && anInt1246 == 0)
+						pushMessage(s3, (byte) -123, "wishes to trade with you.", 4);
+				} else if (message.endsWith(":duelreq:")) {
+					String s4 = message.substring(0, message.indexOf(":"));
+					long l19 = TextUtils.nameToLong(s4);
+					boolean flag2 = false;
+					for (int i28 = 0; i28 < ignoresCount; i28++) {
+						if (ignores[i28] != l19)
+							continue;
+						flag2 = true;
+						break;
+					}
+
+					if (!flag2 && anInt1246 == 0)
+						pushMessage(s4, (byte) -123, "wishes to duel with you.", 8);
+				} else if (message.endsWith(":chalreq:")) {
+					String s5 = message.substring(0, message.indexOf(":"));
+					long l20 = TextUtils.nameToLong(s5);
+					boolean flag3 = false;
+					for (int j28 = 0; j28 < ignoresCount; j28++) {
+						if (ignores[j28] != l20)
+							continue;
+						flag3 = true;
+						break;
+					}
+
+					if (!flag3 && anInt1246 == 0) {
+						String s8 = message.substring(message.indexOf(":") + 1, message.length() - 9);
+						pushMessage(s5, (byte) -123, s8, 8);
+					}
+				} else {
+					pushMessage("", (byte) -123, message, 0);
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 50) {
+				int k4 = buffer.getSignedShort();
+				if (k4 >= 0)
+					method112((byte) 36, k4);
+				if (k4 != anInt1279) {
+					method44(aBoolean1190, anInt1279);
+					anInt1279 = k4;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 82) { // make interface (in)visible maybe?
+				boolean flag = buffer.getUnsignedByte() == 1;
+				int interfaceId = buffer.getShort();
+				Widget.forId(interfaceId).aBoolean219 = flag;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 174) {
+				if (anInt1285 == 12)
+					aBoolean1181 = true;
+				anInt1030 = buffer.getSignedShort();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 233) {
+				anInt1319 = buffer.getUnsignedByte();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 61) {
+				destinationX = 0;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 128) {
+				int l4 = buffer.method550();
+				int k13 = buffer.getLittleShortA();
+				if (anInt988 != -1) {
+					method44(aBoolean1190, anInt988);
+					anInt988 = -1;
+					redrawChatbox = true;
+				}
+				if (anInt1053 != -1) {
+					method44(aBoolean1190, anInt1053);
+					anInt1053 = -1;
+					aBoolean1046 = true;
+				}
+				if (anInt960 != -1) {
+					method44(aBoolean1190, anInt960);
+					anInt960 = -1;
+				}
+				if (openWidgetId != l4) {
+					method44(aBoolean1190, openWidgetId);
+					openWidgetId = l4;
+				}
+				if (anInt1089 != k13) {
+					method44(aBoolean1190, anInt1089);
+					anInt1089 = k13;
+				}
+				if (inputType != 0) {
+					inputType = 0;
+					redrawChatbox = true;
+				}
+				aBoolean1181 = true;
+				aBoolean950 = true;
+				aBoolean1239 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 67) {
+				int i5 = buffer.getUnsignedByte();
+				int l13 = buffer.getUnsignedByte();
+				int i18 = buffer.getUnsignedByte();
+				int l22 = buffer.getUnsignedByte();
+				aBooleanArray927[i5] = true;
+				anIntArray1105[i5] = l13;
+				anIntArray852[i5] = i18;
+				anIntArray991[i5] = l22;
+				anIntArray1145[i5] = 0;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 134) { // set items in interface
+				aBoolean1181 = true;
+				int interfaceId = buffer.getShort();
+				Widget inter = Widget.forId(interfaceId);
+				while (buffer.offset < size) {
+					int slot = buffer.getSmart();
+					int id = buffer.getShort();
+					int amount = buffer.getUnsignedByte();
+					if (amount == 255)
+						amount = buffer.getInt();
+					if (slot >= 0 && slot < inter.itemIds.length) {
+						inter.itemIds[slot] = id;
+						inter.itemAmounts[slot] = amount;
+					}
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 78) { // update friend status
+				long friend = buffer.getLong();
+				int nodeId = buffer.getUnsignedByte();
+				String s7 = TextUtils.formatName(TextUtils.longToName(friend));
+				for (int k25 = 0; k25 < friendsCount; k25++) {
+					if (friend != friends[k25])
+						continue;
+					if (anIntArray1267[k25] != nodeId) {
+						anIntArray1267[k25] = nodeId;
+						aBoolean1181 = true;
+						if (nodeId > 0)
+							pushMessage("", (byte) -123, s7 + " has logged in.", 5);
+						if (nodeId == 0)
+							pushMessage("", (byte) -123, s7 + " has logged out.", 5);
+					}
+					s7 = null;
+					break;
+				}
+
+				if (s7 != null && friendsCount < 200) {
+					friends[friendsCount] = friend;
+					friendsListNames[friendsCount] = s7;
+					anIntArray1267[friendsCount] = nodeId;
+					friendsCount++;
+					aBoolean1181 = true;
+				}
+				for (boolean flag5 = false; !flag5;) {
+					flag5 = true;
+					for (int j30 = 0; j30 < friendsCount - 1; j30++)
+						if (anIntArray1267[j30] != world && anIntArray1267[j30 + 1] == world
+								|| anIntArray1267[j30] == 0 && anIntArray1267[j30 + 1] != 0) {
+							int l31 = anIntArray1267[j30];
+							anIntArray1267[j30] = anIntArray1267[j30 + 1];
+							anIntArray1267[j30 + 1] = l31;
+							String s10 = friendsListNames[j30];
+							friendsListNames[j30] = friendsListNames[j30 + 1];
+							friendsListNames[j30 + 1] = s10;
+							long l33 = friends[j30];
+							friends[j30] = friends[j30 + 1];
+							friends[j30 + 1] = l33;
+							aBoolean1181 = true;
+							flag5 = false;
+						}
+
+				}
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 58) { // enter amount interface
+				messagePromptRaised = false;
+				inputType = 1;
+				inputInputMessage = "";
+				redrawChatbox = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 252) {
+				anInt1285 = buffer.getByteNegated();
+				aBoolean1181 = true;
+				aBoolean950 = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 40) {
+				placementY = buffer.getByteSubtracted();
+				placementX = buffer.getByteNegated();
+				for (int k5 = placementX; k5 < placementX + 8; k5++) {
+					for (int i14 = placementY; i14 < placementY + 8; i14++)
+						if (groundItems[plane][k5][i14] != null) {
+							groundItems[plane][k5][i14] = null;
+							method26(k5, i14);
+						}
+
+				}
+
+				for (Class50_Sub2 class50_sub2 = (Class50_Sub2) aClass6_1261.first(); class50_sub2 != null; class50_sub2 = (Class50_Sub2) aClass6_1261
+						.next())
+					if (class50_sub2.anInt1393 >= placementX && class50_sub2.anInt1393 < placementX + 8
+							&& class50_sub2.anInt1394 >= placementY && class50_sub2.anInt1394 < placementY + 8
+							&& class50_sub2.anInt1391 == plane)
+						class50_sub2.anInt1390 = 0;
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 255) { // show player in an interface *maybe*?
+				int interfaceId = buffer.getLittleShortA();
+				Widget.forId(interfaceId).anInt283 = 3;
+				if (thisPlayer.npc == null) // maybe that is the appear as npc thing?
+					Widget.forId(interfaceId).anInt284 = (thisPlayer.colors[0] << 25) + (thisPlayer.colors[4] << 20)
+							+ (thisPlayer.equipment[0] << 15) + (thisPlayer.equipment[8] << 10)
+							+ (thisPlayer.equipment[11] << 5) + thisPlayer.equipment[1];
+				else
+					Widget.forId(interfaceId).anInt284 = (int) (0x12345678L + thisPlayer.npc.id);
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 135) { // private message (?)
+				long l6 = buffer.getLong();
+				int i19 = buffer.getInt();
+				int j23 = buffer.getUnsignedByte();
+				boolean flag4 = false;
+				for (int k28 = 0; k28 < 100; k28++) {
+					if (anIntArray1258[k28] != i19)
+						continue;
+					flag4 = true;
+					break;
+				}
+
+				if (j23 <= 1) {
+					for (int k30 = 0; k30 < ignoresCount; k30++) {
+						if (ignores[k30] != l6)
+							continue;
+						flag4 = true;
+						break;
+					}
+
+				}
+				if (!flag4 && anInt1246 == 0)
+					try {
+						anIntArray1258[anInt1152] = i19;
+						anInt1152 = (anInt1152 + 1) % 100;
+						String s9 = ChatEncoder.get(size - 13, buffer);
+						if (j23 != 3)
+							s9 = ChatFilter.method383((byte) 0, s9);
+						if (j23 == 2 || j23 == 3)
+							pushMessage("@cr2@" + TextUtils.formatName(TextUtils.longToName(l6)), (byte) -123,
+									s9, 7);
+						else if (j23 == 1)
+							pushMessage("@cr1@" + TextUtils.formatName(TextUtils.longToName(l6)), (byte) -123,
+									s9, 7);
+						else
+							pushMessage(TextUtils.formatName(TextUtils.longToName(l6)), (byte) -123, s9, 3);
+					} catch (Exception exception1) {
+						SignLink.reporterror("cde1");
+					}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 183) {
+				placementX = buffer.getUnsignedByte();
+				placementY = buffer.getByteAdded();
+				while (buffer.offset < size) {
+					int j6 = buffer.getUnsignedByte();
+					parsePlacementPacket(buffer, j6);
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 159) { // open interface
+				int interfaceId = buffer.getLittleShortA();
+				method112((byte) 36, interfaceId);
+				if (anInt1089 != -1) {
+					method44(aBoolean1190, anInt1089);
+					anInt1089 = -1;
+					aBoolean1181 = true;
+					aBoolean950 = true;
+				}
+				if (anInt988 != -1) {
+					method44(aBoolean1190, anInt988);
+					anInt988 = -1;
+					redrawChatbox = true;
+				}
+				if (anInt1053 != -1) {
+					method44(aBoolean1190, anInt1053);
+					anInt1053 = -1;
+					aBoolean1046 = true;
+				}
+				if (anInt960 != -1) {
+					method44(aBoolean1190, anInt960);
+					anInt960 = -1;
+				}
+				if (openWidgetId != interfaceId) {
+					method44(aBoolean1190, openWidgetId);
+					openWidgetId = interfaceId;
+				}
+				if (inputType != 0) {
+					inputType = 0;
+					redrawChatbox = true;
+				}
+				aBoolean1239 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 246) {
+				int i7 = buffer.getLittleShortA();
+				method112((byte) 36, i7);
+				if (anInt988 != -1) {
+					method44(aBoolean1190, anInt988);
+					anInt988 = -1;
+					redrawChatbox = true;
+				}
+				if (anInt1053 != -1) {
+					method44(aBoolean1190, anInt1053);
+					anInt1053 = -1;
+					aBoolean1046 = true;
+				}
+				if (anInt960 != -1) {
+					method44(aBoolean1190, anInt960);
+					anInt960 = -1;
+				}
+				if (openWidgetId != -1) {
+					method44(aBoolean1190, openWidgetId);
+					openWidgetId = -1;
+				}
+				if (anInt1089 != i7) {
+					method44(aBoolean1190, anInt1089);
+					anInt1089 = i7;
+				}
+				if (inputType != 0) {
+					inputType = 0;
+					redrawChatbox = true;
+				}
+				aBoolean1181 = true;
+				aBoolean950 = true;
+				aBoolean1239 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 49) {
+				aBoolean1181 = true;
+				int j7 = buffer.getByteNegated();
+				int j14 = buffer.getUnsignedByte();
+				int j19 = buffer.getInt();
+				anIntArray843[j7] = j19;
+				anIntArray1029[j7] = j14;
+				anIntArray1054[j7] = 1;
+				for (int k23 = 0; k23 < 98; k23++)
+					if (j19 >= xpForSkillLevel[k23])
+						anIntArray1054[j7] = k23 + 2;
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 206) { // update all items in interface
+				aBoolean1181 = true;
+				int interfaceId = buffer.getShort();
+				Widget inter = Widget.forId(interfaceId);
+				int items = buffer.getShort();
+				for (int item = 0; item < items; item++) {
+					inter.itemIds[item] = buffer.getLittleShortA();
+					int amount = buffer.getByteNegated();
+					if (amount == 255)
+						amount = buffer.method555();
+					inter.itemAmounts[item] = amount;
+				}
+
+				for (int i26 = items; i26 < inter.itemIds.length; i26++) {
+					inter.itemIds[i26] = 0;
+					inter.itemAmounts[i26] = 0;
+				}
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 222 || opcode == 53) { // new map region
+				int tmpChunkX = chunkX;
+				int tmpChunkY = chunkY;
+				if (opcode == 222) {
+					tmpChunkY = buffer.getShort();
+					tmpChunkX = buffer.getLittleShortA();
+					aBoolean1163 = false;
+				}
+				if (opcode == 53) {
+					tmpChunkX = buffer.method550();
+					buffer.initBitAccess();
+					for (int z = 0; z < 4; z++) {
+						for (int x = 0; x < 13; x++) {
+							for (int y = 0; y < 13; y++) {
+								int flag = buffer.getBits(1);
+								if (flag == 1)
+									constructedMapPalette[z][x][y] = buffer.getBits(26);
+								else
+									constructedMapPalette[z][x][y] = -1;
+							}
+
+						}
+
+					}
+
+					buffer.finishBitAccess();
+					tmpChunkY = buffer.method550();
+					aBoolean1163 = true;
+				}
+				if (chunkX == tmpChunkX && chunkY == tmpChunkY && anInt1071 == 2) {
+					opcode = -1;
+					return true;
+				}
+				chunkX = tmpChunkX;
+				chunkY = tmpChunkY;
+				nextTopLeftTileX = (chunkX - 6) * 8;
+				nextTopRightTileY = (chunkY - 6) * 8;
+				aBoolean1067 = false;
+				if ((chunkX / 8 == 48 || chunkX / 8 == 49) && chunkY / 8 == 48)
+					aBoolean1067 = true;
+				if (chunkX / 8 == 48 && chunkY / 8 == 148)
+					aBoolean1067 = true;
+				anInt1071 = 1;
+				aLong1229 = System.currentTimeMillis();
+				method125(null, "Loading - please wait.");
+				if (opcode == 222) {
+					int count = 0;
+					for (int fileX = (chunkX - 6) / 8; fileX <= (chunkX + 6) / 8; fileX++) {
+						for (int fileY = (chunkY - 6) / 8; fileY <= (chunkY + 6) / 8; fileY++)
+							count++;
+
+					}
+
+					aByteArrayArray838 = new byte[count][];
+					aByteArrayArray1232 = new byte[count][];
+					coordinates = new int[count];
+					anIntArray857 = new int[count];
+					anIntArray858 = new int[count];
+					count = 0;
+					for (int fileX = (chunkX - 6) / 8; fileX <= (chunkX + 6) / 8; fileX++) {
+						for (int fileY = (chunkY - 6) / 8; fileY <= (chunkY + 6) / 8; fileY++) {
+							coordinates[count] = (fileX << 8) + fileY;
+							if (aBoolean1067
+									&& (fileY == 49 || fileY == 149 || fileY == 147 || fileX == 50 || fileX == 49 && fileY == 47)) {
+								anIntArray857[count] = -1;
+								anIntArray858[count] = -1;
+								count++;
+							} else {
+								int l30 = anIntArray857[count] = onDemandFetcher.method344(0, fileX, fileY, 0);
+								if (l30 != -1)
+									onDemandFetcher.request(3, l30);
+								int i32 = anIntArray858[count] = onDemandFetcher.method344(0, fileX, fileY, 1);
+								if (i32 != -1)
+									onDemandFetcher.request(3, i32);
+								count++;
+							}
+						}
+
+					}
+
+				}
+				if (opcode == 53) {
+					int uniqueCount = 0;
+					int fileIndices[] = new int[676];
+					for (int tileZ = 0; tileZ < 4; tileZ++) {
+						for (int tileX = 0; tileX < 13; tileX++) {
+							for (int tileY = 0; tileY < 13; tileY++) {
+								int data = constructedMapPalette[tileZ][tileX][tileY];
+								if (data != -1) {
+									int chunkX = data >> 14 & 0x3ff;
+									int chunkY = data >> 3 & 0x7ff;
+									int fileIndex = (chunkX / 8 << 8) + chunkY / 8;
+									for (int pos = 0; pos < uniqueCount; pos++) {
+										if (fileIndices[pos] != fileIndex)
+											continue;
+										fileIndex = -1;
+										break;
+									}
+
+									if (fileIndex != -1)
+										fileIndices[uniqueCount++] = fileIndex;
+								}
+							}
+
+						}
+
+					}
+
+					aByteArrayArray838 = new byte[uniqueCount][];
+					aByteArrayArray1232 = new byte[uniqueCount][];
+					coordinates = new int[uniqueCount];
+					anIntArray857 = new int[uniqueCount];
+					anIntArray858 = new int[uniqueCount];
+					for (int pos = 0; pos < uniqueCount; pos++) {
+						int j31 = coordinates[pos] = fileIndices[pos];
+						int fileX = j31 >> 8 & 0xff;
+						int fileY = j31 & 0xff;
+						int i34 = anIntArray857[pos] = onDemandFetcher.method344(0, fileX, fileY, 0);
+						if (i34 != -1)
+							onDemandFetcher.request(3, i34);
+						int k34 = anIntArray858[pos] = onDemandFetcher.method344(0, fileX, fileY, 1);
+						if (k34 != -1)
+							onDemandFetcher.request(3, k34);
+					}
+
+				}
+				int deltaX = nextTopLeftTileX - topLeftTileX;
+				int deltaY = nextTopRightTileY - topLeftTileY;
+				topLeftTileX = nextTopLeftTileX;
+				topLeftTileY = nextTopRightTileY;
+				for (int id = 0; id < 16384; id++) {
+					Npc npc = npcs[id];
+					if (npc != null) {
+						for (int pos = 0; pos < 10; pos++) {
+							((Actor) (npc)).pathX[pos] -= deltaX;
+							((Actor) (npc)).pathY[pos] -= deltaY;
+						}
+
+						npc.unitX -= deltaX * 128;
+						npc.unitY -= deltaY * 128;
+					}
+				}
+
+				for (int id = 0; id < anInt968; id++) {
+					Player player = players[id];
+					if (player != null) {
+						for (int pos = 0; pos < 10; pos++) {
+							((Actor) (player)).pathX[pos] -= deltaX;
+							((Actor) (player)).pathY[pos] -= deltaY;
+						}
+
+						player.unitX -= deltaX * 128;
+						player.unitY -= deltaY * 128;
+					}
+				}
+
+				aBoolean1209 = true;
+				byte byte1 = 0;
+				byte byte2 = 104;
+				byte byte3 = 1;
+				if (deltaX < 0) {
+					byte1 = 103;
+					byte2 = -1;
+					byte3 = -1;
+				}
+				byte byte4 = 0;
+				byte byte5 = 104;
+				byte byte6 = 1;
+				if (deltaY < 0) {
+					byte4 = 103;
+					byte5 = -1;
+					byte6 = -1;
+				}
+				for (int i35 = byte1; i35 != byte2; i35 += byte3) {
+					for (int j35 = byte4; j35 != byte5; j35 += byte6) {
+						int k35 = i35 + deltaX;
+						int l35 = j35 + deltaY;
+						for (int i36 = 0; i36 < 4; i36++)
+							if (k35 >= 0 && l35 >= 0 && k35 < 104 && l35 < 104)
+								groundItems[i36][i35][j35] = groundItems[i36][k35][l35];
+							else
+								groundItems[i36][i35][j35] = null;
+
+					}
+
+				}
+
+				for (Class50_Sub2 class50_sub2_1 = (Class50_Sub2) aClass6_1261.first(); class50_sub2_1 != null; class50_sub2_1 = (Class50_Sub2) aClass6_1261
+						.next()) {
+					class50_sub2_1.anInt1393 -= deltaX;
+					class50_sub2_1.anInt1394 -= deltaY;
+					if (class50_sub2_1.anInt1393 < 0 || class50_sub2_1.anInt1394 < 0 || class50_sub2_1.anInt1393 >= 104
+							|| class50_sub2_1.anInt1394 >= 104)
+						class50_sub2_1.remove();
+				}
+
+				if (destinationX != 0) {
+					destinationX -= deltaX;
+					anInt1121 -= deltaY;
+				}
+				aBoolean1211 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 190) {
+				anInt1057 = buffer.method549() * 30;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 41 || opcode == 121 || opcode == 203 || opcode == 106 || opcode == 59 || opcode == 181
+					|| opcode == 208 || opcode == 107 || opcode == 142 || opcode == 88 || opcode == 152) {
+				parsePlacementPacket(buffer, opcode); // these are to do with objects iirc
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 125) {
+				if (anInt1285 == 12)
+					aBoolean1181 = true;
+				anInt1324 = buffer.getUnsignedByte();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 21) { // show a model on an interface??
+				int scale = buffer.getShort();
+				int itemId = buffer.method549();
+				int interfaceId = buffer.getLittleShortA();
+				if (itemId == 65535) {
+					Widget.forId(interfaceId).anInt283 = 0;
+					opcode = -1;
+					return true;
+				} else {
+					ItemDefinition class16 = ItemDefinition.forId(itemId);
+					Widget.forId(interfaceId).anInt283 = 4;
+					Widget.forId(interfaceId).anInt284 = itemId;
+					Widget.forId(interfaceId).anInt252 = class16.modelRotationX;
+					Widget.forId(interfaceId).anInt253 = class16.modelRotationY;
+					Widget.forId(interfaceId).anInt251 = (class16.modelScale * 100) / scale;
+					opcode = -1;
+					return true;
+				}
+			}
+			if (opcode == 3) {
+				aBoolean1211 = true;
+				anInt874 = buffer.getUnsignedByte();
+				anInt875 = buffer.getUnsignedByte();
+				anInt876 = buffer.getShort();
+				anInt877 = buffer.getUnsignedByte();
+				anInt878 = buffer.getUnsignedByte();
+				if (anInt878 >= 100) {
+					anInt1216 = anInt874 * 128 + 64;
+					anInt1218 = anInt875 * 128 + 64;
+					anInt1217 = method110(anInt1218, anInt1216, (byte) 9, plane) - anInt876;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 2) {
+				int interfaceId = buffer.getLittleShortA();
+				int i15 = buffer.method553();
+				Widget class13_3 = Widget.forId(interfaceId);
+				if (class13_3.anInt286 != i15 || i15 == -1) {
+					class13_3.anInt286 = i15;
+					class13_3.anInt235 = 0;
+					class13_3.anInt227 = 0;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 71) {
+				method48(buffer, aBoolean1038, size);
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 226) { // ignore list
+				ignoresCount = size / 8;
+				for (int k8 = 0; k8 < ignoresCount; k8++)
+					ignores[k8] = buffer.getLong();
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 10) {
+				int l8 = buffer.getByteSubtracted();
+				int j15 = buffer.method550();
+				if (j15 == 65535)
+					j15 = -1;
+				if (anIntArray1081[l8] != j15) {
+					method44(aBoolean1190, anIntArray1081[l8]);
+					anIntArray1081[l8] = j15;
+				}
+				aBoolean1181 = true;
+				aBoolean950 = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 219) { // reset all items on interface?
+				int interfaceId = buffer.method549();
+				Widget class13_2 = Widget.forId(interfaceId);
+				for (int k21 = 0; k21 < class13_2.itemIds.length; k21++) {
+					class13_2.itemIds[k21] = -1;
+					class13_2.itemIds[k21] = 0;
+				}
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 238) {
+				anInt1213 = buffer.getUnsignedByte();
+				if (anInt1213 == anInt1285) {
+					if (anInt1213 == 3)
+						anInt1285 = 1;
+					else
+						anInt1285 = 3;
+					aBoolean1181 = true;
+				}
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 148) {
+				aBoolean1211 = false;
+				for (int j9 = 0; j9 < 5; j9++)
+					aBooleanArray927[j9] = false;
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 126) {
+				playerMembers = buffer.getUnsignedByte();
+				thisPlayerServerId = buffer.method549();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 75) {
+				placementX = buffer.getByteNegated();
+				placementY = buffer.getByteAdded();
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 253) { // open fullscreen interface
+				int k9 = buffer.method549();
+				int k15 = buffer.method550();
+				method112((byte) 36, k15);
+				if (k9 != -1)
+					method112((byte) 36, k9);
+				if (openWidgetId != -1) {
+					method44(aBoolean1190, openWidgetId);
+					openWidgetId = -1;
+				}
+				if (anInt1089 != -1) {
+					method44(aBoolean1190, anInt1089);
+					anInt1089 = -1;
+				}
+				if (anInt988 != -1) {
+					method44(aBoolean1190, anInt988);
+					anInt988 = -1;
+				}
+				if (anInt1053 != k15) {
+					method44(aBoolean1190, anInt1053);
+					anInt1053 = k15;
+				}
+				if (anInt960 != k15) {
+					method44(aBoolean1190, anInt960);
+					anInt960 = k9;
+				}
+				inputType = 0;
+				aBoolean1239 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 251) {
+				friendListStatus = buffer.getUnsignedByte();
+				aBoolean1181 = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 18) {
+				int l9 = buffer.getShort();
+				int interfaceId = buffer.method550();
+				int l21 = buffer.method549();
+				Widget.forId(interfaceId).anInt218 = (l9 << 16) + l21;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 90) { // player update
+				updatePlayers(size, 69, buffer);
+				aBoolean1209 = false;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 113) {
+				for (int i10 = 0; i10 < widgetSettings.length; i10++)
+					if (widgetSettings[i10] != anIntArray1005[i10]) {
+						widgetSettings[i10] = anIntArray1005[i10];
+						method105(0, i10);
+						aBoolean1181 = true;
+					}
+
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 232) { // update interface string?
+				int j10 = buffer.getLittleShortA();
+				String s6 = buffer.getString();
+				Widget.forId(j10).aString230 = s6;
+				if (Widget.forId(j10).anInt248 == anIntArray1081[anInt1285])
+					aBoolean1181 = true;
+				opcode = -1;
+				return true;
+			}
+			if (opcode == 200) {
+				int interfaceId = buffer.getShort();
+				int i16 = buffer.getLittleShortA();
+				Widget class13_4 = Widget.forId(interfaceId);
+				if (class13_4 != null && class13_4.anInt236 == 0) {
+					if (i16 < 0)
+						i16 = 0;
+					if (i16 > class13_4.anInt285 - class13_4.anInt238)
+						i16 = class13_4.anInt285 - class13_4.anInt238;
+					class13_4.anInt231 = i16;
+				}
+				opcode = -1;
+				return true;
+			}
+			SignLink.reporterror("T1 - " + opcode + "," + size + " - " + anInt904 + "," + anInt905);
+			logout();
+		} catch (IOException _ex) {
+			method59();
+		} catch (Exception exception) {
+			String s1 = "T2 - " + opcode + "," + anInt904 + "," + anInt905 + " - " + size + ","
+					+ (nextTopLeftTileX + ((Actor) (thisPlayer)).pathX[0]) + ","
+					+ (nextTopRightTileY + ((Actor) (thisPlayer)).pathY[0]) + " - ";
+			for (int j16 = 0; j16 < size && j16 < 50; j16++)
+				s1 = s1 + buffer.buffer[j16] + ",";
+
+			SignLink.reporterror(s1);
+			logout();
+
+			exception.printStackTrace();
+		}
+		return true;
+	}
+
+	public void method34(byte byte0) {
+		if (anInt1183 < 2 && anInt1146 == 0 && anInt1171 == 0)
+			return;
+		if (byte0 != -79)
+			return;
+		String s;
+		if (anInt1146 == 1 && anInt1183 < 2)
+			s = "Use " + aString1150 + " with...";
+		else if (anInt1171 == 1 && anInt1183 < 2)
+			s = aString1174 + "...";
+		else
+			s = aStringArray1184[anInt1183 - 1];
+		if (anInt1183 > 2)
+			s = s + "@whi@ / " + (anInt1183 - 2) + " more options";
+		fontBold.method479(true, pulseCycle / 1000, 4, 0xffffff, 15, s, 0);
+	}
+
+	public boolean walk(boolean flag, boolean flag1, int dstY, int srcY, int k, int l, int packetType, int j1, int dstX, int l1,
+			int i2, int srcX) {
+		byte byte0 = 104;
+		byte byte1 = 104;
+		for (int x = 0; x < byte0; x++) {
+			for (int y = 0; y < byte1; y++) {
+				anIntArrayArray885[x][y] = 0;
+				cost[x][y] = 0x5f5e0ff;
+			}
+
+		}
+
+		int curX = srcX;
+		int curY = srcY;
+		anIntArrayArray885[srcX][srcY] = 99;
+		cost[srcX][srcY] = 0;
+		int k3 = 0;
+		int l3 = 0;
+		anIntArray1123[k3] = srcX;
+		anIntArray1124[k3++] = srcY;
+		boolean flag2 = false;
+		int i4 = anIntArray1123.length;
+		int masks[][] = currentCollisionMap[plane].adjacency;
+		while (l3 != k3) {
+			curX = anIntArray1123[l3];
+			curY = anIntArray1124[l3];
+			l3 = (l3 + 1) % i4;
+			if (curX == dstX && curY == dstY) {
+				flag2 = true;
+				break;
+			}
+			if (j1 != 0) {
+				if ((j1 < 5 || j1 == 10) && currentCollisionMap[plane].method420(dstX, 0, dstY, j1 - 1, curX, curY, i2)) {
+					flag2 = true;
+					break;
+				}
+				if (j1 < 10 && currentCollisionMap[plane].method421(-37, curY, dstX, curX, i2, j1 - 1, dstY)) {
+					flag2 = true;
 					break;
 				}
 			}
-			if (crcValues[8] == 0) {
-				errors++;
-				for (int i_8_ = waitTime; i_8_ > 0; i_8_--) {
-					if (errors >= 10) {
-						drawLoadingText(10, "Game updated - please reload page");
-						i_8_ = 10;
-					} else {
-						drawLoadingText(10, problem + " - Will retry in " + i_8_ + " secs.");
-					}
-					try {
-						Thread.sleep(1000L);
-					} catch (Exception exception) {
-						/* empty */
-					}
-				}
-				waitTime *= 2;
-				if (waitTime > 60) {
-					waitTime = 60;
-				}
-				aBoolean897 = !aBoolean897;
+			if (k != 0 && l != 0 && currentCollisionMap[plane].method422(k, curX, true, dstX, l1, l, dstY, curY)) {
+				flag2 = true;
+				break;
+			}
+			int nextCost = cost[curX][curY] + 1;
+			if (curX > 0 && anIntArrayArray885[curX - 1][curY] == 0 && (masks[curX - 1][curY] & 0x1280108) == 0) {
+				anIntArray1123[k3] = curX - 1;
+				anIntArray1124[k3] = curY;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX - 1][curY] = 2;
+				cost[curX - 1][curY] = nextCost;
+			}
+			if (curX < byte0 - 1 && anIntArrayArray885[curX + 1][curY] == 0 && (masks[curX + 1][curY] & 0x1280180) == 0) {
+				anIntArray1123[k3] = curX + 1;
+				anIntArray1124[k3] = curY;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX + 1][curY] = 8;
+				cost[curX + 1][curY] = nextCost;
+			}
+			if (curY > 0 && anIntArrayArray885[curX][curY - 1] == 0 && (masks[curX][curY - 1] & 0x1280102) == 0) {
+				anIntArray1123[k3] = curX;
+				anIntArray1124[k3] = curY - 1;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX][curY - 1] = 1;
+				cost[curX][curY - 1] = nextCost;
+			}
+			if (curY < byte1 - 1 && anIntArrayArray885[curX][curY + 1] == 0 && (masks[curX][curY + 1] & 0x1280120) == 0) {
+				anIntArray1123[k3] = curX;
+				anIntArray1124[k3] = curY + 1;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX][curY + 1] = 4;
+				cost[curX][curY + 1] = nextCost;
+			}
+			if (curX > 0 && curY > 0 && anIntArrayArray885[curX - 1][curY - 1] == 0 && (masks[curX - 1][curY - 1] & 0x128010e) == 0
+					&& (masks[curX - 1][curY] & 0x1280108) == 0 && (masks[curX][curY - 1] & 0x1280102) == 0) {
+				anIntArray1123[k3] = curX - 1;
+				anIntArray1124[k3] = curY - 1;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX - 1][curY - 1] = 3;
+				cost[curX - 1][curY - 1] = nextCost;
+			}
+			if (curX < byte0 - 1 && curY > 0 && anIntArrayArray885[curX + 1][curY - 1] == 0
+					&& (masks[curX + 1][curY - 1] & 0x1280183) == 0 && (masks[curX + 1][curY] & 0x1280180) == 0
+					&& (masks[curX][curY - 1] & 0x1280102) == 0) {
+				anIntArray1123[k3] = curX + 1;
+				anIntArray1124[k3] = curY - 1;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX + 1][curY - 1] = 9;
+				cost[curX + 1][curY - 1] = nextCost;
+			}
+			if (curX > 0 && curY < byte1 - 1 && anIntArrayArray885[curX - 1][curY + 1] == 0
+					&& (masks[curX - 1][curY + 1] & 0x1280138) == 0 && (masks[curX - 1][curY] & 0x1280108) == 0
+					&& (masks[curX][curY + 1] & 0x1280120) == 0) {
+				anIntArray1123[k3] = curX - 1;
+				anIntArray1124[k3] = curY + 1;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX - 1][curY + 1] = 6;
+				cost[curX - 1][curY + 1] = nextCost;
+			}
+			if (curX < byte0 - 1 && curY < byte1 - 1 && anIntArrayArray885[curX + 1][curY + 1] == 0
+					&& (masks[curX + 1][curY + 1] & 0x12801e0) == 0 && (masks[curX + 1][curY] & 0x1280180) == 0
+					&& (masks[curX][curY + 1] & 0x1280120) == 0) {
+				anIntArray1123[k3] = curX + 1;
+				anIntArray1124[k3] = curY + 1;
+				k3 = (k3 + 1) % i4;
+				anIntArrayArray885[curX + 1][curY + 1] = 12;
+				cost[curX + 1][curY + 1] = nextCost;
 			}
 		}
-	}
+		anInt1126 = 0;
+		if (!flag2)
+			if (flag) {
+				int l4 = 1000;
+				int j5 = 100;
+				byte byte2 = 10;
+				for (int i6 = dstX - byte2; i6 <= dstX + byte2; i6++) {
+					for (int k6 = dstY - byte2; k6 <= dstY + byte2; k6++)
+						if (i6 >= 0 && k6 >= 0 && i6 < 104 && k6 < 104 && cost[i6][k6] < 100) {
+							int i7 = 0;
+							if (i6 < dstX)
+								i7 = dstX - i6;
+							else if (i6 > (dstX + k) - 1)
+								i7 = i6 - ((dstX + k) - 1);
+							int j7 = 0;
+							if (k6 < dstY)
+								j7 = dstY - k6;
+							else if (k6 > (dstY + l) - 1)
+								j7 = k6 - ((dstY + l) - 1);
+							int k7 = i7 * i7 + j7 * j7;
+							if (k7 < l4 || k7 == l4 && cost[i6][k6] < j5) {
+								l4 = k7;
+								j5 = cost[i6][k6];
+								curX = i6;
+								curY = k6;
+							}
+						}
 
-	public final boolean method17(int menuAction) {
-		if (menuAction < 0) {
-			return false;
+				}
+
+				if (l4 == 1000)
+					return false;
+				if (curX == srcX && curY == srcY)
+					return false;
+				anInt1126 = 1;
+			} else {
+				return false;
+			}
+		l3 = 0;
+		if (flag1)
+			startup();
+		anIntArray1123[l3] = curX;
+		anIntArray1124[l3++] = curY;
+		int k5;
+		for (int i5 = k5 = anIntArrayArray885[curX][curY]; curX != srcX || curY != srcY; i5 = anIntArrayArray885[curX][curY]) {
+			if (i5 != k5) {
+				k5 = i5;
+				anIntArray1123[l3] = curX;
+				anIntArray1124[l3++] = curY;
+			}
+			if ((i5 & 2) != 0)
+				curX++;
+			else if ((i5 & 8) != 0)
+				curX--;
+			if ((i5 & 1) != 0)
+				curY++;
+			else if ((i5 & 4) != 0)
+				curY--;
 		}
-		int menuActionId = menuActionIds[menuAction];
-		if (menuActionId >= 2000) {
-			menuActionId -= 2000;
-		}
-		if (menuActionId == 337) {
+
+		if (l3 > 0) {
+			int j4 = l3;
+			if (j4 > 25)
+				j4 = 25;
+			l3--;
+			int l5 = anIntArray1123[l3];
+			int j6 = anIntArray1124[l3];
+			if (packetType == 0) {
+				outBuffer.putOpcode(28);
+				outBuffer.putByte(j4 + j4 + 3);
+			}
+			if (packetType == 1) {
+				outBuffer.putOpcode(213);
+				outBuffer.putByte(j4 + j4 + 3 + 14);
+			}
+			if (packetType == 2) {
+				outBuffer.putOpcode(247);
+				outBuffer.putByte(j4 + j4 + 3);
+			}
+			outBuffer.putLEShortAdded(l5 + nextTopLeftTileX);
+			outBuffer.putByte(super.keyStatus[5] != 1 ? 0 : 1);
+			outBuffer.putLEShortAdded(j6 + nextTopRightTileY);
+			destinationX = anIntArray1123[0];
+			anInt1121 = anIntArray1124[0];
+			for (int l6 = 1; l6 < j4; l6++) {
+				l3--;
+				outBuffer.putByte(anIntArray1123[l3] - l5);
+				outBuffer.putByteSubtracted(anIntArray1124[l3] - j6);
+			}
+
 			return true;
 		}
-		return false;
+		return packetType != 1;
 	}
 
-	public final void drawChatbox() {
-		try {
-			chatboxProducingGraphicsBuffer.createRasterizer();
-			Rasterizer3D.lineOffsets = chatboxLineOffsets;
-			chatboxBackgroundImage.drawImage(0, 0);
-			if (messagePromptRaised) {
-				fontBold.drawStringLeft(chatboxInputMessage, 239, 40, 0);
-				fontBold.drawStringLeft(chatMessage + "*", 239, 60, 128);
-			} else if (inputType == 1) {
-				fontBold.drawStringLeft("Enter amount:", 239, 40, 0);
-				fontBold.drawStringLeft(inputInputMessage + "*", 239, 60, 128);
-			} else if (inputType == 2) {
-				fontBold.drawStringLeft("Enter name:", 239, 40, 0);
-				fontBold.drawStringLeft(inputInputMessage + "*", 239, 60, 128);
-			} else if (aString869 != null) {
-				fontBold.drawStringLeft(aString869, 239, 40, 0);
-				fontBold.drawStringLeft("Click to continue", 239, 60, 128);
-			} else if (chatboxWidgetId != -1) {
-				method105(0, 0, Widget.cache[chatboxWidgetId], 0);
-			} else if (anInt1067 != -1) {
-				method105(0, 0, Widget.cache[anInt1067], 0);
-			} else {
-				TypeFace typeFace = fontNormal;
-				int i = 0;
-				Rasterizer.setCoordinates(0, 0, 463, 77);
-				for (int chatboxMessage = 0; chatboxMessage < 100; chatboxMessage++) {
-					if (chatboxMessages[chatboxMessage] != null) {
-						int chatboxMessageType = chatboxMessageTypes[chatboxMessage];
-						int i_14_ = 70 - i * 14 + anInt1114;
-						String chatboxMessageName = chatboxMessageNames[chatboxMessage];
-						int playerRights = 0;
-						if (chatboxMessageName != null && chatboxMessageName.startsWith("@cr1@")) {
-							chatboxMessageName = chatboxMessageName.substring(5);
-							playerRights = 1;
-						}
-						if (chatboxMessageName != null && chatboxMessageName.startsWith("@cr2@")) {
-							chatboxMessageName = chatboxMessageName.substring(5);
-							playerRights = 2;
-						}
-						if (chatboxMessageType == 0) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								typeFace.drawString(chatboxMessages[chatboxMessage], 4, i_14_, 0);
-							}
-							i++;
-						}
-						if ((chatboxMessageType == 1 || chatboxMessageType == 2)
-								&& (chatboxMessageType == 1 || publicChatSetting == 0 || publicChatSetting == 1
-										&& method109(false, chatboxMessageName))) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								int i_16_ = 4;
-								if (playerRights == 1) {
-									moderatorIcon[0].drawImage(i_16_, i_14_ - 12);
-									i_16_ += 14;
-								}
-								if (playerRights == 2) {
-									moderatorIcon[1].drawImage(i_16_, i_14_ - 12);
-									i_16_ += 14;
-								}
-								typeFace.drawString(chatboxMessageName + ":", i_16_, i_14_, 0);
-								i_16_ += typeFace.getStringEffectWidth(chatboxMessageName) + 8;
-								typeFace.drawString(chatboxMessages[chatboxMessage], i_16_, i_14_, 255);
-							}
-							i++;
-						}
-						if ((chatboxMessageType == 3 || chatboxMessageType == 7)
-								&& anInt1220 == 0
-								&& (chatboxMessageType == 7 || privateChatSetting == 0 || privateChatSetting == 1
-										&& method109(false, chatboxMessageName))) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								int i_17_ = 4;
-								typeFace.drawString("From", i_17_, i_14_, 0);
-								i_17_ += typeFace.getStringEffectWidth("From ");
-								if (playerRights == 1) {
-									moderatorIcon[0].drawImage(i_17_, i_14_ - 12);
-									i_17_ += 14;
-								}
-								if (playerRights == 2) {
-									moderatorIcon[1].drawImage(i_17_, i_14_ - 12);
-									i_17_ += 14;
-								}
-								typeFace.drawString(chatboxMessageName + ":", i_17_, i_14_, 0);
-								i_17_ += typeFace.getStringEffectWidth(chatboxMessageName) + 8;
-								typeFace.drawString(chatboxMessages[chatboxMessage], i_17_, i_14_, 8388608);
-							}
-							i++;
-						}
-						if (chatboxMessageType == 4
-								&& (tradeSetting == 0 || tradeSetting == 1 && method109(false, chatboxMessageName))) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								typeFace.drawString(chatboxMessageName + " " + chatboxMessages[chatboxMessage], 4,
-										i_14_, 8388736);
-							}
-							i++;
-						}
-						if (chatboxMessageType == 5 && anInt1220 == 0 && privateChatSetting < 2) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								typeFace.drawString(chatboxMessages[chatboxMessage], 4, i_14_, 8388608);
-							}
-							i++;
-						}
-						if (chatboxMessageType == 6 && anInt1220 == 0 && privateChatSetting < 2) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								typeFace.drawString("To " + chatboxMessageName + ":", 4, i_14_, 0);
-								typeFace.drawString(chatboxMessages[chatboxMessage],
-										12 + typeFace.getStringEffectWidth("To " + chatboxMessageName), i_14_, 8388608);
-							}
-							i++;
-						}
-						if (chatboxMessageType == 8
-								&& (tradeSetting == 0 || tradeSetting == 1 && method109(false, chatboxMessageName))) {
-							if (i_14_ > 0 && i_14_ < 110) {
-								typeFace.drawString(chatboxMessageName + " " + chatboxMessages[chatboxMessage], 4,
-										i_14_, 8270336);
-							}
-							i++;
-						}
+	public void method36(int i) {
+		if (i != 16220)
+			anInt1328 = 458;
+		if (anInt1071 == 2) {
+			for (Class50_Sub2 class50_sub2 = (Class50_Sub2) aClass6_1261.first(); class50_sub2 != null; class50_sub2 = (Class50_Sub2) aClass6_1261
+					.next()) {
+				if (class50_sub2.anInt1390 > 0)
+					class50_sub2.anInt1390--;
+				if (class50_sub2.anInt1390 == 0) {
+					if (class50_sub2.anInt1387 < 0
+							|| MapArea.method170(class50_sub2.anInt1389, aByte1143, class50_sub2.anInt1387)) {
+						method45(class50_sub2.anInt1388, class50_sub2.anInt1393, class50_sub2.anInt1387,
+								class50_sub2.anInt1394, class50_sub2.anInt1391, class50_sub2.anInt1389, (byte) 1,
+								class50_sub2.anInt1392);
+						class50_sub2.remove();
 					}
-				}
-				Rasterizer.resetCoordinates();
-				anInt1236 = i * 14 + 7;
-				if (anInt1236 < 78) {
-					anInt1236 = 78;
-				}
-				processScroll(77, anInt1236 - anInt1114 - 77, 0, 463, anInt1236);
-				String string;
-				if (Game.localPlayer != null && Game.localPlayer.playerName != null) {
-					string = Game.localPlayer.playerName;
 				} else {
-					string = TextUtils.formatName(username);
+					if (class50_sub2.anInt1395 > 0)
+						class50_sub2.anInt1395--;
+					if (class50_sub2.anInt1395 == 0
+							&& class50_sub2.anInt1393 >= 1
+							&& class50_sub2.anInt1394 >= 1
+							&& class50_sub2.anInt1393 <= 102
+							&& class50_sub2.anInt1394 <= 102
+							&& (class50_sub2.anInt1384 < 0 || MapArea.method170(class50_sub2.anInt1386, aByte1143,
+									class50_sub2.anInt1384))) {
+						method45(class50_sub2.anInt1385, class50_sub2.anInt1393, class50_sub2.anInt1384,
+								class50_sub2.anInt1394, class50_sub2.anInt1391, class50_sub2.anInt1386, (byte) 1,
+								class50_sub2.anInt1392);
+						class50_sub2.anInt1395 = -1;
+						if (class50_sub2.anInt1384 == class50_sub2.anInt1387 && class50_sub2.anInt1387 == -1)
+							class50_sub2.remove();
+						else if (class50_sub2.anInt1384 == class50_sub2.anInt1387
+								&& class50_sub2.anInt1385 == class50_sub2.anInt1388
+								&& class50_sub2.anInt1386 == class50_sub2.anInt1389)
+							class50_sub2.remove();
+					}
 				}
-				typeFace.drawString(string + ":", 4, 90, 0);
-				typeFace.drawString(chatboxInput + "*", 6 + typeFace.getStringEffectWidth(string + ": "), 90, 255);
-				Rasterizer.drawHorizontalLine(0, 77, 479, 0);
 			}
-			if (actionMenuOpen && actionMenuArea == 2) {
-				drawActionMenu();
-			}
-			chatboxProducingGraphicsBuffer.drawGraphics(17, 357, gameGraphics);
-			currentSceneBuffer.createRasterizer();
-			Rasterizer3D.lineOffsets = anIntArray1207;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("19689, " + runtimeexception.toString());
-			throw new RuntimeException();
+
 		}
 	}
 
-	@Override
-	public final void init() {
-		Game.nodeId = Integer.parseInt(getParameter("nodeid"));
-		Game.portOffset = Integer.parseInt(getParameter("portoff"));
-		String memoryType = getParameter("lowmem");
-		if (memoryType != null && memoryType.equals("1")) {
-			Game.setLowMemory();
+	public String method37(int i) {
+		if (i != -42588)
+			opcode = buffer.getUnsignedByte();
+		if (SignLink.mainapp != null)
+			return SignLink.mainapp.getDocumentBase().getHost().toLowerCase();
+		if (super.gameFrame != null)
+			return "runescape.com";
+		else
+			return super.getDocumentBase().getHost().toLowerCase();
+	}
+
+	public void method38(int i, int j, int k, Player class50_sub1_sub4_sub3_sub2, int l) {
+		if (class50_sub1_sub4_sub3_sub2 == thisPlayer)
+			return;
+		if (anInt1183 >= 400)
+			return;
+		if (l != 0)
+			aBoolean963 = !aBoolean963;
+		String s;
+		if (class50_sub1_sub4_sub3_sub2.anInt1759 == 0)
+			s = class50_sub1_sub4_sub3_sub2.username
+					+ method92(class50_sub1_sub4_sub3_sub2.anInt1753, thisPlayer.anInt1753, 736) + " (level-"
+					+ class50_sub1_sub4_sub3_sub2.anInt1753 + ")";
+		else
+			s = class50_sub1_sub4_sub3_sub2.username + " (skill-" + class50_sub1_sub4_sub3_sub2.anInt1759 + ")";
+		if (anInt1146 == 1) {
+			aStringArray1184[anInt1183] = "Use " + aString1150 + " with @whi@" + s;
+			anIntArray981[anInt1183] = 596;
+			anIntArray982[anInt1183] = i;
+			anIntArray979[anInt1183] = k;
+			anIntArray980[anInt1183] = j;
+			anInt1183++;
+		} else if (anInt1171 == 1) {
+			if ((anInt1173 & 8) == 8) {
+				aStringArray1184[anInt1183] = aString1174 + " @whi@" + s;
+				anIntArray981[anInt1183] = 918;
+				anIntArray982[anInt1183] = i;
+				anIntArray979[anInt1183] = k;
+				anIntArray980[anInt1183] = j;
+				anInt1183++;
+			}
 		} else {
-			Game.setHighMemory();
-		}
-		String worldType = getParameter("free");
-		if (worldType != null && worldType.equals("1")) {
-			Game.membersWorld = false;
-		} else {
-			Game.membersWorld = true;
-		}
-		this.initializeApplet(765, 503);
-	}
+			for (int i1 = 4; i1 >= 0; i1--)
+				if (aStringArray1069[i1] != null) {
+					aStringArray1184[anInt1183] = aStringArray1069[i1] + " @whi@" + s;
+					char c = '\0';
+					if (aStringArray1069[i1].equalsIgnoreCase("attack")) {
+						if (class50_sub1_sub4_sub3_sub2.anInt1753 > thisPlayer.anInt1753)
+							c = '\u07D0';
+						if (thisPlayer.team != 0 && class50_sub1_sub4_sub3_sub2.team != 0)
+							if (thisPlayer.team == class50_sub1_sub4_sub3_sub2.team)
+								c = '\u07D0';
+							else
+								c = '\0';
+					} else if (aBooleanArray1070[i1])
+						c = '\u07D0';
+					if (i1 == 0)
+						anIntArray981[anInt1183] = 200 + c;
+					if (i1 == 1)
+						anIntArray981[anInt1183] = 493 + c;
+					if (i1 == 2)
+						anIntArray981[anInt1183] = 408 + c;
+					if (i1 == 3)
+						anIntArray981[anInt1183] = 677 + c;
+					if (i1 == 4)
+						anIntArray981[anInt1183] = 876 + c;
+					anIntArray982[anInt1183] = i;
+					anIntArray979[anInt1183] = k;
+					anIntArray980[anInt1183] = j;
+					anInt1183++;
+				}
 
-	@Override
-	public final void startRunnable(Runnable runnable, int priority) {
-		if (priority > 10) {
-			priority = 10;
 		}
-		if (SignLink.applet != null) {
-			SignLink.startRunnable(runnable, priority);
-		} else {
-			super.startRunnable(runnable, priority);
-		}
-	}
-
-	public final Socket openSocket(int port) throws IOException {
-		if (SignLink.applet != null) {
-			return SignLink.openSocket(port);
-		}
-		return new Socket(InetAddress.getByName(getCodeBase().getHost()), port);
-	}
-
-	public final void method20() {
-		if (anInt1111 == 0) {
-			int type = clickType;
-			if (anInt1161 == 1 && clickX >= 516 && clickY >= 160 && clickX <= 765 && clickY <= 205) {
-				type = 0;
+		for (int j1 = 0; j1 < anInt1183; j1++)
+			if (anIntArray981[j1] == 14) {
+				aStringArray1184[j1] = "Walk here @whi@" + s;
+				return;
 			}
-			if (actionMenuOpen) {
-				if (type != 1) {
-					int eventX = mouseEventX;
-					int eventY = mouseEventY;
-					if (actionMenuArea == 0) {
-						eventX -= 4;
-						eventY -= 4;
-					}
-					if (actionMenuArea == 1) {
-						eventX -= 553;
-						eventY -= 205;
-					}
-					if (actionMenuArea == 2) {
-						eventX -= 17;
-						eventY -= 357;
-					}
-					if (eventX < anInt974 - 10 || eventX > anInt974 + anInt976 + 10 || eventY < anInt975 - 10
-							|| eventY > anInt975 + anInt977 + 10) {
-						actionMenuOpen = false;
-						if (actionMenuArea == 1) {
-							redrawTab = true;
-						}
-						if (actionMenuArea == 2) {
-							redrawChatbox = true;
-						}
-					}
-				}
-				if (type == 1) {
-					int menuX = anInt974;
-					int height = anInt975;
-					int width = anInt976;
-					int x = clickX;
-					int y = clickY;
-					if (actionMenuArea == 0) {
-						x -= 4;
-						y -= 4;
-					}
-					if (actionMenuArea == 1) {
-						x -= 553;
-						y -= 205;
-					}
-					if (actionMenuArea == 2) {
-						x -= 17;
-						y -= 357;
-					}
-					int hoveredRow = -1;
-					for (int row = 0; row < menuActionRow; row++) {
-						int rowY = height + 31 + (menuActionRow - 1 - row) * 15;
-						if (x > menuX && x < menuX + width && y > rowY - 13 && y < rowY + 3) {
-							hoveredRow = row;
-						}
-					}
-					if (hoveredRow != -1) {
-						processMenuAction(hoveredRow);
-					}
-					actionMenuOpen = false;
-					if (actionMenuArea == 1) {
-						redrawTab = true;
-					}
-					if (actionMenuArea == 2) {
-						redrawChatbox = true;
-					}
-				}
-			} else {
-				if (type == 1 && menuActionRow > 0) {
-					int i = menuActionIds[menuActionRow - 1];
-					if (i == 632 || i == 78 || i == 867 || i == 431 || i == 53 || i == 74 || i == 454 || i == 539
-							|| i == 493 || i == 847 || i == 447 || i == 1125) {
-						int i_31_ = menuActionIds2[menuActionRow - 1];
-						int i_32_ = menuActionIds3[menuActionRow - 1];
-						Widget widget = Widget.cache[i_32_];
-						if (widget.itemSwapable || widget.itemDeletesDraged) {
-							aBoolean1267 = false;
-							anInt1014 = 0;
-							anInt1109 = i_32_;
-							anInt1110 = i_31_;
-							anInt1111 = 2;
-							anInt1112 = clickX;
-							anInt1113 = clickY;
-							if (Widget.cache[i_32_].parentId == openWidgetId) {
-								anInt1111 = 1;
-							}
-							if (Widget.cache[i_32_].parentId == chatboxWidgetId) {
-								anInt1111 = 3;
-							}
-							return;
-						}
-					}
-				}
-				if (type == 1 && (anInt1278 == 1 || method17(menuActionRow - 1)) && menuActionRow > 2) {
-					type = 2;
-				}
-				if (type == 1 && menuActionRow > 0) {
-					processMenuAction(menuActionRow - 1);
-				}
-				if (type != 2 || menuActionRow <= 0) {
-					return;
-				}
-				processMenuHovering();
+
+	}
+
+	public void method39(boolean flag) {
+		if (!flag)
+			groundItems = null;
+		if (super.clickType == 1) {
+			if (super.clickX >= 6 && super.clickX <= 106 && super.clickY >= 467 && super.clickY <= 499) {
+				anInt1006 = (anInt1006 + 1) % 4;
+				aBoolean1212 = true;
+				redrawChatbox = true;
+				outBuffer.putOpcode(176);
+				outBuffer.putByte(anInt1006);
+				outBuffer.putByte(anInt887);
+				outBuffer.putByte(anInt1227);
 			}
-		}
-	}
-
-	public final void saveMidi(boolean midiFade, byte[] midiBuffer) {
-		SignLink.midiFade = midiFade ? 1 : 0;
-		SignLink.midiSave(midiBuffer, midiBuffer.length);
-	}
-
-	public final void method22() {
-		try {
-			try {
-				lastSceneId = -1;
-				aLinkedList1081.clear();
-				projectileList.clear();
-				Rasterizer3D.method363(Game.anInt871);
-				resetModelCaches();
-				currentScene.method496(619);
-				System.gc();
-				for (int i = 0; i < 4; i++) {
-					currentCollisionMap[i].reset();
-				}
-				for (int i = 0; i < 4; i++) {
-					for (int i_33_ = 0; i_33_ < 104; i_33_++) {
-						for (int i_34_ = 0; i_34_ < 104; i_34_++) {
-							currentSceneTileFlags[i][i_33_][i_34_] = (byte) 0;
-						}
-					}
-				}
-				Region region = new Region(currentSceneTileFlags, 104, 104, anIntArrayArrayArray1239);
-				int i = aByteArrayArray1208.length;
-				outBuffer.putOpcode(0);
-				if (!aBoolean1184) {
-					for (int i_35_ = 0; i_35_ < i; i_35_++) {
-						int i_36_ = (anIntArray1259[i_35_] >> 8) * 64 - regionAbsoluteBaseX;
-						int i_37_ = (anIntArray1259[i_35_] & 0xff) * 64 - regionAbsoluteBaseY;
-						byte[] bs = aByteArrayArray1208[i_35_];
-						if (bs != null) {
-							region.method462(bs, i_37_, i_36_, (anInt1094 - 6) * 8, (anInt1095 - 6) * 8, (byte) 4,
-									currentCollisionMap);
-						}
-					}
-					for (int i_38_ = 0; i_38_ < i; i_38_++) {
-						int i_39_ = (anIntArray1259[i_38_] >> 8) * 64 - regionAbsoluteBaseX;
-						int i_40_ = (anIntArray1259[i_38_] & 0xff) * 64 - regionAbsoluteBaseY;
-						byte[] bs = aByteArrayArray1208[i_38_];
-						if (bs == null && anInt1095 < 800) {
-							region.initiateVertexHeights(i_39_, 64, i_40_, 64);
-						}
-					}
-					Game.anInt1122++;
-					if (Game.anInt1122 > 160) {
-						Game.anInt1122 = 0;
-						outBuffer.putOpcode(238);
-						outBuffer.put(96);
-					}
-					outBuffer.putOpcode(0);
-					for (int i_41_ = 0; i_41_ < i; i_41_++) {
-						byte[] bs = aByteArrayArray1272[i_41_];
-						if (bs != null) {
-							int i_42_ = (anIntArray1259[i_41_] >> 8) * 64 - regionAbsoluteBaseX;
-							int i_43_ = (anIntArray1259[i_41_] & 0xff) * 64 - regionAbsoluteBaseY;
-							region.method472(i_42_, currentCollisionMap, i_43_, 7, currentScene, bs);
-						}
-					}
-				}
-				if (aBoolean1184) {
-					for (int plane = 0; plane < 4; plane++) {
-						for (int x = 0; x < 13; x++) {
-							for (int y = 0; y < 13; y++) {
-								int tile = constructMapTiles[plane][x][y];
-								if (tile != -1) {
-									int i_48_ = tile >> 24 & 0x3;
-									int i_49_ = tile >> 1 & 0x3;
-									int i_50_ = tile >> 14 & 0x3ff;
-									int i_51_ = tile >> 3 & 0x7ff;
-									int i_52_ = (i_50_ / 8 << 8) + i_51_ / 8;
-									for (int i_53_ = 0; i_53_ < anIntArray1259.length; i_53_++) {
-										if (anIntArray1259[i_53_] == i_52_ && aByteArrayArray1208[i_53_] != null) {
-											region.method461(i_48_, i_49_, currentCollisionMap, 9, x * 8,
-													(i_50_ & 0x7) * 8, aByteArrayArray1208[i_53_], (i_51_ & 0x7) * 8,
-													plane, y * 8);
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-					for (int i_54_ = 0; i_54_ < 13; i_54_++) {
-						for (int i_55_ = 0; i_55_ < 13; i_55_++) {
-							int i_56_ = constructMapTiles[0][i_54_][i_55_];
-							if (i_56_ == -1) {
-								region.initiateVertexHeights(i_54_ * 8, 8, i_55_ * 8, 8);
-							}
-						}
-					}
-					outBuffer.putOpcode(0);
-					for (int i_57_ = 0; i_57_ < 4; i_57_++) {
-						for (int i_58_ = 0; i_58_ < 13; i_58_++) {
-							for (int i_59_ = 0; i_59_ < 13; i_59_++) {
-								int i_60_ = constructMapTiles[i_57_][i_58_][i_59_];
-								if (i_60_ != -1) {
-									int i_61_ = i_60_ >> 24 & 0x3;
-									int i_62_ = i_60_ >> 1 & 0x3;
-									int i_63_ = i_60_ >> 14 & 0x3ff;
-									int i_64_ = i_60_ >> 3 & 0x7ff;
-									int i_65_ = (i_63_ / 8 << 8) + i_64_ / 8;
-									for (int i_66_ = 0; i_66_ < anIntArray1259.length; i_66_++) {
-										if (anIntArray1259[i_66_] == i_65_ && aByteArrayArray1272[i_66_] != null) {
-											region.method465(currentCollisionMap, currentScene, i_61_, i_58_ * 8,
-													(i_64_ & 0x7) * 8, true, i_57_, aByteArrayArray1272[i_66_],
-													(i_63_ & 0x7) * 8, i_62_, i_59_ * 8);
-											break;
-										}
-									}
-								}
-							}
-						}
-					}
-				}
-				outBuffer.putOpcode(0);
-				region.createRegionScene(currentCollisionMap, currentScene);
-				currentSceneBuffer.createRasterizer();
-				outBuffer.putOpcode(0);
-				int i_67_ = Region.lowestPlane;
-				if (i_67_ > currentSceneId) {
-					i_67_ = currentSceneId;
-				}
-				if (i_67_ < currentSceneId - 1) {
-					i_67_ = currentSceneId - 1;
-				}
-				if (Game.lowMemory) {
-					currentScene.method497(Region.lowestPlane, -34686);
+			if (super.clickX >= 135 && super.clickX <= 235 && super.clickY >= 467 && super.clickY <= 499) {
+				anInt887 = (anInt887 + 1) % 3;
+				aBoolean1212 = true;
+				redrawChatbox = true;
+				outBuffer.putOpcode(176);
+				outBuffer.putByte(anInt1006);
+				outBuffer.putByte(anInt887);
+				outBuffer.putByte(anInt1227);
+			}
+			if (super.clickX >= 273 && super.clickX <= 373 && super.clickY >= 467 && super.clickY <= 499) {
+				anInt1227 = (anInt1227 + 1) % 3;
+				aBoolean1212 = true;
+				redrawChatbox = true;
+				outBuffer.putOpcode(176);
+				outBuffer.putByte(anInt1006);
+				outBuffer.putByte(anInt887);
+				outBuffer.putByte(anInt1227);
+			}
+			if (super.clickX >= 412 && super.clickX <= 512 && super.clickY >= 467 && super.clickY <= 499)
+				if (openWidgetId == -1) {
+					closeWidgets();
+					reportedName = "";
+					reportMutePlayer = false;
+					anInt1231 = openWidgetId = Widget.anInt246;
 				} else {
-					currentScene.method497(0, -34686);
+					pushMessage("", (byte) -123, "Please close the interface you have open before using 'report abuse'", 0);
 				}
-				for (int i_68_ = 0; i_68_ < 104; i_68_++) {
-					for (int i_69_ = 0; i_69_ < 104; i_69_++) {
-						sortGroundItems(i_68_, i_69_);
-					}
-				}
-				Game.anInt1076++;
-				if (Game.anInt1076 > 98) {
-					Game.anInt1076 = 0;
-					outBuffer.putOpcode(150);
-				}
-				method63(-919);
-			} catch (Exception exception) {
-				/* empty */
+			anInt1160++;
+			if (anInt1160 > 161) {
+				anInt1160 = 0;
+				outBuffer.putOpcode(22);
+				outBuffer.putShort(38304);
 			}
-			GameObjectDefinition.modelCache.removeAll();
-			if (gameFrame != null) {
-				outBuffer.putOpcode(210);
-				outBuffer.putInt(1057001181);
-			}
-			if (Game.lowMemory && SignLink.cacheDat != null) {
-				int i = onDemandRequester.fileCount(0);
-				for (int i_70_ = 0; i_70_ < i; i_70_++) {
-					int i_71_ = onDemandRequester.modelId(i_70_);
-					if ((i_71_ & 0x79) == 0) {
-						Model.resetModel(i_70_);
-					}
-				}
-			}
-			System.gc();
-			Rasterizer3D.method364(20, true);
-			onDemandRequester.clearPassiveRequests();
-			int i = (anInt1094 - 6) / 8 - 1;
-			int i_72_ = (anInt1094 + 6) / 8 + 1;
-			int i_73_ = (anInt1095 - 6) / 8 - 1;
-			int i_74_ = (anInt1095 + 6) / 8 + 1;
-			if (aBoolean1166) {
-				i = 49;
-				i_72_ = 50;
-				i_73_ = 49;
-				i_74_ = 50;
-			}
-			for (int i_75_ = i; i_75_ <= i_72_; i_75_++) {
-				for (int i_76_ = i_73_; i_76_ <= i_74_; i_76_++) {
-					if (i_75_ == i || i_75_ == i_72_ || i_76_ == i_73_ || i_76_ == i_74_) {
-						int i_77_ = onDemandRequester.regId(0, i_76_, i_75_);
-						if (i_77_ != -1) {
-							onDemandRequester.passiveRequest(i_77_, 3);
-						}
-						int i_78_ = onDemandRequester.regId(1, i_76_, i_75_);
-						if (i_78_ != -1) {
-							onDemandRequester.passiveRequest(i_78_, 3);
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("81650, " + runtimeexception.toString());
-			throw new RuntimeException();
 		}
 	}
 
-	public final void resetModelCaches() {
+	public void parsePlayerBlocks(Buffer vec, int packetSize) {
+		for (int k = 0; k < updatedPlayerCount; k++) {
+			int id = updatedPlayers[k];
+			Player plr = players[id];
+			int mask = vec.getUnsignedByte();
+			if ((mask & 0x20) != 0)
+				mask += vec.getUnsignedByte() << 8;
+			parsePlayerBlock(id, plr, mask, vec);
+		}
+	}
+
+	public void updateThisPlayerMovement(int i, boolean flag, Buffer buffer) {
+		buffer.initBitAccess();
+		int moved = buffer.getBits(1);
+		if (moved == 0)
+			return;
+		int moveType = buffer.getBits(2);
+		loggedIn &= flag;
+		if (moveType == 0) {
+			updatedPlayers[updatedPlayerCount++] = thisPlayerId;
+			return;
+		}
+		if (moveType == 1) {
+			int direction = buffer.getBits(3);
+			thisPlayer.move(direction, false);
+			int blockUpdateRequired = buffer.getBits(1);
+			if (blockUpdateRequired == 1)
+				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
+			return;
+		}
+		if (moveType == 2) {
+			int direction1 = buffer.getBits(3);
+			thisPlayer.move(direction1, true);
+			int direction2 = buffer.getBits(3);
+			thisPlayer.move(direction2, true);
+			int blockUpdateRequired = buffer.getBits(1);
+			if (blockUpdateRequired == 1)
+				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
+			return;
+		}
+		if (moveType == 3) {
+			int discardWalkingQueue = buffer.getBits(1);
+			plane = buffer.getBits(2);
+			int localY = buffer.getBits(7);
+			int localX = buffer.getBits(7);
+			int blockUpdateRequired = buffer.getBits(1);
+			if (blockUpdateRequired == 1)
+				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
+			thisPlayer.setPosition(localX, localY, discardWalkingQueue == 1);
+		}
+	}
+
+	public void method42(int i, int j, Widget class13, byte byte0, int k, int l, int i1, int j1, int k1) {
+		if (aBoolean1127)
+			anInt1303 = 32;
+		else
+			anInt1303 = 0;
+		aBoolean1127 = false;
+		if (byte0 != 102) {
+			for (int l1 = 1; l1 > 0; l1++);
+		}
+		if (i1 >= k1 && i1 < k1 + 16 && k >= j && k < j + 16) {
+			class13.anInt231 -= anInt1094 * 4;
+			if (l == 1)
+				aBoolean1181 = true;
+			if (l == 2 || l == 3)
+				redrawChatbox = true;
+			return;
+		}
+		if (i1 >= k1 && i1 < k1 + 16 && k >= (j + j1) - 16 && k < j + j1) {
+			class13.anInt231 += anInt1094 * 4;
+			if (l == 1)
+				aBoolean1181 = true;
+			if (l == 2 || l == 3)
+				redrawChatbox = true;
+			return;
+		}
+		if (i1 >= k1 - anInt1303 && i1 < k1 + 16 + anInt1303 && k >= j + 16 && k < (j + j1) - 16 && anInt1094 > 0) {
+			int i2 = ((j1 - 32) * j1) / i;
+			if (i2 < 8)
+				i2 = 8;
+			int j2 = k - j - 16 - i2 / 2;
+			int k2 = j1 - 32 - i2;
+			class13.anInt231 = ((i - j1) * j2) / k2;
+			if (l == 1)
+				aBoolean1181 = true;
+			if (l == 2 || l == 3)
+				redrawChatbox = true;
+			aBoolean1127 = true;
+		}
+	}
+
+	public void method43(byte byte0) {
+		if (anInt1146 == 0 && anInt1171 == 0) {
+			aStringArray1184[anInt1183] = "Walk here";
+			anIntArray981[anInt1183] = 14;
+			anIntArray979[anInt1183] = super.mouseX;
+			anIntArray980[anInt1183] = super.mouseY;
+			anInt1183++;
+		}
+		int i = -1;
+		if (byte0 != 7)
+			opcode = -1;
+		for (int j = 0; j < Model.anInt1708; j++) {
+			int k = Model.anIntArray1709[j];
+			int l = k & 0x7f;
+			int i1 = k >> 7 & 0x7f;
+			int j1 = k >> 29 & 3;
+			int k1 = k >> 14 & 0x7fff;
+			if (k == i)
+				continue;
+			i = k;
+			if (j1 == 2 && currentScene.method271(plane, l, i1, k) >= 0) {
+				GameObjectDefinition class47 = GameObjectDefinition.getDefinition(k1);
+				if (class47.childrenIds != null)
+					class47 = class47.method424(0);
+				if (class47 == null)
+					continue;
+				if (anInt1146 == 1) {
+					aStringArray1184[anInt1183] = "Use " + aString1150 + " with @cya@" + class47.name;
+					anIntArray981[anInt1183] = 467;
+					anIntArray982[anInt1183] = k;
+					anIntArray979[anInt1183] = l;
+					anIntArray980[anInt1183] = i1;
+					anInt1183++;
+				} else if (anInt1171 == 1) {
+					if ((anInt1173 & 4) == 4) {
+						aStringArray1184[anInt1183] = aString1174 + " @cya@" + class47.name;
+						anIntArray981[anInt1183] = 376;
+						anIntArray982[anInt1183] = k;
+						anIntArray979[anInt1183] = l;
+						anIntArray980[anInt1183] = i1;
+						anInt1183++;
+					}
+				} else {
+					if (class47.options != null) {
+						for (int l1 = 4; l1 >= 0; l1--)
+							if (class47.options[l1] != null) {
+								aStringArray1184[anInt1183] = class47.options[l1] + " @cya@"
+										+ class47.name;
+								if (l1 == 0)
+									anIntArray981[anInt1183] = 35;
+								if (l1 == 1)
+									anIntArray981[anInt1183] = 389;
+								if (l1 == 2)
+									anIntArray981[anInt1183] = 888;
+								if (l1 == 3)
+									anIntArray981[anInt1183] = 892;
+								if (l1 == 4)
+									anIntArray981[anInt1183] = 1280;
+								anIntArray982[anInt1183] = k;
+								anIntArray979[anInt1183] = l;
+								anIntArray980[anInt1183] = i1;
+								anInt1183++;
+							}
+
+					}
+					aStringArray1184[anInt1183] = "Examine @cya@" + class47.name;
+					anIntArray981[anInt1183] = 1412;
+					anIntArray982[anInt1183] = class47.id << 14;
+					anIntArray979[anInt1183] = l;
+					anIntArray980[anInt1183] = i1;
+					anInt1183++;
+				}
+			}
+			if (j1 == 1) {
+				Npc class50_sub1_sub4_sub3_sub1 = npcs[k1];
+				if (class50_sub1_sub4_sub3_sub1.npcDefinition.boundaryDimension == 1
+						&& (((Actor) (class50_sub1_sub4_sub3_sub1)).unitX & 0x7f) == 64
+						&& (((Actor) (class50_sub1_sub4_sub3_sub1)).unitY & 0x7f) == 64) {
+					for (int i2 = 0; i2 < anInt1133; i2++) {
+						Npc class50_sub1_sub4_sub3_sub1_1 = npcs[anIntArray1134[i2]];
+						if (class50_sub1_sub4_sub3_sub1_1 != null
+								&& class50_sub1_sub4_sub3_sub1_1 != class50_sub1_sub4_sub3_sub1
+								&& class50_sub1_sub4_sub3_sub1_1.npcDefinition.boundaryDimension == 1
+								&& ((Actor) (class50_sub1_sub4_sub3_sub1_1)).unitX == ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX
+								&& ((Actor) (class50_sub1_sub4_sub3_sub1_1)).unitY == ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY)
+							method82(class50_sub1_sub4_sub3_sub1_1.npcDefinition, i1, l, anIntArray1134[i2], (byte) -76);
+					}
+
+					for (int k2 = 0; k2 < localPlayerCount; k2++) {
+						Player class50_sub1_sub4_sub3_sub2_1 = players[localPlayers[k2]];
+						if (class50_sub1_sub4_sub3_sub2_1 != null
+								&& ((Actor) (class50_sub1_sub4_sub3_sub2_1)).unitX == ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX
+								&& ((Actor) (class50_sub1_sub4_sub3_sub2_1)).unitY == ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY)
+							method38(localPlayers[k2], i1, l, class50_sub1_sub4_sub3_sub2_1, 0);
+					}
+
+				}
+				method82(class50_sub1_sub4_sub3_sub1.npcDefinition, i1, l, k1, (byte) -76);
+			}
+			if (j1 == 0) {
+				Player class50_sub1_sub4_sub3_sub2 = players[k1];
+				if ((((Actor) (class50_sub1_sub4_sub3_sub2)).unitX & 0x7f) == 64
+						&& (((Actor) (class50_sub1_sub4_sub3_sub2)).unitY & 0x7f) == 64) {
+					for (int j2 = 0; j2 < anInt1133; j2++) {
+						Npc class50_sub1_sub4_sub3_sub1_2 = npcs[anIntArray1134[j2]];
+						if (class50_sub1_sub4_sub3_sub1_2 != null
+								&& class50_sub1_sub4_sub3_sub1_2.npcDefinition.boundaryDimension == 1
+								&& ((Actor) (class50_sub1_sub4_sub3_sub1_2)).unitX == ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX
+								&& ((Actor) (class50_sub1_sub4_sub3_sub1_2)).unitY == ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY)
+							method82(class50_sub1_sub4_sub3_sub1_2.npcDefinition, i1, l, anIntArray1134[j2], (byte) -76);
+					}
+
+					for (int l2 = 0; l2 < localPlayerCount; l2++) {
+						Player class50_sub1_sub4_sub3_sub2_2 = players[localPlayers[l2]];
+						if (class50_sub1_sub4_sub3_sub2_2 != null
+								&& class50_sub1_sub4_sub3_sub2_2 != class50_sub1_sub4_sub3_sub2
+								&& ((Actor) (class50_sub1_sub4_sub3_sub2_2)).unitX == ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX
+								&& ((Actor) (class50_sub1_sub4_sub3_sub2_2)).unitY == ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY)
+							method38(localPlayers[l2], i1, l, class50_sub1_sub4_sub3_sub2_2, 0);
+					}
+
+				}
+				method38(k1, i1, l, class50_sub1_sub4_sub3_sub2, 0);
+			}
+			if (j1 == 3) {
+				LinkedList class6 = groundItems[plane][l][i1];
+				if (class6 != null) {
+					for (GroundItem class50_sub1_sub4_sub1 = (GroundItem) class6.last(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (GroundItem) class6
+							.previous()) {
+						ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.id);
+						if (anInt1146 == 1) {
+							aStringArray1184[anInt1183] = "Use " + aString1150 + " with @lre@" + class16.name;
+							anIntArray981[anInt1183] = 100;
+							anIntArray982[anInt1183] = class50_sub1_sub4_sub1.id;
+							anIntArray979[anInt1183] = l;
+							anIntArray980[anInt1183] = i1;
+							anInt1183++;
+						} else if (anInt1171 == 1) {
+							if ((anInt1173 & 1) == 1) {
+								aStringArray1184[anInt1183] = aString1174 + " @lre@" + class16.name;
+								anIntArray981[anInt1183] = 199;
+								anIntArray982[anInt1183] = class50_sub1_sub4_sub1.id;
+								anIntArray979[anInt1183] = l;
+								anIntArray980[anInt1183] = i1;
+								anInt1183++;
+							}
+						} else {
+							for (int i3 = 4; i3 >= 0; i3--)
+								if (class16.groundActions != null && class16.groundActions[i3] != null) {
+									aStringArray1184[anInt1183] = class16.groundActions[i3] + " @lre@" + class16.name;
+									if (i3 == 0)
+										anIntArray981[anInt1183] = 68;
+									if (i3 == 1)
+										anIntArray981[anInt1183] = 26;
+									if (i3 == 2)
+										anIntArray981[anInt1183] = 684;
+									if (i3 == 3)
+										anIntArray981[anInt1183] = 930;
+									if (i3 == 4)
+										anIntArray981[anInt1183] = 270;
+									anIntArray982[anInt1183] = class50_sub1_sub4_sub1.id;
+									anIntArray979[anInt1183] = l;
+									anIntArray980[anInt1183] = i1;
+									anInt1183++;
+								} else if (i3 == 2) {
+									aStringArray1184[anInt1183] = "Take @lre@" + class16.name;
+									anIntArray981[anInt1183] = 684;
+									anIntArray982[anInt1183] = class50_sub1_sub4_sub1.id;
+									anIntArray979[anInt1183] = l;
+									anIntArray980[anInt1183] = i1;
+									anInt1183++;
+								}
+
+							aStringArray1184[anInt1183] = "Examine @lre@" + class16.name;
+							anIntArray981[anInt1183] = 1564;
+							anIntArray982[anInt1183] = class50_sub1_sub4_sub1.id;
+							anIntArray979[anInt1183] = l;
+							anIntArray980[anInt1183] = i1;
+							anInt1183++;
+						}
+					}
+
+				}
+			}
+		}
+
+	}
+
+	public void method44(boolean flag, int i) {
+		if (!flag) {
+			return;
+		} else {
+			Widget.method200(aBoolean1190, i);
+			return;
+		}
+	}
+
+	public void method45(int i, int j, int k, int l, int i1, int j1, byte byte0, int k1) {
+		if (byte0 != aByte1066)
+			anInt1175 = -380;
+		if (j >= 1 && l >= 1 && j <= 102 && l <= 102) {
+			if (lowMemory && i1 != plane)
+				return;
+			int l1 = 0;
+			if (k1 == 0)
+				l1 = currentScene.method267(i1, j, l);
+			if (k1 == 1)
+				l1 = currentScene.method268(j, (byte) 4, i1, l);
+			if (k1 == 2)
+				l1 = currentScene.method269(i1, j, l);
+			if (k1 == 3)
+				l1 = currentScene.getFloorDecorationHash(i1, j, l);
+			if (l1 != 0) {
+				int l2 = currentScene.method271(i1, j, l, l1);
+				int i2 = l1 >> 14 & 0x7fff;
+				int j2 = l2 & 0x1f;
+				int k2 = l2 >> 6;
+				if (k1 == 0) {
+					currentScene.method258(l, i1, j, true);
+					GameObjectDefinition class47 = GameObjectDefinition.getDefinition(i2);
+					if (class47.aBoolean810)
+						currentCollisionMap[i1].method416(k2, j, 0, l, j2, class47.aBoolean809);
+				}
+				if (k1 == 1)
+					currentScene.method259(false, j, l, i1);
+				if (k1 == 2) {
+					currentScene.method260(l, i1, -779, j);
+					GameObjectDefinition class47_1 = GameObjectDefinition.getDefinition(i2);
+					if (j + class47_1.anInt801 > 103 || l + class47_1.anInt801 > 103 || j + class47_1.anInt775 > 103
+							|| l + class47_1.anInt775 > 103)
+						return;
+					if (class47_1.aBoolean810)
+						currentCollisionMap[i1].method417(anInt1055, l, j, k2, class47_1.anInt775, class47_1.aBoolean809,
+								class47_1.anInt801);
+				}
+				if (k1 == 3) {
+					currentScene.method261(j, l, true, i1);
+					GameObjectDefinition class47_2 = GameObjectDefinition.getDefinition(i2);
+					if (class47_2.aBoolean810 && class47_2.aBoolean759)
+						currentCollisionMap[i1].method419(j, (byte) -122, l);
+				}
+			}
+			if (k >= 0) {
+				int i3 = i1;
+				if (i3 < 3 && (currentSceneTileFlags[1][j][l] & 2) == 2)
+					i3++;
+				MapArea.method165(k, i3, j1, l, currentCollisionMap[i1], i, j, 0, i1, currentScene,
+						anIntArrayArrayArray891);
+			}
+		}
+	}
+
+	public void method46(int i, byte byte0, Buffer buffer) {
+		buffer.initBitAccess();
+		int j = buffer.getBits(8);
+		if (byte0 != aByte1317)
+			anInt1281 = -460;
+		if (j < anInt1133) {
+			for (int k = j; k < anInt1133; k++)
+				removePlayers[removePlayerCount++] = anIntArray1134[k];
+
+		}
+		if (j > anInt1133) {
+			SignLink.reporterror(username + " Too many npcs");
+			throw new RuntimeException("eek");
+		}
+		anInt1133 = 0;
+		for (int l = 0; l < j; l++) {
+			int i1 = anIntArray1134[l];
+			Npc npc = npcs[i1];
+			int updateRequired = buffer.getBits(1);
+			if (updateRequired == 0) {
+				anIntArray1134[anInt1133++] = i1;
+				npc.pulseCycle = pulseCycle;
+			} else {
+				int moveType = buffer.getBits(2);
+				if (moveType == 0) {
+					anIntArray1134[anInt1133++] = i1;
+					npc.pulseCycle = pulseCycle;
+					updatedPlayers[updatedPlayerCount++] = i1;
+				} else if (moveType == 1) {
+					anIntArray1134[anInt1133++] = i1;
+					npc.pulseCycle = pulseCycle;
+					int direction = buffer.getBits(3);
+					npc.move(direction, false);
+					int blockUpdateRequired = buffer.getBits(1);
+					if (blockUpdateRequired == 1)
+						updatedPlayers[updatedPlayerCount++] = i1;
+				} else if (moveType == 2) {
+					anIntArray1134[anInt1133++] = i1;
+					npc.pulseCycle = pulseCycle;
+					int direction1 = buffer.getBits(3);
+					npc.move(direction1, true);
+					int direction2 = buffer.getBits(3);
+					npc.move(direction2, true);
+					int blockUpdateRequired = buffer.getBits(1);
+					if (blockUpdateRequired == 1)
+						updatedPlayers[updatedPlayerCount++] = i1;
+				} else if (moveType == 3)
+					removePlayers[removePlayerCount++] = i1;
+			}
+		}
+
+	}
+
+	public void pushMessage(String s, byte byte0, String s1, int i) {
+		if (i == 0 && anInt1191 != -1) {
+			aString1058 = s1;
+			super.clickType = 0;
+		}
+		if (anInt988 == -1)
+			redrawChatbox = true;
+		for (int j = 99; j > 0; j--) {
+			anIntArray1296[j] = anIntArray1296[j - 1];
+			aStringArray1297[j] = aStringArray1297[j - 1];
+			aStringArray1298[j] = aStringArray1298[j - 1];
+		}
+
+		if (byte0 != aByte901)
+			anInt1140 = incomingRandom.nextInt();
+		anIntArray1296[0] = i;
+		aStringArray1297[0] = s;
+		aStringArray1298[0] = s1;
+	}
+
+	public void method48(Buffer class50_sub1_sub2, boolean flag, int i) {
+		loggedIn &= flag;
+		removePlayerCount = 0;
+		updatedPlayerCount = 0;
+		method46(i, (byte) -58, class50_sub1_sub2);
+		method132(class50_sub1_sub2, i, false);
+		method62(class50_sub1_sub2, i, 838);
+		for (int j = 0; j < removePlayerCount; j++) {
+			int k = removePlayers[j];
+			if (((Actor) (npcs[k])).pulseCycle != pulseCycle) {
+				npcs[k].npcDefinition = null;
+				npcs[k] = null;
+			}
+		}
+
+		if (class50_sub1_sub2.offset != i) {
+			SignLink.reporterror(username + " size mismatch in getnpcpos - coord:" + class50_sub1_sub2.offset
+					+ " psize:" + i);
+			throw new RuntimeException("eek");
+		}
+		for (int l = 0; l < anInt1133; l++)
+			if (npcs[anIntArray1134[l]] == null) {
+				SignLink.reporterror(username + " null entry in npc list - coord:" + l + " size:" + anInt1133);
+				throw new RuntimeException("eek");
+			}
+
+	}
+
+	public void resetModelCaches() {
 		GameObjectDefinition.modelCache.removeAll();
 		GameObjectDefinition.animatedModelCache.removeAll();
 		ActorDefinition.modelCache.removeAll();
 		ItemDefinition.modelCache.removeAll();
 		ItemDefinition.rgbImageCache.removeAll();
 		Player.modelCache.removeAll();
-		SpotAnimation.modelCache.removeAll();
+		SpotAnimation.models.removeAll();
 	}
 
-	public final void renderViewport(int plane) {
-		int[] pixels = minimapImage.pixels;
-		int pixelAmount = pixels.length;
-		for (int pixel = 0; pixel < pixelAmount; pixel++) {
-			pixels[pixel] = 0;
-		}
-		for (int viewportY = 1; viewportY < 103; viewportY++) {
-			int drawPoint = 24628 + (103 - viewportY) * 512 * 4;
-			for (int viewportX = 1; viewportX < 103; viewportX++) {
-				if ((currentSceneTileFlags[plane][viewportX][viewportY] & 0x18) == 0) {
-					currentScene.renderMinimapDot(pixels, drawPoint, 512, plane, viewportX, viewportY);
-				}
-				if (plane < 3 && (currentSceneTileFlags[plane + 1][viewportX][viewportY] & 0x8) != 0) {
-					currentScene.renderMinimapDot(pixels, drawPoint, 512, plane + 1, viewportX, viewportY);
-				}
-				drawPoint += 4;
-			}
-		}
-		int primaryColour = (238 + (int) (Math.random() * 20.0) - 10 << 16)
-				+ (238 + (int) (Math.random() * 20.0) - 10 << 8) + (238 + (int) (Math.random() * 20.0) - 10);
-		int secondaryColour = 238 + (int) (Math.random() * 20.0) - 10 << 16;
-		minimapImage.createRasterizer();
-		for (int viewportY = 1; viewportY < 103; viewportY++) {
-			for (int viewportX = 1; viewportX < 103; viewportX++) {
-				if ((currentSceneTileFlags[plane][viewportX][viewportY] & 0x18) == 0) {
-					renderCurrentScene(viewportY, -960, primaryColour, viewportX, secondaryColour, plane);
-				}
-				if (plane < 3 && (currentSceneTileFlags[plane + 1][viewportX][viewportY] & 0x8) != 0) {
-					renderCurrentScene(viewportY, -960, primaryColour, viewportX, secondaryColour, plane + 1);
-				}
-			}
-		}
-		currentSceneBuffer.createRasterizer();
 
-		minimapHintCount = 0;
-		for (int viewportX = 0; viewportX < 104; viewportX++) {
-			for (int viewportY = 0; viewportY < 104; viewportY++) {
-				int floorHash = currentScene.getFloorDecorationHash(currentSceneId, viewportX, viewportY);
-				if (floorHash != 0) {
-					floorHash = floorHash >> 14 & 0x7fff;
-					int icon = GameObjectDefinition.getDefinition(floorHash).icon;
-					if (icon >= 0) {
-						int drawPointX = viewportX;
-						int drawPointY = viewportY;
-						if (icon != 22 && icon != 29 && icon != 34 && icon != 36 && icon != 46 && icon != 47
-								&& icon != 48) {
-							int regionWidth = 104;
-							int regionHeight = 104;
-							int[][] flags = currentCollisionMap[currentSceneId].adjacency;
-							for (int off = 0; off < 10; off++) {
-								int randPlane = (int) (Math.random() * 4.0);
-								if (randPlane == 0 && drawPointX > 0 && drawPointX > viewportX - 3
-										&& (flags[drawPointX - 1][drawPointY] & 0x1280108) == 0) {
-									drawPointX--;
-								}
-								if (randPlane == 1 && drawPointX < regionWidth - 1 && drawPointX < viewportX + 3
-										&& (flags[drawPointX + 1][drawPointY] & 0x1280180) == 0) {
-									drawPointX++;
-								}
-								if (randPlane == 2 && drawPointY > 0 && drawPointY > viewportY - 3
-										&& (flags[drawPointX][drawPointY - 1] & 0x1280102) == 0) {
-									drawPointY--;
-								}
-								if (randPlane == 3 && drawPointY < regionHeight - 1 && drawPointY < viewportY + 3
-										&& (flags[drawPointX][drawPointY + 1] & 0x1280120) == 0) {
-									drawPointY++;
-								}
-							}
-						}
-						minimapHint[minimapHintCount] = worldMapHintIcons[icon];
-						minimapHintX[minimapHintCount] = drawPointX;
-						minimapHintY[minimapHintCount] = drawPointY;
-						minimapHintCount++;
-					}
+	public void method51(boolean flag) {
+		Projectile class50_sub1_sub4_sub2 = (Projectile) aClass6_1282.first();
+		if (flag)
+			anInt1328 = 153;
+		for (; class50_sub1_sub4_sub2 != null; class50_sub1_sub4_sub2 = (Projectile) aClass6_1282
+				.next())
+			if (class50_sub1_sub4_sub2.sceneId != plane || pulseCycle > class50_sub1_sub4_sub2.endCycle)
+				class50_sub1_sub4_sub2.remove();
+			else if (pulseCycle >= class50_sub1_sub4_sub2.delay) {
+				if (class50_sub1_sub4_sub2.targetedEntityId > 0) {
+					Npc class50_sub1_sub4_sub3_sub1 = npcs[class50_sub1_sub4_sub2.targetedEntityId - 1];
+					if (class50_sub1_sub4_sub3_sub1 != null
+							&& ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX >= 0
+							&& ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX < 13312
+							&& ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY >= 0
+							&& ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY < 13312)
+						class50_sub1_sub4_sub2.trackTarget(((Actor) (class50_sub1_sub4_sub3_sub1)).unitX,
+								((Actor) (class50_sub1_sub4_sub3_sub1)).unitY, method110(
+										((Actor) (class50_sub1_sub4_sub3_sub1)).unitY,
+										((Actor) (class50_sub1_sub4_sub3_sub1)).unitX, (byte) 9,
+										class50_sub1_sub4_sub2.sceneId)
+										- class50_sub1_sub4_sub2.endHeight, pulseCycle);
 				}
+				if (class50_sub1_sub4_sub2.targetedEntityId < 0) {
+					int i = -class50_sub1_sub4_sub2.targetedEntityId - 1;
+					Player class50_sub1_sub4_sub3_sub2;
+					if (i == thisPlayerServerId)
+						class50_sub1_sub4_sub3_sub2 = thisPlayer;
+					else
+						class50_sub1_sub4_sub3_sub2 = players[i];
+					if (class50_sub1_sub4_sub3_sub2 != null
+							&& ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX >= 0
+							&& ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX < 13312
+							&& ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY >= 0
+							&& ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY < 13312)
+						class50_sub1_sub4_sub2.trackTarget(((Actor) (class50_sub1_sub4_sub3_sub2)).unitX,
+								((Actor) (class50_sub1_sub4_sub3_sub2)).unitY, method110(
+										((Actor) (class50_sub1_sub4_sub3_sub2)).unitY,
+										((Actor) (class50_sub1_sub4_sub3_sub2)).unitX, (byte) 9,
+										class50_sub1_sub4_sub2.sceneId)
+										- class50_sub1_sub4_sub2.endHeight, pulseCycle);
+				}
+				class50_sub1_sub4_sub2.move(anInt951);
+				currentScene.method252(-1, class50_sub1_sub4_sub2, (int) class50_sub1_sub4_sub2.currentX,
+						(int) class50_sub1_sub4_sub2.currentHeight, false, 0, plane, 60,
+						(int) class50_sub1_sub4_sub2.currentY, class50_sub1_sub4_sub2.anInt1562);
 			}
+
+		anInt1168++;
+		if (anInt1168 > 51) {
+			anInt1168 = 0;
+			outBuffer.putOpcode(248);
 		}
 	}
 
-	public final void sortGroundItems(int x, int y) {
-		LinkedList groundItems = groundItemNodes[currentSceneId][x][y];
-		if (groundItems == null) {
-			currentScene.resetCameraAngle(currentSceneId, x, y);
-		} else {
-			int mostValue = -99999999;
-			Item item = null;
-			for (Item groundItem = (Item) groundItems.getBack(); groundItem != null; groundItem = (Item) groundItems
-					.getPrevious()) {
-				ItemDefinition itemDefinition = ItemDefinition.getDefinition(groundItem.itemId);
-				int value = itemDefinition.value;
-				if (itemDefinition.stackable) {
-					value *= groundItem.itemCount + 1;
-				}
-				if (value > mostValue) {
-					mostValue = value;
-					item = groundItem;
-				}
-			}
-			groundItems.insertFront(item);
-			Item groundItemOne = null;
-			Item groundItemTwo = null;
-			for (Item groundItem = (Item) groundItems.getBack(); groundItem != null; groundItem = (Item) groundItems
-					.getPrevious()) {
-				if (groundItem.itemId != item.itemId && groundItemOne == null) {
-					groundItemOne = groundItem;
-				}
-				if (groundItem.itemId != item.itemId && groundItem.itemId != groundItemOne.itemId
-						&& groundItemTwo == null) {
-					groundItemTwo = groundItem;
-				}
-			}
-			int position = x + (y << 7) + 1610612736;
-			currentScene.method503((byte) 7, x, position, groundItemOne,
-					method42(currentSceneId, y * 128 + 64, true, x * 128 + 64), groundItemTwo, item, currentSceneId, y);
+	public void prepareTitle() {
+		titleboxImage = new IndexedImage(titleArchive, "titlebox", 0);
+		titleboxButtonImage = new IndexedImage(titleArchive, "titlebutton", 0);
+		titleFlameEmblem = new IndexedImage[12];
+		for (int i = 0; i < 12; i++)
+			titleFlameEmblem[i] = new IndexedImage(titleArchive, "runes", i);
+
+		anImageRGB1226 = new ImageRGB(128, 265);
+		anImageRGB1227 = new ImageRGB(128, 265);
+		System.arraycopy(flameLeftBackground.pixels, 0, anImageRGB1226.pixels, 0, (128 * 265));
+		System.arraycopy(flameRightBackground.pixels, 0, anImageRGB1227.pixels, 0, (128 * 265));
+
+
+		anIntArray1311 = new int[256];
+		for (int l = 0; l < 64; l++)
+			anIntArray1311[l] = l * 0x40000;
+
+		for (int i1 = 0; i1 < 64; i1++)
+			anIntArray1311[i1 + 64] = 0xff0000 + 1024 * i1;
+
+		for (int j1 = 0; j1 < 64; j1++)
+			anIntArray1311[j1 + 128] = 0xffff00 + 4 * j1;
+
+		for (int k1 = 0; k1 < 64; k1++)
+			anIntArray1311[k1 + 192] = 0xffffff;
+
+		anIntArray1312 = new int[256];
+		for (int l1 = 0; l1 < 64; l1++)
+			anIntArray1312[l1] = l1 * 1024;
+
+		for (int i2 = 0; i2 < 64; i2++)
+			anIntArray1312[i2 + 64] = 65280 + 4 * i2;
+
+		for (int j2 = 0; j2 < 64; j2++)
+			anIntArray1312[j2 + 128] = 65535 + 0x40000 * j2;
+
+		for (int k2 = 0; k2 < 64; k2++)
+			anIntArray1312[k2 + 192] = 0xffffff;
+
+		anIntArray1313 = new int[256];
+		for (int l2 = 0; l2 < 64; l2++)
+			anIntArray1313[l2] = l2 * 4;
+
+		for (int i3 = 0; i3 < 64; i3++)
+			anIntArray1313[i3 + 64] = 255 + 0x40000 * i3;
+
+		for (int j3 = 0; j3 < 64; j3++)
+			anIntArray1313[j3 + 128] = 0xff00ff + 1024 * j3;
+
+		for (int k3 = 0; k3 < 64; k3++)
+			anIntArray1313[k3 + 192] = 0xffffff;
+
+		anIntArray1310 = new int[256];
+		anIntArray1176 = new int[32768];
+		anIntArray1177 = new int[32768];
+		method83(null, 0);
+		anIntArray1084 = new int[32768];
+		anIntArray1085 = new int[32768];
+		drawLoadingText(10, "Connecting to fileserver");
+		if (!aBoolean1243) {
+			aBoolean1314 = true;
+			aBoolean1243 = true;
+			startRunnable(this, 2);
 		}
 	}
 
-	public final void method26(boolean bool) {
+	public void method53(long l, int i) {
 		try {
-			for (int index = 0; index < actorCount; index++) {
-				Npc npc = localNpcs[anIntArray862[index]];
-				int i_108_ = 536870912 + (anIntArray862[index] << 14);
-				if (npc != null && npc.isVisibile() && npc.npcDefinition.visible == bool) {
-					int i_109_ = npc.xWithBoundary >> 7;
-					int i_110_ = npc.yWithBoundary >> 7;
-					if (i_109_ >= 0 && i_109_ < 104 && i_110_ >= 0 && i_110_ < 104) {
-						if (npc.boundaryDimension == 1 && (npc.xWithBoundary & 0x7f) == 64
-								&& (npc.yWithBoundary & 0x7f) == 64) {
-							if (anIntArrayArray954[i_109_][i_110_] == anInt1290) {
-								continue;
-							}
-							anIntArrayArray954[i_109_][i_110_] = anInt1290;
-						}
-						if (!npc.npcDefinition.clickable) {
-							i_108_ += -2147483648;
-						}
-						currentScene.method507(currentSceneId, npc.anInt1572, (byte) 6,
-								method42(currentSceneId, npc.yWithBoundary, true, npc.xWithBoundary), i_108_,
-								npc.yWithBoundary, (npc.boundaryDimension - 1) * 64 + 60, npc.xWithBoundary, npc,
-								npc.aBoolean1561);
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("19775, " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	private final void printLoadError(String loadError) {
-		System.out.println(loadError);
-		try {
-			getAppletContext().showDocument(new URL(getCodeBase(), "loaderror_" + loadError + ".html"));
-		} catch (Exception exception) {
-			exception.printStackTrace();
-		}
-	}
-
-	public final void processWidgetClick(int i, Widget widget, int i_112_, int i_113_, int i_114_, int i_115_) {
-		try {
-			if (widget.type == 0
-					&& widget.children != null
-					&& !widget.hiddenUntilHovered
-					&& (i_112_ >= i && i_114_ >= i_113_ && i_112_ <= i + widget.width && i_114_ <= i_113_
-							+ widget.height)) {
-				int childCount = widget.children.length;
-				for (int child = 0; child < childCount; child++) {
-					int i_118_ = widget.childrenX[child] + i;
-					int i_119_ = widget.childrenY[child] + i_113_ - i_115_;
-					Widget widgetChild = Widget.cache[widget.children[child]];
-					i_118_ += widgetChild.x;
-					i_119_ += widgetChild.y;
-					if ((widgetChild.hoveredPopup >= 0 || widgetChild.disabledHoveredColor != 0) && i_112_ >= i_118_
-							&& i_114_ >= i_119_ && i_112_ < i_118_ + widgetChild.width
-							&& i_114_ < i_119_ + widgetChild.height) {
-						if (widgetChild.hoveredPopup >= 0) {
-							anInt911 = widgetChild.hoveredPopup;
-						} else {
-							anInt911 = widgetChild.id;
-						}
-					}
-					if (widgetChild.type == 0) {
-						processWidgetClick(i_118_, widgetChild, i_112_, i_119_, i_114_, widgetChild.scrollPosition);
-						if (widgetChild.scrollLimit > widgetChild.height) {
-							method65(i_118_ + widgetChild.width, widgetChild.height, i_112_, i_114_, widgetChild,
-									i_119_, true, widgetChild.scrollLimit, 0);
-						}
-					} else {
-						if (widgetChild.actionType == 1 && i_112_ >= i_118_ && i_114_ >= i_119_
-								&& i_112_ < i_118_ + widgetChild.width && i_114_ < i_119_ + widgetChild.height) {
-							boolean bool = false;
-							if (widgetChild.contentType != 0) {
-								bool = method103(widgetChild, false);
-							}
-							if (!bool) {
-								menuActionNames[menuActionRow] = widgetChild.tooltip;
-								menuActionIds[menuActionRow] = 315;
-								menuActionIds3[menuActionRow] = widgetChild.id;
-								menuActionRow++;
-							}
-						}
-						if (widgetChild.actionType == 2 && anInt1161 == 0 && i_112_ >= i_118_ && i_114_ >= i_119_
-								&& i_112_ < i_118_ + widgetChild.width && i_114_ < i_119_ + widgetChild.height) {
-							String string = widgetChild.selectedActionName;
-							if (string.indexOf(" ") != -1) {
-								string = string.substring(0, string.indexOf(" "));
-							}
-							menuActionNames[menuActionRow] = string + " @gre@" + widgetChild.spellName;
-							menuActionIds[menuActionRow] = 626;
-							menuActionIds3[menuActionRow] = widgetChild.id;
-							menuActionRow++;
-						}
-						if (widgetChild.actionType == 3 && i_112_ >= i_118_ && i_114_ >= i_119_
-								&& i_112_ < i_118_ + widgetChild.width && i_114_ < i_119_ + widgetChild.height) {
-							menuActionNames[menuActionRow] = "Close";
-							menuActionIds[menuActionRow] = 200;
-							menuActionIds3[menuActionRow] = widgetChild.id;
-							menuActionRow++;
-						}
-						if (widgetChild.actionType == 4 && i_112_ >= i_118_ && i_114_ >= i_119_
-								&& i_112_ < i_118_ + widgetChild.width && i_114_ < i_119_ + widgetChild.height) {
-							menuActionNames[menuActionRow] = widgetChild.tooltip;
-							menuActionIds[menuActionRow] = 169;
-							menuActionIds3[menuActionRow] = widgetChild.id;
-							menuActionRow++;
-						}
-						if (widgetChild.actionType == 5 && i_112_ >= i_118_ && i_114_ >= i_119_
-								&& i_112_ < i_118_ + widgetChild.width && i_114_ < i_119_ + widgetChild.height) {
-							menuActionNames[menuActionRow] = widgetChild.tooltip;
-							menuActionIds[menuActionRow] = 646;
-							menuActionIds3[menuActionRow] = widgetChild.id;
-							menuActionRow++;
-						}
-						if (widgetChild.actionType == 6 && aBoolean1174 == false && i_112_ >= i_118_
-								&& i_114_ >= i_119_ && i_112_ < i_118_ + widgetChild.width
-								&& i_114_ < i_119_ + widgetChild.height) {
-							menuActionNames[menuActionRow] = widgetChild.tooltip;
-							menuActionIds[menuActionRow] = 679;
-							menuActionIds3[menuActionRow] = widgetChild.id;
-							menuActionRow++;
-						}
-						if (widgetChild.type == 2) {
-							int i_121_ = 0;
-							for (int i_122_ = 0; i_122_ < widgetChild.height; i_122_++) {
-								for (int i_123_ = 0; i_123_ < widgetChild.width; i_123_++) {
-									int i_124_ = i_118_ + i_123_ * (32 + widgetChild.itemSpritePadsX);
-									int i_125_ = i_119_ + i_122_ * (32 + widgetChild.itemSpritePadsY);
-									if (i_121_ < 20) {
-										i_124_ += widgetChild.imageX[i_121_];
-										i_125_ += widgetChild.imageY[i_121_];
-									}
-									if (i_112_ >= i_124_ && i_114_ >= i_125_ && i_112_ < i_124_ + 32
-											&& i_114_ < i_125_ + 32) {
-										anInt1091 = i_121_;
-										anInt1092 = widgetChild.id;
-										if (widgetChild.items[i_121_] > 0) {
-											ItemDefinition itemdefinition = ItemDefinition
-													.getDefinition(widgetChild.items[i_121_] - 1);
-											if (anInt1307 == 1 && widgetChild.isInventory) {
-												if (widgetChild.id != anInt1309 || i_121_ != anInt1308) {
-													menuActionNames[menuActionRow] = "Use " + aString1311
-															+ " with @lre@" + itemdefinition.name;
-													menuActionIds[menuActionRow] = 870;
-													menuActionIds1[menuActionRow] = itemdefinition.id;
-													menuActionIds2[menuActionRow] = i_121_;
-													menuActionIds3[menuActionRow] = widgetChild.id;
-													menuActionRow++;
-												}
-											} else if (anInt1161 == 1 && widgetChild.isInventory) {
-												if ((anInt1163 & 0x10) == 16) {
-													menuActionNames[menuActionRow] = aString1164 + " @lre@"
-															+ itemdefinition.name;
-													menuActionIds[menuActionRow] = 543;
-													menuActionIds1[menuActionRow] = itemdefinition.id;
-													menuActionIds2[menuActionRow] = i_121_;
-													menuActionIds3[menuActionRow] = widgetChild.id;
-													menuActionRow++;
-												}
-											} else {
-												if (widgetChild.isInventory) {
-													for (int i_126_ = 4; i_126_ >= 3; i_126_--) {
-														if (itemdefinition.inventoryActions != null
-																&& itemdefinition.inventoryActions[i_126_] != null) {
-															menuActionNames[menuActionRow] = itemdefinition.inventoryActions[i_126_]
-																	+ " @lre@" + itemdefinition.name;
-															if (i_126_ == 3) {
-																menuActionIds[menuActionRow] = 493;
-															}
-															if (i_126_ == 4) {
-																menuActionIds[menuActionRow] = 847;
-															}
-															menuActionIds1[menuActionRow] = itemdefinition.id;
-															menuActionIds2[menuActionRow] = i_121_;
-															menuActionIds3[menuActionRow] = widgetChild.id;
-															menuActionRow++;
-														} else if (i_126_ == 4) {
-															menuActionNames[menuActionRow] = "Drop @lre@"
-																	+ itemdefinition.name;
-															menuActionIds[menuActionRow] = 847;
-															menuActionIds1[menuActionRow] = itemdefinition.id;
-															menuActionIds2[menuActionRow] = i_121_;
-															menuActionIds3[menuActionRow] = widgetChild.id;
-															menuActionRow++;
-														}
-													}
-												}
-												if (widgetChild.itemUsable) {
-													menuActionNames[menuActionRow] = "Use @lre@" + itemdefinition.name;
-													menuActionIds[menuActionRow] = 447;
-													menuActionIds1[menuActionRow] = itemdefinition.id;
-													menuActionIds2[menuActionRow] = i_121_;
-													menuActionIds3[menuActionRow] = widgetChild.id;
-													menuActionRow++;
-												}
-												if (widgetChild.isInventory && itemdefinition.inventoryActions != null) {
-													for (int i_127_ = 2; i_127_ >= 0; i_127_--) {
-														if (itemdefinition.inventoryActions[i_127_] != null) {
-															menuActionNames[menuActionRow] = itemdefinition.inventoryActions[i_127_]
-																	+ " @lre@" + itemdefinition.name;
-															if (i_127_ == 0) {
-																menuActionIds[menuActionRow] = 74;
-															}
-															if (i_127_ == 1) {
-																menuActionIds[menuActionRow] = 454;
-															}
-															if (i_127_ == 2) {
-																menuActionIds[menuActionRow] = 539;
-															}
-															menuActionIds1[menuActionRow] = itemdefinition.id;
-															menuActionIds2[menuActionRow] = i_121_;
-															menuActionIds3[menuActionRow] = widgetChild.id;
-															menuActionRow++;
-														}
-													}
-												}
-												if (widgetChild.actions != null) {
-													for (int i_128_ = 4; i_128_ >= 0; i_128_--) {
-														if (widgetChild.actions[i_128_] != null) {
-															menuActionNames[menuActionRow] = widgetChild.actions[i_128_]
-																	+ " @lre@" + itemdefinition.name;
-															if (i_128_ == 0) {
-																menuActionIds[menuActionRow] = 632;
-															}
-															if (i_128_ == 1) {
-																menuActionIds[menuActionRow] = 78;
-															}
-															if (i_128_ == 2) {
-																menuActionIds[menuActionRow] = 867;
-															}
-															if (i_128_ == 3) {
-																menuActionIds[menuActionRow] = 431;
-															}
-															if (i_128_ == 4) {
-																menuActionIds[menuActionRow] = 53;
-															}
-															menuActionIds1[menuActionRow] = itemdefinition.id;
-															menuActionIds2[menuActionRow] = i_121_;
-															menuActionIds3[menuActionRow] = widgetChild.id;
-															menuActionRow++;
-														}
-													}
-												}
-												menuActionNames[menuActionRow] = "Examine @lre@" + itemdefinition.name;
-												menuActionIds[menuActionRow] = 1125;
-												menuActionIds1[menuActionRow] = itemdefinition.id;
-												menuActionIds2[menuActionRow] = i_121_;
-												menuActionIds3[menuActionRow] = widgetChild.id;
-												menuActionRow++;
-											}
-										}
-									}
-									i_121_++;
-								}
-							}
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("38948, " + i + ", " + widget + ", " + i_112_ + ", " + i_113_ + ", " + i_114_ + ", "
-					+ i_115_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processScroll(int height, int i_130_, int y, int x, int i_133_) {
-		scrollbarUp.drawImage(x, y);
-		scrollbarDown.drawImage(x, y + height - 16);
-		Rasterizer.drawFilledRectangle(x, y + 16, 16, height - 32, anInt1027);
-		int length = (height - 32) * height / i_133_;
-		if (length < 8) {
-			length = 8;
-		}
-		int yOffset = (height - 32 - length) * i_130_ / (i_133_ - height);
-		Rasterizer.drawFilledRectangle(x, y + 16 + yOffset, 16, length, anInt1088);
-		Rasterizer.drawVerticalLine(x, y + 16 + yOffset, length, anInt927);
-		Rasterizer.drawVerticalLine(x + 1, y + 16 + yOffset, length, anInt927);
-		Rasterizer.drawHorizontalLine(x, y + 16 + yOffset, 16, anInt927);
-		Rasterizer.drawHorizontalLine(x, y + 17 + yOffset, 16, anInt927);
-		Rasterizer.drawVerticalLine(x + 15, y + 16 + yOffset, length, anInt952);
-		Rasterizer.drawVerticalLine(x + 14, y + 17 + yOffset, length - 1, anInt952);
-		Rasterizer.drawHorizontalLine(x, y + 15 + yOffset + length, 16, anInt952);
-		Rasterizer.drawHorizontalLine(x + 1, y + 14 + yOffset + length, 15, anInt952);
-	}
-
-	private final void updateActors(Buffer buffer, int actorIndex) {
-		anInt864 = 0;
-		anInt918 = 0;
-		method139(buffer, -45, actorIndex);
-		method46(actorIndex, buffer, (byte) 2);
-		method86(actorIndex, buffer, true);
-		for (int i_137_ = 0; i_137_ < anInt864; i_137_++) {
-			int i_138_ = anIntArray865[i_137_];
-			if (localNpcs[i_138_].anInt1557 != Game.currentCycle) {
-				localNpcs[i_138_].npcDefinition = null;
-				localNpcs[i_138_] = null;
-			}
-		}
-		if (buffer.offset != actorIndex) {
-			SignLink.reportError(username + " size mismatch in getnpcpos - pos:" + buffer.offset + " psize:"
-					+ actorIndex);
-			throw new RuntimeException("eek");
-		}
-		for (int i_139_ = 0; i_139_ < actorCount; i_139_++) {
-			if (localNpcs[anIntArray862[i_139_]] == null) {
-				SignLink.reportError(username + " null entry in npc list - pos:" + i_139_ + " size:" + actorCount);
-				throw new RuntimeException("eek");
-			}
-		}
-	}
-
-	public final void processClickingChatSettings() {
-		try {
-			if (clickType != 1) {
+			if (l == 0L)
 				return;
-			}
-			if (clickX >= 6 && clickX <= 106 && clickY >= 467 && clickY <= 499) {
-				publicChatSetting = (publicChatSetting + 1) % 4;
-				redrawChatSettings = true;
-				redrawChatbox = true;
-				outBuffer.putOpcode(95);
-				outBuffer.put(publicChatSetting);
-				outBuffer.put(privateChatSetting);
-				outBuffer.put(tradeSetting);
-			}
-			if (clickX >= 135 && clickX <= 235 && clickY >= 467 && clickY <= 499) {
-				privateChatSetting = (privateChatSetting + 1) % 3;
-				redrawChatSettings = true;
-				redrawChatbox = true;
-				outBuffer.putOpcode(95);
-				outBuffer.put(publicChatSetting);
-				outBuffer.put(privateChatSetting);
-				outBuffer.put(tradeSetting);
-			}
-			if (clickX >= 273 && clickX <= 373 && clickY >= 467 && clickY <= 499) {
-				tradeSetting = (tradeSetting + 1) % 3;
-				redrawChatSettings = true;
-				redrawChatbox = true;
-				outBuffer.putOpcode(95);
-				outBuffer.put(publicChatSetting);
-				outBuffer.put(privateChatSetting);
-				outBuffer.put(tradeSetting);
-			}
-			if (clickX >= 412 && clickX <= 512 && clickY >= 467 && clickY <= 499) {
-				if (openWidgetId == -1) {
-					closeWidgets();
-					reportedName = "";
-					reportMutePlayer = false;
-					for (Widget element : Widget.cache) {
-						if (element != null && element.contentType == 600) {
-							anInt1203 = openWidgetId = element.parentId;
-							break;
-						}
-					}
-				} else {
-					sendMessage("Please close the interface you have open before using 'report abuse'", 0, "");
+			for (int j = 0; j < friendsCount; j++) {
+				if (friends[j] != l)
+					continue;
+				friendsCount--;
+				aBoolean1181 = true;
+				for (int k = j; k < friendsCount; k++) {
+					friendsListNames[k] = friendsListNames[k + 1];
+					anIntArray1267[k] = anIntArray1267[k + 1];
+					friends[k] = friends[k + 1];
 				}
+
+				outBuffer.putOpcode(141);
+				outBuffer.putLong(l);
+				break;
 			}
+
+			size += i;
+			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("30699, " + runtimeexception.toString());
-			throw new RuntimeException();
+			SignLink.reporterror("38799, " + l + ", " + i + ", " + runtimeexception.toString());
 		}
+		throw new RuntimeException();
 	}
 
-	public final void handleWidgetSetting(int index) {
-		do {
-			int type = Varp.cache[index].type;
-			if (type != 0) {
-				int setting = widgetSettings[index];
-				if (type == 1) {
-					if (setting == 1) {
-						Rasterizer3D.method369(0.9);
-					}
-					if (setting == 2) {
-						Rasterizer3D.method369(0.8);
-					}
-					if (setting == 3) {
-						Rasterizer3D.method369(0.7);
-					}
-					if (setting == 4) {
-						Rasterizer3D.method369(0.6);
-					}
-					ItemDefinition.rgbImageCache.removeAll();
-					redraw = true;
+	public void method54(int i) {
+		if (anInt1113 != 0)
+			return;
+		int j = super.clickType;
+		if (i != 0)
+			opcode = buffer.getUnsignedByte();
+		if (anInt1171 == 1 && super.clickX >= 516 && super.clickY >= 160 && super.clickX <= 765
+				&& super.clickY <= 205)
+			j = 0;
+		if (aBoolean1065) {
+			if (j != 1) {
+				int k = super.mouseX;
+				int j1 = super.mouseY;
+				if (anInt1304 == 0) {
+					k -= 4;
+					j1 -= 4;
 				}
-				if (type == 3) {
-					if (setting == 0) {
-						setMidiVolume(musicEnabled, 0);
-						musicEnabled = true;
-					}
-					if (setting == 1) {
-						setMidiVolume(musicEnabled, -400);
-						musicEnabled = true;
-					}
-					if (setting == 2) {
-						setMidiVolume(musicEnabled, -800);
-						musicEnabled = true;
-					}
-					if (setting == 3) {
-						setMidiVolume(musicEnabled, -1200);
-						musicEnabled = true;
-					}
-					if (setting == 4) {
-						musicEnabled = false;
-					}
-					if (!Game.lowMemory) {
-						if (musicEnabled) {
-							onDemandRequesterId = songId;
-							midiFade = true;
-							onDemandRequester.request(2, onDemandRequesterId);
-						} else {
-							stopMidi();
-						}
-						songFadeCycle = 0;
-					}
+				if (anInt1304 == 1) {
+					k -= 553;
+					j1 -= 205;
 				}
-				if (type == 4) {
-					if (setting == 0) {
-						aBoolean873 = true;
-						setWaveVolume(0);
-					}
-					if (setting == 1) {
-						aBoolean873 = true;
-						setWaveVolume(-400);
-					}
-					if (setting == 2) {
-						aBoolean873 = true;
-						setWaveVolume(-800);
-					}
-					if (setting == 3) {
-						aBoolean873 = true;
-						setWaveVolume(-1200);
-					}
-					if (setting == 4) {
-						aBoolean873 = false;
-					}
+				if (anInt1304 == 2) {
+					k -= 17;
+					j1 -= 357;
 				}
-				if (type == 5) {
-					anInt1278 = setting;
+				if (k < anInt1305 - 10 || k > anInt1305 + anInt1307 + 10 || j1 < anInt1306 - 10
+						|| j1 > anInt1306 + anInt1308 + 10) {
+					aBoolean1065 = false;
+					if (anInt1304 == 1)
+						aBoolean1181 = true;
+					if (anInt1304 == 2)
+						redrawChatbox = true;
 				}
-				if (type == 6) {
-					anInt1274 = setting;
+			}
+			if (j == 1) {
+				int l = anInt1305;
+				int k1 = anInt1306;
+				int i2 = anInt1307;
+				int k2 = super.clickX;
+				int l2 = super.clickY;
+				if (anInt1304 == 0) {
+					k2 -= 4;
+					l2 -= 4;
 				}
-				if (type == 8) {
-					anInt1220 = setting;
+				if (anInt1304 == 1) {
+					k2 -= 553;
+					l2 -= 205;
+				}
+				if (anInt1304 == 2) {
+					k2 -= 17;
+					l2 -= 357;
+				}
+				int i3 = -1;
+				for (int j3 = 0; j3 < anInt1183; j3++) {
+					int k3 = k1 + 31 + (anInt1183 - 1 - j3) * 15;
+					if (k2 > l && k2 < l + i2 && l2 > k3 - 13 && l2 < k3 + 3)
+						i3 = j3;
+				}
+
+				if (i3 != -1)
+					method120(i3, 8);
+				aBoolean1065 = false;
+				if (anInt1304 == 1)
+					aBoolean1181 = true;
+				if (anInt1304 == 2) {
 					redrawChatbox = true;
-				}
-				if (type != 9) {
-					break;
-				}
-				anInt938 = setting;
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method34() {
-		try {
-			anInt999 = 0;
-			for (int i_143_ = -1; i_143_ < playerCount + actorCount; i_143_++) {
-				Actor actor;
-				if (i_143_ == -1) {
-					actor = Game.localPlayer;
-				} else if (i_143_ < playerCount) {
-					actor = players[anIntArray917[i_143_]];
-				} else {
-					actor = localNpcs[anIntArray862[i_143_ - playerCount]];
-				}
-				if (actor != null && actor.isVisibile()) {
-					if (actor instanceof Npc) {
-						ActorDefinition npcdefinition = ((Npc) actor).npcDefinition;
-						if (npcdefinition.childrenIds != null) {
-							npcdefinition = npcdefinition.getChildDefinition();
-						}
-						if (npcdefinition == null) {
-							continue;
-						}
-					}
-					if (i_143_ < playerCount) {
-						int i_144_ = 30;
-						Player player = (Player) actor;
-						if (player.headIcon != 0) {
-							method127(true, actor, actor.modelHeight + 15);
-							if (anInt988 > -1) {
-								for (int i_145_ = 0; i_145_ < 8; i_145_++) {
-									if ((player.headIcon & 1 << i_145_) != 0) {
-										anImageRGBArray1120[i_145_].drawImage(anInt988 - 12, anInt989 - i_144_);
-										i_144_ -= 25;
-									}
-								}
-							}
-						}
-						if (i_143_ >= 0 && hintIconType == 10 && hintIconId == anIntArray917[i_143_]) {
-							method127(true, actor, actor.modelHeight + 15);
-							if (anInt988 > -1) {
-								anImageRGBArray1120[7].drawImage(anInt988 - 12, anInt989 - i_144_);
-							}
-						}
-					} else {
-						ActorDefinition npcdefinition = ((Npc) actor).npcDefinition;
-						if (npcdefinition.headIcon >= 0 && npcdefinition.headIcon < anImageRGBArray1120.length) {
-							method127(true, actor, actor.modelHeight + 15);
-							if (anInt988 > -1) {
-								anImageRGBArray1120[npcdefinition.headIcon].drawImage(anInt988 - 12, anInt989 - 30);
-							}
-						}
-						if (hintIconType == 1 && hintIconActorId == anIntArray862[i_143_ - playerCount]
-								&& Game.currentCycle % 20 < 10) {
-							method127(true, actor, actor.modelHeight + 15);
-							if (anInt988 > -1) {
-								anImageRGBArray1120[2].drawImage(anInt988 - 12, anInt989 - 28);
-							}
-						}
-					}
-					if (actor.forcedChat != null
-							&& (i_143_ >= playerCount || publicChatSetting == 0 || publicChatSetting == 3 || publicChatSetting == 1
-									&& method109(false, ((Player) actor).playerName))) {
-						method127(true, actor, actor.modelHeight);
-						if (anInt988 > -1 && anInt999 < anInt1000) {
-							anIntArray1004[anInt999] = fontBold.getStringWidth(actor.forcedChat) / 2;
-							anIntArray1003[anInt999] = fontBold.characterDefaultHeight;
-							anIntArray1001[anInt999] = anInt988;
-							anIntArray1002[anInt999] = anInt989;
-							anIntArray1005[anInt999] = actor.chatColor;
-							anIntArray1006[anInt999] = actor.chatEffect;
-							anIntArray1007[anInt999] = actor.anInt1555;
-							aStringArray1008[anInt999++] = actor.forcedChat;
-							if (anInt1274 == 0 && actor.chatEffect >= 1 && actor.chatEffect <= 3) {
-								anIntArray1003[anInt999] += 10;
-								anIntArray1002[anInt999] += 5;
-							}
-							if (anInt1274 == 0 && actor.chatEffect == 4) {
-								anIntArray1004[anInt999] = 60;
-							}
-							if (anInt1274 == 0 && actor.chatEffect == 5) {
-								anIntArray1003[anInt999] += 5;
-							}
-						}
-					}
-					if (actor.endCycle > Game.currentCycle) {
-						method127(true, actor, actor.modelHeight + 15);
-						if (anInt988 > -1) {
-							int i_146_ = actor.maxHealth * 30 / actor.currentHealth;
-							if (i_146_ > 30) {
-								i_146_ = 30;
-							}
-							Rasterizer.drawFilledRectangle(anInt988 - 15, anInt989 - 3, i_146_, 5, 0x00FF00);
-							Rasterizer.drawFilledRectangle(anInt988 - 15 + i_146_, anInt989 - 3, 30 - i_146_, 5,
-									0xFF0000);
-						}
-					}
-					for (int i_147_ = 0; i_147_ < 4; i_147_++) {
-						if (actor.hitCycles[i_147_] > Game.currentCycle) {
-							method127(true, actor, actor.modelHeight / 2);
-							if (anInt988 > -1) {
-								if (i_147_ == 1) {
-									anInt989 -= 20;
-								}
-								if (i_147_ == 2) {
-									anInt988 -= 15;
-									anInt989 -= 10;
-								}
-								if (i_147_ == 3) {
-									anInt988 += 15;
-									anInt989 -= 10;
-								}
-								anImageRGBArray1012[actor.hitTypes[i_147_]].drawImage(anInt988 - 12, anInt989 - 12);
-								fontSmall.drawStringLeft(String.valueOf(actor.hitDamages[i_147_]), anInt988,
-										anInt989 + 4, 0);
-								fontSmall.drawStringLeft(String.valueOf(actor.hitDamages[i_147_]), anInt988 - 1,
-										anInt989 + 3, 0xFFFFFF);
-							}
-						}
-					}
-				}
-			}
-			for (int i_148_ = 0; i_148_ < anInt999; i_148_++) {
-				int i_149_ = anIntArray1001[i_148_];
-				int i_150_ = anIntArray1002[i_148_];
-				int i_151_ = anIntArray1004[i_148_];
-				int i_152_ = anIntArray1003[i_148_];
-				boolean bool = true;
-				while (bool) {
-					bool = false;
-					for (int i_153_ = 0; i_153_ < i_148_; i_153_++) {
-						if (i_150_ + 2 > anIntArray1002[i_153_] - anIntArray1003[i_153_]
-								&& i_150_ - i_152_ < anIntArray1002[i_153_] + 2
-								&& i_149_ - i_151_ < anIntArray1001[i_153_] + anIntArray1004[i_153_]
-								&& i_149_ + i_151_ > anIntArray1001[i_153_] - anIntArray1004[i_153_]
-								&& anIntArray1002[i_153_] - anIntArray1003[i_153_] < i_150_) {
-							i_150_ = anIntArray1002[i_153_] - anIntArray1003[i_153_];
-							bool = true;
-						}
-					}
-				}
-				anInt988 = anIntArray1001[i_148_];
-				anInt989 = anIntArray1002[i_148_] = i_150_;
-				String string = aStringArray1008[i_148_];
-				if (anInt1274 == 0) {
-					int i_154_ = 0xFFFF00;
-					if (anIntArray1005[i_148_] < 6) {
-						i_154_ = anIntArray990[anIntArray1005[i_148_]];
-					}
-					if (anIntArray1005[i_148_] == 6) {
-						i_154_ = anInt1290 % 20 < 10 ? 0xFF0000 : 0xFFFF00;
-					}
-					if (anIntArray1005[i_148_] == 7) {
-						i_154_ = anInt1290 % 20 < 10 ? 255 : 0xFFFF;
-					}
-					if (anIntArray1005[i_148_] == 8) {
-						i_154_ = anInt1290 % 20 < 10 ? 45056 : 8454016;
-					}
-					if (anIntArray1005[i_148_] == 9) {
-						int i_155_ = 150 - anIntArray1007[i_148_];
-						if (i_155_ < 50) {
-							i_154_ = 0xFF0000 + 1280 * i_155_;
-						} else if (i_155_ < 100) {
-							i_154_ = 0xFFFF00 - 327680 * (i_155_ - 50);
-						} else if (i_155_ < 150) {
-							i_154_ = 0x00FF00 + 5 * (i_155_ - 100);
-						}
-					}
-					if (anIntArray1005[i_148_] == 10) {
-						int i_156_ = 150 - anIntArray1007[i_148_];
-						if (i_156_ < 50) {
-							i_154_ = 0xFF0000 + 5 * i_156_;
-						} else if (i_156_ < 100) {
-							i_154_ = 16711935 - 327680 * (i_156_ - 50);
-						} else if (i_156_ < 150) {
-							i_154_ = 255 + 327680 * (i_156_ - 100) - 5 * (i_156_ - 100);
-						}
-					}
-					if (anIntArray1005[i_148_] == 11) {
-						int i_157_ = 150 - anIntArray1007[i_148_];
-						if (i_157_ < 50) {
-							i_154_ = 0xFFFFFF - 327685 * i_157_;
-						} else if (i_157_ < 100) {
-							i_154_ = 0x00FF00 + 327685 * (i_157_ - 50);
-						} else if (i_157_ < 150) {
-							i_154_ = 0xFFFFFF - 327680 * (i_157_ - 100);
-						}
-					}
-					if (anIntArray1006[i_148_] == 0) {
-						fontBold.drawStringLeft(string, anInt988, anInt989 + 1, 0);
-						fontBold.drawStringLeft(string, anInt988, anInt989, i_154_);
-					}
-					if (anIntArray1006[i_148_] == 1) {
-						fontBold.drawCenteredStringWaveY(string, anInt988, anInt989 + 1, anInt1290, 0);
-						fontBold.drawCenteredStringWaveY(string, anInt988, anInt989, anInt1290, i_154_);
-					}
-					if (anIntArray1006[i_148_] == 2) {
-						fontBold.drawCeneteredStringWaveXY(string, anInt988, anInt989 + 1, anInt1290, 0);
-						fontBold.drawCeneteredStringWaveXY(string, anInt988, anInt989, anInt1290, i_154_);
-					}
-					if (anIntArray1006[i_148_] == 3) {
-						fontBold.drawCenteredStringWaveXYMove(string, anInt988, anInt989 + 1, anInt1290,
-								150 - anIntArray1007[i_148_], 0);
-						fontBold.drawCenteredStringWaveXYMove(string, anInt988, anInt989, anInt1290,
-								150 - anIntArray1007[i_148_], i_154_);
-					}
-					if (anIntArray1006[i_148_] == 4) {
-						int i_158_ = fontBold.getStringWidth(string);
-						int i_159_ = (150 - anIntArray1007[i_148_]) * (i_158_ + 100) / 150;
-						Rasterizer.setCoordinates(anInt988 - 50, 0, anInt988 + 50, 334);
-						fontBold.drawString(string, anInt988 + 50 - i_159_, anInt989 + 1, 0);
-						fontBold.drawString(string, anInt988 + 50 - i_159_, anInt989, i_154_);
-						Rasterizer.resetCoordinates();
-					}
-					if (anIntArray1006[i_148_] == 5) {
-						int i_160_ = 150 - anIntArray1007[i_148_];
-						int i_161_ = 0;
-						if (i_160_ < 25) {
-							i_161_ = i_160_ - 25;
-						} else if (i_160_ > 125) {
-							i_161_ = i_160_ - 125;
-						}
-						Rasterizer.setCoordinates(0, anInt989 - fontBold.characterDefaultHeight - 1, 512, anInt989 + 5);
-						fontBold.drawStringLeft(string, anInt988, anInt989 + 1 + i_161_, 0);
-						fontBold.drawStringLeft(string, anInt988, anInt989 + i_161_, i_154_);
-						Rasterizer.resetCoordinates();
-					}
-				} else {
-					fontBold.drawStringLeft(string, anInt988, anInt989 + 1, 0);
-					fontBold.drawStringLeft(string, anInt988, anInt989, 0xFFFF00);
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("52196, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method35(boolean bool, long l) {
-		try {
-			if (l != 0L) {
-				for (int i = 0; i < friendsListCount; i++) {
-					if (friendsListLongs[i] == l) {
-						friendsListCount--;
-						redrawTab = true;
-						for (int i_162_ = i; i_162_ < friendsListCount; i_162_++) {
-							friendsListNames[i_162_] = friendsListNames[i_162_ + 1];
-							friendsListWorlds[i_162_] = friendsListWorlds[i_162_ + 1];
-							friendsListLongs[i_162_] = friendsListLongs[i_162_ + 1];
-						}
-						outBuffer.putOpcode(215);
-						outBuffer.putLong(l);
-						break;
-					}
-				}
-				if (bool) {
 					return;
 				}
 			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("18622, " + bool + ", " + l + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+		} else {
+			if (j == 1 && anInt1183 > 0) {
+				int i1 = anIntArray981[anInt1183 - 1];
+				if (i1 == 9 || i1 == 225 || i1 == 444 || i1 == 564 || i1 == 894 || i1 == 961 || i1 == 399 || i1 == 324
+						|| i1 == 227 || i1 == 891 || i1 == 52 || i1 == 1094) {
+					int l1 = anIntArray979[anInt1183 - 1];
+					int j2 = anIntArray980[anInt1183 - 1];
+					Widget class13 = Widget.forId(j2);
+					if (class13.aBoolean274 || class13.aBoolean217) {
+						aBoolean1155 = false;
+						anInt1269 = 0;
+						anInt1111 = j2;
+						anInt1112 = l1;
+						anInt1113 = 2;
+						anInt1114 = super.clickX;
+						anInt1115 = super.clickY;
+						if (Widget.forId(j2).anInt248 == openWidgetId)
+							anInt1113 = 1;
+						if (Widget.forId(j2).anInt248 == anInt988)
+							anInt1113 = 3;
+						return;
+					}
+				}
+			}
+			if (j == 1 && (anInt1300 == 1 || method126(anInt1183 - 1, aByte1161)) && anInt1183 > 2)
+				j = 2;
+			if (j == 1 && anInt1183 > 0)
+				method120(anInt1183 - 1, 8);
+			if (j == 2 && anInt1183 > 0)
+				method108(811);
 		}
 	}
 
-	public final void drawTab() {
-		try {
-			aProducingGraphicsBuffer1188.createRasterizer();
-			Rasterizer3D.lineOffsets = anIntArray1206;
-			inventoryBackgroundImage.drawImage(0, 0);
-			if (anInt1214 != -1) {
-				method105(0, 0, Widget.cache[anInt1214], 0);
-			} else if (tabWidgetIds[currentTabId] != -1) {
-				method105(0, 0, Widget.cache[tabWidgetIds[currentTabId]], 0);
-			}
-			if (actionMenuOpen && actionMenuArea == 1) {
-				drawActionMenu();
-			}
-			aProducingGraphicsBuffer1188.drawGraphics(553, 205, gameGraphics);
-			currentSceneBuffer.createRasterizer();
-			Rasterizer3D.lineOffsets = anIntArray1207;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("56062, " + runtimeexception.toString());
-			throw new RuntimeException();
+	public void method55(int i, ImageRGB class50_sub1_sub1_sub1, int j, int k) {
+		int l = k * k + i * i;
+		while (j >= 0)
+			opcode = -1;
+		if (l > 4225 && l < 0x15f90) {
+			int i1 = anInt1252 + anInt916 & 0x7ff;
+			int j1 = Model.anIntArray1710[i1];
+			int k1 = Model.anIntArray1711[i1];
+			j1 = (j1 * 256) / (anInt1233 + 256);
+			k1 = (k1 * 256) / (anInt1233 + 256);
+			int l1 = i * j1 + k * k1 >> 16;
+			int i2 = i * k1 - k * j1 >> 16;
+			double d = Math.atan2(l1, i2);
+			int j2 = (int) (Math.sin(d) * 63D);
+			int k2 = (int) (Math.cos(d) * 57D);
+			minimapEdge.method466(256, 15, (94 + j2 + 4) - 10, 15, 20, anInt1119, 20, d, 83 - k2 - 20);
+			return;
+		} else {
+			method130(i, true, class50_sub1_sub1_sub1, k);
+			return;
 		}
 	}
 
-	public final void method37(int i, int i_163_) {
-		do {
-			try {
-				if (i <= 0) {
-					opcode = -1;
-				}
-				if (Game.lowMemory) {
-					break;
-				}
-				if (Rasterizer3D.anIntArray1500[17] >= i_163_) {
-					IndexedImage indexedimage = Rasterizer3D.indexedImages[17];
-					int i_164_ = indexedimage.width * indexedimage.height - 1;
-					int i_165_ = indexedimage.width * anInt970 * 2;
-					byte[] bs = indexedimage.pixels;
-					byte[] bs_166_ = aByteArray937;
-					for (int i_167_ = 0; i_167_ <= i_164_; i_167_++) {
-						bs_166_[i_167_] = bs[i_167_ - i_165_ & i_164_];
-					}
-					indexedimage.pixels = bs_166_;
-					aByteArray937 = bs;
-					Rasterizer3D.method367(17, -477);
-					Game.anInt879++;
-					if (Game.anInt879 > 1235) {
-						Game.anInt879 = 0;
-						outBuffer.putOpcode(226);
-						outBuffer.put(0);
-						int i_168_ = outBuffer.offset;
-						outBuffer.putShort(58722);
-						outBuffer.put(240);
-						outBuffer.putShort((int) (Math.random() * 65536.0));
-						outBuffer.put((int) (Math.random() * 256.0));
-						if ((int) (Math.random() * 2.0) == 0) {
-							outBuffer.putShort(51825);
-						}
-						outBuffer.put((int) (Math.random() * 256.0));
-						outBuffer.putShort((int) (Math.random() * 65536.0));
-						outBuffer.putShort(7130);
-						outBuffer.putShort((int) (Math.random() * 65536.0));
-						outBuffer.putShort(61657);
-						outBuffer.putSizeByte(outBuffer.offset - i_168_);
-					}
-				}
-				if (Rasterizer3D.anIntArray1500[24] >= i_163_) {
-					IndexedImage indexedimage = Rasterizer3D.indexedImages[24];
-					int i_169_ = indexedimage.width * indexedimage.height - 1;
-					int i_170_ = indexedimage.width * anInt970 * 2;
-					byte[] bs = indexedimage.pixels;
-					byte[] bs_171_ = aByteArray937;
-					for (int i_172_ = 0; i_172_ <= i_169_; i_172_++) {
-						bs_171_[i_172_] = bs[i_172_ - i_170_ & i_169_];
-					}
-					indexedimage.pixels = bs_171_;
-					aByteArray937 = bs;
-					Rasterizer3D.method367(24, -477);
-				}
-				if (Rasterizer3D.anIntArray1500[34] < i_163_) {
-					break;
-				}
-				IndexedImage indexedimage = Rasterizer3D.indexedImages[34];
-				int i_173_ = indexedimage.width * indexedimage.height - 1;
-				int i_174_ = indexedimage.width * anInt970 * 2;
-				byte[] bs = indexedimage.pixels;
-				byte[] bs_175_ = aByteArray937;
-				for (int i_176_ = 0; i_176_ <= i_173_; i_176_++) {
-					bs_175_[i_176_] = bs[i_176_ - i_174_ & i_173_];
-				}
-				indexedimage.pixels = bs_175_;
-				aByteArray937 = bs;
-				Rasterizer3D.method367(34, -477);
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("86342, " + i + ", " + i_163_ + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
+	public void method56(boolean flag, int i, int j, int k, int l, int i1) {
+		scrollbarUp.drawImage(i1, j);
+		scrollbarDown.drawImage((i1 + k) - 16, j);
+		Rasterizer.drawFilledRectangle(j, i1 + 16, 16, k - 32, anInt931);
+		int j1 = ((k - 32) * k) / l;
+		if (j1 < 8)
+			j1 = 8;
+		int k1 = ((k - 32 - j1) * i) / (l - k);
+		Rasterizer.drawFilledRectangle(j, i1 + 16 + k1, 16, j1, anInt1080);
+		Rasterizer.drawVerticalLine(j, i1 + 16 + k1, j1, anInt1135);
+		Rasterizer.drawVerticalLine(j + 1, i1 + 16 + k1, j1, anInt1135);
+		if (!flag)
+			anInt921 = -136;
+		Rasterizer.drawHorizontalLine(j, i1 + 16 + k1, 16, anInt1135);
+		Rasterizer.drawHorizontalLine(j, i1 + 17 + k1, 16, anInt1135);
+		Rasterizer.drawVerticalLine(j + 15, i1 + 16 + k1, j1, anInt1287);
+		Rasterizer.drawVerticalLine(j + 14, i1 + 17 + k1, j1 - 1, anInt1287);
+		Rasterizer.drawHorizontalLine(j, i1 + 15 + k1 + j1, 16, anInt1287);
+		Rasterizer.drawHorizontalLine(j + 1, i1 + 14 + k1 + j1, 15, anInt1287);
 	}
 
-	public final void method38() {
-		try {
-			for (int i = -1; i < playerCount; i++) {
-				int i_177_;
-				if (i == -1) {
-					i_177_ = localPlayerId;
-				} else {
-					i_177_ = anIntArray917[i];
-				}
-				Player player = players[i_177_];
-				if (player != null && player.anInt1555 > 0) {
-					player.anInt1555--;
-					if (player.anInt1555 == 0) {
-						player.forcedChat = null;
-					}
-				}
+	public void method57(int i, boolean flag) {
+		i = 26 / i;
+		for (int j = 0; j < anInt1133; j++) {
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[anIntArray1134[j]];
+			int k = 0x20000000 + (anIntArray1134[j] << 14);
+			if (class50_sub1_sub4_sub3_sub1 == null || !class50_sub1_sub4_sub3_sub1.isVisible()
+					|| class50_sub1_sub4_sub3_sub1.npcDefinition.aBoolean644 != flag
+					|| !class50_sub1_sub4_sub3_sub1.npcDefinition.method360(-993))
+				continue;
+			int l = ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX >> 7;
+			int i1 = ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY >> 7;
+			if (l < 0 || l >= 104 || i1 < 0 || i1 >= 104)
+				continue;
+			if (((Actor) (class50_sub1_sub4_sub3_sub1)).boundaryDimension == 1
+					&& (((Actor) (class50_sub1_sub4_sub3_sub1)).unitX & 0x7f) == 64
+					&& (((Actor) (class50_sub1_sub4_sub3_sub1)).unitY & 0x7f) == 64) {
+				if (anIntArrayArray886[l][i1] == anInt1138)
+					continue;
+				anIntArrayArray886[l][i1] = anInt1138;
 			}
-			for (int i = 0; i < actorCount; i++) {
-				int i_178_ = anIntArray862[i];
-				Npc npc = localNpcs[i_178_];
-				if (npc != null && npc.anInt1555 > 0) {
-					npc.anInt1555--;
-					if (npc.anInt1555 == 0) {
-						npc.forcedChat = null;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("18071, " + runtimeexception.toString());
-			throw new RuntimeException();
+			if (!class50_sub1_sub4_sub3_sub1.npcDefinition.aBoolean631)
+				k += 0x80000000;
+			currentScene.method252(k, class50_sub1_sub4_sub3_sub1,
+					((Actor) (class50_sub1_sub4_sub3_sub1)).unitX, method110(
+							((Actor) (class50_sub1_sub4_sub3_sub1)).unitY,
+							((Actor) (class50_sub1_sub4_sub3_sub1)).unitX, (byte) 9, plane),
+					((Actor) (class50_sub1_sub4_sub3_sub1)).aBoolean1592, 0, plane,
+					(((Actor) (class50_sub1_sub4_sub3_sub1)).boundaryDimension - 1) * 64 + 60,
+					((Actor) (class50_sub1_sub4_sub3_sub1)).unitY,
+					((Actor) (class50_sub1_sub4_sub3_sub1)).anInt1612);
 		}
+
 	}
 
-	public final void method39(byte b) {
-		do {
-			try {
-				int i = anInt1123 * 128 + 64;
-				int i_179_ = anInt1124 * 128 + 64;
-				int i_180_ = method42(currentSceneId, i_179_, true, i) - anInt1125;
-				if (anInt883 < i) {
-					anInt883 += anInt1126 + (i - anInt883) * anInt1127 / 1000;
-					if (anInt883 > i) {
-						anInt883 = i;
-					}
-				}
-				if (anInt883 > i) {
-					anInt883 -= anInt1126 + (anInt883 - i) * anInt1127 / 1000;
-					if (anInt883 < i) {
-						anInt883 = i;
-					}
-				}
-				if (anInt884 < i_180_) {
-					anInt884 += anInt1126 + (i_180_ - anInt884) * anInt1127 / 1000;
-					if (anInt884 > i_180_) {
-						anInt884 = i_180_;
-					}
-				}
-				if (anInt884 > i_180_) {
-					anInt884 -= anInt1126 + (anInt884 - i_180_) * anInt1127 / 1000;
-					if (anInt884 < i_180_) {
-						anInt884 = i_180_;
-					}
-				}
-				if (anInt885 < i_179_) {
-					anInt885 += anInt1126 + (i_179_ - anInt885) * anInt1127 / 1000;
-					if (anInt885 > i_179_) {
-						anInt885 = i_179_;
-					}
-				}
-				if (anInt885 > i_179_) {
-					anInt885 -= anInt1126 + (anInt885 - i_179_) * anInt1127 / 1000;
-					if (anInt885 < i_179_) {
-						anInt885 = i_179_;
-					}
-				}
-				i = anInt1020 * 128 + 64;
-				i_179_ = anInt1021 * 128 + 64;
-				i_180_ = method42(currentSceneId, i_179_, true, i) - anInt1022;
-				int i_181_ = i - anInt883;
-				int i_182_ = i_180_ - anInt884;
-				int i_183_ = i_179_ - anInt885;
-				int i_184_ = (int) Math.sqrt(i_181_ * i_181_ + i_183_ * i_183_);
-				int i_185_ = (int) (Math.atan2(i_182_, i_184_) * 325.949) & 0x7ff;
-				if (b == 5) {
-					b = (byte) 0;
-				} else {
-					Game.aBoolean944 = !Game.aBoolean944;
-				}
-				int i_186_ = (int) (Math.atan2(i_181_, i_183_) * -325.949) & 0x7ff;
-				if (i_185_ < 128) {
-					i_185_ = 128;
-				}
-				if (i_185_ > 383) {
-					i_185_ = 383;
-				}
-				if (anInt886 < i_185_) {
-					anInt886 += anInt1023 + (i_185_ - anInt886) * anInt1024 / 1000;
-					if (anInt886 > i_185_) {
-						anInt886 = i_185_;
-					}
-				}
-				if (anInt886 > i_185_) {
-					anInt886 -= anInt1023 + (anInt886 - i_185_) * anInt1024 / 1000;
-					if (anInt886 < i_185_) {
-						anInt886 = i_185_;
-					}
-				}
-				int i_187_ = i_186_ - anInt887;
-				if (i_187_ > 1024) {
-					i_187_ -= 2048;
-				}
-				if (i_187_ < -1024) {
-					i_187_ += 2048;
-				}
-				if (i_187_ > 0) {
-					anInt887 += anInt1023 + i_187_ * anInt1024 / 1000;
-					anInt887 &= 0x7ff;
-				}
-				if (i_187_ < 0) {
-					anInt887 -= anInt1023 + -i_187_ * anInt1024 / 1000;
-					anInt887 &= 0x7ff;
-				}
-				int i_188_ = i_186_ - anInt887;
-				if (i_188_ > 1024) {
-					i_188_ -= 2048;
-				}
-				if (i_188_ < -1024) {
-					i_188_ += 2048;
-				}
-				if ((i_188_ >= 0 || i_187_ <= 0) && (i_188_ <= 0 || i_187_ >= 0)) {
-					break;
-				}
-				anInt887 = i_186_;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("71397, " + b + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
+	public void setWaveVolume( int j) {
+		SignLink.wavevol = j;
 	}
 
-	public final void drawActionMenu() {
-		try {
-			int x = anInt974;
-			int y = anInt975;
-			int width = anInt976;
-			int height = anInt977;
-			int rgb = 0x5D5447;
-			Rasterizer.drawFilledRectangle(x, y, width, height, rgb);
-			Rasterizer.drawFilledRectangle(x + 1, y + 1, width - 2, 16, 0);
-			Rasterizer.drawUnfilledRectangle(x + 1, y + 18, width - 2, height - 19, 0);
-			fontBold.drawString("Choose Option", x + 3, y + 14, rgb);
-			int mouseX = mouseEventX;
-			int mouseY = mouseEventY;
-			if (actionMenuArea == 0) {
-				mouseX -= 4;
-				mouseY -= 4;
-			}
-			if (actionMenuArea == 1) {
-				mouseX -= 553;
-				mouseY -= 205;
-			}
-			if (actionMenuArea == 2) {
-				mouseX -= 17;
-				mouseY -= 357;
-			}
-			for (int i = 0; i < menuActionRow; i++) {
-				int yOffset = y + 31 + (menuActionRow - 1 - i) * 15;
-				int fontColor = 0xFFFFFF;
-				if (mouseX > x && mouseX < x + width && mouseY > yOffset - 13 && mouseY < yOffset + 3) {
-					fontColor = 0xFFFF00;
-				}
-				fontBold.drawShadowedString(menuActionNames[i], x + 3, yOffset, true, fontColor);
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("82996, " + runtimeexception.toString());
-			throw new RuntimeException();
+	public void method59() {
+		if (anInt873 > 0) {
+			logout();
+			return;
 		}
-	}
-
-	public final void method41(byte b, long l) {
-		try {
-			if (l != 0L) {
-				if (friendsListCount >= 100 && anInt1071 != 1) {
-					sendMessage("Your friendlist is full. Max of 100 for free users, and 200 for members", 0, "");
-				} else if (friendsListCount >= 200) {
-					sendMessage("Your friendlist is full. Max of 100 for free users, and 200 for members", 0, "");
-				} else {
-					String string = TextUtils.formatName(TextUtils.longToName(l));
-					for (int i = 0; i < friendsListCount; i++) {
-						if (friendsListLongs[i] == l) {
-							sendMessage(string + " is already on your friend list", 0, "");
-							return;
-						}
-					}
-					if (b != 68) {
-						opcode = -1;
-					}
-					for (int i = 0; i < ignoreListCount; i++) {
-						if (ignoreList[i] == l) {
-							sendMessage("Please remove " + string + " from your ignore list first", 0, "");
-							return;
-						}
-					}
-					if (!string.equals(Game.localPlayer.playerName)) {
-						friendsListNames[friendsListCount] = string;
-						friendsListLongs[friendsListCount] = l;
-						friendsListWorlds[friendsListCount] = 0;
-						friendsListCount++;
-						redrawTab = true;
-						outBuffer.putOpcode(188);
-						outBuffer.putLong(l);
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("15283, " + b + ", " + l + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final int method42(int i, int i_198_, boolean bool, int i_199_) {
-		try {
-			loggedIn &= bool;
-			int i_200_ = i_199_ >> 7;
-			int i_201_ = i_198_ >> 7;
-			if (i_200_ < 0 || i_201_ < 0 || i_200_ > 103 || i_201_ > 103) {
-				return 0;
-			}
-			int i_202_ = i;
-			if (i_202_ < 3 && (currentSceneTileFlags[1][i_200_][i_201_] & 0x2) == 2) {
-				i_202_++;
-			}
-			int i_203_ = i_199_ & 0x7f;
-			int i_204_ = i_198_ & 0x7f;
-			int i_205_ = anIntArrayArrayArray1239[i_202_][i_200_][i_201_] * (128 - i_203_)
-					+ anIntArrayArrayArray1239[i_202_][i_200_ + 1][i_201_] * i_203_ >> 7;
-			int i_206_ = anIntArrayArrayArray1239[i_202_][i_200_][i_201_ + 1] * (128 - i_203_)
-					+ anIntArrayArrayArray1239[i_202_][i_200_ + 1][i_201_ + 1] * i_203_ >> 7;
-			return i_205_ * (128 - i_204_) + i_206_ * i_204_ >> 7;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("48438, " + i + ", " + i_198_ + ", " + bool + ", " + i_199_ + ", "
-					+ runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	private static final String method43(int i, int i_207_) {
-		try {
-			if (i != -33245) {
-				Game.anInt871 = -65;
-			}
-			if (i_207_ < 100000) {
-				return String.valueOf(i_207_);
-			}
-			if (i_207_ < 10000000) {
-				return String.valueOf(i_207_ / 1000) + "K";
-			}
-			return String.valueOf(i_207_ / 1000000) + "M";
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("13837, " + i + ", " + i_207_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void logout() {
-		try {
-			if (bufferedConnection != null) {
-				bufferedConnection.close();
-			}
-		} catch (Exception exception) {
-			/* empty */
-		}
-		bufferedConnection = null;
+		method125("Please wait - attempting to reestablish", "Connection lost");
+		minimapState = 0;
+		destinationX = 0;
+		JagSocket class17 = bufferedConnection;
 		loggedIn = false;
-		loginScreenState = 0;
-		username = "";
-		password = "";
-		resetModelCaches();
-		currentScene.method496(619);
-		for (int plane = 0; plane < 4; plane++) {
-			currentCollisionMap[plane].reset();
-		}
-		System.gc();
-		stopMidi();
-		songId = -1;
-		onDemandRequesterId = -1;
-		songFadeCycle = 0;
-	}
-
-	public final void characterChangeGenger(int i) {
+		anInt850 = 0;
+		login(username, password, true);
+		if (!loggedIn)
+			logout();
 		try {
-			if (i != 0) {
-				opcode = -1;
-			}
-			aBoolean1056 = true;
-			for (int i_208_ = 0; i_208_ < 7; i_208_++) {
-				characterEditIdentityKits[i_208_] = -1;
-				for (int i_209_ = 0; i_209_ < IdentityKit.count; i_209_++) {
-					if (!IdentityKit.cache[i_209_].widgetDisplayed
-							&& IdentityKit.cache[i_209_].partId == i_208_ + (characterEditChangeGenger ? 0 : 7)) {
-						characterEditIdentityKits[i_208_] = i_209_;
-						break;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("51214, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			class17.close();
+			return;
+		} catch (Exception _ex) {
+			return;
 		}
 	}
 
-	private final void method46(int i, Buffer buffer, byte b) {
-		try {
-			if (b != 2) {
-				for (int i_210_ = 1; i_210_ > 0; i_210_++) {
-					/* empty */
-				}
-			}
-			while (buffer.bitOffset + 21 < i * 8) {
-				int i_211_ = buffer.getBits(14);
-				if (i_211_ == 16383) {
-					break;
-				}
-				if (localNpcs[i_211_] == null) {
-					localNpcs[i_211_] = new Npc();
-				}
-				Npc npc = localNpcs[i_211_];
-				anIntArray862[actorCount++] = i_211_;
-				npc.anInt1557 = Game.currentCycle;
-				int i_212_ = buffer.getBits(5);
-				if (i_212_ > 15) {
-					i_212_ -= 32;
-				}
-				int i_213_ = buffer.getBits(5);
-				if (i_213_ > 15) {
-					i_213_ -= 32;
-				}
-				buffer.getBits(1);
-				npc.npcDefinition = ActorDefinition.getDefinition(buffer.getBits(12));
-				int i_215_ = buffer.getBits(1);
-				if (i_215_ == 1) {
-					anIntArray919[anInt918++] = i_211_;
-				}
-				npc.boundaryDimension = npc.npcDefinition.boundaryDimension;
-				npc.anInt1524 = npc.npcDefinition.degreesToTurn;
-				npc.walkAnimationId = npc.npcDefinition.walkAnimationId;
-				npc.turnAroundAnimationId = npc.npcDefinition.turnAroundAnimationId;
-				npc.turnRightAnimationId = npc.npcDefinition.turnRightAnimationId;
-				npc.turnLeftAnimationId = npc.npcDefinition.turnLeftAnimationId;
-				npc.standAnimationId = npc.npcDefinition.standAnimationId;
-				npc.setPosition(Game.localPlayer.pathX[0] + i_213_, Game.localPlayer.pathY[0] + i_212_);
-			}
-			buffer.finishBitAccess();
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("75258, " + i + ", " + buffer + ", " + b + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	@Override
-	public final void doLogic() {
-		if (!aBoolean1277 && !aBoolean951 && !aBoolean1201) {
-			Game.currentCycle++;
-			if (!loggedIn) {
-				processLoginScreen();
-			} else {
-				processGame();
-			}
-			method57(false);
-			Game.aBoolean944 = !Game.aBoolean944;
-		}
-	}
-
-	public final void method47(boolean bool) {
-		try {
-			if (Game.localPlayer.xWithBoundary >> 7 == destinationX
-					&& Game.localPlayer.yWithBoundary >> 7 == destinationY) {
-				destinationX = 0;
-			}
-			int i_216_ = playerCount;
-			if (bool) {
-				i_216_ = 1;
-			}
-			int i_218_ = 0;
-			for (/**/; i_218_ < i_216_; i_218_++) {
-				Player player;
-				int i_219_;
-				if (bool) {
-					player = Game.localPlayer;
-					i_219_ = localPlayerId << 14;
-				} else {
-					player = players[anIntArray917[i_218_]];
-					i_219_ = anIntArray917[i_218_] << 14;
-				}
-				if (player != null && player.isVisibile()) {
-					player.aBoolean1719 = false;
-					if ((Game.lowMemory && playerCount > 50 || playerCount > 200) && !bool
-							&& player.anInt1537 == player.standAnimationId) {
-						player.aBoolean1719 = true;
-					}
-					int i_220_ = player.xWithBoundary >> 7;
-					int i_221_ = player.yWithBoundary >> 7;
-					if (i_220_ >= 0 && i_220_ < 104 && i_221_ >= 0 && i_221_ < 104) {
-						if (player.playerModel != null && Game.currentCycle >= player.anInt1727
-								&& Game.currentCycle < player.anInt1728) {
-							player.aBoolean1719 = false;
-							player.anInt1729 = method42(currentSceneId, player.yWithBoundary, true,
-									player.xWithBoundary);
-							currentScene.method508(60, currentSceneId, player.yWithBoundary, player, player.anInt1572,
-									player.anInt1742, player.xWithBoundary, player.anInt1729, player.anInt1739,
-									player.anInt1741, i_219_, player.anInt1740, (byte) 35);
-						} else {
-							if ((player.xWithBoundary & 0x7f) == 64 && (player.yWithBoundary & 0x7f) == 64) {
-								if (anIntArrayArray954[i_220_][i_221_] == anInt1290) {
-									continue;
-								}
-								anIntArrayArray954[i_220_][i_221_] = anInt1290;
-							}
-							player.anInt1729 = method42(currentSceneId, player.yWithBoundary, true,
-									player.xWithBoundary);
-							currentScene
-									.method507(currentSceneId, player.anInt1572, (byte) 6, player.anInt1729, i_219_,
-											player.yWithBoundary, 60, player.xWithBoundary, player, player.aBoolean1561);
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("79491, " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final boolean handleWidgetDynamicAction(Widget widget) {
+	public boolean handleWidgetDynamicAction(Widget widget) {
 		int type = widget.contentType;
 		if (friendListStatus == 2) {
 			if (type == 201) {
@@ -2489,7 +3732,7 @@ public class Game extends GameShell {
 			}
 		}
 		if (type == 205) {
-			anInt1036 = 250;
+			anInt873 = 250;
 			return true;
 		}
 		if (type == 501) {
@@ -2509,4581 +3752,601 @@ public class Game extends GameShell {
 			chatboxInputMessage = "Enter name of player to delete from list";
 		}
 		if (type >= 300 && type <= 313) {
-			int i_223_ = (type - 300) / 2;
-			int i_224_ = type & 0x1;
-			int i_225_ = characterEditIdentityKits[i_223_];
-			if (i_225_ != -1) {
+			int k = (type - 300) / 2;
+			int j1 = type & 1;
+			int i2 = characterEditIdentityKits[k];
+			if (i2 != -1) {
 				do {
-					if (i_224_ == 0 && --i_225_ < 0) {
-						i_225_ = IdentityKit.count - 1;
-					}
-					if (i_224_ == 1 && ++i_225_ >= IdentityKit.count) {
-						i_225_ = 0;
-					}
-				} while (IdentityKit.cache[i_225_].widgetDisplayed
-						|| IdentityKit.cache[i_225_].partId != i_223_ + (characterEditChangeGenger ? 0 : 7));
-				characterEditIdentityKits[i_223_] = i_225_;
-				aBoolean1056 = true;
+					if (j1 == 0 && --i2 < 0)
+						i2 = IdentityKit.count - 1;
+					if (j1 == 1 && ++i2 >= IdentityKit.count)
+						i2 = 0;
+				} while (IdentityKit.identityKits[i2].notSelectable
+						|| IdentityKit.identityKits[i2].part != k + (characterEditChangeGenger ? 0 : 7));
+				characterEditIdentityKits[k] = i2;
+				aBoolean1277 = true;
 			}
 		}
 		if (type >= 314 && type <= 323) {
-			int i_226_ = (type - 314) / 2;
-			int i_227_ = type & 0x1;
-			int i_228_ = characterEditColors[i_226_];
-			if (i_227_ == 0 && --i_228_ < 0) {
-				i_228_ = Game.anIntArrayArray1028[i_226_].length - 1;
-			}
-			if (i_227_ == 1 && ++i_228_ >= Game.anIntArrayArray1028[i_226_].length) {
-				i_228_ = 0;
-			}
-			characterEditColors[i_226_] = i_228_;
-			aBoolean1056 = true;
+			int l = (type - 314) / 2;
+			int k1 = type & 1;
+			int j2 = characterEditColors[l];
+			if (k1 == 0 && --j2 < 0)
+				j2 = playerColours[l].length - 1;
+			if (k1 == 1 && ++j2 >= playerColours[l].length)
+				j2 = 0;
+			characterEditColors[l] = j2;
+			aBoolean1277 = true;
 		}
 		if (type == 324 && !characterEditChangeGenger) {
 			characterEditChangeGenger = true;
-			characterChangeGenger(0);
+			method25(anInt1015);
 		}
 		if (type == 325 && characterEditChangeGenger) {
 			characterEditChangeGenger = false;
-			characterChangeGenger(0);
+			method25(anInt1015);
 		}
 		if (type == 326) {
-			outBuffer.putOpcode(101);
-			outBuffer.put(characterEditChangeGenger ? 0 : 1);
-			for (int identityKit = 0; identityKit < 7; identityKit++) {
-				outBuffer.put(characterEditIdentityKits[identityKit]);
-			}
-			for (int color = 0; color < 5; color++) {
-				outBuffer.put(characterEditColors[color]);
-			}
+			outBuffer.putOpcode(163);
+			outBuffer.putByte(characterEditChangeGenger ? 0 : 1);
+			for (int i1 = 0; i1 < 7; i1++)
+				outBuffer.putByte(characterEditIdentityKits[i1]);
+
+			for (int l1 = 0; l1 < 5; l1++)
+				outBuffer.putByte(characterEditColors[l1]);
+
 			return true;
 		}
-		if (type == 613) {
+		if (type == 620)
 			reportMutePlayer = !reportMutePlayer;
-		}
-		if (type >= 601 && type <= 612) {
+		if (type >= 601 && type <= 613) {
 			closeWidgets();
 			if (reportedName.length() > 0) {
-				outBuffer.putOpcode(218);
+				outBuffer.putOpcode(184);
 				outBuffer.putLong(TextUtils.nameToLong(reportedName));
-				outBuffer.put(type - 601);
-				outBuffer.put(reportMutePlayer ? 1 : 0);
+				outBuffer.putByte(type - 601);
+				outBuffer.putByte(reportMutePlayer ? 1 : 0);
 			}
 		}
 		return false;
 	}
 
-	private final void method49(Buffer buffer) {
+	public Archive method61(int i, int j, String s, int k, int l, String s1) {
+		byte abyte0[] = null;
+		int i1 = 5;
 		try {
-			for (int i = 0; i < anInt918; i++) {
-				int playerIndex = anIntArray919[i];
-				Player player = players[playerIndex];
-				int updateMask = buffer.getUnsignedByte();
-				if ((updateMask & 0x40) != 0) {
-					updateMask += buffer.getUnsignedByte() << 8;
-				}
-				updatePlayerMask(updateMask, playerIndex, buffer, player);
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("72508, " + buffer + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			if (stores[0] != null)
+				abyte0 = stores[0].get(l);
+		} catch (Exception _ex) {
 		}
-	}
-
-	public final void renderCurrentScene(int i, int i_234_, int i_235_, int i_236_, int i_237_, int i_238_) {
-		do {
+		if (abyte0 != null) {
+			aCRC32_1088.reset();
+			aCRC32_1088.update(abyte0);
+			int j1 = (int) aCRC32_1088.getValue();
+			if (j1 != j)
+				abyte0 = null;
+		}
+		if (abyte0 != null) {
+			Archive class2 = new Archive(abyte0);
+			return class2;
+		}
+		int k1 = 0;
+		if (i != 14076)
+			anInt1281 = -343;
+		while (abyte0 == null) {
+			String s2 = "Unknown error";
+			drawLoadingText(k, "Requesting " + s1);
 			try {
-				int i_239_ = currentScene.method522(i_238_, i_236_, i);
-				if (i_234_ < 0) {
-					if (i_239_ != 0) {
-						int i_240_ = currentScene.getConfig(i_238_, i_236_, i, i_239_);
-						int i_241_ = i_240_ >> 6 & 0x3;
-						int i_242_ = i_240_ & 0x1f;
-						int i_243_ = i_235_;
-						if (i_239_ > 0) {
-							i_243_ = i_237_;
-						}
-						int[] is = minimapImage.pixels;
-						int i_244_ = 24624 + i_236_ * 4 + (103 - i) * 512 * 4;
-						int i_245_ = i_239_ >> 14 & 0x7fff;
-						GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_245_);
-						if (gameobjectdefinition.mapScene != -1) {
-							IndexedImage indexedimage = anIndexedImageArray1085[gameobjectdefinition.mapScene];
-							if (indexedimage != null) {
-								int i_246_ = (gameobjectdefinition.sizeX * 4 - indexedimage.width) / 2;
-								int i_247_ = (gameobjectdefinition.sizeY * 4 - indexedimage.height) / 2;
-								indexedimage.drawImage(48 + i_236_ * 4 + i_246_, 48
-										+ (104 - i - gameobjectdefinition.sizeY) * 4 + i_247_);
-							}
-						} else {
-							if (i_242_ == 0 || i_242_ == 2) {
-								if (i_241_ == 0) {
-									is[i_244_] = i_243_;
-									is[i_244_ + 512] = i_243_;
-									is[i_244_ + 1024] = i_243_;
-									is[i_244_ + 1536] = i_243_;
-								} else if (i_241_ == 1) {
-									is[i_244_] = i_243_;
-									is[i_244_ + 1] = i_243_;
-									is[i_244_ + 2] = i_243_;
-									is[i_244_ + 3] = i_243_;
-								} else if (i_241_ == 2) {
-									is[i_244_ + 3] = i_243_;
-									is[i_244_ + 3 + 512] = i_243_;
-									is[i_244_ + 3 + 1024] = i_243_;
-									is[i_244_ + 3 + 1536] = i_243_;
-								} else if (i_241_ == 3) {
-									is[i_244_ + 1536] = i_243_;
-									is[i_244_ + 1536 + 1] = i_243_;
-									is[i_244_ + 1536 + 2] = i_243_;
-									is[i_244_ + 1536 + 3] = i_243_;
-								}
-							}
-							if (i_242_ == 3) {
-								if (i_241_ == 0) {
-									is[i_244_] = i_243_;
-								} else if (i_241_ == 1) {
-									is[i_244_ + 3] = i_243_;
-								} else if (i_241_ == 2) {
-									is[i_244_ + 3 + 1536] = i_243_;
-								} else if (i_241_ == 3) {
-									is[i_244_ + 1536] = i_243_;
-								}
-							}
-							if (i_242_ == 2) {
-								if (i_241_ == 3) {
-									is[i_244_] = i_243_;
-									is[i_244_ + 512] = i_243_;
-									is[i_244_ + 1024] = i_243_;
-									is[i_244_ + 1536] = i_243_;
-								} else if (i_241_ == 0) {
-									is[i_244_] = i_243_;
-									is[i_244_ + 1] = i_243_;
-									is[i_244_ + 2] = i_243_;
-									is[i_244_ + 3] = i_243_;
-								} else if (i_241_ == 1) {
-									is[i_244_ + 3] = i_243_;
-									is[i_244_ + 3 + 512] = i_243_;
-									is[i_244_ + 3 + 1024] = i_243_;
-									is[i_244_ + 3 + 1536] = i_243_;
-								} else if (i_241_ == 2) {
-									is[i_244_ + 1536] = i_243_;
-									is[i_244_ + 1536 + 1] = i_243_;
-									is[i_244_ + 1536 + 2] = i_243_;
-									is[i_244_ + 1536 + 3] = i_243_;
-								}
-							}
-						}
+				int l1 = 0;
+				DataInputStream datainputstream = method31(s + j);
+				byte abyte1[] = new byte[6];
+				datainputstream.readFully(abyte1, 0, 6);
+				Buffer class50_sub1_sub2 = new Buffer(abyte1);
+				class50_sub1_sub2.offset = 3;
+				int j2 = class50_sub1_sub2.getTriByte() + 6;
+				int k2 = 6;
+				abyte0 = new byte[j2];
+				for (int l2 = 0; l2 < 6; l2++)
+					abyte0[l2] = abyte1[l2];
+
+				while (k2 < j2) {
+					int i3 = j2 - k2;
+					if (i3 > 1000)
+						i3 = 1000;
+					int k3 = datainputstream.read(abyte0, k2, i3);
+					if (k3 < 0) {
+						s2 = "Length error: " + k2 + "/" + j2;
+						throw new IOException("EOF");
 					}
-					i_239_ = currentScene.method524(i_238_, i_236_, i);
-					if (i_239_ != 0) {
-						int i_248_ = currentScene.getConfig(i_238_, i_236_, i, i_239_);
-						int i_249_ = i_248_ >> 6 & 0x3;
-						int i_250_ = i_248_ & 0x1f;
-						int i_251_ = i_239_ >> 14 & 0x7fff;
-						GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_251_);
-						if (gameobjectdefinition.mapScene != -1) {
-							IndexedImage indexedimage = anIndexedImageArray1085[gameobjectdefinition.mapScene];
-							if (indexedimage != null) {
-								int i_252_ = (gameobjectdefinition.sizeX * 4 - indexedimage.width) / 2;
-								int i_253_ = (gameobjectdefinition.sizeY * 4 - indexedimage.height) / 2;
-								indexedimage.drawImage(48 + i_236_ * 4 + i_252_, 48
-										+ (104 - i - gameobjectdefinition.sizeY) * 4 + i_253_);
-							}
-						} else if (i_250_ == 9) {
-							int i_254_ = 15658734;
-							if (i_239_ > 0) {
-								i_254_ = 15597568;
-							}
-							int[] is = minimapImage.pixels;
-							int i_255_ = 24624 + i_236_ * 4 + (103 - i) * 512 * 4;
-							if (i_249_ == 0 || i_249_ == 2) {
-								is[i_255_ + 1536] = i_254_;
-								is[i_255_ + 1024 + 1] = i_254_;
-								is[i_255_ + 512 + 2] = i_254_;
-								is[i_255_ + 3] = i_254_;
-							} else {
-								is[i_255_] = i_254_;
-								is[i_255_ + 512 + 1] = i_254_;
-								is[i_255_ + 1024 + 2] = i_254_;
-								is[i_255_ + 1536 + 3] = i_254_;
-							}
-						}
-					}
-					i_239_ = currentScene.getFloorDecorationHash(i_238_, i_236_, i);
-					if (i_239_ == 0) {
-						break;
-					}
-					int i_256_ = i_239_ >> 14 & 0x7fff;
-					GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_256_);
-					if (gameobjectdefinition.mapScene == -1) {
-						break;
-					}
-					IndexedImage indexedimage = anIndexedImageArray1085[gameobjectdefinition.mapScene];
-					if (indexedimage == null) {
-						break;
-					}
-					int i_257_ = (gameobjectdefinition.sizeX * 4 - indexedimage.width) / 2;
-					int i_258_ = (gameobjectdefinition.sizeY * 4 - indexedimage.height) / 2;
-					indexedimage.drawImage(48 + i_236_ * 4 + i_257_, 48 + (104 - i - gameobjectdefinition.sizeY) * 4
-							+ i_258_);
+					k2 += k3;
+					int l3 = (k2 * 100) / j2;
+					if (l3 != l1)
+						drawLoadingText(k, "Loading " + s1 + " - " + l3 + "%");
+					l1 = l3;
 				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("19786, " + i + ", " + i_234_ + ", " + i_235_ + ", " + i_236_ + ", " + i_237_
-						+ ", " + i_238_ + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void prepareTitle() {
-		do {
-			try {
-				titleboxImage = new IndexedImage(anArchive1078, "titlebox", 0);
-				titleboxButtonImage = new IndexedImage(anArchive1078, "titlebutton", 0);
-				titleFlameEmblem = new IndexedImage[12];
-
-				int icon = 0;
+				datainputstream.close();
 				try {
-					icon = Integer.parseInt(getParameter("fl_icon"));
-				} catch (Exception exception) {
-					/* empty */
+					if (stores[0] != null)
+						stores[0].put(abyte0.length, abyte0, l);
+				} catch (Exception _ex) {
+					stores[0] = null;
 				}
-				if (icon == 0) {
-					for (int i = 0; i < 12; i++) {
-						titleFlameEmblem[i] = new IndexedImage(anArchive1078, "runes", i);
+				if (abyte0 != null) {
+					aCRC32_1088.reset();
+					aCRC32_1088.update(abyte0);
+					int j3 = (int) aCRC32_1088.getValue();
+					if (j3 != j) {
+						abyte0 = null;
+						k1++;
+						s2 = "Checksum error: " + j3;
 					}
-				} else {
-					for (int i = 0; i < 12; i++) {
-						titleFlameEmblem[i] = new IndexedImage(anArchive1078, "runes", 12 + (i & 0x3));
-					}
 				}
-
-				anImageRGB1226 = new ImageRGB(128, 265);
-				anImageRGB1227 = new ImageRGB(128, 265);
-
-				// Copies the background behind the flames, to the flame's
-				// pixels before the actual flames are rendered.
-				System.arraycopy(flameLeftBackground.pixels, 0, anImageRGB1226.pixels, 0, (128 * 265));
-				System.arraycopy(flameRightBackground.pixels, 0, anImageRGB1227.pixels, 0, (128 * 265));
-
-				anIntArray876 = new int[256];
-				for (int i = 0; i < 64; i++) {
-					anIntArray876[i] = i * 0x040000;
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray876[i + 64] = 0xFF0000 + (0x000400 * i);
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray876[i + 128] = 0xFFFF00 + (0x04 * i);
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray876[i + 192] = 0xFFFFFF;
-				}
-
-				anIntArray877 = new int[256];
-				for (int i = 0; i < 64; i++) {
-					anIntArray877[i] = i * 0x000400;
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray877[i + 64] = 0x00FF00 + (0x04 * i);
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray877[i + 128] = 0x00FFFF + (0x040000 * i);
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray877[i + 192] = 0xFFFFFF;
-				}
-
-				anIntArray878 = new int[256];
-				for (int i = 0; i < 64; i++) {
-					anIntArray878[i] = i * 4;
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray878[i + 64] = 0xFF + (0x040000 * i);
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray878[i + 128] = 0xFF00FF + (0x0400 * i);
-				}
-				for (int i = 0; i < 64; i++) {
-					anIntArray878[i + 192] = 0xFFFFFF;
-				}
-
-				anIntArray875 = new int[256];
-				anIntArray1215 = new int[32768];
-				anIntArray1216 = new int[32768];
-				method106(null, -135);
-				anIntArray853 = new int[32768];
-				anIntArray854 = new int[32768];
-				drawLoadingText(10, "Connecting to fileserver");
-				if (aBoolean856) {
-					break;
-				}
-				aBoolean905 = true;
-				aBoolean856 = true;
-				startRunnable(this, 2);
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("57668, " + runtimeexception.toString());
-				throw new RuntimeException();
+			} catch (IOException ioexception) {
+				if (s2.equals("Unknown error"))
+					s2 = "Connection error";
+				abyte0 = null;
+			} catch (NullPointerException _ex) {
+				s2 = "Null error";
+				abyte0 = null;
+				if (!SignLink.reporterror)
+					return null;
+			} catch (ArrayIndexOutOfBoundsException _ex) {
+				s2 = "Bounds error";
+				abyte0 = null;
+				if (!SignLink.reporterror)
+					return null;
+			} catch (Exception _ex) {
+				s2 = "Unexpected error";
+				abyte0 = null;
+				if (!SignLink.reporterror)
+					return null;
 			}
-			break;
-		} while (false);
-	}
-
-	public static final void setHighMemory() {
-		Scene.lowMemory = false;
-		Rasterizer3D.lowMemory = false;
-		Game.lowMemory = false;
-		Region.lowMemory = false;
-		GameObjectDefinition.lowMemory = false;
-	}
-
-	public static final void main(String[] strings) {
-		try {
-			System.out.println("RS2 user client - release #" + 317);
-			Game.nodeId = 0;
-			Game.portOffset = 0;
-			// setLowMemory((byte) 77);
-			Game.setHighMemory();
-			Game.membersWorld = true;
-			SignLink.storeId = 32;
-			SignLink.initialize(InetAddress.getLocalHost());
-			Game client = new Game();
-			client.initializeApplication(765, 503);
-		} catch (Exception exception) {
-			/* empty */
-		}
-	}
-
-	public final void method53() {
-		try {
-			if (Game.lowMemory && anInt1048 == 2 && Region.onBuildTimePlane != currentSceneId) {
-				currentSceneBuffer.createRasterizer();
-				fontNormal.drawStringLeft("Loading - please wait.", 257, 151, 0);
-				fontNormal.drawStringLeft("Loading - please wait.", 256, 150, 0xFFFFFF);
-				currentSceneBuffer.drawGraphics(4, 4, gameGraphics);
-				anInt1048 = 1;
-				aLong849 = System.currentTimeMillis();
-			}
-			if (anInt1048 == 1) {
-				int i_276_ = method54();
-				if (i_276_ != 0 && System.currentTimeMillis() - aLong849 > 360000L) {
-					SignLink.reportError(username + " glcfb " + aLong1240 + "," + i_276_ + "," + Game.lowMemory + ","
-							+ stores[0] + "," + onDemandRequester.immediateRequestCount() + "," + currentSceneId + ","
-							+ anInt1094 + "," + anInt1095);
-					aLong849 = System.currentTimeMillis();
-				}
-			}
-			if (anInt1048 != 2 || currentSceneId == lastSceneId) {
-				return;
-			}
-			lastSceneId = currentSceneId;
-			renderViewport(currentSceneId);
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("51136, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final int method54() {
-		try {
-			for (int i = 0; i < aByteArrayArray1208.length; i++) {
-				if (aByteArrayArray1208[i] == null && anIntArray1260[i] != -1) {
-					return -1;
-				}
-				if (aByteArrayArray1272[i] == null && anIntArray1261[i] != -1) {
-					return -2;
-				}
-			}
-			boolean bool = true;
-			for (int i = 0; i < aByteArrayArray1208.length; i++) {
-				byte[] bs = aByteArrayArray1272[i];
-				if (bs != null) {
-					int i_277_ = (anIntArray1259[i] >> 8) * 64 - regionAbsoluteBaseX;
-					int i_278_ = (anIntArray1259[i] & 0xff) * 64 - regionAbsoluteBaseY;
-					if (aBoolean1184) {
-						i_277_ = 10;
-						i_278_ = 10;
-					}
-					bool &= Region.method471(i_277_, bs, i_278_, 6);
-				}
-			}
-			if (!bool) {
-				return -3;
-			}
-			if (aBoolean1105) {
-				return -4;
-			}
-			anInt1048 = 2;
-			Region.onBuildTimePlane = currentSceneId;
-			method22();
-			outBuffer.putOpcode(121);
-			return 0;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("50361, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method55(int i) {
-		try {
-			while (i >= 0) {
-				startup();
-			}
-			for (Projectile projectile = (Projectile) projectileList.getBack(); projectile != null; projectile = (Projectile) projectileList
-					.getPrevious()) {
-				if (projectile.sceneId != currentSceneId || Game.currentCycle > projectile.endCycle) {
-					projectile.remove();
-				} else if (Game.currentCycle >= projectile.delay) {
-					if (projectile.targetedEntityId > 0) {
-						Npc npc = localNpcs[projectile.targetedEntityId - 1];
-						if (npc != null && npc.xWithBoundary >= 0 && npc.xWithBoundary < 13312
-								&& npc.yWithBoundary >= 0 && npc.yWithBoundary < 13312) {
-							projectile.trackTarget(Game.currentCycle, npc.yWithBoundary,
-									method42(projectile.sceneId, npc.yWithBoundary, true, npc.xWithBoundary)
-											- projectile.endHeight, npc.xWithBoundary);
-						}
-					}
-					if (projectile.targetedEntityId < 0) {
-						int i_279_ = -projectile.targetedEntityId - 1;
-						Player player;
-						if (i_279_ == anInt909) {
-							player = Game.localPlayer;
-						} else {
-							player = players[i_279_];
-						}
-						if (player != null && player.xWithBoundary >= 0 && player.xWithBoundary < 13312
-								&& player.yWithBoundary >= 0 && player.yWithBoundary < 13312) {
-							projectile.trackTarget(Game.currentCycle, player.yWithBoundary,
-									method42(projectile.sceneId, player.yWithBoundary, true, player.xWithBoundary)
-											- projectile.endHeight, player.xWithBoundary);
-						}
-					}
-					projectile.move(anInt970);
-					currentScene.method507(currentSceneId, projectile.modelRotationY, (byte) 6,
-							(int) projectile.currentHeight, -1, (int) projectile.currentY, 60,
-							(int) projectile.currentX, projectile, false);
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("65179, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	@Override
-	public final AppletContext getAppletContext() {
-		if (SignLink.applet != null) {
-			return SignLink.applet.getAppletContext();
-		}
-		return super.getAppletContext();
-	}
-
-	public final void prepareTitleBackground() {
-		try {
-			byte[] data = anArchive1078.getFile("title.dat");
-			ImageRGB image = new ImageRGB(data, this);
-			flameLeftBackground.createRasterizer();
-			image.drawInverse(0, 0);
-			flameRightBackground.createRasterizer();
-			image.drawInverse(-637, 0);
-			aProducingGraphicsBuffer1132.createRasterizer();
-			image.drawInverse(-128, 0);
-			aProducingGraphicsBuffer1133.createRasterizer();
-			image.drawInverse(-202, -371);
-			aProducingGraphicsBuffer1134.createRasterizer();
-			image.drawInverse(-202, -171);
-			aProducingGraphicsBuffer1137.createRasterizer();
-			image.drawInverse(0, -265);
-			aProducingGraphicsBuffer1138.createRasterizer();
-			image.drawInverse(-562, -265);
-			aProducingGraphicsBuffer1139.createRasterizer();
-			image.drawInverse(-128, -171);
-			aProducingGraphicsBuffer1140.createRasterizer();
-			image.drawInverse(-562, -171);
-			int[] is = new int[image.width];
-			for (int i_280_ = 0; i_280_ < image.height; i_280_++) {
-				for (int i_281_ = 0; i_281_ < image.width; i_281_++) {
-					is[i_281_] = image.pixels[image.width - i_281_ - 1 + image.width * i_280_];
-				}
-				for (int i_282_ = 0; i_282_ < image.width; i_282_++) {
-					image.pixels[i_282_ + image.width * i_280_] = is[i_282_];
-				}
-			}
-			flameLeftBackground.createRasterizer();
-			image.drawInverse(382, 0);
-			flameRightBackground.createRasterizer();
-			image.drawInverse(-255, 0);
-			aProducingGraphicsBuffer1132.createRasterizer();
-			image.drawInverse(254, 0);
-			aProducingGraphicsBuffer1133.createRasterizer();
-			image.drawInverse(180, -371);
-			aProducingGraphicsBuffer1134.createRasterizer();
-			image.drawInverse(180, -171);
-			aProducingGraphicsBuffer1137.createRasterizer();
-			image.drawInverse(382, -265);
-			aProducingGraphicsBuffer1138.createRasterizer();
-			image.drawInverse(-180, -265);
-			aProducingGraphicsBuffer1139.createRasterizer();
-			image.drawInverse(254, -171);
-			aProducingGraphicsBuffer1140.createRasterizer();
-			image.drawInverse(-180, -171);
-			image = new ImageRGB(anArchive1078, "logo", 0);
-			aProducingGraphicsBuffer1132.createRasterizer();
-			image.drawImage(382 - (image.width / 2) - 128, 18);
-			System.gc();
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("96255, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method57(boolean bool) {
-		try {
-			if (bool) {
-			}
-			for (;;) {
-				OnDemandNode ondemandnode = onDemandRequester.next();
-				if (ondemandnode == null) {
-					break;
-				}
-				if (ondemandnode.type == 0) {
-					Model.loadModelHeader(ondemandnode.buffer, ondemandnode.id);
-					if ((onDemandRequester.modelId(ondemandnode.id) & 0x62) != 0) {
-						redrawTab = true;
-						if (chatboxWidgetId != -1) {
-							redrawChatbox = true;
-						}
-					}
-				}
-				if (ondemandnode.type == 1 && ondemandnode.buffer != null) {
-					Animation.method149(ondemandnode.buffer, false);
-				}
-				if (ondemandnode.type == 2 && ondemandnode.id == onDemandRequesterId && ondemandnode.buffer != null) {
-					saveMidi(midiFade, ondemandnode.buffer);
-				}
-				if (ondemandnode.type == 3 && anInt1048 == 1) {
-					for (int i = 0; i < aByteArrayArray1208.length; i++) {
-						if (anIntArray1260[i] == ondemandnode.id) {
-							aByteArrayArray1208[i] = ondemandnode.buffer;
-							if (ondemandnode.buffer == null) {
-								anIntArray1260[i] = -1;
-							}
-							break;
-						}
-						if (anIntArray1261[i] == ondemandnode.id) {
-							aByteArrayArray1272[i] = ondemandnode.buffer;
-							if (ondemandnode.buffer == null) {
-								anIntArray1261[i] = -1;
-							}
-							break;
-						}
-					}
-				}
-				if (ondemandnode.type == 93 && onDemandRequester.landIndexExists(ondemandnode.id)) {
-					Region.passiveRequestGameObjectModels(new Buffer(ondemandnode.buffer), onDemandRequester);
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("21105, " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void drawFlames() {
-		do {
-			try {
-				int i_285_ = 256;
-				for (int i_286_ = 10; i_286_ < 117; i_286_++) {
-					int i_287_ = (int) (Math.random() * 100.0);
-					if (i_287_ < 50) {
-						anIntArray853[i_286_ + (i_285_ - 2 << 7)] = 255;
-					}
-				}
-				for (int i_288_ = 0; i_288_ < 100; i_288_++) {
-					int i_289_ = (int) (Math.random() * 124.0) + 2;
-					int i_290_ = (int) (Math.random() * 128.0) + 128;
-					int i_291_ = i_289_ + (i_290_ << 7);
-					anIntArray853[i_291_] = 192;
-				}
-				for (int i_292_ = 1; i_292_ < i_285_ - 1; i_292_++) {
-					for (int i_293_ = 1; i_293_ < 127; i_293_++) {
-						int i_294_ = i_293_ + (i_292_ << 7);
-						anIntArray854[i_294_] = (anIntArray853[i_294_ - 1] + anIntArray853[i_294_ + 1]
-								+ anIntArray853[i_294_ - 128] + anIntArray853[i_294_ + 128]) / 4;
-					}
-				}
-				anInt1300 += 128;
-				if (anInt1300 > anIntArray1215.length) {
-					anInt1300 -= anIntArray1215.length;
-					int i_295_ = (int) (Math.random() * 12.0);
-					method106(titleFlameEmblem[i_295_], -135);
-				}
-				for (int i_296_ = 1; i_296_ < i_285_ - 1; i_296_++) {
-					for (int i_297_ = 1; i_297_ < 127; i_297_++) {
-						int i_298_ = i_297_ + (i_296_ << 7);
-						int i_299_ = anIntArray854[i_298_ + 128]
-								- anIntArray1215[i_298_ + anInt1300 & anIntArray1215.length - 1] / 5;
-						if (i_299_ < 0) {
-							i_299_ = 0;
-						}
-						anIntArray853[i_298_] = i_299_;
-					}
-				}
-				for (int i_300_ = 0; i_300_ < i_285_ - 1; i_300_++) {
-					anIntArray994[i_300_] = anIntArray994[i_300_ + 1];
-				}
-				anIntArray994[i_285_ - 1] = (int) (Math.sin(Game.currentCycle / 14.0) * 16.0
-						+ Math.sin(Game.currentCycle / 15.0) * 14.0 + Math.sin(Game.currentCycle / 16.0) * 12.0);
-				if (anInt1065 > 0) {
-					anInt1065 -= 4;
-				}
-				if (anInt1066 > 0) {
-					anInt1066 -= 4;
-				}
-				if (anInt1065 != 0 || anInt1066 != 0) {
-					break;
-				}
-				int i_301_ = (int) (Math.random() * 2000.0);
-				if (i_301_ == 0) {
-					anInt1065 = 1024;
-				}
-				if (i_301_ != 1) {
-					break;
-				}
-				anInt1066 = 1024;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("52615, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method60(int widgetId) {
-		try {
-			Widget widget = Widget.cache[widgetId];
-			for (int element : widget.children) {
-				if (element == -1) {
-					break;
-				}
-				Widget child = Widget.cache[element];
-				if (child.type == 1) {
-					method60(child.id);
-				}
-				child.animationFrame = 0;
-				child.animationDuration = 0;
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("61586, " + widgetId + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method61() {
-		do {
-			try {
-				if (hintIconType == 2) {
-					method128((hintIconX - regionAbsoluteBaseX << 7) + anInt962, hintIconOffset * 2, anInt900,
-							(hintIconY - regionAbsoluteBaseY << 7) + anInt963);
-					if (anInt988 <= -1 || Game.currentCycle % 20 >= 10) {
-						break;
-					}
-					anImageRGBArray1120[2].drawImage(anInt988 - 12, anInt989 - 28);
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("10525, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void processGame() {
-		do {
-			try {
-				if (systemUpdateTime > 1) {
-					systemUpdateTime--;
-				}
-				if (anInt1036 > 0) {
-					anInt1036--;
-				}
-				for (int i_304_ = 0; i_304_ < 5; i_304_++) {
-					if (!method145(true)) {
-						break;
-					}
-				}
-				if (loggedIn) {
-					synchronized (mouseCapturer.objectLock) {
-						if (Game.flagged) {
-							if (clickType != 0 || mouseCapturer.coord >= 40) {
-								outBuffer.putOpcode(45);
-								outBuffer.put(0);
-								int offset = outBuffer.offset;
-								int i_306_ = 0;
-								for (int i_307_ = 0; i_307_ < mouseCapturer.coord; i_307_++) {
-									if (offset - outBuffer.offset >= 240) {
-										break;
-									}
-									i_306_++;
-									int i_308_ = mouseCapturer.coordsY[i_307_];
-									if (i_308_ < 0) {
-										i_308_ = 0;
-									} else if (i_308_ > 502) {
-										i_308_ = 502;
-									}
-									int i_309_ = mouseCapturer.coordsX[i_307_];
-									if (i_309_ < 0) {
-										i_309_ = 0;
-									} else if (i_309_ > 764) {
-										i_309_ = 764;
-									}
-									int i_310_ = i_308_ * 765 + i_309_;
-									if (mouseCapturer.coordsY[i_307_] == -1 && mouseCapturer.coordsX[i_307_] == -1) {
-										i_309_ = -1;
-										i_308_ = -1;
-										i_310_ = 524287;
-									}
-									if (i_309_ == anInt1262 && i_308_ == anInt1263) {
-										if (anInt1047 < 2047) {
-											anInt1047++;
-										}
-									} else {
-										int i_311_ = i_309_ - anInt1262;
-										anInt1262 = i_309_;
-										int i_312_ = i_308_ - anInt1263;
-										anInt1263 = i_308_;
-										if (anInt1047 < 8 && i_311_ >= -32 && i_311_ <= 31 && i_312_ >= -32
-												&& i_312_ <= 31) {
-											i_311_ += 32;
-											i_312_ += 32;
-											outBuffer.putShort((anInt1047 << 12) + (i_311_ << 6) + i_312_);
-											anInt1047 = 0;
-										} else if (anInt1047 < 8) {
-											outBuffer.put24BitInt(8388608 + (anInt1047 << 19) + i_310_);
-											anInt1047 = 0;
-										} else {
-											outBuffer.putInt(-1073741824 + (anInt1047 << 19) + i_310_);
-											anInt1047 = 0;
-										}
-									}
-								}
-								outBuffer.putSizeByte(outBuffer.offset - offset);
-								if (i_306_ >= mouseCapturer.coord) {
-									mouseCapturer.coord = 0;
-								} else {
-									mouseCapturer.coord -= i_306_;
-									for (int i_313_ = 0; i_313_ < mouseCapturer.coord; i_313_++) {
-										mouseCapturer.coordsX[i_313_] = mouseCapturer.coordsX[i_313_ + i_306_];
-										mouseCapturer.coordsY[i_313_] = mouseCapturer.coordsY[i_313_ + i_306_];
-									}
-								}
-							}
-						} else {
-							mouseCapturer.coord = 0;
-						}
-					}
-					if (clickType != 0) {
-						long l = (clickTime - aLong1245) / 50L;
-						if (l > 4095L) {
-							l = 4095L;
-						}
-						aLong1245 = clickTime;
-						int i_314_ = clickY;
-						if (i_314_ < 0) {
-							i_314_ = 0;
-						} else if (i_314_ > 502) {
-							i_314_ = 502;
-						}
-						int i_315_ = clickX;
-						if (i_315_ < 0) {
-							i_315_ = 0;
-						} else if (i_315_ > 764) {
-							i_315_ = 764;
-						}
-						int i_316_ = i_314_ * 765 + i_315_;
-						int i_317_ = 0;
-						if (clickType == 2) {
-							i_317_ = 1;
-						}
-						int i_318_ = (int) l;
-						outBuffer.putOpcode(241);
-						outBuffer.putInt((i_318_ << 20) + (i_317_ << 19) + i_316_);
-					}
-					if (anInt1041 > 0) {
-						anInt1041--;
-					}
-					if (keyStatus[1] == 1 || keyStatus[2] == 1 || keyStatus[3] == 1 || keyStatus[4] == 1) {
-						aBoolean1042 = true;
-					}
-					if (aBoolean1042 && anInt1041 <= 0) {
-						anInt1041 = 20;
-						aBoolean1042 = false;
-						outBuffer.putOpcode(86);
-						outBuffer.putShort(anInt1209);
-						outBuffer.putShortA(anInt1210);
-					}
-					if (awtFocus == true && aBoolean979 == false) {
-						aBoolean979 = true;
-						outBuffer.putOpcode(3);
-						outBuffer.put(1);
-					}
-					if (awtFocus == false && aBoolean979 == true) {
-						aBoolean979 = false;
-						outBuffer.putOpcode(3);
-						outBuffer.put(0);
-					}
-					method53();
-					method115();
-					method90();
-					anInt1034++;
-					if (anInt1034 > 750) {
-						method68(-670);
-					}
-					method114();
-					method95();
-					method38();
-					anInt970++;
-					if (lastClickType != 0) {
-						anInt941 += 20;
-						if (anInt941 >= 400) {
-							lastClickType = 0;
-						}
-					}
-					if (anInt1271 != 0) {
-						anInt1268++;
-						if (anInt1268 >= 15) {
-							if (anInt1271 == 2) {
-								redrawTab = true;
-							}
-							if (anInt1271 == 3) {
-								redrawChatbox = true;
-							}
-							anInt1271 = 0;
-						}
-					}
-					if (anInt1111 != 0) {
-						anInt1014++;
-						if (mouseEventX > anInt1112 + 5 || mouseEventX < anInt1112 - 5 || mouseEventY > anInt1113 + 5
-								|| mouseEventY < anInt1113 - 5) {
-							aBoolean1267 = true;
-						}
-						if (mouseButtonPressed == 0) {
-							if (anInt1111 == 2) {
-								redrawTab = true;
-							}
-							if (anInt1111 == 3) {
-								redrawChatbox = true;
-							}
-							anInt1111 = 0;
-							if (aBoolean1267 && anInt1014 >= 5) {
-								anInt1092 = -1;
-								processClickingAreas();
-								if (anInt1092 == anInt1109 && anInt1091 != anInt1110) {
-									Widget widget = Widget.cache[anInt1109];
-									int i_319_ = 0;
-									if (anInt938 == 1 && widget.contentType == 206) {
-										i_319_ = 1;
-									}
-									if (widget.items[anInt1091] <= 0) {
-										i_319_ = 0;
-									}
-									if (widget.itemDeletesDraged) {
-										int i_320_ = anInt1110;
-										int i_321_ = anInt1091;
-										widget.items[i_321_] = widget.items[i_320_];
-										widget.itemAmounts[i_321_] = widget.itemAmounts[i_320_];
-										widget.items[i_320_] = -1;
-										widget.itemAmounts[i_320_] = 0;
-									} else if (i_319_ == 1) {
-										int i_322_ = anInt1110;
-										int i_323_ = anInt1091;
-										while (i_322_ != i_323_) {
-											if (i_322_ > i_323_) {
-												widget.swapItems(i_322_, i_322_ - 1);
-												i_322_--;
-											} else if (i_322_ < i_323_) {
-												widget.swapItems(i_322_, i_322_ + 1);
-												i_322_++;
-											}
-										}
-									} else {
-										widget.swapItems(anInt1110, anInt1091);
-									}
-									outBuffer.putOpcode(214);
-									outBuffer.putLEShortA(anInt1109);
-									outBuffer.putByteC(i_319_);
-									outBuffer.putLEShortA(anInt1110);
-									outBuffer.putLEShort(anInt1091);
-								}
-							} else if ((anInt1278 == 1 || method17(menuActionRow - 1)) && menuActionRow > 2) {
-								processMenuHovering();
-							} else if (menuActionRow > 0) {
-								processMenuAction(menuActionRow - 1);
-							}
-							anInt1268 = 10;
-							clickType = 0;
-						}
-					}
-					if (Scene.anInt550 != -1) {
-						int i_324_ = Scene.anInt550;
-						int i_325_ = Scene.anInt551;
-						boolean bool = calculatePath(0, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, i_325_,
-								Game.localPlayer.pathX[0], true, i_324_);
-						Scene.anInt550 = -1;
-						if (bool) {
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 1;
-							anInt941 = 0;
-						}
-					}
-					if (clickType == 1 && aString869 != null) {
-						aString869 = null;
-						redrawChatbox = true;
-						clickType = 0;
-					}
-					method20();
-					processClickingMinimap();
-					processClickingTabs();
-					processClickingChatSettings();
-					if (mouseButtonPressed == 1 || clickType == 1) {
-						anInt1238++;
-					}
-					if (anInt1048 == 2) {
-						method108(3);
-					}
-					if (anInt1048 == 2 && aBoolean1185) {
-						method39((byte) 5);
-					}
-					for (int i_326_ = 0; i_326_ < 5; i_326_++) {
-						anIntArray1055[i_326_]++;
-					}
-					method73(732);
-					idleTime++;
-					if (idleTime > 4500) {
-						anInt1036 = 250;
-						idleTime -= 500;
-						outBuffer.putOpcode(202);
-					}
-					anInt1013++;
-					if (anInt1013 > 500) {
-						anInt1013 = 0;
-						int i_327_ = (int) (Math.random() * 8.0);
-						if ((i_327_ & 0x1) == 1) {
-							anInt1303 += anInt1304;
-						}
-						if ((i_327_ & 0x2) == 2) {
-							anInt1156 += anInt1157;
-						}
-						if ((i_327_ & 0x4) == 4) {
-							anInt921 += anInt922;
-						}
-					}
-					if (anInt1303 < -50) {
-						anInt1304 = 2;
-					}
-					if (anInt1303 > 50) {
-						anInt1304 = -2;
-					}
-					if (anInt1156 < -55) {
-						anInt1157 = 2;
-					}
-					if (anInt1156 > 55) {
-						anInt1157 = -2;
-					}
-					if (anInt921 < -40) {
-						anInt922 = 1;
-					}
-					if (anInt921 > 40) {
-						anInt922 = -1;
-					}
-					anInt1279++;
-					if (anInt1279 > 500) {
-						anInt1279 = 0;
-						int i_328_ = (int) (Math.random() * 8.0);
-						if ((i_328_ & 0x1) == 1) {
-							anInt1234 += anInt1235;
-						}
-						if ((i_328_ & 0x2) == 2) {
-							anInt1195 += anInt1196;
-						}
-					}
-					if (anInt1234 < -60) {
-						anInt1235 = 2;
-					}
-					if (anInt1234 > 60) {
-						anInt1235 = -2;
-					}
-					if (anInt1195 < -20) {
-						anInt1196 = 1;
-					}
-					if (anInt1195 > 10) {
-						anInt1196 = -1;
-					}
-					anInt1035++;
-					if (anInt1035 > 50) {
-						outBuffer.putOpcode(0);
-					}
-					try {
-						if (bufferedConnection == null || outBuffer.offset <= 0) {
-							break;
-						}
-						bufferedConnection.write(outBuffer.offset, outBuffer.payload, 0);
-						outBuffer.offset = 0;
-						anInt1035 = 0;
-					} catch (IOException ioexception) {
-						method68(-670);
-					} catch (Exception exception) {
-						logout();
-					}
-					break;
-				}
-				break;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("71747, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-		} while (false);
-	}
-
-	private final void method63(int i) {
-		try {
-			SpawnObjectNode spawnobjectnode = (SpawnObjectNode) spawnObjectNodeList.getBack();
-			while (i >= 0) {
-				for (int i_329_ = 1; i_329_ > 0; i_329_++) {
-					/* empty */
-				}
-			}
-			for (/**/; spawnobjectnode != null; spawnobjectnode = (SpawnObjectNode) spawnObjectNodeList.getPrevious()) {
-				if (spawnobjectnode.anInt1344 == -1) {
-					spawnobjectnode.anInt1352 = 0;
-					method89(spawnobjectnode);
-				} else {
-					spawnobjectnode.remove();
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("6061, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method64() {
-		try {
-			if (aProducingGraphicsBuffer1132 == null) {
-				producingGraphicsBuffer = null;
-				chatboxProducingGraphicsBuffer = null;
-				aProducingGraphicsBuffer1189 = null;
-				aProducingGraphicsBuffer1188 = null;
-				currentSceneBuffer = null;
-				aProducingGraphicsBuffer1148 = null;
-				aProducingGraphicsBuffer1149 = null;
-				aProducingGraphicsBuffer1150 = null;
-				flameLeftBackground = new ProducingGraphicsBuffer(128, 265, getComponent());
-				Rasterizer.resetPixels();
-				flameRightBackground = new ProducingGraphicsBuffer(128, 265, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1132 = new ProducingGraphicsBuffer(509, 171, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1133 = new ProducingGraphicsBuffer(360, 132, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1134 = new ProducingGraphicsBuffer(360, 200, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1137 = new ProducingGraphicsBuffer(202, 238, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1138 = new ProducingGraphicsBuffer(203, 238, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1139 = new ProducingGraphicsBuffer(74, 94, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1140 = new ProducingGraphicsBuffer(75, 94, getComponent());
-				Rasterizer.resetPixels();
-				if (anArchive1078 != null) {
-					prepareTitleBackground();
-					prepareTitle();
-				}
-				redraw = true;
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("33128,  " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	@Override
-	public final void drawLoadingText(int i, String string) {
-		do {
-			anInt1104 = i;
-			aString1074 = string;
-			method64();
-			if (anArchive1078 == null) {
-				super.drawLoadingText(i, string);
-			} else {
-				aProducingGraphicsBuffer1134.createRasterizer();
-				int i_330_ = 360;
-				int i_331_ = 200;
-				int i_332_ = 20;
-				fontBold.drawStringLeft("RuneScape is loading - please wait...", i_330_ / 2, i_331_ / 2 - 26 - i_332_,
-						0xFFFFFF);
-				int i_333_ = i_331_ / 2 - 18 - i_332_;
-				Rasterizer.drawUnfilledRectangle(i_330_ / 2 - 152, i_333_, 304, 34, 9179409);
-				Rasterizer.drawUnfilledRectangle(i_330_ / 2 - 151, i_333_ + 1, 302, 32, 0);
-				Rasterizer.drawFilledRectangle(i_330_ / 2 - 150, i_333_ + 2, i * 3, 30, 9179409);
-				Rasterizer.drawFilledRectangle(i_330_ / 2 - 150 + i * 3, i_333_ + 2, 300 - i * 3, 30, 0);
-				fontBold.drawStringLeft(string, i_330_ / 2, i_331_ / 2 + 5 - i_332_, 0xFFFFFF);
-				aProducingGraphicsBuffer1134.drawGraphics(202, 171, gameGraphics);
-				if (!redraw) {
-					break;
-				}
-				redraw = false;
-				if (!aBoolean856) {
-					flameLeftBackground.drawGraphics(0, 0, gameGraphics);
-					flameRightBackground.drawGraphics(637, 0, gameGraphics);
-				}
-				aProducingGraphicsBuffer1132.drawGraphics(128, 0, gameGraphics);
-				aProducingGraphicsBuffer1133.drawGraphics(202, 371, gameGraphics);
-				aProducingGraphicsBuffer1137.drawGraphics(0, 265, gameGraphics);
-				aProducingGraphicsBuffer1138.drawGraphics(562, 265, gameGraphics);
-				aProducingGraphicsBuffer1139.drawGraphics(128, 171, gameGraphics);
-				aProducingGraphicsBuffer1140.drawGraphics(562, 171, gameGraphics);
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method65(int i, int i_335_, int i_336_, int i_337_, Widget widget, int i_338_, boolean bool,
-			int i_339_, int i_340_) {
-		do {
-			try {
-				if (aBoolean997) {
-					anInt1017 = 32;
-				} else {
-					anInt1017 = 0;
-				}
-				aBoolean997 = false;
-				packetSize += i_340_;
-				if (i_336_ >= i && i_336_ < i + 16 && i_337_ >= i_338_ && i_337_ < i_338_ + 16) {
-					widget.scrollPosition -= anInt1238 * 4;
-					if (bool) {
-						redrawTab = true;
-					}
-				} else if (i_336_ >= i && i_336_ < i + 16 && i_337_ >= i_338_ + i_335_ - 16 && i_337_ < i_338_ + i_335_) {
-					widget.scrollPosition += anInt1238 * 4;
-					if (bool) {
-						redrawTab = true;
-					}
-				} else {
-					if (i_336_ < i - anInt1017 || i_336_ >= i + 16 + anInt1017 || i_337_ < i_338_ + 16
-							|| i_337_ >= i_338_ + i_335_ - 16 || anInt1238 <= 0) {
-						break;
-					}
-					int i_341_ = (i_335_ - 32) * i_335_ / i_339_;
-					if (i_341_ < 8) {
-						i_341_ = 8;
-					}
-					int i_342_ = i_337_ - i_338_ - 16 - i_341_ / 2;
-					int i_343_ = i_335_ - 32 - i_341_;
-					widget.scrollPosition = (i_339_ - i_335_) * i_342_ / i_343_;
-					if (bool) {
-						redrawTab = true;
-					}
-					aBoolean997 = true;
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("45715, " + i + ", " + i_335_ + ", " + i_336_ + ", " + i_337_ + ", " + widget
-						+ ", " + i_338_ + ", " + bool + ", " + i_339_ + ", " + i_340_ + ", "
-						+ runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final boolean method66(int toLocalX, int toLocalY, int hash) {
-		int objectHash = hash >> 14 & 0x7fff;
-		int sceneConfig = currentScene.getConfig(currentSceneId, toLocalX, toLocalY, hash);
-		if (sceneConfig == -1) {
-			return false;
-		}
-		int type = sceneConfig & 0x1f;
-		int rotation = sceneConfig >> 6 & 0x3;
-		if (type == 10 || type == 11 || type == 22) {
-			GameObjectDefinition gameObjectDefinition = GameObjectDefinition.getDefinition(objectHash);
-			int sizeX;
-			int sizeY;
-			if (rotation == 0 || rotation == 2) {
-				sizeX = gameObjectDefinition.sizeX;
-				sizeY = gameObjectDefinition.sizeY;
-			} else {
-				sizeX = gameObjectDefinition.sizeY;
-				sizeY = gameObjectDefinition.sizeX;
-			}
-			int face = gameObjectDefinition.face;
-			if (rotation != 0) {
-				face = (face << rotation & 0xf) + (face >> 4 - rotation);
-			}
-			calculatePath(2, 0, sizeY, 0, Game.localPlayer.pathY[0], sizeX, face, toLocalY, Game.localPlayer.pathX[0],
-					false, toLocalX);
-		} else {
-			calculatePath(2, rotation, 0, type + 1, Game.localPlayer.pathY[0], 0, 0, toLocalY,
-					Game.localPlayer.pathX[0], false, toLocalX);
-		}
-		lastClickX = clickX;
-		lastClickY = clickY;
-		lastClickType = 2;
-		anInt941 = 0;
-		return true;
-	}
-
-	public final Archive requestArchive(int archiveId, String archiveAlias, String archiveName, int archiveCRC,
-			int loadPercentage) {
-		try {
-			byte[] archiveBuffer = null;
-			int retryTime = 5;
-			try {
-				if (stores[0] != null) {
-					archiveBuffer = stores[0].get(archiveId);
-				}
-			} catch (Exception exception) {
-				/* empty */
-			}
-			if (archiveBuffer != null) {
-				crc32.reset();
-				crc32.update(archiveBuffer);
-				int crc = (int) crc32.getValue();
-				if (crc != archiveCRC) {
-					archiveBuffer = null;
-				}
-			}
-			if (archiveBuffer != null) {
-				Archive archive = new Archive(archiveBuffer);
-				return archive;
-			}
-			int errors = 0;
-			while (archiveBuffer == null) {
-				String message = "Unknown error";
-				drawLoadingText(loadPercentage, "Requesting " + archiveAlias);
-				try {
-					int i_361_ = 0;
-					DataInputStream in = jaggrabRequest(archiveName + archiveCRC);
-					byte[] responseBuffer = new byte[6];
-					in.readFully(responseBuffer, 0, 6);
-					Buffer buffer = new Buffer(responseBuffer);
-					buffer.offset = 3;
-					int i_363_ = buffer.get24BitInt() + 6;
-					int i_364_ = 6;
-					archiveBuffer = new byte[i_363_];
-					for (int i = 0; i < 6; i++) {
-						archiveBuffer[i] = responseBuffer[i];
-					}
-					while (i_364_ < i_363_) {
-						int i_366_ = i_363_ - i_364_;
-						if (i_366_ > 1000) {
-							i_366_ = 1000;
-						}
-						int i_367_ = in.read(archiveBuffer, i_364_, i_366_);
-						if (i_367_ < 0) {
-							message = "Length error: " + i_364_ + "/" + i_363_;
-							throw new IOException("EOF");
-						}
-						i_364_ += i_367_;
-						int i_368_ = i_364_ * 100 / i_363_;
-						if (i_368_ != i_361_) {
-							drawLoadingText(loadPercentage, "Loading " + archiveAlias + " - " + i_368_ + "%");
-						}
-						i_361_ = i_368_;
-					}
-					in.close();
-					try {
-						if (stores[0] != null) {
-							stores[0].put(archiveBuffer.length, archiveBuffer, archiveId);
-						}
-					} catch (Exception exception) {
-						stores[0] = null;
-					}
-					if (archiveBuffer != null) {
-						crc32.reset();
-						crc32.update(archiveBuffer);
-						int crc = (int) crc32.getValue();
-						if (crc != archiveCRC) {
-							archiveBuffer = null;
-							errors++;
-							message = "Checksum error: " + crc;
-						}
-					}
-				} catch (IOException ioexception) {
-					if (message.equals("Unknown error")) {
-						message = "Connection error";
-					}
-					archiveBuffer = null;
-				} catch (NullPointerException nullpointerexception) {
-					message = "Null error";
-					archiveBuffer = null;
-					if (!SignLink.reportError) {
-						return null;
-					}
-				} catch (ArrayIndexOutOfBoundsException arrayindexoutofboundsexception) {
-					message = "Bounds error";
-					archiveBuffer = null;
-					if (!SignLink.reportError) {
-						return null;
-					}
-				} catch (Exception exception) {
-					message = "Unexpected error";
-					archiveBuffer = null;
-					if (!SignLink.reportError) {
-						return null;
-					}
-				}
-				if (archiveBuffer == null) {
-					for (int waitTime = retryTime; waitTime > 0; waitTime--) {
-						if (errors >= 3) {
-							drawLoadingText(loadPercentage, "Game updated - please reload page");
-							waitTime = 10;
-						} else {
-							drawLoadingText(loadPercentage, message + " - Retrying in " + waitTime);
-						}
-						try {
-							Thread.sleep(1000L);
-						} catch (Exception exception) {
-							/* empty */
-						}
-					}
-					retryTime *= 2;
-					if (retryTime > 60) {
-						retryTime = 60;
-					}
-					aBoolean897 = !aBoolean897;
-				}
-			}
-			return new Archive(archiveBuffer);
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("44021, " + archiveId + ", " + archiveAlias + ", " + archiveName + ", " + archiveCRC
-					+ ", " + loadPercentage + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method68(int i) {
-		try {
-			if (anInt1036 > 0) {
-				logout();
-			} else {
-				currentSceneBuffer.createRasterizer();
-				fontNormal.drawStringLeft("Connection lost", 257, 144, 0);
-				fontNormal.drawStringLeft("Connection lost", 256, 143, 0xFFFFFF);
-				fontNormal.drawStringLeft("Please wait - attempting to reestablish", 257, 159, 0);
-				fontNormal.drawStringLeft("Please wait - attempting to reestablish", 256, 158, 0xFFFFFF);
-				while (i >= 0) {
-					outBuffer.put(164);
-				}
-				currentSceneBuffer.drawGraphics(4, 4, gameGraphics);
-				minimapState = 0;
-				destinationX = 0;
-				BufferedConnection bufferedconnection = bufferedConnection;
-				loggedIn = false;
-				anInt1063 = 0;
-				method84(username, password, true);
-				if (!loggedIn) {
-					logout();
-				}
-				try {
-					bufferedconnection.close();
-				} catch (Exception exception) {
-					/* empty */
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("43851, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processMenuAction(int pressedRow) {
-		try {
-			if (pressedRow >= 0) {
-				if (inputType != 0) {
-					inputType = 0;
-					redrawChatbox = true;
-				}
-				int itemSlotId = menuActionIds2[pressedRow];
-				int frameId = menuActionIds3[pressedRow];
-				int menuActionId = menuActionIds[pressedRow];
-				int itemId = menuActionIds1[pressedRow];
-				if (menuActionId >= 2000) {
-					menuActionId -= 2000;
-				}
-				if (menuActionId == 582) {
-					Npc npc = localNpcs[itemId];
-					if (npc != null) {
-						calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-								Game.localPlayer.pathX[0], false, npc.pathX[0]);
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(57);
-						outBuffer.putShortA(anInt1310);
-						outBuffer.putShortA(itemId);
-						outBuffer.putLEShort(anInt1308);
-						outBuffer.putShortA(anInt1309);
-					}
-				}
-				if (menuActionId == 234) {
-					boolean bool_375_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-							Game.localPlayer.pathX[0], false, itemSlotId);
-					if (!bool_375_) {
-						bool_375_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-								Game.localPlayer.pathX[0], false, itemSlotId);
-					}
-					lastClickX = clickX;
-					lastClickY = clickY;
-					lastClickType = 2;
-					anInt941 = 0;
-					outBuffer.putOpcode(236);
-					outBuffer.putLEShort(frameId + regionAbsoluteBaseY);
-					outBuffer.putShort(itemId);
-					outBuffer.putLEShort(itemSlotId + regionAbsoluteBaseX);
-				}
-				if (menuActionId == 62 && method66(itemSlotId, frameId, itemId)) {
-					outBuffer.putOpcode(192);
-					outBuffer.putShort(anInt1309);
-					outBuffer.putLEShort(itemId >> 14 & 0x7fff);
-					outBuffer.putLEShortA(frameId + regionAbsoluteBaseY);
-					outBuffer.putLEShort(anInt1308);
-					outBuffer.putLEShortA(itemSlotId + regionAbsoluteBaseX);
-					outBuffer.putShort(anInt1310);
-				}
-				if (menuActionId == 511) {
-					boolean bool_376_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-							Game.localPlayer.pathX[0], false, itemSlotId);
-					if (!bool_376_) {
-						bool_376_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-								Game.localPlayer.pathX[0], false, itemSlotId);
-					}
-					lastClickX = clickX;
-					lastClickY = clickY;
-					lastClickType = 2;
-					anInt941 = 0;
-					outBuffer.putOpcode(25);
-					outBuffer.putLEShort(anInt1309);
-					outBuffer.putShortA(anInt1310);
-					outBuffer.putShort(itemId);
-					outBuffer.putShortA(frameId + regionAbsoluteBaseY);
-					outBuffer.putLEShortA(anInt1308);
-					outBuffer.putShort(itemSlotId + regionAbsoluteBaseX);
-				}
-				if (menuActionId == 74) {
-					outBuffer.putOpcode(122);
-					outBuffer.putLEShortA(frameId);
-					outBuffer.putShortA(itemSlotId);
-					outBuffer.putLEShort(itemId);
-					anInt1268 = 0;
-					anInt1269 = frameId;
-					anInt1270 = itemSlotId;
-					anInt1271 = 2;
-					if (Widget.cache[frameId].parentId == openWidgetId) {
-						anInt1271 = 1;
-					}
-					if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-						anInt1271 = 3;
-					}
-				}
-				if (menuActionId == 315) {
-					Widget widget = Widget.cache[frameId];
-					boolean bool_377_ = true;
-					if (widget.contentType > 0) {
-						bool_377_ = handleWidgetDynamicAction(widget);
-					}
-					if (bool_377_) {
-						outBuffer.putOpcode(185);
-						outBuffer.putShort(frameId);
-					}
-				}
-				if (menuActionId == 561) {
-					Player player = players[itemId];
-					if (player != null) {
-						calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-								Game.localPlayer.pathX[0], false, player.pathX[0]);
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						Game.anInt1213 += itemId;
-						if (Game.anInt1213 >= 90) {
-							outBuffer.putOpcode(136);
-							Game.anInt1213 = 0;
-						}
-						outBuffer.putOpcode(128);
-						outBuffer.putShort(itemId);
-					}
-				}
-				if (menuActionId == 20) {
-					Npc npc = localNpcs[itemId];
-					if (npc != null) {
-						calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-								Game.localPlayer.pathX[0], false, npc.pathX[0]);
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(155);
-						outBuffer.putLEShort(itemId);
-					}
-				}
-				if (menuActionId == 779) {
-					Player player = players[itemId];
-					if (player != null) {
-						calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-								Game.localPlayer.pathX[0], false, player.pathX[0]);
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(153);
-						outBuffer.putLEShort(itemId);
-					}
-				}
-				if (menuActionId == 516) {
-					if (!actionMenuOpen) {
-						currentScene.method534(false, clickY - 4, clickX - 4);
+			if (abyte0 == null) {
+				for (int i2 = i1; i2 > 0; i2--) {
+					if (k1 >= 3) {
+						drawLoadingText(k, "Game updated - please reload page");
+						i2 = 10;
 					} else {
-						currentScene.method534(false, frameId - 4, itemSlotId - 4);
+						drawLoadingText(k, s2 + " - Retrying in " + i2);
 					}
-				}
-				if (menuActionId == 1062) {
-					Game.anInt949 += regionAbsoluteBaseX;
-					if (Game.anInt949 >= 113) {
-						outBuffer.putOpcode(183);
-						outBuffer.put24BitInt(15086193);
-						Game.anInt949 = 0;
-					}
-					method66(itemSlotId, frameId, itemId);
-					outBuffer.putOpcode(228);
-					outBuffer.putShortA(itemId >> 14 & 0x7fff);
-					outBuffer.putShortA(frameId + regionAbsoluteBaseY);
-					outBuffer.putShort(itemSlotId + regionAbsoluteBaseX);
-				}
-				if (menuActionId == 679 && !aBoolean1174) {
-					outBuffer.putOpcode(40);
-					outBuffer.putShort(frameId);
-					aBoolean1174 = true;
-				}
-				if (menuActionId == 431) {
-					outBuffer.putOpcode(129);
-					outBuffer.putShortA(itemSlotId);
-					outBuffer.putShort(frameId);
-					outBuffer.putShortA(itemId);
-					anInt1268 = 0;
-					anInt1269 = frameId;
-					anInt1270 = itemSlotId;
-					anInt1271 = 2;
-					if (Widget.cache[frameId].parentId == openWidgetId) {
-						anInt1271 = 1;
-					}
-					if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-						anInt1271 = 3;
-					}
-				}
-				if (menuActionId == 337 || menuActionId == 42 || menuActionId == 792 || menuActionId == 322) {
-					String string = menuActionNames[pressedRow];
-					int i_378_ = string.indexOf("@whi@");
-					if (i_378_ != -1) {
-						long l = TextUtils.nameToLong(string.substring(i_378_ + 5).trim());
-						if (menuActionId == 337) {
-							method41((byte) 68, l);
-						}
-						if (menuActionId == 42) {
-							addIgnore(l, 4);
-						}
-						if (menuActionId == 792) {
-							method35(false, l);
-						}
-						if (menuActionId == 322) {
-							method122(3, l);
-						}
-					}
-				}
-				if (menuActionId == 53) {
-					outBuffer.putOpcode(135);
-					outBuffer.putLEShort(itemSlotId);
-					outBuffer.putShortA(frameId);
-					outBuffer.putLEShort(itemId);
-					anInt1268 = 0;
-					anInt1269 = frameId;
-					anInt1270 = itemSlotId;
-					anInt1271 = 2;
-					if (Widget.cache[frameId].parentId == openWidgetId) {
-						anInt1271 = 1;
-					}
-					if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-						anInt1271 = 3;
-					}
-				}
-				if (menuActionId == 539) {
-					outBuffer.putOpcode(16);
-					outBuffer.putShortA(itemId);
-					outBuffer.putLEShortA(itemSlotId);
-					outBuffer.putLEShortA(frameId);
-					anInt1268 = 0;
-					anInt1269 = frameId;
-					anInt1270 = itemSlotId;
-					anInt1271 = 2;
-					if (Widget.cache[frameId].parentId == openWidgetId) {
-						anInt1271 = 1;
-					}
-					if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-						anInt1271 = 3;
-					}
-				}
-				if (menuActionId == 484 || menuActionId == 6) {
-					String string = menuActionNames[pressedRow];
-					int i_379_ = string.indexOf("@whi@");
-					if (i_379_ != -1) {
-						string = string.substring(i_379_ + 5).trim();
-						String string_380_ = TextUtils.formatName(TextUtils.longToName(TextUtils.nameToLong(string)));
-						boolean bool_381_ = false;
-						for (int i_382_ = 0; i_382_ < playerCount; i_382_++) {
-							Player player = players[anIntArray917[i_382_]];
-							if (player != null && player.playerName != null
-									&& player.playerName.equalsIgnoreCase(string_380_)) {
-								calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-										Game.localPlayer.pathX[0], false, player.pathX[0]);
-								if (menuActionId == 484) {
-									outBuffer.putOpcode(139);
-									outBuffer.putLEShort(anIntArray917[i_382_]);
-								}
-								if (menuActionId == 6) {
-									Game.anInt1213 += itemId;
-									if (Game.anInt1213 >= 90) {
-										outBuffer.putOpcode(136);
-										Game.anInt1213 = 0;
-									}
-									outBuffer.putOpcode(128);
-									outBuffer.putShort(anIntArray917[i_382_]);
-								}
-								bool_381_ = true;
-								break;
-							}
-						}
-						if (!bool_381_) {
-							sendMessage("Unable to find " + string_380_, 0, "");
-						}
-					}
-				}
-				if (menuActionId == 870) {
-					outBuffer.putOpcode(53);
-					outBuffer.putShort(itemSlotId);
-					outBuffer.putShortA(anInt1308);
-					outBuffer.putLEShortA(itemId);
-					outBuffer.putShort(anInt1309);
-					outBuffer.putLEShort(anInt1310);
-					outBuffer.putShort(frameId);
-					anInt1268 = 0;
-					anInt1269 = frameId;
-					anInt1270 = itemSlotId;
-					anInt1271 = 2;
-					if (Widget.cache[frameId].parentId == openWidgetId) {
-						anInt1271 = 1;
-					}
-					if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-						anInt1271 = 3;
-					}
-				}
-				if (menuActionId == 847) {
-					outBuffer.putOpcode(87);
-					outBuffer.putShortA(itemId);
-					outBuffer.putShort(frameId);
-					outBuffer.putShortA(itemSlotId);
-					anInt1268 = 0;
-					anInt1269 = frameId;
-					anInt1270 = itemSlotId;
-					anInt1271 = 2;
-					if (Widget.cache[frameId].parentId == openWidgetId) {
-						anInt1271 = 1;
-					}
-					if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-						anInt1271 = 3;
-					}
-				}
-				if (menuActionId == 626) {
-					Widget widget = Widget.cache[frameId];
-					anInt1161 = 1;
-					spellId = frameId;
-					anInt1163 = widget.spellUsableOn;
-					anInt1307 = 0;
-					redrawTab = true;
-					String string = widget.selectedActionName;
-					if (string.indexOf(" ") != -1) {
-						string = string.substring(0, string.indexOf(" "));
-					}
-					String string_383_ = widget.selectedActionName;
-					if (string_383_.indexOf(" ") != -1) {
-						string_383_ = string_383_.substring(string_383_.indexOf(" ") + 1);
-					}
-					aString1164 = string + " " + widget.spellName + " " + string_383_;
-					if (anInt1163 == 16) {
-						redrawTab = true;
-						currentTabId = 3;
-						drawTabIcons = true;
-					}
-				} else {
-					if (menuActionId == 78) {
-						outBuffer.putOpcode(117);
-						outBuffer.putLEShortA(frameId);
-						outBuffer.putLEShortA(itemId);
-						outBuffer.putLEShort(itemSlotId);
-						anInt1268 = 0;
-						anInt1269 = frameId;
-						anInt1270 = itemSlotId;
-						anInt1271 = 2;
-						if (Widget.cache[frameId].parentId == openWidgetId) {
-							anInt1271 = 1;
-						}
-						if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-							anInt1271 = 3;
-						}
-					}
-					if (menuActionId == 27) {
-						Player player = players[itemId];
-						if (player != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-									Game.localPlayer.pathX[0], false, player.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							Game.anInt1011 += itemId;
-							if (Game.anInt1011 >= 54) {
-								outBuffer.putOpcode(189);
-								outBuffer.put(234);
-								Game.anInt1011 = 0;
-							}
-							outBuffer.putOpcode(73);
-							outBuffer.putLEShort(itemId);
-						}
-					}
-					if (menuActionId == 213) {
-						boolean bool_384_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-								Game.localPlayer.pathX[0], false, itemSlotId);
-						if (!bool_384_) {
-							bool_384_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-									Game.localPlayer.pathX[0], false, itemSlotId);
-						}
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(79);
-						outBuffer.putLEShort(frameId + regionAbsoluteBaseY);
-						outBuffer.putShort(itemId);
-						outBuffer.putShortA(itemSlotId + regionAbsoluteBaseX);
-					}
-					if (menuActionId == 632) {
-						outBuffer.putOpcode(145);
-						outBuffer.putShortA(frameId);
-						outBuffer.putShortA(itemSlotId);
-						outBuffer.putShortA(itemId);
-						anInt1268 = 0;
-						anInt1269 = frameId;
-						anInt1270 = itemSlotId;
-						anInt1271 = 2;
-						if (Widget.cache[frameId].parentId == openWidgetId) {
-							anInt1271 = 1;
-						}
-						if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-							anInt1271 = 3;
-						}
-					}
-					if (menuActionId == 493) {
-						outBuffer.putOpcode(75);
-						outBuffer.putLEShortA(frameId);
-						outBuffer.putLEShort(itemSlotId);
-						outBuffer.putShortA(itemId);
-						anInt1268 = 0;
-						anInt1269 = frameId;
-						anInt1270 = itemSlotId;
-						anInt1271 = 2;
-						if (Widget.cache[frameId].parentId == openWidgetId) {
-							anInt1271 = 1;
-						}
-						if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-							anInt1271 = 3;
-						}
-					}
-					if (menuActionId == 652) {
-						boolean bool_385_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-								Game.localPlayer.pathX[0], false, itemSlotId);
-						if (!bool_385_) {
-							bool_385_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-									Game.localPlayer.pathX[0], false, itemSlotId);
-						}
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(156);
-						outBuffer.putShortA(itemSlotId + regionAbsoluteBaseX);
-						outBuffer.putLEShort(frameId + regionAbsoluteBaseY);
-						outBuffer.putLEShortA(itemId);
-					}
-					if (menuActionId == 94) {
-						boolean bool_386_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-								Game.localPlayer.pathX[0], false, itemSlotId);
-						if (!bool_386_) {
-							bool_386_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-									Game.localPlayer.pathX[0], false, itemSlotId);
-						}
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(181);
-						outBuffer.putLEShort(frameId + regionAbsoluteBaseY);
-						outBuffer.putShort(itemId);
-						outBuffer.putLEShort(itemSlotId + regionAbsoluteBaseX);
-						outBuffer.putShortA(spellId);
-					}
-					if (menuActionId == 646) {
-						outBuffer.putOpcode(185);
-						outBuffer.putShort(frameId);
-						Widget widget = Widget.cache[frameId];
-						if (widget.opcodes != null && widget.opcodes[0][0] == 5) {
-							int widgetOpcode = widget.opcodes[0][1];
-							if (widgetSettings[widgetOpcode] != widget.conditionValues[0]) {
-								widgetSettings[widgetOpcode] = widget.conditionValues[0];
-								handleWidgetSetting(widgetOpcode);
-								redrawTab = true;
-							}
-						}
-					}
-					if (menuActionId == 225) {
-						Npc npc = localNpcs[itemId];
-						if (npc != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-									Game.localPlayer.pathX[0], false, npc.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							Game.anInt1251 += itemId;
-							if (Game.anInt1251 >= 85) {
-								outBuffer.putOpcode(230);
-								outBuffer.put(239);
-								Game.anInt1251 = 0;
-							}
-							outBuffer.putOpcode(17);
-							outBuffer.putLEShortA(itemId);
-						}
-					}
-					if (menuActionId == 965) {
-						Npc npc = localNpcs[itemId];
-						if (npc != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-									Game.localPlayer.pathX[0], false, npc.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							Game.anInt1159++;
-							if (Game.anInt1159 >= 96) {
-								outBuffer.putOpcode(152);
-								outBuffer.put(88);
-								Game.anInt1159 = 0;
-							}
-							outBuffer.putOpcode(21);
-							outBuffer.putShort(itemId);
-						}
-					}
-					if (menuActionId == 413) {
-						Npc npc = localNpcs[itemId];
-						if (npc != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-									Game.localPlayer.pathX[0], false, npc.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(131);
-							outBuffer.putLEShortA(itemId);
-							outBuffer.putShortA(spellId);
-						}
-					}
-					if (menuActionId == 200) {
-						closeWidgets();
-					}
-					if (menuActionId == 1025) {
-						Npc npc = localNpcs[itemId];
-						if (npc != null) {
-							ActorDefinition npcdefinition = npc.npcDefinition;
-							if (npcdefinition.childrenIds != null) {
-								npcdefinition = npcdefinition.getChildDefinition();
-							}
-							if (npcdefinition != null) {
-								String string;
-								if (npcdefinition.description != null) {
-									string = new String(npcdefinition.description);
-								} else {
-									string = "It's a " + npcdefinition.name + ".";
-								}
-								sendMessage(string, 0, "");
-							}
-						}
-					}
-					if (menuActionId == 900) {
-						method66(itemSlotId, frameId, itemId);
-						outBuffer.putOpcode(252);
-						outBuffer.putLEShortA(itemId >> 14 & 0x7fff);
-						outBuffer.putLEShort(frameId + regionAbsoluteBaseY);
-						outBuffer.putShortA(itemSlotId + regionAbsoluteBaseX);
-					}
-					if (menuActionId == 412) {
-						Npc npc = localNpcs[itemId];
-						if (npc != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-									Game.localPlayer.pathX[0], false, npc.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(72);
-							outBuffer.putShortA(itemId);
-						}
-					}
-					if (menuActionId == 365) {
-						Player player = players[itemId];
-						if (player != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-									Game.localPlayer.pathX[0], false, player.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(249);
-							outBuffer.putShortA(itemId);
-							outBuffer.putLEShort(spellId);
-						}
-					}
-					if (menuActionId == 729) {
-						Player player = players[itemId];
-						if (player != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-									Game.localPlayer.pathX[0], false, player.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(39);
-							outBuffer.putLEShort(itemId);
-						}
-					}
-					if (menuActionId == 577) {
-						Player player = players[itemId];
-						if (player != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-									Game.localPlayer.pathX[0], false, player.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(139);
-							outBuffer.putLEShort(itemId);
-						}
-					}
-					if (menuActionId == 956 && method66(itemSlotId, frameId, itemId)) {
-						outBuffer.putOpcode(35);
-						outBuffer.putLEShort(itemSlotId + regionAbsoluteBaseX);
-						outBuffer.putShortA(spellId);
-						outBuffer.putShortA(frameId + regionAbsoluteBaseY);
-						outBuffer.putLEShort(itemId >> 14 & 0x7fff);
-					}
-					if (menuActionId == 567) {
-						boolean bool_388_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-								Game.localPlayer.pathX[0], false, itemSlotId);
-						if (!bool_388_) {
-							bool_388_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-									Game.localPlayer.pathX[0], false, itemSlotId);
-						}
-						lastClickX = clickX;
-						lastClickY = clickY;
-						lastClickType = 2;
-						anInt941 = 0;
-						outBuffer.putOpcode(23);
-						outBuffer.putLEShort(frameId + regionAbsoluteBaseY);
-						outBuffer.putLEShort(itemId);
-						outBuffer.putLEShort(itemSlotId + regionAbsoluteBaseX);
-					}
-					if (menuActionId == 867) {
-						if ((itemId & 0x3) == 0) {
-							Game.anInt1200++;
-						}
-						if (Game.anInt1200 >= 59) {
-							outBuffer.putOpcode(200);
-							outBuffer.putShort(25501);
-							Game.anInt1200 = 0;
-						}
-						outBuffer.putOpcode(43);
-						outBuffer.putLEShort(frameId);
-						outBuffer.putShortA(itemId);
-						outBuffer.putShortA(itemSlotId);
-						anInt1268 = 0;
-						anInt1269 = frameId;
-						anInt1270 = itemSlotId;
-						anInt1271 = 2;
-						if (Widget.cache[frameId].parentId == openWidgetId) {
-							anInt1271 = 1;
-						}
-						if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-							anInt1271 = 3;
-						}
-					}
-					if (menuActionId == 543) {
-						outBuffer.putOpcode(237);
-						outBuffer.putShort(itemSlotId);
-						outBuffer.putShortA(itemId);
-						outBuffer.putShort(frameId);
-						outBuffer.putShortA(spellId);
-						anInt1268 = 0;
-						anInt1269 = frameId;
-						anInt1270 = itemSlotId;
-						anInt1271 = 2;
-						if (Widget.cache[frameId].parentId == openWidgetId) {
-							anInt1271 = 1;
-						}
-						if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-							anInt1271 = 3;
-						}
-					}
-					if (menuActionId == 606) {
-						String string = menuActionNames[pressedRow];
-						int i_389_ = string.indexOf("@whi@");
-						if (i_389_ != -1) {
-							if (openWidgetId == -1) {
-								closeWidgets();
-								reportedName = string.substring(i_389_ + 5).trim();
-								reportMutePlayer = false;
-								for (Widget element : Widget.cache) {
-									if (element != null && element.contentType == 600) {
-										anInt1203 = openWidgetId = element.parentId;
-										break;
-									}
-								}
-							} else {
-								sendMessage("Please close the interface you have open before using 'report abuse'", 0,
-										"");
-							}
-						}
-					}
-					if (menuActionId == 491) {
-						Player player = players[itemId];
-						if (player != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, player.pathY[0],
-									Game.localPlayer.pathX[0], false, player.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(14);
-							outBuffer.putShortA(anInt1309);
-							outBuffer.putShort(itemId);
-							outBuffer.putShort(anInt1310);
-							outBuffer.putLEShort(anInt1308);
-						}
-					}
-					if (menuActionId == 639) {
-						String string = menuActionNames[pressedRow];
-						int i_391_ = string.indexOf("@whi@");
-						if (i_391_ != -1) {
-							long l = TextUtils.nameToLong(string.substring(i_391_ + 5).trim());
-							int i_392_ = -1;
-							for (int i_393_ = 0; i_393_ < friendsListCount; i_393_++) {
-								if (friendsListLongs[i_393_] == l) {
-									i_392_ = i_393_;
-									break;
-								}
-							}
-							if (i_392_ != -1 && friendsListWorlds[i_392_] > 0) {
-								redrawChatbox = true;
-								inputType = 0;
-								messagePromptRaised = true;
-								chatMessage = "";
-								friendsListAction = 3;
-								aLong978 = friendsListLongs[i_392_];
-								chatboxInputMessage = "Enter message to send to " + friendsListNames[i_392_];
-							}
-						}
-					}
-					if (menuActionId == 454) {
-						outBuffer.putOpcode(41);
-						outBuffer.putShort(itemId);
-						outBuffer.putShortA(itemSlotId);
-						outBuffer.putShortA(frameId);
-						anInt1268 = 0;
-						anInt1269 = frameId;
-						anInt1270 = itemSlotId;
-						anInt1271 = 2;
-						if (Widget.cache[frameId].parentId == openWidgetId) {
-							anInt1271 = 1;
-						}
-						if (Widget.cache[frameId].parentId == chatboxWidgetId) {
-							anInt1271 = 3;
-						}
-					}
-					if (menuActionId == 478) {
-						Npc npc = localNpcs[itemId];
-						if (npc != null) {
-							calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, npc.pathY[0],
-									Game.localPlayer.pathX[0], false, npc.pathX[0]);
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							if ((itemId & 0x3) == 0) {
-								Game.anInt1180++;
-							}
-							if (Game.anInt1180 >= 53) {
-								outBuffer.putOpcode(85);
-								outBuffer.put(66);
-								Game.anInt1180 = 0;
-							}
-							outBuffer.putOpcode(18);
-							outBuffer.putLEShort(itemId);
-						}
-					}
-					if (menuActionId == 113) {
-						method66(itemSlotId, frameId, itemId);
-						outBuffer.putOpcode(70);
-						outBuffer.putLEShort(itemSlotId + regionAbsoluteBaseX);
-						outBuffer.putShort(frameId + regionAbsoluteBaseY);
-						outBuffer.putLEShortA(itemId >> 14 & 0x7fff);
-					}
-					if (menuActionId == 872) {
-						method66(itemSlotId, frameId, itemId);
-						outBuffer.putOpcode(234);
-						outBuffer.putLEShortA(itemSlotId + regionAbsoluteBaseX);
-						outBuffer.putShortA(itemId >> 14 & 0x7fff);
-						outBuffer.putLEShortA(frameId + regionAbsoluteBaseY);
-					}
-					if (menuActionId == 502) {
-						method66(itemSlotId, frameId, itemId);
-						outBuffer.putOpcode(132);
-						outBuffer.putLEShortA(itemSlotId + regionAbsoluteBaseX);
-						outBuffer.putShort(itemId >> 14 & 0x7fff);
-						outBuffer.putShortA(frameId + regionAbsoluteBaseY);
-					}
-					if (menuActionId == 1125) {
-						ItemDefinition itemdefinition = ItemDefinition.getDefinition(itemId);
-						Widget widget = Widget.cache[frameId];
-						String string;
-						if (widget != null && widget.itemAmounts[itemSlotId] >= 100000) {
-							string = String.valueOf(widget.itemAmounts[itemSlotId]) + " x " + itemdefinition.name;
-						} else if (itemdefinition.description != null) {
-							string = new String(itemdefinition.description);
-						} else {
-							string = "It's a " + itemdefinition.name + ".";
-						}
-						sendMessage(string, 0, "");
-					}
-					if (menuActionId == 169) {
-						outBuffer.putOpcode(185);
-						outBuffer.putShort(frameId);
-						Widget widget = Widget.cache[frameId];
-						if (widget.opcodes != null && widget.opcodes[0][0] == 5) {
-							int i_394_ = widget.opcodes[0][1];
-							widgetSettings[i_394_] = 1 - widgetSettings[i_394_];
-							handleWidgetSetting(i_394_);
-							redrawTab = true;
-						}
-					}
-					if (menuActionId == 447) {
-						anInt1307 = 1;
-						anInt1308 = itemSlotId;
-						anInt1309 = frameId;
-						anInt1310 = itemId;
-						aString1311 = ItemDefinition.getDefinition(itemId).name;
-						anInt1161 = 0;
-						redrawTab = true;
-					} else {
-						if (menuActionId == 1226) {
-							int hash = itemId >> 14 & 0x7fff;
-							GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(hash);
-							String description;
-							if (gameobjectdefinition.description != null) {
-								description = new String(gameobjectdefinition.description);
-							} else {
-								description = "It's a " + gameobjectdefinition.name + ".";
-							}
-							sendMessage(description, 0, "");
-						}
-						if (menuActionId == 244) {
-							boolean bool_396_ = calculatePath(2, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, frameId,
-									Game.localPlayer.pathX[0], false, itemSlotId);
-							if (!bool_396_) {
-								bool_396_ = calculatePath(2, 0, 1, 0, Game.localPlayer.pathY[0], 1, 0, frameId,
-										Game.localPlayer.pathX[0], false, itemSlotId);
-							}
-							lastClickX = clickX;
-							lastClickY = clickY;
-							lastClickType = 2;
-							anInt941 = 0;
-							outBuffer.putOpcode(253);
-							outBuffer.putLEShort(itemSlotId + regionAbsoluteBaseX);
-							outBuffer.putLEShortA(frameId + regionAbsoluteBaseY);
-							outBuffer.putShortA(itemId);
-						}
-						if (menuActionId == 1448) {
-							ItemDefinition itemdefinition = ItemDefinition.getDefinition(itemId);
-							String string;
-							if (itemdefinition.description != null) {
-								string = new String(itemdefinition.description);
-							} else {
-								string = "It's a " + itemdefinition.name + ".";
-							}
-							sendMessage(string, 0, "");
-						}
-						anInt1307 = 0;
-						anInt1161 = 0;
-						redrawTab = true;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("53, " + pressedRow + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processInTutorial() {
-		try {
-			inTutorial = 0;
-
-			int x = (Game.localPlayer.xWithBoundary >> 7) + regionAbsoluteBaseX;
-			int y = (Game.localPlayer.yWithBoundary >> 7) + regionAbsoluteBaseY;
-
-			// Overworld
-			if (x >= 3053 && x <= 3156 && y >= 3056 && y <= 3136) {
-				inTutorial = 1;
-			}
-
-			// Underground
-			if (x >= 3072 && x <= 3118 && y >= 9492 && y <= 9535) {
-				inTutorial = 1;
-			}
-
-			if (inTutorial != 1 || x < 3139 || x > 3199 || y < 3008 || y > 3062) {
-				return;
-			}
-
-			inTutorial = 0;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("12723, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	@Override
-	public final void run() {
-		if (aBoolean905) {
-			method136((byte) 59);
-		} else {
-			super.run();
-		}
-	}
-
-	public final void processClickingGame() {
-		do {
-			try {
-				if (anInt1307 == 0 && anInt1161 == 0) {
-					menuActionNames[menuActionRow] = "Walk here";
-					menuActionIds[menuActionRow] = 516;
-					menuActionIds2[menuActionRow] = mouseEventX;
-					menuActionIds3[menuActionRow] = mouseEventY;
-					menuActionRow++;
-				}
-				int i_399_ = -1;
-				for (int i_400_ = 0; i_400_ < Model.anInt1680; i_400_++) {
-					int i_401_ = Model.anIntArray1681[i_400_];
-					int i_402_ = i_401_ & 0x7f;
-					int i_403_ = i_401_ >> 7 & 0x7f;
-					int i_404_ = i_401_ >> 29 & 0x3;
-					int i_405_ = i_401_ >> 14 & 0x7fff;
-					if (i_401_ != i_399_) {
-						i_399_ = i_401_;
-						if (i_404_ == 2 && currentScene.getConfig(currentSceneId, i_402_, i_403_, i_401_) >= 0) {
-							GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_405_);
-							if (gameobjectdefinition.childrenIds != null) {
-								gameobjectdefinition = gameobjectdefinition.getChildDefinition();
-							}
-							if (gameobjectdefinition == null) {
-								continue;
-							}
-							if (anInt1307 == 1) {
-								menuActionNames[menuActionRow] = "Use " + aString1311 + " with @cya@"
-										+ gameobjectdefinition.name;
-								menuActionIds[menuActionRow] = 62;
-								menuActionIds1[menuActionRow] = i_401_;
-								menuActionIds2[menuActionRow] = i_402_;
-								menuActionIds3[menuActionRow] = i_403_;
-								menuActionRow++;
-							} else if (anInt1161 == 1) {
-								if ((anInt1163 & 0x4) == 4) {
-									menuActionNames[menuActionRow] = aString1164 + " @cya@" + gameobjectdefinition.name;
-									menuActionIds[menuActionRow] = 956;
-									menuActionIds1[menuActionRow] = i_401_;
-									menuActionIds2[menuActionRow] = i_402_;
-									menuActionIds3[menuActionRow] = i_403_;
-									menuActionRow++;
-								}
-							} else {
-								if (gameobjectdefinition.actions != null) {
-									for (int i_406_ = 4; i_406_ >= 0; i_406_--) {
-										if (gameobjectdefinition.actions[i_406_] != null) {
-											menuActionNames[menuActionRow] = gameobjectdefinition.actions[i_406_]
-													+ " @cya@" + gameobjectdefinition.name;
-											if (i_406_ == 0) {
-												menuActionIds[menuActionRow] = 502;
-											}
-											if (i_406_ == 1) {
-												menuActionIds[menuActionRow] = 900;
-											}
-											if (i_406_ == 2) {
-												menuActionIds[menuActionRow] = 113;
-											}
-											if (i_406_ == 3) {
-												menuActionIds[menuActionRow] = 872;
-											}
-											if (i_406_ == 4) {
-												menuActionIds[menuActionRow] = 1062;
-											}
-											menuActionIds1[menuActionRow] = i_401_;
-											menuActionIds2[menuActionRow] = i_402_;
-											menuActionIds3[menuActionRow] = i_403_;
-											menuActionRow++;
-										}
-									}
-								}
-								menuActionNames[menuActionRow] = "Examine @cya@" + gameobjectdefinition.name;
-								menuActionIds[menuActionRow] = 1226;
-								menuActionIds1[menuActionRow] = gameobjectdefinition.id << 14;
-								menuActionIds2[menuActionRow] = i_402_;
-								menuActionIds3[menuActionRow] = i_403_;
-								menuActionRow++;
-							}
-						}
-						if (i_404_ == 1) {
-							Npc npc = localNpcs[i_405_];
-							if (npc.npcDefinition.boundaryDimension == 1 && (npc.xWithBoundary & 0x7f) == 64
-									&& (npc.yWithBoundary & 0x7f) == 64) {
-								for (int i_407_ = 0; i_407_ < actorCount; i_407_++) {
-									Npc npc_408_ = localNpcs[anIntArray862[i_407_]];
-									if (npc_408_ != null && npc_408_ != npc
-											&& npc_408_.npcDefinition.boundaryDimension == 1
-											&& npc_408_.xWithBoundary == npc.xWithBoundary
-											&& npc_408_.yWithBoundary == npc.yWithBoundary) {
-										method87(npc_408_.npcDefinition, anIntArray862[i_407_], false, i_403_, i_402_);
-									}
-								}
-								for (int i_409_ = 0; i_409_ < playerCount; i_409_++) {
-									Player player = players[anIntArray917[i_409_]];
-									if (player != null && player.xWithBoundary == npc.xWithBoundary
-											&& player.yWithBoundary == npc.yWithBoundary) {
-										method88(i_402_, anIntArray917[i_409_], player, false, i_403_);
-									}
-								}
-							}
-							method87(npc.npcDefinition, i_405_, false, i_403_, i_402_);
-						}
-						if (i_404_ == 0) {
-							Player player = players[i_405_];
-							if ((player.xWithBoundary & 0x7f) == 64 && (player.yWithBoundary & 0x7f) == 64) {
-								for (int i_410_ = 0; i_410_ < actorCount; i_410_++) {
-									Npc npc = localNpcs[anIntArray862[i_410_]];
-									if (npc != null && npc.npcDefinition.boundaryDimension == 1
-											&& npc.xWithBoundary == player.xWithBoundary
-											&& npc.yWithBoundary == player.yWithBoundary) {
-										method87(npc.npcDefinition, anIntArray862[i_410_], false, i_403_, i_402_);
-									}
-								}
-								for (int i_411_ = 0; i_411_ < playerCount; i_411_++) {
-									Player player_412_ = players[anIntArray917[i_411_]];
-									if (player_412_ != null && player_412_ != player
-											&& player_412_.xWithBoundary == player.xWithBoundary
-											&& player_412_.yWithBoundary == player.yWithBoundary) {
-										method88(i_402_, anIntArray917[i_411_], player_412_, false, i_403_);
-									}
-								}
-							}
-							method88(i_402_, i_405_, player, false, i_403_);
-						}
-						if (i_404_ == 3) {
-							LinkedList linkedlist = groundItemNodes[currentSceneId][i_402_][i_403_];
-							if (linkedlist != null) {
-								for (Item item = (Item) linkedlist.getFront(); item != null; item = (Item) linkedlist
-										.getNext()) {
-									ItemDefinition itemdefinition = ItemDefinition.getDefinition(item.itemId);
-									if (anInt1307 == 1) {
-										menuActionNames[menuActionRow] = "Use " + aString1311 + " with @lre@"
-												+ itemdefinition.name;
-										menuActionIds[menuActionRow] = 511;
-										menuActionIds1[menuActionRow] = item.itemId;
-										menuActionIds2[menuActionRow] = i_402_;
-										menuActionIds3[menuActionRow] = i_403_;
-										menuActionRow++;
-									} else if (anInt1161 == 1) {
-										if ((anInt1163 & 0x1) == 1) {
-											menuActionNames[menuActionRow] = aString1164 + " @lre@"
-													+ itemdefinition.name;
-											menuActionIds[menuActionRow] = 94;
-											menuActionIds1[menuActionRow] = item.itemId;
-											menuActionIds2[menuActionRow] = i_402_;
-											menuActionIds3[menuActionRow] = i_403_;
-											menuActionRow++;
-										}
-									} else {
-										for (int i_413_ = 4; i_413_ >= 0; i_413_--) {
-											if (itemdefinition.groundActions != null
-													&& itemdefinition.groundActions[i_413_] != null) {
-												menuActionNames[menuActionRow] = itemdefinition.groundActions[i_413_]
-														+ " @lre@" + itemdefinition.name;
-												if (i_413_ == 0) {
-													menuActionIds[menuActionRow] = 652;
-												}
-												if (i_413_ == 1) {
-													menuActionIds[menuActionRow] = 567;
-												}
-												if (i_413_ == 2) {
-													menuActionIds[menuActionRow] = 234;
-												}
-												if (i_413_ == 3) {
-													menuActionIds[menuActionRow] = 244;
-												}
-												if (i_413_ == 4) {
-													menuActionIds[menuActionRow] = 213;
-												}
-												menuActionIds1[menuActionRow] = item.itemId;
-												menuActionIds2[menuActionRow] = i_402_;
-												menuActionIds3[menuActionRow] = i_403_;
-												menuActionRow++;
-											} else if (i_413_ == 2) {
-												menuActionNames[menuActionRow] = "Take @lre@" + itemdefinition.name;
-												menuActionIds[menuActionRow] = 234;
-												menuActionIds1[menuActionRow] = item.itemId;
-												menuActionIds2[menuActionRow] = i_402_;
-												menuActionIds3[menuActionRow] = i_403_;
-												menuActionRow++;
-											}
-										}
-										menuActionNames[menuActionRow] = "Examine @lre@" + itemdefinition.name;
-										menuActionIds[menuActionRow] = 1448;
-										menuActionIds1[menuActionRow] = item.itemId;
-										menuActionIds2[menuActionRow] = i_402_;
-										menuActionIds3[menuActionRow] = i_403_;
-										menuActionRow++;
-									}
-								}
-							}
-						}
-					}
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("26026, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	@Override
-	public final void shutdown() {
-		SignLink.reportError = false;
-		try {
-			if (bufferedConnection != null) {
-				bufferedConnection.close();
-			}
-		} catch (Exception exception) {
-			/* empty */
-		}
-		bufferedConnection = null;
-		stopMidi();
-		if (mouseCapturer != null) {
-			mouseCapturer.capturing = false;
-		}
-		mouseCapturer = null;
-		onDemandRequester.stop();
-		onDemandRequester = null;
-		aBuffer859 = null;
-		outBuffer = null;
-		aBuffer872 = null;
-		inBuffer = null;
-		anIntArray1259 = null;
-		aByteArrayArray1208 = null;
-		aByteArrayArray1272 = null;
-		anIntArray1260 = null;
-		anIntArray1261 = null;
-		anIntArrayArrayArray1239 = null;
-		currentSceneTileFlags = null;
-		currentScene = null;
-		currentCollisionMap = null;
-		wayPoints = null;
-		distanceValues = null;
-		walkingQueueX = null;
-		walkingQueueY = null;
-		aByteArray937 = null;
-		aProducingGraphicsBuffer1188 = null;
-		aProducingGraphicsBuffer1189 = null;
-		currentSceneBuffer = null;
-		chatboxProducingGraphicsBuffer = null;
-		aProducingGraphicsBuffer1148 = null;
-		aProducingGraphicsBuffer1149 = null;
-		aProducingGraphicsBuffer1150 = null;
-		aProducingGraphicsBuffer928 = null;
-		aProducingGraphicsBuffer929 = null;
-		aProducingGraphicsBuffer930 = null;
-		aProducingGraphicsBuffer931 = null;
-		aProducingGraphicsBuffer932 = null;
-		aProducingGraphicsBuffer933 = null;
-		aProducingGraphicsBuffer934 = null;
-		aProducingGraphicsBuffer935 = null;
-		aProducingGraphicsBuffer936 = null;
-		inventoryBackgroundImage = null;
-		minimapBackgroundImage = null;
-		chatboxBackgroundImage = null;
-		anIndexedImage1052 = null;
-		anIndexedImage1053 = null;
-		anIndexedImage1054 = null;
-		tabIcon = null;
-		anIndexedImage1168 = null;
-		anIndexedImage1169 = null;
-		anIndexedImage1170 = null;
-		anIndexedImage1171 = null;
-		anIndexedImage1172 = null;
-		anIndexedImage890 = null;
-		anIndexedImage891 = null;
-		anIndexedImage892 = null;
-		anIndexedImage893 = null;
-		anIndexedImage894 = null;
-		minimapCompass = null;
-		anImageRGBArray1012 = null;
-		anImageRGBArray1120 = null;
-		cursorCross = null;
-		mapdotItem = null;
-		mapdotActor = null;
-		mapdotPlayer = null;
-		mapdotFriend = null;
-		mapdotTeammate = null;
-		anIndexedImageArray1085 = null;
-		worldMapHintIcons = null;
-		anIntArrayArray954 = null;
-		players = null;
-		anIntArray917 = null;
-		anIntArray919 = null;
-		playerBuffer = null;
-		anIntArray865 = null;
-		localNpcs = null;
-		anIntArray862 = null;
-		groundItemNodes = null;
-		spawnObjectNodeList = null;
-		projectileList = null;
-		aLinkedList1081 = null;
-		menuActionIds2 = null;
-		menuActionIds3 = null;
-		menuActionIds = null;
-		menuActionIds1 = null;
-		menuActionNames = null;
-		widgetSettings = null;
-		minimapHintX = null;
-		minimapHintY = null;
-		minimapHint = null;
-		minimapImage = null;
-		friendsListNames = null;
-		friendsListLongs = null;
-		friendsListWorlds = null;
-		flameLeftBackground = null;
-		flameRightBackground = null;
-		aProducingGraphicsBuffer1132 = null;
-		aProducingGraphicsBuffer1133 = null;
-		aProducingGraphicsBuffer1134 = null;
-		aProducingGraphicsBuffer1137 = null;
-		aProducingGraphicsBuffer1138 = null;
-		aProducingGraphicsBuffer1139 = null;
-		aProducingGraphicsBuffer1140 = null;
-		method118();
-		GameObjectDefinition.reset();
-		ActorDefinition.reset();
-		ItemDefinition.reset();
-		FloorDefinition.cache = null;
-		IdentityKit.cache = null;
-		Widget.cache = null;
-		AnimationSequence.cache = null;
-		SpotAnimation.cache = null;
-		SpotAnimation.modelCache = null;
-		Varp.cache = null;
-		producingGraphicsBuffer = null;
-		Player.modelCache = null;
-		Rasterizer3D.reset();
-		Scene.method495(-501);
-		Model.reset();
-		Animation.reset();
-		System.gc();
-	}
-
-	public void method72() {
-		System.out.println("============");
-		System.out.println("flame-cycle:" + anInt1233);
-		if (onDemandRequester != null) {
-			System.out.println("Od-cycle:" + onDemandRequester.cycle);
-		}
-		System.out.println("loop-cycle:" + Game.currentCycle);
-		System.out.println("draw-cycle:" + Game.anInt1086);
-		System.out.println("ptype:" + opcode);
-		System.out.println("psize:" + packetSize);
-		if (bufferedConnection != null) {
-			bufferedConnection.printDebug();
-		}
-		dumpRequested = true;
-	}
-
-	@Override
-	public final Component getComponent() {
-		if (SignLink.applet != null) {
-			return SignLink.applet;
-		}
-		if (gameFrame != null) {
-			return gameFrame;
-		}
-		return this;
-	}
-
-	public final void method73(int i) {
-		try {
-			i = 55 / i;
-			for (;;) {
-				int key = this.readCharacter();
-				if (key == -1) {
-					break;
-				}
-				if (openWidgetId != -1 && openWidgetId == anInt1203) {
-					if (key == 8 && reportedName.length() > 0) {
-						reportedName = reportedName.substring(0, reportedName.length() - 1);
-					}
-					if ((key >= 97 && key <= 122 || key >= 65 && key <= 90 || key >= 48 && key <= 57 || key == 32)
-							&& reportedName.length() < 12) {
-						reportedName += (char) key;
-					}
-				} else if (messagePromptRaised) {
-					if (key >= 32 && key <= 122 && chatMessage.length() < 80) {
-						chatMessage += (char) key;
-						redrawChatbox = true;
-					}
-					if (key == 8 && chatMessage.length() > 0) {
-						chatMessage = chatMessage.substring(0, chatMessage.length() - 1);
-						redrawChatbox = true;
-					}
-					if (key == 13 || key == 10) {
-						messagePromptRaised = false;
-						redrawChatbox = true;
-						if (friendsListAction == 1) {
-							long l = TextUtils.nameToLong(chatMessage);
-							method41((byte) 68, l);
-						}
-						if (friendsListAction == 2 && friendsListCount > 0) {
-							long l = TextUtils.nameToLong(chatMessage);
-							method35(false, l);
-						}
-						if (friendsListAction == 3 && chatMessage.length() > 0) {
-							outBuffer.putOpcode(126);
-							outBuffer.put(0);
-							int i_415_ = outBuffer.offset;
-							outBuffer.putLong(aLong978);
-							ChatEncoder.put(chatMessage, outBuffer);
-							outBuffer.putSizeByte(outBuffer.offset - i_415_);
-							chatMessage = ChatEncoder.formatChatMessage(chatMessage);
-							chatMessage = ChatCensor.censorString(chatMessage);
-							sendMessage(chatMessage, 6, TextUtils.formatName(TextUtils.longToName(aLong978)));
-							if (privateChatSetting == 2) {
-								privateChatSetting = 1;
-								redrawChatSettings = true;
-								outBuffer.putOpcode(95);
-								outBuffer.put(publicChatSetting);
-								outBuffer.put(privateChatSetting);
-								outBuffer.put(tradeSetting);
-							}
-						}
-						if (friendsListAction == 4 && ignoreListCount < 100) {
-							long l = TextUtils.nameToLong(chatMessage);
-							addIgnore(l, 4);
-						}
-						if (friendsListAction == 5 && ignoreListCount > 0) {
-							long l = TextUtils.nameToLong(chatMessage);
-							method122(3, l);
-						}
-					}
-				} else if (inputType == 1) {
-					if (key >= KeyEvent.VK_0 && key <= KeyEvent.VK_9 && inputInputMessage.length() < 10) {
-						inputInputMessage += (char) key;
-						redrawChatbox = true;
-					}
-					if (key == KeyEvent.VK_BACK_SPACE && inputInputMessage.length() > 0) {
-						inputInputMessage = inputInputMessage.substring(0, inputInputMessage.length() - 1);
-						redrawChatbox = true;
-					}
-					if (key == KeyEvent.VK_ENTER) {
-						if (inputInputMessage.length() > 0) {
-							int inputValue = 0;
-							try {
-								inputValue = Integer.parseInt(inputInputMessage);
-							} catch (Exception e) {
-								/* empty */
-							}
-							outBuffer.putOpcode(208);
-							outBuffer.putInt(inputValue);
-						}
-						inputType = 0;
-						redrawChatbox = true;
-					}
-				} else if (inputType == 2) {
-					if (key >= 32 && key <= 122 && inputInputMessage.length() < 12) {
-						inputInputMessage += (char) key;
-						redrawChatbox = true;
-					}
-					if (key == KeyEvent.VK_BACK_SPACE && inputInputMessage.length() > 0) {
-						inputInputMessage = inputInputMessage.substring(0, inputInputMessage.length() - 1);
-						redrawChatbox = true;
-					}
-					if (key == KeyEvent.VK_ENTER) {
-						if (inputInputMessage.length() > 0) {
-							outBuffer.putOpcode(60);
-							outBuffer.putLong(TextUtils.nameToLong(inputInputMessage));
-						}
-						inputType = 0;
-						redrawChatbox = true;
-					}
-				} else if (chatboxWidgetId == -1) {
-					if (key >= 32 && key <= 122 && chatboxInput.length() < 80) {
-						System.out.println((char) 32);
-						chatboxInput += (char) key;
-						redrawChatbox = true;
-					}
-					if (key == KeyEvent.VK_BACK_SPACE && chatboxInput.length() > 0) {
-						chatboxInput = chatboxInput.substring(0, chatboxInput.length() - 1);
-						redrawChatbox = true;
-					}
-					if ((key == KeyEvent.VK_ENTER) && chatboxInput.length() > 0) {
-						if (playerRights == 0) {
-							if (chatboxInput.equals("::clientdrop")) {
-								method68(-670);
-							}
-							if (chatboxInput.equals("::lag")) {
-								method72();
-							}
-							if (chatboxInput.equals("::prefetchmusic")) {
-								for (int i_417_ = 0; i_417_ < onDemandRequester.fileCount(2); i_417_++) {
-									onDemandRequester.setPriority((byte) 1, 2, i_417_);
-								}
-							}
-							if (chatboxInput.equals("::fps")) {
-								Game.debug = !Game.debug;
-							}
-							if (chatboxInput.equals("::noclip")) {
-								for (int plane = 0; plane < 4; plane++) {
-									for (int x = 1; x < 103; x++) {
-										for (int y = 1; y < 103; y++) {
-											currentCollisionMap[plane].adjacency[x][y] = 0;
-										}
-									}
-								}
-							}
-						}
-						if (chatboxInput.startsWith("::")) {
-							outBuffer.putOpcode(103);
-							outBuffer.put(chatboxInput.length() - 1);
-							outBuffer.putString(chatboxInput.substring(2));
-						} else {
-							String string = chatboxInput.toLowerCase();
-							int i_421_ = 0;
-							if (string.startsWith("yellow:")) {
-								i_421_ = 0;
-								chatboxInput = chatboxInput.substring(7);
-							} else if (string.startsWith("red:")) {
-								i_421_ = 1;
-								chatboxInput = chatboxInput.substring(4);
-							} else if (string.startsWith("green:")) {
-								i_421_ = 2;
-								chatboxInput = chatboxInput.substring(6);
-							} else if (string.startsWith("cyan:")) {
-								i_421_ = 3;
-								chatboxInput = chatboxInput.substring(5);
-							} else if (string.startsWith("purple:")) {
-								i_421_ = 4;
-								chatboxInput = chatboxInput.substring(7);
-							} else if (string.startsWith("white:")) {
-								i_421_ = 5;
-								chatboxInput = chatboxInput.substring(6);
-							} else if (string.startsWith("flash1:")) {
-								i_421_ = 6;
-								chatboxInput = chatboxInput.substring(7);
-							} else if (string.startsWith("flash2:")) {
-								i_421_ = 7;
-								chatboxInput = chatboxInput.substring(7);
-							} else if (string.startsWith("flash3:")) {
-								i_421_ = 8;
-								chatboxInput = chatboxInput.substring(7);
-							} else if (string.startsWith("glow1:")) {
-								i_421_ = 9;
-								chatboxInput = chatboxInput.substring(6);
-							} else if (string.startsWith("glow2:")) {
-								i_421_ = 10;
-								chatboxInput = chatboxInput.substring(6);
-							} else if (string.startsWith("glow3:")) {
-								i_421_ = 11;
-								chatboxInput = chatboxInput.substring(6);
-							}
-							string = chatboxInput.toLowerCase();
-							int i_422_ = 0;
-							if (string.startsWith("wave:")) {
-								i_422_ = 1;
-								chatboxInput = chatboxInput.substring(5);
-							} else if (string.startsWith("wave2:")) {
-								i_422_ = 2;
-								chatboxInput = chatboxInput.substring(6);
-							} else if (string.startsWith("shake:")) {
-								i_422_ = 3;
-								chatboxInput = chatboxInput.substring(6);
-							} else if (string.startsWith("scroll:")) {
-								i_422_ = 4;
-								chatboxInput = chatboxInput.substring(7);
-							} else if (string.startsWith("slide:")) {
-								i_422_ = 5;
-								chatboxInput = chatboxInput.substring(6);
-							}
-							outBuffer.putOpcode(4);
-							outBuffer.put(0);
-							int i_423_ = outBuffer.offset;
-							outBuffer.putByteS(i_422_);
-							outBuffer.putByteS(i_421_);
-							aBuffer859.offset = 0;
-							ChatEncoder.put(chatboxInput, aBuffer859);
-							outBuffer.putBytesA(0, aBuffer859.payload, aBuffer859.offset);
-							outBuffer.putSizeByte(outBuffer.offset - i_423_);
-							chatboxInput = ChatEncoder.formatChatMessage(chatboxInput);
-							chatboxInput = ChatCensor.censorString(chatboxInput);
-							Game.localPlayer.forcedChat = chatboxInput;
-							Game.localPlayer.chatColor = i_421_;
-							Game.localPlayer.chatEffect = i_422_;
-							Game.localPlayer.anInt1555 = 150;
-							if (playerRights == 2) {
-								sendMessage(Game.localPlayer.forcedChat, 2, "@cr2@" + Game.localPlayer.playerName);
-							} else if (playerRights == 1) {
-								sendMessage(Game.localPlayer.forcedChat, 2, "@cr1@" + Game.localPlayer.playerName);
-							} else {
-								sendMessage(Game.localPlayer.forcedChat, 2, Game.localPlayer.playerName);
-							}
-							if (publicChatSetting == 2) {
-								publicChatSetting = 3;
-								redrawChatSettings = true;
-								outBuffer.putOpcode(95);
-								outBuffer.put(publicChatSetting);
-								outBuffer.put(privateChatSetting);
-								outBuffer.put(tradeSetting);
-							}
-						}
-						chatboxInput = "";
-						redrawChatbox = true;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("88130, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method74(int i, int i_424_) {
-		try {
-			int i_426_ = 0;
-			for (int i_427_ = 0; i_427_ < 100; i_427_++) {
-				if (chatboxMessages[i_427_] != null) {
-					int i_428_ = chatboxMessageTypes[i_427_];
-					int i_429_ = 70 - i_426_ * 14 + anInt1114 + 4;
-					if (i_429_ < -20) {
-						break;
-					}
-					String name = chatboxMessageNames[i_427_];
-					if (name != null && name.startsWith("@cr1@")) {
-						name = name.substring(5);
-					}
-					if (name != null && name.startsWith("@cr2@")) {
-						name = name.substring(5);
-					}
-					if (i_428_ == 0) {
-						i_426_++;
-					}
-					if ((i_428_ == 1 || i_428_ == 2)
-							&& (i_428_ == 1 || publicChatSetting == 0 || publicChatSetting == 1
-									&& method109(false, name))) {
-						if (i_424_ > i_429_ - 14 && i_424_ <= i_429_ && !name.equals(Game.localPlayer.playerName)) {
-							if (playerRights >= 1) {
-								menuActionNames[menuActionRow] = "Report abuse @whi@" + name;
-								menuActionIds[menuActionRow] = 606;
-								menuActionRow++;
-							}
-							menuActionNames[menuActionRow] = "Add ignore @whi@" + name;
-							menuActionIds[menuActionRow] = 42;
-							menuActionRow++;
-							menuActionNames[menuActionRow] = "Add friend @whi@" + name;
-							menuActionIds[menuActionRow] = 337;
-							menuActionRow++;
-						}
-						i_426_++;
-					}
-					if ((i_428_ == 3 || i_428_ == 7)
-							&& anInt1220 == 0
-							&& (i_428_ == 7 || privateChatSetting == 0 || privateChatSetting == 1
-									&& method109(false, name))) {
-						if (i_424_ > i_429_ - 14 && i_424_ <= i_429_) {
-							if (playerRights >= 1) {
-								menuActionNames[menuActionRow] = "Report abuse @whi@" + name;
-								menuActionIds[menuActionRow] = 606;
-								menuActionRow++;
-							}
-							menuActionNames[menuActionRow] = "Add ignore @whi@" + name;
-							menuActionIds[menuActionRow] = 42;
-							menuActionRow++;
-							menuActionNames[menuActionRow] = "Add friend @whi@" + name;
-							menuActionIds[menuActionRow] = 337;
-							menuActionRow++;
-						}
-						i_426_++;
-					}
-					if (i_428_ == 4 && (tradeSetting == 0 || tradeSetting == 1 && method109(false, name))) {
-						if (i_424_ > i_429_ - 14 && i_424_ <= i_429_) {
-							menuActionNames[menuActionRow] = "Accept trade @whi@" + name;
-							menuActionIds[menuActionRow] = 484;
-							menuActionRow++;
-						}
-						i_426_++;
-					}
-					if ((i_428_ == 5 || i_428_ == 6) && anInt1220 == 0 && privateChatSetting < 2) {
-						i_426_++;
-					}
-					if (i_428_ == 8 && (tradeSetting == 0 || tradeSetting == 1 && method109(false, name))) {
-						if (i_424_ > i_429_ - 14 && i_424_ <= i_429_) {
-							menuActionNames[menuActionRow] = "Accept challenge @whi@" + name;
-							menuActionIds[menuActionRow] = 6;
-							menuActionRow++;
-						}
-						i_426_++;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("86869, " + i + ", " + i_424_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method75(Widget widget) {
-		do {
-			try {
-				int type = widget.contentType;
-				if (type >= 1 && type <= 100 || type >= 701 && type <= 800) {
-					if (type == 1 && friendListStatus == 0) {
-						widget.disabledText = "Loading friend list";
-						widget.actionType = 0;
-					} else if (type == 1 && friendListStatus == 1) {
-						widget.disabledText = "Connecting to friendserver";
-						widget.actionType = 0;
-					} else if (type == 2 && friendListStatus != 2) {
-						widget.disabledText = "Please wait...";
-						widget.actionType = 0;
-					} else {
-						int friendCount = friendsListCount;
-						if (friendListStatus != 2) {
-							friendCount = 0;
-						}
-						if (type > 700) {
-							type -= 601;
-						} else {
-							type--;
-						}
-						if (type >= friendCount) {
-							widget.disabledText = "";
-							widget.actionType = 0;
-						} else {
-							widget.disabledText = friendsListNames[type];
-							widget.actionType = 1;
-						}
-					}
-				} else if (type >= 101 && type <= 200 || type >= 801 && type <= 900) {
-					int i_433_ = friendsListCount;
-					if (friendListStatus != 2) {
-						i_433_ = 0;
-					}
-					if (type > 800) {
-						type -= 701;
-					} else {
-						type -= 101;
-					}
-					if (type >= i_433_) {
-						widget.disabledText = "";
-						widget.actionType = 0;
-					} else {
-						if (friendsListWorlds[type] == 0) {
-							widget.disabledText = "@red@Offline";
-						} else if (friendsListWorlds[type] == Game.nodeId) {
-							widget.disabledText = "@gre@World-" + (friendsListWorlds[type] - 9);
-						} else {
-							widget.disabledText = "@yel@World-" + (friendsListWorlds[type] - 9);
-						}
-						widget.actionType = 1;
-					}
-				} else if (type == 203) {
-					int i_434_ = friendsListCount;
-					if (friendListStatus != 2) {
-						i_434_ = 0;
-					}
-					widget.scrollLimit = i_434_ * 15 + 20;
-					if (widget.scrollLimit <= widget.height) {
-						widget.scrollLimit = widget.height + 1;
-					}
-				} else if (type >= 401 && type <= 500) {
-					type -= 401;
-					if (type == 0 && friendListStatus == 0) {
-						widget.disabledText = "Loading ignore list";
-						widget.actionType = 0;
-					} else if (type == 1 && friendListStatus == 0) {
-						widget.disabledText = "Please wait...";
-						widget.actionType = 0;
-					} else {
-						int i_435_ = ignoreListCount;
-						if (friendListStatus == 0) {
-							i_435_ = 0;
-						}
-						if (type >= i_435_) {
-							widget.disabledText = "";
-							widget.actionType = 0;
-						} else {
-							widget.disabledText = TextUtils.formatName(TextUtils.longToName(ignoreList[type]));
-							widget.actionType = 1;
-						}
-					}
-				} else if (type == 503) {
-					widget.scrollLimit = ignoreListCount * 15 + 20;
-					if (widget.scrollLimit <= widget.height) {
-						widget.scrollLimit = widget.height + 1;
-					}
-				} else if (type == 327) {
-					widget.rotationX = 150;
-					widget.rotationY = (int) (Math.sin(Game.currentCycle / 40.0) * 256.0) & 0x7ff;
-					if (aBoolean1056) {
-						for (int i_436_ = 0; i_436_ < 7; i_436_++) {
-							int i_437_ = characterEditIdentityKits[i_436_];
-							if (i_437_ >= 0 && !IdentityKit.cache[i_437_].isBodyModelCached()) {
-								return;
-							}
-						}
-						aBoolean1056 = false;
-						Model[] models = new Model[7];
-						int i_438_ = 0;
-						for (int i_439_ = 0; i_439_ < 7; i_439_++) {
-							int i_440_ = characterEditIdentityKits[i_439_];
-							if (i_440_ >= 0) {
-								models[i_438_++] = IdentityKit.cache[i_440_].getBodyModel();
-							}
-						}
-						Model model = new Model(i_438_, models);
-						for (int i_441_ = 0; i_441_ < 5; i_441_++) {
-							if (characterEditColors[i_441_] != 0) {
-								model.recolor(Game.anIntArrayArray1028[i_441_][0],
-										Game.anIntArrayArray1028[i_441_][characterEditColors[i_441_]]);
-								if (i_441_ == 1) {
-									model.recolor(Game.anIntArray1229[0],
-											Game.anIntArray1229[characterEditColors[i_441_]]);
-								}
-							}
-						}
-						model.createBones();
-						model.applyTransform(AnimationSequence.cache[Game.localPlayer.standAnimationId].frame2Ids[0]);
-						model.applyLighting(64, 850, -30, -50, -30, true);
-						widget.modelType = 5;
-						widget.modelId = 0;
-						Widget.setModel(0, 5, model);
-					}
-				} else if (type == 324) {
-					if (anImageRGB956 == null) {
-						anImageRGB956 = widget.disabledImage;
-						anImageRGB957 = widget.enabledImage;
-					}
-					if (characterEditChangeGenger) {
-						widget.disabledImage = anImageRGB957;
-					} else {
-						widget.disabledImage = anImageRGB956;
-					}
-				} else if (type == 325) {
-					if (anImageRGB956 == null) {
-						anImageRGB956 = widget.disabledImage;
-						anImageRGB957 = widget.enabledImage;
-					}
-					if (characterEditChangeGenger) {
-						widget.disabledImage = anImageRGB956;
-					} else {
-						widget.disabledImage = anImageRGB957;
-					}
-				} else if (type == 600) {
-					widget.disabledText = reportedName;
-					if (Game.currentCycle % 20 < 10) {
-						widget.disabledText += "|";
-					} else {
-						widget.disabledText += " ";
-					}
-				} else {
-					if (type == 613) {
-						if (playerRights >= 1) {
-							if (reportMutePlayer) {
-								widget.disabledColor = 0xFF0000;
-								widget.disabledText = "Moderator option: Mute player for 48 hours: <ON>";
-							} else {
-								widget.disabledColor = 0xFFFFFF;
-								widget.disabledText = "Moderator option: Mute player for 48 hours: <OFF>";
-							}
-						} else {
-							widget.disabledText = "";
-						}
-					}
-					if (type == 650 || type == 655) {
-						if (lastAddress != 0) {
-							String string;
-							if (lastLogin == 0) {
-								string = "earlier today";
-							} else if (lastLogin == 1) {
-								string = "yesterday";
-							} else {
-								string = String.valueOf(lastLogin) + " days ago";
-							}
-							widget.disabledText = "You last logged in " + string + " from: " + SignLink.dns;
-						} else {
-							widget.disabledText = "";
-						}
-					}
-					if (type == 651) {
-						if (unreadMessages == 0) {
-							widget.disabledText = "0 unread messages";
-							widget.disabledColor = 0xFFFF00;
-						}
-						if (unreadMessages == 1) {
-							widget.disabledText = "1 unread message";
-							widget.disabledColor = 0x00FF00;
-						}
-						if (unreadMessages > 1) {
-							widget.disabledText = String.valueOf(unreadMessages) + " unread messages";
-							widget.disabledColor = 0x00FF00;
-						}
-					}
-					if (type == 652) {
-						if (lastRecoveryChange == 201) {
-							if (membershipAdviser == 1) {
-								widget.disabledText = "@yel@This is a non-members world: @whi@Since you are a member we";
-							} else {
-								widget.disabledText = "";
-							}
-						} else if (lastRecoveryChange == 200) {
-							widget.disabledText = "You have not yet set any password recovery questions.";
-						} else {
-							String string;
-							if (lastRecoveryChange == 0) {
-								string = "Earlier today";
-							} else if (lastRecoveryChange == 1) {
-								string = "Yesterday";
-							} else {
-								string = String.valueOf(lastRecoveryChange) + " days ago";
-							}
-							widget.disabledText = string + " you changed your recovery questions";
-						}
-					}
-					if (type == 653) {
-						if (lastRecoveryChange == 201) {
-							if (membershipAdviser == 1) {
-								widget.disabledText = "@whi@recommend you use a members world instead. You may use";
-							} else {
-								widget.disabledText = "";
-							}
-						} else if (lastRecoveryChange == 200) {
-							widget.disabledText = "We strongly recommend you do so now to secure your account.";
-						} else {
-							widget.disabledText = "If you do not remember making this change then cancel it immediately";
-						}
-					}
-					if (type != 654) {
-						break;
-					}
-					if (lastRecoveryChange == 201) {
-						if (membershipAdviser == 1) {
-							widget.disabledText = "@whi@this world but member benefits are unavailable whilst here.";
-						} else {
-							widget.disabledText = "";
-						}
-					} else if (lastRecoveryChange == 200) {
-						widget.disabledText = "Do this from the 'account management' area on our front webpage";
-					} else {
-						widget.disabledText = "Do this from the 'account management' area on our front webpage";
-					}
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("36496, " + widget + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method76() {
-		try {
-			if (anInt1220 != 0) {
-				TypeFace font = fontNormal;
-				int row = 0;
-				if (systemUpdateTime != 0) {
-					row = 1;
-				}
-				for (int i = 0; i < 100; i++) {
-					if (chatboxMessages[i] != null) {
-						int type = chatboxMessageTypes[i];
-						String name = chatboxMessageNames[i];
-						int rights = 0;
-						if (name != null) {
-							if (name.startsWith("@cr")) {
-								rights = Integer.parseInt(name.substring(3, name.lastIndexOf("@")));
-								name = name.substring(5);
-							}
-						}
-						if ((type == 3 || type == 7)
-								&& (type == 7 || privateChatSetting == 0 || privateChatSetting == 1
-										&& method109(false, name))) {
-							int y = 329 - row * 13;
-							int x = 4;
-							font.drawString("From", x, y, 0);
-							font.drawString("From", x, y - 1, 0xFFFF);
-							x += font.getStringEffectWidth("From ");
-							if (rights > 0) {
-								moderatorIcon[rights - 1].drawImage(x, y - 12);
-								x += 14;
-							}
-							font.drawString(name + ": " + chatboxMessages[i], x, y, 0);
-							font.drawString(name + ": " + chatboxMessages[i], x, y - 1, 0xFFFF);
-							if (++row >= 5) {
-								break;
-							}
-						}
-						if (type == 5 && privateChatSetting < 2) {
-							int y = 329 - row * 13;
-							font.drawString(chatboxMessages[i], 4, y, 0);
-							font.drawString(chatboxMessages[i], 4, y - 1, 0xFFFF);
-							if (++row >= 5) {
-								break;
-							}
-						}
-						if (type == 6 && privateChatSetting < 2) {
-							int y = 329 - row * 13;
-							font.drawString("To " + name + ": " + chatboxMessages[i], 4, y, 0);
-							font.drawString("To " + name + ": " + chatboxMessages[i], 4, y - 1, 0xFFFF);
-							if (++row >= 5) {
-								break;
-							}
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("85217, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void sendMessage(String message, int type, String prefix) {
-		try {
-			if (type == 0 && anInt1067 != -1) {
-				aString869 = message;
-				clickType = 0;
-			}
-			if (chatboxWidgetId == -1) {
-				redrawChatbox = true;
-			}
-			for (int i_450_ = 99; i_450_ > 0; i_450_--) {
-				chatboxMessageTypes[i_450_] = chatboxMessageTypes[i_450_ - 1];
-				chatboxMessageNames[i_450_] = chatboxMessageNames[i_450_ - 1];
-				chatboxMessages[i_450_] = chatboxMessages[i_450_ - 1];
-			}
-			chatboxMessageTypes[0] = type;
-			chatboxMessageNames[0] = prefix;
-			chatboxMessages[0] = message;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("56346, " + message + ", " + type + ", " + prefix + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processClickingTabs() {
-		try {
-			if (clickType != 1) {
-				return;
-			}
-			if (clickX >= 539 && clickX <= 573 && clickY >= 169 && clickY < 205 && tabWidgetIds[0] != -1) {
-				redrawTab = true;
-				currentTabId = 0;
-				drawTabIcons = true;
-			}
-			if (clickX >= 569 && clickX <= 599 && clickY >= 168 && clickY < 205 && tabWidgetIds[1] != -1) {
-				redrawTab = true;
-				currentTabId = 1;
-				drawTabIcons = true;
-			}
-			if (clickX >= 597 && clickX <= 627 && clickY >= 168 && clickY < 205 && tabWidgetIds[2] != -1) {
-				redrawTab = true;
-				currentTabId = 2;
-				drawTabIcons = true;
-			}
-			if (clickX >= 625 && clickX <= 669 && clickY >= 168 && clickY < 203 && tabWidgetIds[3] != -1) {
-				redrawTab = true;
-				currentTabId = 3;
-				drawTabIcons = true;
-			}
-			if (clickX >= 666 && clickX <= 696 && clickY >= 168 && clickY < 205 && tabWidgetIds[4] != -1) {
-				redrawTab = true;
-				currentTabId = 4;
-				drawTabIcons = true;
-			}
-			if (clickX >= 694 && clickX <= 724 && clickY >= 168 && clickY < 205 && tabWidgetIds[5] != -1) {
-				redrawTab = true;
-				currentTabId = 5;
-				drawTabIcons = true;
-			}
-			if (clickX >= 722 && clickX <= 756 && clickY >= 169 && clickY < 205 && tabWidgetIds[6] != -1) {
-				redrawTab = true;
-				currentTabId = 6;
-				drawTabIcons = true;
-			}
-			if (clickX >= 540 && clickX <= 574 && clickY >= 466 && clickY < 502 && tabWidgetIds[7] != -1) {
-				redrawTab = true;
-				currentTabId = 7;
-				drawTabIcons = true;
-			}
-			if (clickX >= 572 && clickX <= 602 && clickY >= 466 && clickY < 503 && tabWidgetIds[8] != -1) {
-				redrawTab = true;
-				currentTabId = 8;
-				drawTabIcons = true;
-			}
-			if (clickX >= 599 && clickX <= 629 && clickY >= 466 && clickY < 503 && tabWidgetIds[9] != -1) {
-				redrawTab = true;
-				currentTabId = 9;
-				drawTabIcons = true;
-			}
-			if (clickX >= 627 && clickX <= 671 && clickY >= 467 && clickY < 502 && tabWidgetIds[10] != -1) {
-				redrawTab = true;
-				currentTabId = 10;
-				drawTabIcons = true;
-			}
-			if (clickX >= 669 && clickX <= 699 && clickY >= 466 && clickY < 503 && tabWidgetIds[11] != -1) {
-				redrawTab = true;
-				currentTabId = 11;
-				drawTabIcons = true;
-			}
-			if (clickX >= 696 && clickX <= 726 && clickY >= 466 && clickY < 503 && tabWidgetIds[12] != -1) {
-				redrawTab = true;
-				currentTabId = 12;
-				drawTabIcons = true;
-			}
-			if (clickX < 724 || clickX > 758 || clickY < 466 || clickY >= 502 || tabWidgetIds[13] == -1) {
-				return;
-			}
-			redrawTab = true;
-			currentTabId = 13;
-			drawTabIcons = true;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("30484, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method79(int i) {
-		try {
-			if (chatboxProducingGraphicsBuffer == null) {
-				method118();
-				producingGraphicsBuffer = null;
-				aProducingGraphicsBuffer1132 = null;
-				aProducingGraphicsBuffer1133 = null;
-				aProducingGraphicsBuffer1134 = null;
-				flameLeftBackground = null;
-				flameRightBackground = null;
-				aProducingGraphicsBuffer1137 = null;
-				aProducingGraphicsBuffer1138 = null;
-				aProducingGraphicsBuffer1139 = null;
-				aProducingGraphicsBuffer1140 = null;
-				chatboxProducingGraphicsBuffer = new ProducingGraphicsBuffer(479, 96, getComponent());
-				aProducingGraphicsBuffer1189 = new ProducingGraphicsBuffer(172, 156, getComponent());
-				Rasterizer.resetPixels();
-				minimapBackgroundImage.drawImage(0, 0);
-				aProducingGraphicsBuffer1188 = new ProducingGraphicsBuffer(190, 261, getComponent());
-				currentSceneBuffer = new ProducingGraphicsBuffer(512, 334, getComponent());
-				Rasterizer.resetPixels();
-				aProducingGraphicsBuffer1148 = new ProducingGraphicsBuffer(496, 50, getComponent());
-				if (i != 1) {
-					startup();
-				}
-				aProducingGraphicsBuffer1149 = new ProducingGraphicsBuffer(269, 37, getComponent());
-				aProducingGraphicsBuffer1150 = new ProducingGraphicsBuffer(249, 45, getComponent());
-				redraw = true;
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("35544, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final String getHost() {
-		try {
-			if (SignLink.applet != null) {
-				return SignLink.applet.getDocumentBase().getHost().toLowerCase();
-			}
-			if (gameFrame != null) {
-				return "runescape.com";
-			}
-			return super.getDocumentBase().getHost().toLowerCase();
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("82775, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method81(ImageRGB imagergb, int i, int i_451_, int i_452_) {
-		try {
-			int i_453_ = i_452_ * i_452_ + i_451_ * i_451_;
-			if (i >= 0) {
-				startup();
-			}
-			if (i_453_ > 4225 && i_453_ < 90000) {
-				int i_454_ = anInt1210 + anInt1234 & 0x7ff;
-				int i_455_ = Model.SINE[i_454_];
-				int i_456_ = Model.COSINE[i_454_];
-				i_455_ = i_455_ * 256 / (anInt1195 + 256);
-				i_456_ = i_456_ * 256 / (anInt1195 + 256);
-				int i_457_ = i_451_ * i_455_ + i_452_ * i_456_ >> 16;
-				int i_458_ = i_451_ * i_456_ - i_452_ * i_455_ >> 16;
-				double d = Math.atan2(i_457_, i_458_);
-				int i_459_ = (int) (Math.sin(d) * 63.0);
-				int i_460_ = (int) (Math.cos(d) * 57.0);
-				minimapEdge.method350(83 - i_460_ - 20, 15, 20, 15, 41960, 256, 20, d, 94 + i_459_ + 4 - 10);
-			} else {
-				method141(imagergb, i_452_, i_451_);
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("37468, " + imagergb + ", " + i + ", " + i_451_ + ", " + i_452_ + ", "
-					+ runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processClickingAreas() {
-		try {
-			if (anInt1111 == 0) {
-				menuActionNames[0] = "Cancel";
-				menuActionIds[0] = 1107;
-				menuActionRow = 1;
-				processClickingPrivateMessages();
-
-				anInt911 = 0;
-				if (mouseEventX > 4 && mouseEventY > 4 && mouseEventX < 516 && mouseEventY < 338) {
-					if (openWidgetId != -1) {
-						processWidgetClick(4, Widget.cache[openWidgetId], mouseEventX, 4, mouseEventY, 0);
-					} else {
-						processClickingGame();
-					}
-				}
-				if (anInt911 != anInt1051) {
-					anInt1051 = anInt911;
-				}
-
-				anInt911 = 0;
-				if (mouseEventX > 553 && mouseEventY > 205 && mouseEventX < 743 && mouseEventY < 466) {
-					if (anInt1214 != -1) {
-						processWidgetClick(553, Widget.cache[anInt1214], mouseEventX, 205, mouseEventY, 0);
-					} else if (tabWidgetIds[currentTabId] != -1) {
-						processWidgetClick(553, Widget.cache[tabWidgetIds[currentTabId]], mouseEventX, 205,
-								mouseEventY, 0);
-					}
-				}
-				if (anInt911 != anInt1073) {
-					redrawTab = true;
-					anInt1073 = anInt911;
-				}
-
-				anInt911 = 0;
-				if (mouseEventX > 17 && mouseEventY > 357 && mouseEventX < 496 && mouseEventY < 453) {
-					if (chatboxWidgetId != -1) {
-						processWidgetClick(17, Widget.cache[chatboxWidgetId], mouseEventX, 357, mouseEventY, 0);
-					} else if (mouseEventY < 434 && mouseEventX < 426) {
-						method74(mouseEventX - 17, mouseEventY - 357);
-					}
-				}
-				if (chatboxWidgetId != -1 && anInt911 != anInt1064) {
-					redrawChatbox = true;
-					anInt1064 = anInt911;
-				}
-
-				boolean bool = false;
-				while (!bool) {
-					bool = true;
-					for (int actionId = 0; actionId < menuActionRow - 1; actionId++) {
-						if (menuActionIds[actionId] < 1000 && menuActionIds[actionId + 1] > 1000) {
-							String string = menuActionNames[actionId];
-							menuActionNames[actionId] = menuActionNames[actionId + 1];
-							menuActionNames[actionId + 1] = string;
-							int i_462_ = menuActionIds[actionId];
-							menuActionIds[actionId] = menuActionIds[actionId + 1];
-							menuActionIds[actionId + 1] = i_462_;
-							i_462_ = menuActionIds2[actionId];
-							menuActionIds2[actionId] = menuActionIds2[actionId + 1];
-							menuActionIds2[actionId + 1] = i_462_;
-							i_462_ = menuActionIds3[actionId];
-							menuActionIds3[actionId] = menuActionIds3[actionId + 1];
-							menuActionIds3[actionId + 1] = i_462_;
-							i_462_ = menuActionIds1[actionId];
-							menuActionIds1[actionId] = menuActionIds1[actionId + 1];
-							menuActionIds1[actionId + 1] = i_462_;
-							bool = false;
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("40707, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final int method83(int i, int i_463_, int i_464_) {
-		try {
-			int i_465_ = 256 - i_464_;
-			return ((i & 0xff00ff) * i_465_ + (i_463_ & 0xff00ff) * i_464_ & ~0xff00ff)
-					+ ((i & 0xff00) * i_465_ + (i_463_ & 0xff00) * i_464_ & 0xff0000) >> 8;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("76365, " + i + ", " + i_463_ + ", " + i_464_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method84(String username, String password, boolean loginType) {
-		SignLink.errorName = username;
-		try {
-			if (!loginType) {
-				loginMessage1 = "";
-				loginMessage2 = "Connecting to server...";
-				drawLoginScreen(true);
-			}
-			bufferedConnection = new BufferedConnection(this, openSocket(43594 + Game.portOffset));
-			long nameLong = TextUtils.nameToLong(username);
-			int i = (int) (nameLong >> 16 & 0x1fL);
-			outBuffer.offset = 0;
-			outBuffer.put(14);
-			outBuffer.put(i);
-			bufferedConnection.write(2, outBuffer.payload, 0);
-			for (int i_467_ = 0; i_467_ < 8; i_467_++) {
-				bufferedConnection.read();
-			}
-			int loginResponse = bufferedConnection.read();
-			int i_469_ = loginResponse;
-			if (loginResponse == 0) {
-				bufferedConnection.read(inBuffer.payload, 0, 8);
-				inBuffer.offset = 0;
-				aLong1240 = inBuffer.getLong();
-				int[] seed = new int[4];
-				seed[0] = (int) (Math.random() * 9.9999999E7);
-				seed[1] = (int) (Math.random() * 9.9999999E7);
-				seed[2] = (int) (aLong1240 >> 32);
-				seed[3] = (int) aLong1240;
-				outBuffer.offset = 0;
-				outBuffer.put(10);
-				outBuffer.putInt(seed[0]);
-				outBuffer.putInt(seed[1]);
-				outBuffer.putInt(seed[2]);
-				outBuffer.putInt(seed[3]);
-				outBuffer.putInt(SignLink.uid);
-				outBuffer.putString(username);
-				outBuffer.putString(password);
-				outBuffer.applyRSA(Game.RSA_EXPONENT, Game.RSA_MODULUS);
-				aBuffer872.offset = 0;
-				if (loginType) {
-					aBuffer872.put(18);
-				} else {
-					aBuffer872.put(16);
-				}
-				aBuffer872.put(outBuffer.offset + 36 + 1 + 1 + 2);
-				aBuffer872.put(255);
-				aBuffer872.putShort(317);
-				aBuffer872.put(Game.lowMemory ? 1 : 0);
-				for (int crcValue = 0; crcValue < 9; crcValue++) {
-					aBuffer872.putInt(crcValues[crcValue]);
-				}
-				aBuffer872.putBytes(outBuffer.payload, outBuffer.offset, 0);
-				outBuffer.isaacCipher = new ISAACCipher(seed);
-				for (int index_ = 0; index_ < 4; index_++) {
-					seed[index_] += 50;
-				}
-				isaacCipher = new ISAACCipher(seed);
-				bufferedConnection.write(aBuffer872.offset, aBuffer872.payload, 0);
-				loginResponse = bufferedConnection.read();
-			}
-			if (loginResponse == 1) {
-				try {
-					Thread.sleep(2000L);
-				} catch (Exception exception) {
-					/* empty */
-				}
-				method84(username, password, loginType);
-			} else if (loginResponse == 2) {
-				playerRights = bufferedConnection.read();
-				Game.flagged = bufferedConnection.read() == 1;
-				aLong1245 = 0L;
-				anInt1047 = 0;
-				mouseCapturer.coord = 0;
-				awtFocus = true;
-				aBoolean979 = true;
-				loggedIn = true;
-				outBuffer.offset = 0;
-				inBuffer.offset = 0;
-				opcode = -1;
-				anInt866 = -1;
-				anInt867 = -1;
-				anInt868 = -1;
-				packetSize = 0;
-				anInt1034 = 0;
-				systemUpdateTime = 0;
-				anInt1036 = 0;
-				hintIconType = 0;
-				menuActionRow = 0;
-				actionMenuOpen = false;
-				idleTime = 0;
-				for (int i_472_ = 0; i_472_ < 100; i_472_++) {
-					chatboxMessages[i_472_] = null;
-				}
-				anInt1307 = 0;
-				anInt1161 = 0;
-				anInt1048 = 0;
-				trackCount = 0;
-				anInt1303 = (int) (Math.random() * 100.0) - 50;
-				anInt1156 = (int) (Math.random() * 110.0) - 55;
-				anInt921 = (int) (Math.random() * 80.0) - 40;
-				anInt1234 = (int) (Math.random() * 120.0) - 60;
-				anInt1195 = (int) (Math.random() * 30.0) - 20;
-				anInt1210 = (int) (Math.random() * 20.0) - 10 & 0x7ff;
-				minimapState = 0;
-				lastSceneId = -1;
-				destinationX = 0;
-				destinationY = 0;
-				playerCount = 0;
-				actorCount = 0;
-				for (int playerId = 0; playerId < MAX_PLAYERS; playerId++) {
-					players[playerId] = null;
-					playerBuffer[playerId] = null;
-				}
-				for (int npcId = 0; npcId < 16384; npcId++) {
-					localNpcs[npcId] = null;
-				}
-				Game.localPlayer = players[localPlayerId] = new Player();
-				projectileList.clear();
-				aLinkedList1081.clear();
-				for (int i_475_ = 0; i_475_ < 4; i_475_++) {
-					for (int i_476_ = 0; i_476_ < 104; i_476_++) {
-						for (int i_477_ = 0; i_477_ < 104; i_477_++) {
-							groundItemNodes[i_475_][i_476_][i_477_] = null;
-						}
-					}
-				}
-				spawnObjectNodeList = new LinkedList();
-				friendListStatus = 0;
-				friendsListCount = 0;
-				anInt1067 = -1;
-				chatboxWidgetId = -1;
-				openWidgetId = -1;
-				anInt1214 = -1;
-				walkableWidgetId = -1;
-				aBoolean1174 = false;
-				currentTabId = 3;
-				inputType = 0;
-				actionMenuOpen = false;
-				messagePromptRaised = false;
-				aString869 = null;
-				anInt1080 = 0;
-				flashingSidebar = -1;
-				characterEditChangeGenger = true;
-				characterChangeGenger(0);
-				for (int i_478_ = 0; i_478_ < 5; i_478_++) {
-					characterEditColors[i_478_] = 0;
-				}
-				for (int i_479_ = 0; i_479_ < 5; i_479_++) {
-					playerActions[i_479_] = null;
-					aBooleanArray1153[i_479_] = false;
-				}
-				Game.anInt1200 = 0;
-				Game.anInt1159 = 0;
-				Game.anInt1011 = 0;
-				Game.currentWalkingQueueSize = 0;
-				Game.anInt949 = 0;
-				Game.anInt1213 = 0;
-				Game.anInt1180 = 0;
-				Game.anInt1251 = 0;
-				method79(1);
-			} else if (loginResponse == 3) {
-				loginMessage1 = "";
-				loginMessage2 = "Invalid username or password.";
-			} else if (loginResponse == 4) {
-				loginMessage1 = "Your account has been disabled.";
-				loginMessage2 = "Please check your message-centre for details.";
-			} else if (loginResponse == 5) {
-				loginMessage1 = "Your account is already logged in.";
-				loginMessage2 = "Try again in 60 secs...";
-			} else if (loginResponse == 6) {
-				loginMessage1 = "RuneScape has been updated!";
-				loginMessage2 = "Please reload this page.";
-			} else if (loginResponse == 7) {
-				loginMessage1 = "This world is full.";
-				loginMessage2 = "Please use a different world.";
-			} else if (loginResponse == 8) {
-				loginMessage1 = "Unable to connect.";
-				loginMessage2 = "Login server offline.";
-			} else if (loginResponse == 9) {
-				loginMessage1 = "Login limit exceeded.";
-				loginMessage2 = "Too many connections from your address.";
-			} else if (loginResponse == 10) {
-				loginMessage1 = "Unable to connect.";
-				loginMessage2 = "Bad session id.";
-			} else if (loginResponse == 11) {
-				loginMessage2 = "Login server rejected session.";
-				loginMessage2 = "Please try again.";
-			} else if (loginResponse == 12) {
-				loginMessage1 = "You need a members account to login to this world.";
-				loginMessage2 = "Please subscribe, or use a different world.";
-			} else if (loginResponse == 13) {
-				loginMessage1 = "Could not complete login.";
-				loginMessage2 = "Please try using a different world.";
-			} else if (loginResponse == 14) {
-				loginMessage1 = "The server is being updated.";
-				loginMessage2 = "Please wait 1 minute and try again.";
-			} else if (loginResponse == 15) {
-				loggedIn = true;
-				outBuffer.offset = 0;
-				inBuffer.offset = 0;
-				opcode = -1;
-				anInt866 = -1;
-				anInt867 = -1;
-				anInt868 = -1;
-				packetSize = 0;
-				anInt1034 = 0;
-				systemUpdateTime = 0;
-				menuActionRow = 0;
-				actionMenuOpen = false;
-				aLong849 = System.currentTimeMillis();
-			} else if (loginResponse == 16) {
-				loginMessage1 = "Login attempts exceeded.";
-				loginMessage2 = "Please wait 1 minute and try again.";
-			} else if (loginResponse == 17) {
-				loginMessage1 = "You are standing in a members-only area.";
-				loginMessage2 = "To play on this world move to a free area first";
-			} else if (loginResponse == 20) {
-				loginMessage1 = "Invalid loginserver requested";
-				loginMessage2 = "Please try using a different world.";
-			} else if (loginResponse == 21) {
-				for (int i_480_ = bufferedConnection.read(); i_480_ >= 0; i_480_--) {
-					loginMessage1 = "You have only just left another world";
-					loginMessage2 = "Your profile will be transferred in: " + i_480_ + " seconds";
-					drawLoginScreen(true);
 					try {
 						Thread.sleep(1000L);
-					} catch (Exception exception) {
-						/* empty */
+					} catch (Exception _ex) {
 					}
 				}
-				method84(username, password, loginType);
-			} else if (loginResponse == -1) {
-				if (i_469_ == 0) {
-					if (anInt1063 < 2) {
-						try {
-							Thread.sleep(2000L);
-						} catch (Exception exception) {
-							/* empty */
-						}
-						anInt1063++;
-						method84(username, password, loginType);
-					} else {
-						loginMessage1 = "No response from loginserver";
-						loginMessage2 = "Please wait 1 minute and try again.";
-					}
-				} else {
-					loginMessage1 = "No response from server";
-					loginMessage2 = "Please try using a different world.";
-				}
-			} else {
-				System.out.println("response:" + loginResponse);
-				loginMessage1 = "Unexpected server response";
-				loginMessage2 = "Please try using a different world.";
+
+				i1 *= 2;
+				if (i1 > 60)
+					i1 = 60;
+				aBoolean900 = !aBoolean900;
 			}
-		} catch (IOException ioexception) {
-			loginMessage1 = "";
-			loginMessage2 = "Error connecting to server.";
 		}
+		Archive class2_1 = new Archive(abyte0);
+		return class2_1;
 	}
 
-	public final boolean calculatePath(int clickType, int objectRotation, int objectSizeY, int objectType,
-			int fromLocalY, int objectSizeX, int objectFace, int toLocalY, int fromLocalX,
-			boolean isArbitraryDestination, int toLocalX) {
-		int mapSizeX = 104;
-		int mapSizeY = 104;
-		for (int x = 0; x < mapSizeX; x++) {
-			for (int y = 0; y < mapSizeY; y++) {
-				wayPoints[x][y] = 0;
-				distanceValues[x][y] = 99999999;
+	public void redraw() {
+		aBoolean1046 = true;
+	}
+
+	public void method62(Buffer class50_sub1_sub2, int i, int j) {
+		j = 24 / j;
+		for (int k = 0; k < updatedPlayerCount; k++) {
+			int l = updatedPlayers[k];
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[l];
+			int i1 = class50_sub1_sub2.getUnsignedByte();
+			if ((i1 & 1) != 0) {
+				class50_sub1_sub4_sub3_sub1.npcDefinition = ActorDefinition.forId(class50_sub1_sub2.method550());
+				class50_sub1_sub4_sub3_sub1.boundaryDimension = class50_sub1_sub4_sub3_sub1.npcDefinition.boundaryDimension;
+				class50_sub1_sub4_sub3_sub1.anInt1600 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt651;
+				class50_sub1_sub4_sub3_sub1.anInt1619 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt645;
+				class50_sub1_sub4_sub3_sub1.anInt1620 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt643;
+				class50_sub1_sub4_sub3_sub1.anInt1621 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt641;
+				class50_sub1_sub4_sub3_sub1.anInt1622 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt633;
+				class50_sub1_sub4_sub3_sub1.standAnimationId = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt621;
 			}
-		}
-		int currentX = fromLocalX;
-		int currentY = fromLocalY;
-		wayPoints[fromLocalX][fromLocalY] = 99;
-		distanceValues[fromLocalX][fromLocalY] = 0;
-		int nextIndex = 0;
-		int currentIndex = 0;
-		walkingQueueX[nextIndex] = fromLocalX;
-		walkingQueueY[nextIndex++] = fromLocalY;
-		boolean foundDesination = false;
-		int maxPathSize = walkingQueueX.length;
-		int[][] clippingFlags = currentCollisionMap[currentSceneId].adjacency;
-		while (currentIndex != nextIndex) {
-			currentX = walkingQueueX[currentIndex];
-			currentY = walkingQueueY[currentIndex];
-			currentIndex = (currentIndex + 1) % maxPathSize;
-			if (currentX == toLocalX && currentY == toLocalY) {
-				foundDesination = true;
-				break;
+			if ((i1 & 0x40) != 0) {
+				class50_sub1_sub4_sub3_sub1.anInt1609 = class50_sub1_sub2.method549();
+				if (((Actor) (class50_sub1_sub4_sub3_sub1)).anInt1609 == 65535)
+					class50_sub1_sub4_sub3_sub1.anInt1609 = -1;
 			}
-			if (objectType != 0) {
-				if ((objectType < 5 || objectType == 10)
-						&& currentCollisionMap[currentSceneId].reachedWall(currentX, currentY, toLocalX, toLocalY,
-								objectType - 1, objectRotation)) {
-					foundDesination = true;
-					break;
-				}
-				if (objectType < 10
-						&& currentCollisionMap[currentSceneId].reachedWallDecoration(currentX, currentY, toLocalX,
-								toLocalY, objectType - 1, objectRotation)) {
-					foundDesination = true;
-					break;
-				}
+			if ((i1 & 0x80) != 0) {
+				int j1 = class50_sub1_sub2.getByteAdded();
+				int j2 = class50_sub1_sub2.getByteAdded();
+				class50_sub1_sub4_sub3_sub1.updateHits(j2, j1, pulseCycle);
+				class50_sub1_sub4_sub3_sub1.endCycle = pulseCycle + 300;
+				class50_sub1_sub4_sub3_sub1.anInt1596 = class50_sub1_sub2.getUnsignedByte();
+				class50_sub1_sub4_sub3_sub1.anInt1597 = class50_sub1_sub2.getByteSubtracted();
 			}
-			if (objectSizeX != 0
-					&& objectSizeY != 0
-					&& currentCollisionMap[currentSceneId].reachedFacingObject(currentX, currentY, toLocalX, toLocalY,
-							objectSizeX, objectSizeY, objectFace)) {
-				foundDesination = true;
-				break;
+			if ((i1 & 4) != 0) {
+				class50_sub1_sub4_sub3_sub1.spotAnimationId = class50_sub1_sub2.getShort();
+				int k1 = class50_sub1_sub2.method556();
+				class50_sub1_sub4_sub3_sub1.anInt1618 = k1 >> 16;
+				class50_sub1_sub4_sub3_sub1.anInt1617 = pulseCycle + (k1 & 0xffff);
+				class50_sub1_sub4_sub3_sub1.currentAnimationFrame = 0;
+				class50_sub1_sub4_sub3_sub1.anInt1616 = 0;
+				if (((Actor) (class50_sub1_sub4_sub3_sub1)).anInt1617 > pulseCycle)
+					class50_sub1_sub4_sub3_sub1.currentAnimationFrame = -1;
+				if (((Actor) (class50_sub1_sub4_sub3_sub1)).spotAnimationId == 65535)
+					class50_sub1_sub4_sub3_sub1.spotAnimationId = -1;
 			}
-			int newDistanceValue = distanceValues[currentX][currentY] + 1;
-			if (currentX > 0 && wayPoints[currentX - 1][currentY] == 0
-					&& (clippingFlags[currentX - 1][currentY] & 0x1280108) == 0) {
-				walkingQueueX[nextIndex] = currentX - 1;
-				walkingQueueY[nextIndex] = currentY;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX - 1][currentY] = 2;
-				distanceValues[currentX - 1][currentY] = newDistanceValue;
+			if ((i1 & 0x20) != 0) {
+				class50_sub1_sub4_sub3_sub1.forcedChat = class50_sub1_sub2.getString();
+				class50_sub1_sub4_sub3_sub1.anInt1582 = 100;
 			}
-			if (currentX < mapSizeX - 1 && wayPoints[currentX + 1][currentY] == 0
-					&& (clippingFlags[currentX + 1][currentY] & 0x1280180) == 0) {
-				walkingQueueX[nextIndex] = currentX + 1;
-				walkingQueueY[nextIndex] = currentY;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX + 1][currentY] = 8;
-				distanceValues[currentX + 1][currentY] = newDistanceValue;
+			if ((i1 & 8) != 0) {
+				class50_sub1_sub4_sub3_sub1.anInt1598 = class50_sub1_sub2.getLittleShortA();
+				class50_sub1_sub4_sub3_sub1.anInt1599 = class50_sub1_sub2.method549();
 			}
-			if (currentY > 0 && wayPoints[currentX][currentY - 1] == 0
-					&& (clippingFlags[currentX][currentY - 1] & 0x1280102) == 0) {
-				walkingQueueX[nextIndex] = currentX;
-				walkingQueueY[nextIndex] = currentY - 1;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX][currentY - 1] = 1;
-				distanceValues[currentX][currentY - 1] = newDistanceValue;
-			}
-			if (currentY < mapSizeY - 1 && wayPoints[currentX][currentY + 1] == 0
-					&& (clippingFlags[currentX][currentY + 1] & 0x1280120) == 0) {
-				walkingQueueX[nextIndex] = currentX;
-				walkingQueueY[nextIndex] = currentY + 1;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX][currentY + 1] = 4;
-				distanceValues[currentX][currentY + 1] = newDistanceValue;
-			}
-			if (currentX > 0 && currentY > 0 && wayPoints[currentX - 1][currentY - 1] == 0
-					&& (clippingFlags[currentX - 1][currentY - 1] & 0x128010e) == 0
-					&& (clippingFlags[currentX - 1][currentY] & 0x1280108) == 0
-					&& (clippingFlags[currentX][currentY - 1] & 0x1280102) == 0) {
-				walkingQueueX[nextIndex] = currentX - 1;
-				walkingQueueY[nextIndex] = currentY - 1;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX - 1][currentY - 1] = 3;
-				distanceValues[currentX - 1][currentY - 1] = newDistanceValue;
-			}
-			if (currentX < mapSizeX - 1 && currentY > 0 && wayPoints[currentX + 1][currentY - 1] == 0
-					&& (clippingFlags[currentX + 1][currentY - 1] & 0x1280183) == 0
-					&& (clippingFlags[currentX + 1][currentY] & 0x1280180) == 0
-					&& (clippingFlags[currentX][currentY - 1] & 0x1280102) == 0) {
-				walkingQueueX[nextIndex] = currentX + 1;
-				walkingQueueY[nextIndex] = currentY - 1;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX + 1][currentY - 1] = 9;
-				distanceValues[currentX + 1][currentY - 1] = newDistanceValue;
-			}
-			if (currentX > 0 && currentY < mapSizeY - 1 && wayPoints[currentX - 1][currentY + 1] == 0
-					&& (clippingFlags[currentX - 1][currentY + 1] & 0x1280138) == 0
-					&& (clippingFlags[currentX - 1][currentY] & 0x1280108) == 0
-					&& (clippingFlags[currentX][currentY + 1] & 0x1280120) == 0) {
-				walkingQueueX[nextIndex] = currentX - 1;
-				walkingQueueY[nextIndex] = currentY + 1;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX - 1][currentY + 1] = 6;
-				distanceValues[currentX - 1][currentY + 1] = newDistanceValue;
-			}
-			if (currentX < mapSizeX - 1 && currentY < mapSizeY - 1 && wayPoints[currentX + 1][currentY + 1] == 0
-					&& (clippingFlags[currentX + 1][currentY + 1] & 0x12801e0) == 0
-					&& (clippingFlags[currentX + 1][currentY] & 0x1280180) == 0
-					&& (clippingFlags[currentX][currentY + 1] & 0x1280120) == 0) {
-				walkingQueueX[nextIndex] = currentX + 1;
-				walkingQueueY[nextIndex] = currentY + 1;
-				nextIndex = (nextIndex + 1) % maxPathSize;
-				wayPoints[currentX + 1][currentY + 1] = 12;
-				distanceValues[currentX + 1][currentY + 1] = newDistanceValue;
-			}
-		}
-		arbitraryDestination = 0;
-		if (!foundDesination) {
-			if (isArbitraryDestination) {
-				int maxStepsNonInclusive = 100;
-				for (int deviation = 1; deviation < 2; deviation++) {
-					for (int xDeviation = toLocalX - deviation; xDeviation <= toLocalX + deviation; xDeviation++) {
-						for (int yDeviation = toLocalY - deviation; yDeviation <= toLocalY + deviation; yDeviation++) {
-							if (xDeviation >= 0 && yDeviation >= 0 && xDeviation < 104 && yDeviation < 104
-									&& distanceValues[xDeviation][yDeviation] < maxStepsNonInclusive) {
-								maxStepsNonInclusive = distanceValues[xDeviation][yDeviation];
-								currentX = xDeviation;
-								currentY = yDeviation;
-								arbitraryDestination = 1;
-								foundDesination = true;
-							}
-						}
+			if ((i1 & 2) != 0) {
+				int l1 = class50_sub1_sub2.getShort();
+				if (l1 == 65535)
+					l1 = -1;
+				int k2 = class50_sub1_sub2.getByteSubtracted();
+				if (l1 == ((Actor) (class50_sub1_sub4_sub3_sub1)).animation && l1 != -1) {
+					int i3 = AnimationSequence.animations[l1].anInt307;
+					if (i3 == 1) {
+						class50_sub1_sub4_sub3_sub1.anInt1625 = 0;
+						class50_sub1_sub4_sub3_sub1.anInt1626 = 0;
+						class50_sub1_sub4_sub3_sub1.animationDelay = k2;
+						class50_sub1_sub4_sub3_sub1.anInt1628 = 0;
 					}
-					if (foundDesination) {
+					if (i3 == 2)
+						class50_sub1_sub4_sub3_sub1.anInt1628 = 0;
+				} else if (l1 == -1
+						|| ((Actor) (class50_sub1_sub4_sub3_sub1)).animation == -1
+						|| AnimationSequence.animations[l1].anInt301 >= AnimationSequence.animations[((Actor) (class50_sub1_sub4_sub3_sub1)).animation].anInt301) {
+					class50_sub1_sub4_sub3_sub1.animation = l1;
+					class50_sub1_sub4_sub3_sub1.anInt1625 = 0;
+					class50_sub1_sub4_sub3_sub1.anInt1626 = 0;
+					class50_sub1_sub4_sub3_sub1.animationDelay = k2;
+					class50_sub1_sub4_sub3_sub1.anInt1628 = 0;
+					class50_sub1_sub4_sub3_sub1.anInt1613 = ((Actor) (class50_sub1_sub4_sub3_sub1)).pathLength;
+				}
+			}
+			if ((i1 & 0x10) != 0) {
+				int i2 = class50_sub1_sub2.getByteSubtracted();
+				int l2 = class50_sub1_sub2.getByteSubtracted();
+				class50_sub1_sub4_sub3_sub1.updateHits(l2, i2, pulseCycle);
+				class50_sub1_sub4_sub3_sub1.endCycle = pulseCycle + 300;
+				class50_sub1_sub4_sub3_sub1.anInt1596 = class50_sub1_sub2.getUnsignedByte();
+				class50_sub1_sub4_sub3_sub1.anInt1597 = class50_sub1_sub2.getByteNegated();
+			}
+		}
+
+	}
+
+	public void parsePlayerBlock(int id, Player plr, int mask, Buffer vec) {
+		if ((mask & 8) != 0) {
+			int i1 = vec.getShort();
+			if (i1 == 65535)
+				i1 = -1;
+			int k2 = vec.getByteSubtracted();
+			if (i1 == ((Actor) (plr)).animation && i1 != -1) {
+				int k3 = AnimationSequence.animations[i1].anInt307;
+				if (k3 == 1) {
+					plr.anInt1625 = 0;
+					plr.anInt1626 = 0;
+					plr.animationDelay = k2;
+					plr.anInt1628 = 0;
+				}
+				if (k3 == 2)
+					plr.anInt1628 = 0;
+			} else if (i1 == -1
+					|| ((Actor) (plr)).animation == -1
+					|| AnimationSequence.animations[i1].anInt301 >= AnimationSequence.animations[((Actor) (plr)).animation].anInt301) {
+				plr.animation = i1;
+				plr.anInt1625 = 0;
+				plr.anInt1626 = 0;
+				plr.animationDelay = k2;
+				plr.anInt1628 = 0;
+				plr.anInt1613 = ((Actor) (plr)).pathLength;
+			}
+		}
+		if ((mask & 0x10) != 0) {
+			plr.forcedChat = vec.getString();
+			if (((Actor) (plr)).forcedChat.charAt(0) == '~') {
+				plr.forcedChat = ((Actor) (plr)).forcedChat.substring(1);
+				pushMessage(plr.username, (byte) -123, ((Actor) (plr)).forcedChat, 2);
+			} else if (plr == thisPlayer)
+				pushMessage(plr.username, (byte) -123, ((Actor) (plr)).forcedChat, 2);
+			plr.anInt1583 = 0;
+			plr.anInt1593 = 0;
+			plr.anInt1582 = 150;
+		}
+		if ((mask & 0x100) != 0) {
+			plr.anInt1602 = vec.getByteAdded();
+			plr.anInt1604 = vec.getByteNegated();
+			plr.anInt1603 = vec.getByteSubtracted();
+			plr.anInt1605 = vec.getUnsignedByte();
+			plr.anInt1606 = vec.getShort() + pulseCycle;
+			plr.anInt1607 = vec.method550() + pulseCycle;
+			plr.anInt1608 = vec.getUnsignedByte();
+			plr.resetPath();
+		}
+		if ((mask & 1) != 0) {
+			plr.anInt1609 = vec.method550();
+			if (((Actor) (plr)).anInt1609 == 65535)
+				plr.anInt1609 = -1;
+		}
+		if ((mask & 2) != 0) {
+			plr.anInt1598 = vec.getShort();
+			plr.anInt1599 = vec.getShort();
+		}
+		if ((mask & 0x200) != 0) {
+			plr.spotAnimationId = vec.method550();
+			int j1 = vec.method556();
+			plr.anInt1618 = j1 >> 16;
+			plr.anInt1617 = pulseCycle + (j1 & 0xffff);
+			plr.currentAnimationFrame = 0;
+			plr.anInt1616 = 0;
+			if (((Actor) (plr)).anInt1617 > pulseCycle)
+				plr.currentAnimationFrame = -1;
+			if (((Actor) (plr)).spotAnimationId == 65535)
+				plr.spotAnimationId = -1;
+		}
+		if ((mask & 4) != 0) {
+			int size = vec.getUnsignedByte();
+			byte bytes[] = new byte[size];
+			Buffer appearance = new Buffer(bytes);
+			vec.getBytesReverse(bytes, 0, size);
+			cachedAppearances[id] = appearance;
+			plr.updateAppearance(appearance, 0);
+		}
+		if ((mask & 0x400) != 0) {
+			int l1 = vec.getByteAdded();
+			int l2 = vec.getByteSubtracted();
+			plr.updateHits(l2, l1, pulseCycle);
+			plr.endCycle = pulseCycle + 300;
+			plr.anInt1596 = vec.getByteNegated();
+			plr.anInt1597 = vec.getUnsignedByte();
+		}
+		if ((mask & 0x40) != 0) {
+			int i2 = vec.getShort();
+			int rights = vec.getByteNegated();
+			int length = vec.getByteAdded();
+			int i4 = vec.offset;
+			if (plr.username != null && plr.visible) {
+				long l4 = TextUtils.nameToLong(plr.username);
+				boolean flag = false;
+				if (rights <= 1) {
+					for (int j4 = 0; j4 < ignoresCount; j4++) {
+						if (ignores[j4] != l4)
+							continue;
+						flag = true;
 						break;
 					}
-				}
-			}
-			if (!foundDesination) {
-				return false;
-			}
-		}
-		currentIndex = 0;
-		walkingQueueX[currentIndex] = currentX;
-		walkingQueueY[currentIndex++] = currentY;
-		int initialSkipCheck;
-		int waypoint = initialSkipCheck = wayPoints[currentX][currentY];
-		while (currentX != fromLocalX || currentY != fromLocalY) {
-			if (waypoint != initialSkipCheck) {
-				initialSkipCheck = waypoint;
-				walkingQueueX[currentIndex] = currentX;
-				walkingQueueY[currentIndex++] = currentY;
-			}
-			if ((waypoint & 0x2) != 0) {
-				currentX++;
-			} else if ((waypoint & 0x8) != 0) {
-				currentX--;
-			}
-			if ((waypoint & 0x1) != 0) {
-				currentY++;
-			} else if ((waypoint & 0x4) != 0) {
-				currentY--;
-			}
-			waypoint = wayPoints[currentX][currentY];
-		}
-		if (currentIndex > 0) {
-			maxPathSize = currentIndex;
-			if (maxPathSize > 25) {
-				maxPathSize = 25;
-			}
-			currentIndex--;
-			int localX = walkingQueueX[currentIndex];
-			int localY = walkingQueueY[currentIndex];
-			Game.currentWalkingQueueSize += maxPathSize;
-			if (Game.currentWalkingQueueSize >= 92) {
-				outBuffer.putOpcode(36);
-				outBuffer.putInt(0);
-				Game.currentWalkingQueueSize = 0;
-			}
-			if (clickType == 0) {
-				outBuffer.putOpcode(164);
-				outBuffer.put(maxPathSize + maxPathSize + 3);
-			}
-			if (clickType == 1) {
-				outBuffer.putOpcode(248);
-				outBuffer.put(maxPathSize + maxPathSize + 3 + 14);
-			}
-			if (clickType == 2) {
-				outBuffer.putOpcode(98);
-				outBuffer.put(maxPathSize + maxPathSize + 3);
-			}
-			outBuffer.putLEShortA(localX + regionAbsoluteBaseX);
-			destinationX = walkingQueueX[0];
-			destinationY = walkingQueueY[0];
-			for (int maxPathSizeCounter = 1; maxPathSizeCounter < maxPathSize; maxPathSizeCounter++) {
-				currentIndex--;
-				outBuffer.put(walkingQueueX[currentIndex] - localX);
-				outBuffer.put(walkingQueueY[currentIndex] - localY);
-			}
-			outBuffer.putLEShort(localY + regionAbsoluteBaseY);
-			outBuffer.putByteC(keyStatus[5] == 1 ? 1 : 0);
-			return true;
-		}
-		if (clickType == 1) {
-			return false;
-		}
-		return true;
-	}
 
-	private final void method86(int i, Buffer buffer, boolean bool) {
-		try {
-			for (int i_512_ = 0; i_512_ < anInt918; i_512_++) {
-				int i_513_ = anIntArray919[i_512_];
-				Npc npc = localNpcs[i_513_];
-				int i_514_ = buffer.getUnsignedByte();
-				if ((i_514_ & 0x10) != 0) {
-					int i_515_ = buffer.getUnsignedShort();
-					if (i_515_ == 0xFFFF) {
-						i_515_ = -1;
-					}
-					int i_516_ = buffer.getUnsignedByte();
-					if (i_515_ == npc.animation && i_515_ != -1) {
-						int i_517_ = AnimationSequence.cache[i_515_].anInt63;
-						if (i_517_ == 1) {
-							npc.anInt1547 = 0;
-							npc.anInt1548 = 0;
-							npc.aniomationDelay = i_516_;
-							npc.anInt1550 = 0;
-						}
-						if (i_517_ == 2) {
-							npc.anInt1550 = 0;
-						}
-					} else if (i_515_ == -1
-							|| npc.animation == -1
-							|| AnimationSequence.cache[i_515_].anInt57 >= AnimationSequence.cache[npc.animation].anInt57) {
-						npc.animation = i_515_;
-						npc.anInt1547 = 0;
-						npc.anInt1548 = 0;
-						npc.aniomationDelay = i_516_;
-						npc.anInt1550 = 0;
-						npc.anInt1562 = npc.pathLength;
-					}
 				}
-				if ((i_514_ & 0x8) != 0) {
-					int i_518_ = buffer.getUnsignedByteA();
-					int i_519_ = buffer.getUnsignedByteC();
-					npc.updateHits(i_519_, i_518_, Game.currentCycle);
-					npc.endCycle = Game.currentCycle + 300;
-					npc.maxHealth = buffer.getUnsignedByteA();
-					npc.currentHealth = buffer.getUnsignedByte();
-				}
-				if ((i_514_ & 0x80) != 0) {
-					npc.spotAnimationId = buffer.getUnsignedLEShort();
-					int i_520_ = buffer.getInt();
-					npc.spotAnimationDelay = i_520_ >> 16;
-					npc.spotAnimationEndCycle = Game.currentCycle + (i_520_ & 0xffff);
-					npc.currentAnimationFrame = 0;
-					npc.anInt1542 = 0;
-					if (npc.spotAnimationEndCycle > Game.currentCycle) {
-						npc.currentAnimationFrame = -1;
-					}
-					if (npc.spotAnimationId == 0xFFFF) {
-						npc.spotAnimationId = -1;
-					}
-				}
-				if ((i_514_ & 0x20) != 0) {
-					npc.interactingEntity = buffer.getUnsignedLEShort();
-					if (npc.interactingEntity == 0xFFFF) {
-						npc.interactingEntity = -1;
-					}
-				}
-				if ((i_514_ & 0x1) != 0) {
-					npc.forcedChat = buffer.getString();
-					npc.anInt1555 = 100;
-				}
-				if ((i_514_ & 0x40) != 0) {
-					int i_521_ = buffer.getUnsignedByteC();
-					int i_522_ = buffer.getUnsignedByteS();
-					npc.updateHits(i_522_, i_521_, Game.currentCycle);
-					npc.endCycle = Game.currentCycle + 300;
-					npc.maxHealth = buffer.getUnsignedByteS();
-					npc.currentHealth = buffer.getUnsignedByteC();
-				}
-				if ((i_514_ & 0x2) != 0) {
-					npc.npcDefinition = ActorDefinition.getDefinition(buffer.getUnsignedShortA());
-					npc.boundaryDimension = npc.npcDefinition.boundaryDimension;
-					npc.anInt1524 = npc.npcDefinition.degreesToTurn;
-					npc.walkAnimationId = npc.npcDefinition.walkAnimationId;
-					npc.turnAroundAnimationId = npc.npcDefinition.turnAroundAnimationId;
-					npc.turnRightAnimationId = npc.npcDefinition.turnRightAnimationId;
-					npc.turnLeftAnimationId = npc.npcDefinition.turnLeftAnimationId;
-					npc.standAnimationId = npc.npcDefinition.standAnimationId;
-				}
-				if ((i_514_ & 0x4) != 0) {
-					npc.faceTowardX = buffer.getUnsignedShort();
-					npc.faceTowardY = buffer.getUnsignedShort();
-				}
-			}
-			loggedIn &= bool;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("51191, " + i + ", " + buffer + ", " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method87(ActorDefinition npcdefinition, int i, boolean bool, int i_523_, int i_524_) {
-		try {
-			if (menuActionRow < 400) {
-				if (npcdefinition.childrenIds != null) {
-					npcdefinition = npcdefinition.getChildDefinition();
-				}
-				if (npcdefinition != null && npcdefinition.clickable) {
-					String string = npcdefinition.name;
-					if (bool) {
-						Game.aBoolean944 = !Game.aBoolean944;
-					}
-					if (npcdefinition.combatLevel != 0) {
-						string += Game.method110(Game.localPlayer.combatLevel, npcdefinition.combatLevel, true)
-								+ " (level-" + npcdefinition.combatLevel + ")";
-					}
-					if (anInt1307 == 1) {
-						menuActionNames[menuActionRow] = "Use " + aString1311 + " with @yel@" + string;
-						menuActionIds[menuActionRow] = 582;
-						menuActionIds1[menuActionRow] = i;
-						menuActionIds2[menuActionRow] = i_524_;
-						menuActionIds3[menuActionRow] = i_523_;
-						menuActionRow++;
-					} else if (anInt1161 == 1) {
-						if ((anInt1163 & 0x2) == 2) {
-							menuActionNames[menuActionRow] = aString1164 + " @yel@" + string;
-							menuActionIds[menuActionRow] = 413;
-							menuActionIds1[menuActionRow] = i;
-							menuActionIds2[menuActionRow] = i_524_;
-							menuActionIds3[menuActionRow] = i_523_;
-							menuActionRow++;
-						}
-					} else {
-						if (npcdefinition.actions != null) {
-							for (int i_525_ = 4; i_525_ >= 0; i_525_--) {
-								if (npcdefinition.actions[i_525_] != null
-										&& !npcdefinition.actions[i_525_].equalsIgnoreCase("attack")) {
-									menuActionNames[menuActionRow] = npcdefinition.actions[i_525_] + " @yel@" + string;
-									if (i_525_ == 0) {
-										menuActionIds[menuActionRow] = 20;
-									}
-									if (i_525_ == 1) {
-										menuActionIds[menuActionRow] = 412;
-									}
-									if (i_525_ == 2) {
-										menuActionIds[menuActionRow] = 225;
-									}
-									if (i_525_ == 3) {
-										menuActionIds[menuActionRow] = 965;
-									}
-									if (i_525_ == 4) {
-										menuActionIds[menuActionRow] = 478;
-									}
-									menuActionIds1[menuActionRow] = i;
-									menuActionIds2[menuActionRow] = i_524_;
-									menuActionIds3[menuActionRow] = i_523_;
-									menuActionRow++;
-								}
-							}
-						}
-						if (npcdefinition.actions != null) {
-							for (int i_526_ = 4; i_526_ >= 0; i_526_--) {
-								if (npcdefinition.actions[i_526_] != null
-										&& npcdefinition.actions[i_526_].equalsIgnoreCase("attack")) {
-									int i_527_ = 0;
-									if (npcdefinition.combatLevel > Game.localPlayer.combatLevel) {
-										i_527_ = 2000;
-									}
-									menuActionNames[menuActionRow] = npcdefinition.actions[i_526_] + " @yel@" + string;
-									if (i_526_ == 0) {
-										menuActionIds[menuActionRow] = 20 + i_527_;
-									}
-									if (i_526_ == 1) {
-										menuActionIds[menuActionRow] = 412 + i_527_;
-									}
-									if (i_526_ == 2) {
-										menuActionIds[menuActionRow] = 225 + i_527_;
-									}
-									if (i_526_ == 3) {
-										menuActionIds[menuActionRow] = 965 + i_527_;
-									}
-									if (i_526_ == 4) {
-										menuActionIds[menuActionRow] = 478 + i_527_;
-									}
-									menuActionIds1[menuActionRow] = i;
-									menuActionIds2[menuActionRow] = i_524_;
-									menuActionIds3[menuActionRow] = i_523_;
-									menuActionRow++;
-								}
-							}
-						}
-						menuActionNames[menuActionRow] = "Examine @yel@" + string;
-						menuActionIds[menuActionRow] = 1025;
-						menuActionIds1[menuActionRow] = i;
-						menuActionIds2[menuActionRow] = i_524_;
-						menuActionIds3[menuActionRow] = i_523_;
-						menuActionRow++;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("36696, " + npcdefinition + ", " + i + ", " + bool + ", " + i_523_ + ", " + i_524_
-					+ ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method88(int i, int i_528_, Player player, boolean bool, int i_529_) {
-		try {
-			if (player != Game.localPlayer && menuActionRow < 400 && !bool) {
-				String string;
-				if (player.anInt1743 == 0) {
-					string = player.playerName + Game.method110(Game.localPlayer.combatLevel, player.combatLevel, true)
-							+ " (level-" + player.combatLevel + ")";
-				} else {
-					string = player.playerName + " (skill-" + player.anInt1743 + ")";
-				}
-				if (anInt1307 == 1) {
-					menuActionNames[menuActionRow] = "Use " + aString1311 + " with @whi@" + string;
-					menuActionIds[menuActionRow] = 491;
-					menuActionIds1[menuActionRow] = i_528_;
-					menuActionIds2[menuActionRow] = i;
-					menuActionIds3[menuActionRow] = i_529_;
-					menuActionRow++;
-				} else if (anInt1161 == 1) {
-					if ((anInt1163 & 0x8) == 8) {
-						menuActionNames[menuActionRow] = aString1164 + " @whi@" + string;
-						menuActionIds[menuActionRow] = 365;
-						menuActionIds1[menuActionRow] = i_528_;
-						menuActionIds2[menuActionRow] = i;
-						menuActionIds3[menuActionRow] = i_529_;
-						menuActionRow++;
-					}
-				} else {
-					for (int action = 4; action >= 0; action--) {
-						if (playerActions[action] != null) {
-							menuActionNames[menuActionRow] = playerActions[action] + " @whi@" + string;
-							int i_531_ = 0;
-							if (playerActions[action].equalsIgnoreCase("attack")) {
-								if (player.combatLevel > Game.localPlayer.combatLevel) {
-									i_531_ = 2000;
-								}
-								if (Game.localPlayer.teamId != 0 && player.teamId != 0) {
-									if (Game.localPlayer.teamId == player.teamId) {
-										i_531_ = 2000;
-									} else {
-										i_531_ = 0;
-									}
-								}
-							} else if (aBooleanArray1153[action]) {
-								i_531_ = 2000;
-							}
-							if (action == 0) {
-								menuActionIds[menuActionRow] = 561 + i_531_;
-							}
-							if (action == 1) {
-								menuActionIds[menuActionRow] = 779 + i_531_;
-							}
-							if (action == 2) {
-								menuActionIds[menuActionRow] = 27 + i_531_;
-							}
-							if (action == 3) {
-								menuActionIds[menuActionRow] = 577 + i_531_;
-							}
-							if (action == 4) {
-								menuActionIds[menuActionRow] = 729 + i_531_;
-							}
-							menuActionIds1[menuActionRow] = i_528_;
-							menuActionIds2[menuActionRow] = i;
-							menuActionIds3[menuActionRow] = i_529_;
-							menuActionRow++;
-						}
-					}
-				}
-				for (int i_532_ = 0; i_532_ < menuActionRow; i_532_++) {
-					if (menuActionIds[i_532_] == 516) {
-						menuActionNames[i_532_] = "Walk here @whi@" + string;
-						break;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("46972, " + i + ", " + i_528_ + ", " + player + ", " + bool + ", " + i_529_ + ", "
-					+ runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	private final void method89(SpawnObjectNode spawnOjectNode) {
-		int uid = 0;
-		int id = -1;
-		int type = 0;
-		int face = 0;
-		if (spawnOjectNode.type == 0) {
-			uid = currentScene.method522(spawnOjectNode.plane, spawnOjectNode.x, spawnOjectNode.y);
-		}
-		if (spawnOjectNode.type == 1) {
-			uid = currentScene.getWallDecorationHash(spawnOjectNode.plane, spawnOjectNode.x, spawnOjectNode.y);
-		}
-		if (spawnOjectNode.type == 2) {
-			uid = currentScene.method524(spawnOjectNode.plane, spawnOjectNode.x, spawnOjectNode.y);
-		}
-		if (spawnOjectNode.type == 3) {
-			uid = currentScene.getFloorDecorationHash(spawnOjectNode.plane, spawnOjectNode.x, spawnOjectNode.y);
-		}
-		if (uid != 0) {
-			int tag = currentScene.getConfig(spawnOjectNode.plane, spawnOjectNode.x, spawnOjectNode.y, uid);
-			id = uid >> 14 & 0x7fff;
-			type = tag & 0x1f;
-			face = tag >> 6;
-		}
-		spawnOjectNode.id = id;
-		spawnOjectNode.anInt1351 = type;
-		spawnOjectNode.face = face;
-	}
-
-	public final void method90() {
-		try {
-			for (int track = 0; track < trackCount; track++) {
-				if (trackDelay[track] <= 0) {
-					boolean flag = false;
+				if (!flag && anInt1246 == 0)
 					try {
-						if (trackIds[track] == anInt899 && trackLoop[track] == anInt1314) {
-							if (!SignLink.waveReplay()) {
-								flag = true;
-							}
-						} else {
-							Buffer buffer = SoundTrack.data(trackIds[track], trackLoop[track]);
-							if (System.currentTimeMillis() + buffer.offset / 22 > aLong1197 + anInt1282 / 22) {
-								anInt1282 = buffer.offset;
-								aLong1197 = System.currentTimeMillis();
-								if (SignLink.waveSave(buffer.payload, buffer.offset)) {
-									anInt899 = trackIds[track];
-									anInt1314 = trackLoop[track];
-								} else {
-									flag = true;
-								}
-							}
-						}
+						aClass50_Sub1_Sub2_1131.offset = 0;
+						vec.getBytesAdded(aClass50_Sub1_Sub2_1131.buffer, 0, length);
+						aClass50_Sub1_Sub2_1131.offset = 0;
+						String s = ChatEncoder.get(length, aClass50_Sub1_Sub2_1131);
+						s = ChatFilter.method383((byte) 0, s);
+						plr.forcedChat = s;
+						plr.anInt1583 = i2 >> 8;
+						plr.anInt1593 = i2 & 0xff;
+						plr.anInt1582 = 150;
+						if (rights == 2 || rights == 3)
+							pushMessage("@cr2@" + plr.username, (byte) -123, s, 1);
+						else if (rights == 1)
+							pushMessage("@cr1@" + plr.username, (byte) -123, s, 1);
+						else
+							pushMessage(plr.username, (byte) -123, s, 2);
 					} catch (Exception exception) {
-						/* empty */
+						SignLink.reporterror("cde2");
 					}
-					if (!flag || trackDelay[track] == -5) {
-						trackCount--;
-						for (int i_539_ = track; i_539_ < trackCount; i_539_++) {
-							trackIds[i_539_] = trackIds[i_539_ + 1];
-							trackLoop[i_539_] = trackLoop[i_539_ + 1];
-							trackDelay[i_539_] = trackDelay[i_539_ + 1];
-						}
-						track--;
-					} else {
-						trackDelay[track] = -5;
-					}
-				} else {
-					trackDelay[track]--;
-				}
 			}
-			if (songFadeCycle <= 0) {
-				return;
-			}
-			songFadeCycle -= 20;
-			if (songFadeCycle < 0) {
-				songFadeCycle = 0;
-			}
-			if (songFadeCycle != 0 || !musicEnabled || Game.lowMemory) {
-				return;
-			}
-			onDemandRequesterId = songId;
-			midiFade = true;
-			onDemandRequester.request(2, onDemandRequesterId);
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("65150, " + runtimeexception.toString());
-			throw new RuntimeException();
+			vec.offset = i4 + length;
+		}
+		if ((mask & 0x80) != 0) {
+			int j2 = vec.getByteSubtracted();
+			int j3 = vec.getByteNegated();
+			plr.updateHits(j3, j2, pulseCycle);
+			plr.endCycle = pulseCycle + 300;
+			plr.anInt1596 = vec.getByteSubtracted();
+			plr.anInt1597 = vec.getUnsignedByte();
 		}
 	}
 
-	@Override
-	public final void startup() {
+	public void method64(int i) {
+		if (aClass18_1198 != null)
+			return;
+		super.imageProducer = null;
+		chatboxProducingGraphicsBuffer = null;
+		aClass18_1157 = null;
+		aClass18_1156 = null;
+		aClass18_1158 = null;
+		aClass18_1108 = null;
+		aClass18_1109 = null;
+		for (aClass18_1110 = null; i >= 0;)
+			return;
+
+		flameLeftBackground = new ProducingGraphicsBuffer(128, 265, getParentComponent());
+		Rasterizer.resetPixels();
+		flameRightBackground = new ProducingGraphicsBuffer(128, 265, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1198 = new ProducingGraphicsBuffer(509, 171, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1199 = new ProducingGraphicsBuffer(360, 132, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1200 = new ProducingGraphicsBuffer(360, 200, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1203 = new ProducingGraphicsBuffer(202, 238, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1204 = new ProducingGraphicsBuffer(203, 238, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1205 = new ProducingGraphicsBuffer(74, 94, getParentComponent());
+		Rasterizer.resetPixels();
+		aClass18_1206 = new ProducingGraphicsBuffer(75, 94, getParentComponent());
+		Rasterizer.resetPixels();
+		if (titleArchive != null) {
+			prepareTitleBackground();
+			prepareTitle();
+		}
+		aBoolean1046 = true;
+	}
+
+	public void startup() {
 		drawLoadingText(20, "Starting up");
-		if (SignLink.cacheDat != null) {
-			for (int i = 0; i < 5; i++) {
-				stores[i] = new Index(SignLink.cacheDat, SignLink.cacheIdx[i], i + 1);
-			}
+		if (SignLink.cache_dat != null) {
+			for (int type = 0; type < 5; type++)
+				stores[type] = new FileStore(type + 1, 0x927c0, SignLink.cache_dat, SignLink.cache_idx[type]);
 		}
 		try {
 			connectWebServer();
-			anArchive1078 = requestArchive(1, "title screen", "title", crcValues[1], 25);
-			fontSmall = new TypeFace(false, "p11_full", anArchive1078);
-			fontNormal = new TypeFace(false, "p12_full", anArchive1078);
-			fontBold = new TypeFace(false, "b12_full", anArchive1078);
-			fontFancy = new TypeFace(true, "q8_full", anArchive1078);
+			titleArchive = method61(14076, archiveHashes[1], "title", 25, 1, "title screen");
+			fontSmall = new TypeFace(false, titleArchive, -914, "p11_full");
+			fontNormal = new TypeFace(false, titleArchive, -914, "p12_full");
+			fontBold = new TypeFace(false, titleArchive, -914, "b12_full");
+			fontFancy = new TypeFace(true, titleArchive, -914, "q8_full");
 			prepareTitleBackground();
 			prepareTitle();
-			Archive archiveConfig = requestArchive(2, "config", "config", crcValues[2], 30);
-			Archive archiveInterface = requestArchive(3, "interface", "interface", crcValues[3], 35);
-			Archive archiveMedia = requestArchive(4, "2d graphics", "media", crcValues[4], 40);
-			Archive archiveTextures = requestArchive(6, "textures", "textures", crcValues[6], 45);
-			Archive archiveCensor = requestArchive(7, "chat system", "wordenc", crcValues[7], 50);
-			Archive archiveAudio = requestArchive(8, "sound effects", "sounds", crcValues[8], 55);
+			Archive configArchive = method61(14076, archiveHashes[2], "config", 30, 2, "config");
+			Archive archiveInterface = method61(14076, archiveHashes[3], "interface", 35, 3, "interface");
+			Archive archiveMedia = method61(14076, archiveHashes[4], "media", 40, 4, "2d gameGraphics");
+			Archive textureArchive = method61(14076, archiveHashes[6], "textures", 45, 6, "textures");
+			Archive chatArchive = method61(14076, archiveHashes[7], "wordenc", 50, 7, "chat system");
+			Archive soundArchive = method61(14076, archiveHashes[8], "sounds", 55, 8, "sound effects");
 			currentSceneTileFlags = new byte[4][104][104];
-			anIntArrayArrayArray1239 = new int[4][105][105];
-			currentScene = new Scene(104, (byte) 43, 104, anIntArrayArrayArray1239, 4);
-			for (int i = 0; i < 4; i++) {
-				currentCollisionMap[i] = new CollisionMap(104, 104, true);
-			}
+			anIntArrayArrayArray891 = new int[4][105][105];
+			currentScene = new SceneGraph(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
+			for (int j = 0; j < 4; j++)
+				currentCollisionMap[j] = new ClippingPlane(104, 0, 104);
+
 			minimapImage = new ImageRGB(512, 512);
-			Archive archiveCRC = requestArchive(5, "update list", "versionlist", crcValues[5], 60);
+			Archive versionListArchive = method61(14076, archiveHashes[5], "versionlist", 60, 5, "update list");
 			drawLoadingText(60, "Connecting to update server");
-			onDemandRequester = new OnDemandRequester();
-			onDemandRequester.init(archiveCRC, this);
-			Animation.method148(onDemandRequester.animCount());
-			Model.init(onDemandRequester.fileCount(0), onDemandRequester);
-			if (!Game.lowMemory) {
-				onDemandRequesterId = 0;
-				try {
-					onDemandRequesterId = Integer.parseInt(getParameter("music"));
-				} catch (Exception exception) {
-					/* empty */
+			onDemandFetcher = new OnDemandFetcher();
+			onDemandFetcher.init(versionListArchive, this);
+			Animation.method235(onDemandFetcher.method343(553));
+			Model.init(onDemandFetcher.fileCount(0), onDemandFetcher);
+			if (!lowMemory) {
+				nextSong = 0;
+				try
+				{
+					nextSong = Integer.parseInt(getParameter("music"));
 				}
-				midiFade = true;
-				onDemandRequester.request(2, onDemandRequesterId);
-				while (onDemandRequester.immediateRequestCount() > 0) {
-					method57(false);
+				catch(Exception _ex) { }
+				songChanging = true;
+				onDemandFetcher.request(2, nextSong);
+				while (onDemandFetcher.method333() > 0) {
+					method77(false);
 					try {
 						Thread.sleep(100L);
-					} catch (Exception exception) {
-						/* empty */
+					} catch (Exception _ex) {
 					}
-					if (onDemandRequester.requestFails > 3) {
-						printLoadError("ondemand");
+					if (onDemandFetcher.anInt1379 > 3) {
+						method19("ondemand");
 						return;
 					}
 				}
 			}
 			drawLoadingText(65, "Requesting animations");
-			int fileRequestCount = onDemandRequester.fileCount(1);
-			for (int id = 0; id < fileRequestCount; id++) {
-				onDemandRequester.request(1, id);
-			}
-			while (onDemandRequester.immediateRequestCount() > 0) {
-				int remaining = fileRequestCount - onDemandRequester.immediateRequestCount();
-				if (remaining > 0) {
-					drawLoadingText(65, "Loading animations - " + remaining * 100 / fileRequestCount + "%");
-				}
-				method57(false);
+			int fileRequestCount = onDemandFetcher.fileCount(1);
+			for (int l = 0; l < fileRequestCount; l++)
+				onDemandFetcher.request(1, l);
+
+			while (onDemandFetcher.method333() > 0) {
+				int i1 = fileRequestCount - onDemandFetcher.method333();
+				if (i1 > 0)
+					drawLoadingText(65, "Loading animations - " + (i1 * 100) / fileRequestCount + "%");
+				method77(false);
 				try {
 					Thread.sleep(100L);
-				} catch (Exception exception) {
-					/* empty */
+				} catch (Exception _ex) {
 				}
-				if (onDemandRequester.requestFails > 3) {
-					printLoadError("ondemand");
+				if (onDemandFetcher.anInt1379 > 3) {
+					method19("ondemand");
 					return;
 				}
 			}
 			drawLoadingText(70, "Requesting models");
-			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int id = 0; id < fileRequestCount; id++) {
-				int modelId = onDemandRequester.modelId(id);
-				if ((modelId & 0x1) != 0) {
-					onDemandRequester.request(0, id);
-				}
+			fileRequestCount = onDemandFetcher.fileCount(0);
+			for (int j1 = 0; j1 < fileRequestCount; j1++) {
+				int k1 = onDemandFetcher.method325(j1, -493);
+				if ((k1 & 1) != 0)
+					onDemandFetcher.request(0, j1);
 			}
-			fileRequestCount = onDemandRequester.immediateRequestCount();
-			while (onDemandRequester.immediateRequestCount() > 0) {
-				int remaining = fileRequestCount - onDemandRequester.immediateRequestCount();
-				if (remaining > 0) {
-					drawLoadingText(70, "Loading models - " + remaining * 100 / fileRequestCount + "%");
-				}
-				method57(false);
+
+			fileRequestCount = onDemandFetcher.method333();
+			while (onDemandFetcher.method333() > 0) {
+				int l1 = fileRequestCount - onDemandFetcher.method333();
+				if (l1 > 0)
+					drawLoadingText(70, "Loading models - " + (l1 * 100) / fileRequestCount + "%");
+				method77(false);
 				try {
 					Thread.sleep(100L);
-				} catch (Exception exception) {
-					/* empty */
+				} catch (Exception _ex) {
 				}
 			}
 			if (stores[0] != null) {
 				drawLoadingText(75, "Requesting maps");
-				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 47));
-				onDemandRequester.request(3, onDemandRequester.regId(1, 48, 47));
-				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 48));
-				onDemandRequester.request(3, onDemandRequester.regId(1, 48, 48));
-				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 49));
-				onDemandRequester.request(3, onDemandRequester.regId(1, 48, 49));
-				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 47));
-				onDemandRequester.request(3, onDemandRequester.regId(1, 47, 47));
-				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 48));
-				onDemandRequester.request(3, onDemandRequester.regId(1, 47, 48));
-				onDemandRequester.request(3, onDemandRequester.regId(0, 148, 48));
-				onDemandRequester.request(3, onDemandRequester.regId(1, 148, 48));
-				fileRequestCount = onDemandRequester.immediateRequestCount();
-				while (onDemandRequester.immediateRequestCount() > 0) {
-					int remaining = fileRequestCount - onDemandRequester.immediateRequestCount();
-					if (remaining > 0) {
-						drawLoadingText(75, "Loading maps - " + remaining * 100 / fileRequestCount + "%");
-					}
-					method57(false);
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 48, 0)); // these are the maps around tutorial island
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 48, 1));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 48, 0));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 48, 1));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 49, 48, 0));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 49, 48, 1));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 47, 0));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 47, 1));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 47, 0));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 47, 1));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 148, 0));
+				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 148, 1));
+				fileRequestCount = onDemandFetcher.method333();
+				while (onDemandFetcher.method333() > 0) {
+					int i2 = fileRequestCount - onDemandFetcher.method333();
+					if (i2 > 0)
+						drawLoadingText(75, "Loading maps - " + (i2 * 100) / fileRequestCount + "%");
+					method77(false);
 					try {
 						Thread.sleep(100L);
-					} catch (Exception exception) {
-						/* empty */
+					} catch (Exception _ex) {
 					}
 				}
 			}
-			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int id = 0; id < fileRequestCount; id++) {
-				int modelId = onDemandRequester.modelId(id);
-				byte priority = 0;
-				if ((modelId & 0x8) != 0) {
-					priority = (byte) 10;
-				} else if ((modelId & 0x20) != 0) {
-					priority = (byte) 9;
-				} else if ((modelId & 0x10) != 0) {
-					priority = (byte) 8;
-				} else if ((modelId & 0x40) != 0) {
-					priority = (byte) 7;
-				} else if ((modelId & 0x80) != 0) {
-					priority = (byte) 6;
-				} else if ((modelId & 0x2) != 0) {
-					priority = (byte) 5;
-				} else if ((modelId & 0x4) != 0) {
-					priority = (byte) 4;
-				}
-				if ((modelId & 0x1) != 0) {
-					priority = (byte) 3;
-				}
-				if (priority != 0) {
-					onDemandRequester.setPriority(priority, 0, id);
-				}
+			fileRequestCount = onDemandFetcher.fileCount(0);
+			for (int j2 = 0; j2 < fileRequestCount; j2++) {
+				int k2 = onDemandFetcher.method325(j2, -493);
+				byte byte0 = 0;
+				if ((k2 & 8) != 0)
+					byte0 = 10;
+				else if ((k2 & 0x20) != 0)
+					byte0 = 9;
+				else if ((k2 & 0x10) != 0)
+					byte0 = 8;
+				else if ((k2 & 0x40) != 0)
+					byte0 = 7;
+				else if ((k2 & 0x80) != 0)
+					byte0 = 6;
+				else if ((k2 & 2) != 0)
+					byte0 = 5;
+				else if ((k2 & 4) != 0)
+					byte0 = 4;
+				if ((k2 & 1) != 0)
+					byte0 = 3;
+				if (byte0 != 0)
+					onDemandFetcher.setPriority(byte0, 0, j2);
 			}
-			onDemandRequester.preloadRegions(Game.membersWorld);
-			if (!Game.lowMemory) {
-				fileRequestCount = onDemandRequester.fileCount(2);
-				for (int id = 1; id < fileRequestCount; id++) {
-					if (onDemandRequester.midiIdEqualsOne(id)) {
-						onDemandRequester.setPriority((byte) 1, 2, id);
-					}
-				}
+
+			onDemandFetcher.method332(memberServer, (byte) 109);
+			if (!lowMemory) {
+				fileRequestCount = onDemandFetcher.fileCount(2);
+				for (int id = 1; id < fileRequestCount; id++)
+					if (onDemandFetcher.midiIdEqualsOne(id))
+						onDemandFetcher.setPriority((byte) 1, 2, id);
+
 			}
+			fileRequestCount = onDemandFetcher.fileCount(0);
+			for (int i3 = 0; i3 < fileRequestCount; i3++) {
+				int j3 = onDemandFetcher.method325(i3, -493);
+				if (j3 == 0 && onDemandFetcher.anInt1350 < 200)
+					onDemandFetcher.setPriority((byte) 1, 0, i3);
+			}
+
 			drawLoadingText(80, "Unpacking media");
 			inventoryBackgroundImage = new IndexedImage(archiveMedia, "invback", 0);
 			chatboxBackgroundImage = new IndexedImage(archiveMedia, "chatback", 0);
@@ -7091,44 +4354,36 @@ public class Game extends GameShell {
 			anIndexedImage1052 = new IndexedImage(archiveMedia, "backbase1", 0);
 			anIndexedImage1053 = new IndexedImage(archiveMedia, "backbase2", 0);
 			anIndexedImage1054 = new IndexedImage(archiveMedia, "backhmid1", 0);
-
-			for (int i_555_ = 0; i_555_ < 13; i_555_++) {
-				tabIcon[i_555_] = new IndexedImage(archiveMedia, "sideicons", i_555_);
-			}
+			for (int tab = 0; tab < 13; tab++)
+				tabIcon[tab] = new IndexedImage(archiveMedia, "sideicons", tab);
 
 			minimapCompass = new ImageRGB(archiveMedia, "compass", 0);
 			minimapEdge = new ImageRGB(archiveMedia, "mapedge", 0);
 			minimapEdge.trim();
+			for (int i = 0; i < 72; i++)
+				aClass50_Sub1_Sub1_Sub3Array1153[i] = new IndexedImage(archiveMedia, "mapscene", i);
 
-			try {
-				for (int i = 0; i < 100; i++) {
-					anIndexedImageArray1085[i] = new IndexedImage(archiveMedia, "mapscene", i);
-				}
-			} catch (Exception e) {
-			}
-			try {
-				for (int i = 0; i < 100; i++) {
-					worldMapHintIcons[i] = new ImageRGB(archiveMedia, "mapfunction", i);
-				}
-			} catch (Exception e) {
-			}
-			try {
-				for (int i = 0; i < 20; i++) {
-					anImageRGBArray1012[i] = new ImageRGB(archiveMedia, "hitmarks", i);
-				}
-			} catch (Exception e) {
-			}
-			try {
-				for (int i = 0; i < 20; i++) {
-					anImageRGBArray1120[i] = new ImageRGB(archiveMedia, "headicons", i);
-				}
-			} catch (Exception e) {
-			}
+			for (int i = 0; i < 70; i++)
+				worldMapHintIcons[i] = new ImageRGB(archiveMedia, "mapfunction", i);
+
+			for (int i = 0; i < 5; i++)
+				aClass50_Sub1_Sub1_Sub1Array1182[i] = new ImageRGB(archiveMedia, "hitmarks", i);
+
+			for (int i = 0; i < 6; i++)
+				aClass50_Sub1_Sub1_Sub1Array1288[i] = new ImageRGB(archiveMedia, "headicons_pk", i);
+
+			for (int i = 0; i < 9; i++)
+				aClass50_Sub1_Sub1_Sub1Array1079[i] = new ImageRGB(archiveMedia, "headicons_prayer", i);
+
+			for (int i = 0; i < 6; i++)
+				aClass50_Sub1_Sub1_Sub1Array954[i] = new ImageRGB(archiveMedia, "headicons_hint", i);
+
+			aClass50_Sub1_Sub1_Sub1_1086 = new ImageRGB(archiveMedia, "overlay_multiway", 0);
 			mapFlagMarker = new ImageRGB(archiveMedia, "mapmarker", 0);
-			anImageRGB896 = new ImageRGB(archiveMedia, "mapmarker", 1);
-			for (int i_560_ = 0; i_560_ < 8; i_560_++) {
-				cursorCross[i_560_] = new ImageRGB(archiveMedia, "cross", i_560_);
-			}
+			aClass50_Sub1_Sub1_Sub1_1037 = new ImageRGB(archiveMedia, "mapmarker", 1);
+			for (int i = 0; i < 8; i++)
+				cursorCross[i] = new ImageRGB(archiveMedia, "cross", i);
+
 			mapdotItem = new ImageRGB(archiveMedia, "mapdots", 0);
 			mapdotActor = new ImageRGB(archiveMedia, "mapdots", 1);
 			mapdotPlayer = new ImageRGB(archiveMedia, "mapdots", 2);
@@ -7136,5049 +4391,7334 @@ public class Game extends GameShell {
 			mapdotTeammate = new ImageRGB(archiveMedia, "mapdots", 4);
 			scrollbarUp = new IndexedImage(archiveMedia, "scrollbar", 0);
 			scrollbarDown = new IndexedImage(archiveMedia, "scrollbar", 1);
-			anIndexedImage1168 = new IndexedImage(archiveMedia, "redstone1", 0);
-			anIndexedImage1169 = new IndexedImage(archiveMedia, "redstone2", 0);
-			anIndexedImage1170 = new IndexedImage(archiveMedia, "redstone3", 0);
-			anIndexedImage1171 = new IndexedImage(archiveMedia, "redstone1", 0);
-			anIndexedImage1171.flipHorizontal();
-			anIndexedImage1172 = new IndexedImage(archiveMedia, "redstone2", 0);
-			anIndexedImage1172.flipHorizontal();
-			anIndexedImage890 = new IndexedImage(archiveMedia, "redstone1", 0);
-			anIndexedImage890.flipVertical();
-			anIndexedImage891 = new IndexedImage(archiveMedia, "redstone2", 0);
-			anIndexedImage891.flipVertical();
-			anIndexedImage892 = new IndexedImage(archiveMedia, "redstone3", 0);
-			anIndexedImage892.flipVertical();
-			anIndexedImage893 = new IndexedImage(archiveMedia, "redstone1", 0);
-			anIndexedImage893.flipHorizontal();
-			anIndexedImage893.flipVertical();
-			anIndexedImage894 = new IndexedImage(archiveMedia, "redstone2", 0);
-			anIndexedImage894.flipHorizontal();
-			anIndexedImage894.flipVertical();
-			for (int i = 0; i < 2; i++) {
+			aClass50_Sub1_Sub1_Sub3_880 = new IndexedImage(archiveMedia, "redstone1", 0);
+			aClass50_Sub1_Sub1_Sub3_881 = new IndexedImage(archiveMedia, "redstone2", 0);
+			aClass50_Sub1_Sub1_Sub3_882 = new IndexedImage(archiveMedia, "redstone3", 0);
+			aClass50_Sub1_Sub1_Sub3_883 = new IndexedImage(archiveMedia, "redstone1", 0);
+			aClass50_Sub1_Sub1_Sub3_883.flipHorizontal();
+			aClass50_Sub1_Sub1_Sub3_884 = new IndexedImage(archiveMedia, "redstone2", 0);
+			aClass50_Sub1_Sub1_Sub3_884.flipHorizontal();
+			aClass50_Sub1_Sub1_Sub3_983 = new IndexedImage(archiveMedia, "redstone1", 0);
+			aClass50_Sub1_Sub1_Sub3_983.flipVertical();
+			aClass50_Sub1_Sub1_Sub3_984 = new IndexedImage(archiveMedia, "redstone2", 0);
+			aClass50_Sub1_Sub1_Sub3_984.flipVertical();
+			aClass50_Sub1_Sub1_Sub3_985 = new IndexedImage(archiveMedia, "redstone3", 0);
+			aClass50_Sub1_Sub1_Sub3_985.flipVertical();
+			aClass50_Sub1_Sub1_Sub3_986 = new IndexedImage(archiveMedia, "redstone1", 0);
+			aClass50_Sub1_Sub1_Sub3_986.flipHorizontal();
+			aClass50_Sub1_Sub1_Sub3_986.flipVertical();
+			aClass50_Sub1_Sub1_Sub3_987 = new IndexedImage(archiveMedia, "redstone2", 0);
+			aClass50_Sub1_Sub1_Sub3_987.flipHorizontal();
+			aClass50_Sub1_Sub1_Sub3_987.flipVertical();
+			for (int i = 0; i < 2; i++)
 				moderatorIcon[i] = new IndexedImage(archiveMedia, "mod_icons", i);
-			}
+
 			ImageRGB image = new ImageRGB(archiveMedia, "backleft1", 0);
-			aProducingGraphicsBuffer928 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_906 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backleft2", 0);
-			aProducingGraphicsBuffer929 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_907 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backright1", 0);
-			aProducingGraphicsBuffer930 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_908 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backright2", 0);
-			aProducingGraphicsBuffer931 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_909 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backtop1", 0);
-			aProducingGraphicsBuffer932 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_910 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backvmid1", 0);
-			aProducingGraphicsBuffer933 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_911 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backvmid2", 0);
-			aProducingGraphicsBuffer934 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_912 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backvmid3", 0);
-			aProducingGraphicsBuffer935 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_913 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
 			image = new ImageRGB(archiveMedia, "backhmid2", 0);
-			aProducingGraphicsBuffer936 = new ProducingGraphicsBuffer(image.width, image.height, getComponent());
+			aClass18_914 = new ProducingGraphicsBuffer(image.width1, image.height1, getParentComponent());
 			image.drawInverse(0, 0);
-			int i_562_ = (int) (Math.random() * 21.0) - 10;
-			int i_563_ = (int) (Math.random() * 21.0) - 10;
-			int i_564_ = (int) (Math.random() * 21.0) - 10;
-			int i_565_ = (int) (Math.random() * 41.0) - 20;
-			for (int i_566_ = 0; i_566_ < 100; i_566_++) {
-				if (worldMapHintIcons[i_566_] != null) {
-					worldMapHintIcons[i_566_].adjustRGB(i_562_ + i_565_, i_563_ + i_565_, i_564_ + i_565_);
-				}
-				if (anIndexedImageArray1085[i_566_] != null) {
-					anIndexedImageArray1085[i_566_].mixPalette(i_562_ + i_565_, i_563_ + i_565_, i_564_ + i_565_);
-				}
+			int l5 = (int) (Math.random() * 21D) - 10;
+			int i6 = (int) (Math.random() * 21D) - 10;
+			int j6 = (int) (Math.random() * 21D) - 10;
+			int k6 = (int) (Math.random() * 41D) - 20;
+			for (int l6 = 0; l6 < 100; l6++) {
+				if (worldMapHintIcons[l6] != null)
+					worldMapHintIcons[l6].method457(j6 + k6, i6 + k6, l5 + k6, -235);
+				if (aClass50_Sub1_Sub1_Sub3Array1153[l6] != null)
+					aClass50_Sub1_Sub1_Sub3Array1153[l6].method489(j6 + k6, i6 + k6, l5 + k6, -235);
 			}
+
 			drawLoadingText(83, "Unpacking textures");
-			Rasterizer3D.loadIndexedImages(archiveTextures);
-			Rasterizer3D.method369(0.8);
-			Rasterizer3D.method364(20, true);
+			Rasterizer3D.loadIndexedImages(textureArchive);
+			Rasterizer3D.method501(0.80000000000000004D);
+			Rasterizer3D.method496(20);
 			drawLoadingText(86, "Unpacking config");
-			AnimationSequence.load(archiveConfig);
-			GameObjectDefinition.load(archiveConfig);
-			FloorDefinition.load(archiveConfig);
-			ItemDefinition.load(archiveConfig);
-			ActorDefinition.load(archiveConfig);
-			IdentityKit.load(archiveConfig);
-			SpotAnimation.load(archiveConfig);
-			Varp.load(archiveConfig);
-			VarBit.load(archiveConfig);
-			ItemDefinition.playerIsMember = Game.membersWorld;
-			if (!Game.lowMemory) {
+			AnimationSequence.load(configArchive);
+			GameObjectDefinition.load(configArchive);
+			FloorDefinition.load(configArchive);
+			ItemDefinition.load(configArchive);
+			ActorDefinition.load(configArchive);
+			IdentityKit.load(configArchive);
+			SpotAnimation.load(configArchive);
+			Varp.load(configArchive);
+			Varbit.load(configArchive);
+			ItemDefinition.memberServer = memberServer;
+			if (!lowMemory) {
 				drawLoadingText(90, "Unpacking sounds");
-				byte[] bs = archiveAudio.getFile("sounds.dat");
+				byte bs[] = soundArchive.get("sounds.dat");
 				Buffer buffer = new Buffer(bs);
-				SoundTrack.load(buffer);
+				Sound.load(buffer);
 			}
 			drawLoadingText(95, "Unpacking interfaces");
-			TypeFace[] typefaces = { fontSmall, fontNormal, fontBold, fontFancy };
+			TypeFace[] typefaces = {fontSmall,
+					fontNormal, fontBold, fontFancy};
 			Widget.load(archiveInterface, typefaces, archiveMedia);
 			drawLoadingText(100, "Preparing game engine");
-			for (int i_567_ = 0; i_567_ < 33; i_567_++) {
-				int i_568_ = 999;
-				int i_569_ = 0;
-				for (int i_570_ = 0; i_570_ < 34; i_570_++) {
-					if (minimapBackgroundImage.pixels[i_570_ + i_567_ * minimapBackgroundImage.width] == 0) {
-						if (i_568_ == 999) {
-							i_568_ = i_570_;
-						}
-					} else if (i_568_ != 999) {
-						i_569_ = i_570_;
-						break;
+			for (int i7 = 0; i7 < 33; i7++) {
+				int j7 = 999;
+				int l7 = 0;
+				for (int j8 = 0; j8 < 34; j8++) {
+					if (minimapBackgroundImage.pixels[j8 + i7 * minimapBackgroundImage.width2] == 0) {
+						if (j7 == 999)
+							j7 = j8;
+						continue;
 					}
+					if (j7 == 999)
+						continue;
+					l7 = j8;
+					break;
 				}
-				anIntArray993[i_567_] = i_568_;
-				anIntArray1082[i_567_] = i_569_ - i_568_;
+
+				anIntArray1180[i7] = j7;
+				anIntArray1286[i7] = l7 - j7;
 			}
-			for (int i_571_ = 5; i_571_ < 156; i_571_++) {
-				int i_572_ = 999;
-				int i_573_ = 0;
-				for (int i_574_ = 25; i_574_ < 172; i_574_++) {
-					if (minimapBackgroundImage.pixels[i_574_ + i_571_ * minimapBackgroundImage.width] == 0
-							&& (i_574_ > 34 || i_571_ > 34)) {
-						if (i_572_ == 999) {
-							i_572_ = i_574_;
-						}
-					} else if (i_572_ != 999) {
-						i_573_ = i_574_;
-						break;
+
+			for (int k7 = 5; k7 < 156; k7++) {
+				int i8 = 999;
+				int k8 = 0;
+				for (int i9 = 25; i9 < 172; i9++) {
+					if (minimapBackgroundImage.pixels[i9 + k7 * minimapBackgroundImage.width2] == 0
+							&& (i9 > 34 || k7 > 34)) {
+						if (i8 == 999)
+							i8 = i9;
+						continue;
 					}
+					if (i8 == 999)
+						continue;
+					k8 = i9;
+					break;
 				}
-				anIntArray1077[i_571_ - 5] = i_572_ - 25;
-				anIntArray1254[i_571_ - 5] = i_573_ - i_572_;
+
+				anIntArray1019[k7 - 5] = i8 - 25;
+				anIntArray920[k7 - 5] = k8 - i8;
 			}
-			Rasterizer3D.method362(-950, 479, 96);
+
+			Rasterizer3D.method494(765, 503);
+			anIntArray1003 = Rasterizer3D.lineOffsets;
+			Rasterizer3D.method494(479, 96);
 			chatboxLineOffsets = Rasterizer3D.lineOffsets;
-			Rasterizer3D.method362(-950, 190, 261);
-			anIntArray1206 = Rasterizer3D.lineOffsets;
-			Rasterizer3D.method362(-950, 512, 334);
-			anIntArray1207 = Rasterizer3D.lineOffsets;
-			int[] is = new int[9];
-			for (int i_575_ = 0; i_575_ < 9; i_575_++) {
-				int i_576_ = 128 + i_575_ * 32 + 15;
-				int i_577_ = 600 + i_576_ * 3;
-				int i_578_ = Rasterizer3D.SINE[i_576_];
-				is[i_575_] = i_577_ * i_578_ >> 16;
+			Rasterizer3D.method494(190, 261);
+			anIntArray1001 = Rasterizer3D.lineOffsets;
+			Rasterizer3D.method494(512, 334);
+			anIntArray1002 = Rasterizer3D.lineOffsets;
+			int ai[] = new int[9];
+			for (int l8 = 0; l8 < 9; l8++) {
+				int j9 = 128 + l8 * 32 + 15;
+				int k9 = 600 + j9 * 3;
+				int l9 = Rasterizer3D.SINE[j9];
+				ai[l8] = k9 * l9 >> 16;
 			}
-			Scene.method532(500, 800, 512, 334, is, Game.aBoolean1256);
-			ChatCensor.load(archiveCensor);
+
+			SceneGraph.method277(500, 800, 512, 334, ai);
+			ChatFilter.unpack(chatArchive);
 			mouseCapturer = new MouseCapturer(this);
 			startRunnable(mouseCapturer, 10);
 			GameObject.client = this;
 			GameObjectDefinition.client = this;
 			ActorDefinition.client = this;
+			return;
 		} catch (Exception exception) {
-			SignLink.reportError("loaderror " + aString1074 + " " + anInt1104);
-			aBoolean951 = true;
+			SignLink.reporterror("loaderror " + aString1027 + " " + anInt1322);
 		}
+		aBoolean1283 = true;
 	}
 
-	private final void method91(Buffer buffer, int i) {
-		try {
-			anInt1144 = -50;
-			while (buffer.bitOffset + 10 < i * 8) {
-				int playerId = buffer.getBits(11);
-				if (playerId == 2047) {
-					break;
+	public void method65(int i) {
+		if (!lowMemory) {
+			for (int k = 0; k < anIntArray1290.length; k++) {
+				int l = anIntArray1290[k];
+				if (Rasterizer3D.anIntArray1546[l] >= i) {
+					IndexedImage class50_sub1_sub1_sub3 = Rasterizer3D.aClass50_Sub1_Sub1_Sub3Array1540[l];
+					int i1 = class50_sub1_sub1_sub3.width2 * class50_sub1_sub1_sub3.anInt1519 - 1;
+					int j1 = class50_sub1_sub1_sub3.width2 * anInt951 * 2;
+					byte abyte0[] = class50_sub1_sub1_sub3.pixels;
+					byte abyte1[] = aByteArray1245;
+					for (int k1 = 0; k1 <= i1; k1++)
+						abyte1[k1] = abyte0[k1 - j1 & i1];
+
+					class50_sub1_sub1_sub3.pixels = abyte1;
+					aByteArray1245 = abyte0;
+					Rasterizer3D.method499(l, 9);
 				}
-				if (players[playerId] == null) {
-					players[playerId] = new Player();
-					if (playerBuffer[playerId] != null) {
-						players[playerId].updatePlayer(playerBuffer[playerId]);
-					}
-				}
-				anIntArray917[playerCount++] = playerId;
-				Player player = players[playerId];
-				player.anInt1557 = Game.currentCycle;
-				int i_580_ = buffer.getBits(1);
-				if (i_580_ == 1) {
-					anIntArray919[anInt918++] = playerId;
-				}
-				buffer.getBits(1);
-				int i_582_ = buffer.getBits(5);
-				if (i_582_ > 15) {
-					i_582_ -= 32;
-				}
-				int i_583_ = buffer.getBits(5);
-				if (i_583_ > 15) {
-					i_583_ -= 32;
-				}
-				player.setPosition(Game.localPlayer.pathX[0] + i_583_, Game.localPlayer.pathY[0] + i_582_);
 			}
-			buffer.finishBitAccess();
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("22315, " + buffer + ", " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+
 		}
 	}
 
-	public final void processClickingMinimap() {
-		do {
-			try {
-				if (minimapState == 0) {
-					if (clickType != 1) {
-						break;
+	public void method66(int i, Widget class13, int j, int k, int l, int i1, int j1, int k1) {
+		if (j1 != 23658)
+			return;
+		if (class13.anInt236 != 0 || class13.anIntArray258 == null || class13.aBoolean219)
+			return;
+		if (i1 < l || k1 < i || i1 > l + class13.anInt241 || k1 > i + class13.anInt238)
+			return;
+		int l1 = class13.anIntArray258.length;
+		for (int i2 = 0; i2 < l1; i2++) {
+			int j2 = class13.anIntArray232[i2] + l;
+			int k2 = (class13.anIntArray276[i2] + i) - k;
+			Widget class13_1 = Widget.forId(class13.anIntArray258[i2]);
+			j2 += class13_1.anInt228;
+			k2 += class13_1.anInt259;
+			if ((class13_1.anInt254 >= 0 || class13_1.anInt261 != 0) && i1 >= j2 && k1 >= k2
+					&& i1 < j2 + class13_1.anInt241 && k1 < k2 + class13_1.anInt238)
+				if (class13_1.anInt254 >= 0)
+					anInt915 = class13_1.anInt254;
+				else
+					anInt915 = class13_1.id;
+			if (class13_1.anInt236 == 8 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+					&& k1 < k2 + class13_1.anInt238)
+				anInt1315 = class13_1.id;
+			if (class13_1.anInt236 == 0) {
+				method66(k2, class13_1, j, class13_1.anInt231, j2, i1, 23658, k1);
+				if (class13_1.anInt285 > class13_1.anInt238)
+					method42(class13_1.anInt285, k2, class13_1, (byte) 102, k1, j, i1, class13_1.anInt238, j2
+							+ class13_1.anInt241);
+			} else {
+				if (class13_1.anInt289 == 1 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+						&& k1 < k2 + class13_1.anInt238) {
+					boolean flag = false;
+					if (class13_1.contentType != 0)
+						flag = method23(class13_1, 8);
+					if (!flag) {
+						aStringArray1184[anInt1183] = class13_1.tooltip;
+						anIntArray981[anInt1183] = 352;
+						anIntArray980[anInt1183] = class13_1.id;
+						anInt1183++;
 					}
-					int i = clickX - 25 - 550;
-					int i_584_ = clickY - 5 - 4;
-					if (i >= 0 && i_584_ >= 0 && i < 146 && i_584_ < 151) {
-						i -= 73;
-						i_584_ -= 75;
-						int i_585_ = anInt1210 + anInt1234 & 0x7ff;
-						int i_586_ = Rasterizer3D.SINE[i_585_];
-						int i_587_ = Rasterizer3D.COSINE[i_585_];
-						i_586_ = i_586_ * (anInt1195 + 256) >> 8;
-						i_587_ = i_587_ * (anInt1195 + 256) >> 8;
-						int i_588_ = i_584_ * i_586_ + i * i_587_ >> 11;
-						int i_589_ = i_584_ * i_587_ - i * i_586_ >> 11;
-						int i_590_ = Game.localPlayer.xWithBoundary + i_588_ >> 7;
-						int i_591_ = Game.localPlayer.yWithBoundary - i_589_ >> 7;
-						boolean bool_592_ = calculatePath(1, 0, 0, 0, Game.localPlayer.pathY[0], 0, 0, i_591_,
-								Game.localPlayer.pathX[0], true, i_590_);
-						if (bool_592_) {
-							outBuffer.put(i);
-							outBuffer.put(i_584_);
-							outBuffer.putShort(anInt1210);
-							outBuffer.put(57);
-							outBuffer.put(anInt1234);
-							outBuffer.put(anInt1195);
-							outBuffer.put(89);
-							outBuffer.putShort(Game.localPlayer.xWithBoundary);
-							outBuffer.putShort(Game.localPlayer.yWithBoundary);
-							outBuffer.put(arbitraryDestination);
-							outBuffer.put(63);
+				}
+				if (class13_1.anInt289 == 2 && anInt1171 == 0 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+						&& k1 < k2 + class13_1.anInt238) {
+					String s = class13_1.aString281;
+					if (s.indexOf(" ") != -1)
+						s = s.substring(0, s.indexOf(" "));
+					aStringArray1184[anInt1183] = s + " @gre@" + class13_1.aString211;
+					anIntArray981[anInt1183] = 70;
+					anIntArray980[anInt1183] = class13_1.id;
+					anInt1183++;
+				}
+				if (class13_1.anInt289 == 3 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+						&& k1 < k2 + class13_1.anInt238) {
+					aStringArray1184[anInt1183] = "Close";
+					if (j == 3)
+						anIntArray981[anInt1183] = 55;
+					else
+						anIntArray981[anInt1183] = 639;
+					anIntArray980[anInt1183] = class13_1.id;
+					anInt1183++;
+				}
+				if (class13_1.anInt289 == 4 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+						&& k1 < k2 + class13_1.anInt238) {
+					aStringArray1184[anInt1183] = class13_1.tooltip;
+					anIntArray981[anInt1183] = 890;
+					anIntArray980[anInt1183] = class13_1.id;
+					anInt1183++;
+				}
+				if (class13_1.anInt289 == 5 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+						&& k1 < k2 + class13_1.anInt238) {
+					aStringArray1184[anInt1183] = class13_1.tooltip;
+					anIntArray981[anInt1183] = 518;
+					anIntArray980[anInt1183] = class13_1.id;
+					anInt1183++;
+				}
+				if (class13_1.anInt289 == 6 && !aBoolean1239 && i1 >= j2 && k1 >= k2 && i1 < j2 + class13_1.anInt241
+						&& k1 < k2 + class13_1.anInt238) {
+					aStringArray1184[anInt1183] = class13_1.tooltip;
+					anIntArray981[anInt1183] = 575;
+					anIntArray980[anInt1183] = class13_1.id;
+					anInt1183++;
+				}
+				if (class13_1.anInt236 == 2) {
+					int l2 = 0;
+					for (int i3 = 0; i3 < class13_1.anInt238; i3++) {
+						for (int j3 = 0; j3 < class13_1.anInt241; j3++) {
+							int k3 = j2 + j3 * (32 + class13_1.anInt263);
+							int l3 = k2 + i3 * (32 + class13_1.anInt244);
+							if (l2 < 20) {
+								k3 += class13_1.anIntArray221[l2];
+								l3 += class13_1.anIntArray213[l2];
+							}
+							if (i1 >= k3 && k1 >= l3 && i1 < k3 + 32 && k1 < l3 + 32) {
+								anInt1063 = l2;
+								anInt1064 = class13_1.id;
+								if (class13_1.itemIds[l2] > 0) {
+									ItemDefinition class16 = ItemDefinition.forId(class13_1.itemIds[l2] - 1);
+									if (anInt1146 == 1 && class13_1.aBoolean229) {
+										if (class13_1.id != anInt1148 || l2 != anInt1147) {
+											aStringArray1184[anInt1183] = "Use " + aString1150 + " with @lre@"
+													+ class16.name;
+											anIntArray981[anInt1183] = 903;
+											anIntArray982[anInt1183] = class16.id;
+											anIntArray979[anInt1183] = l2;
+											anIntArray980[anInt1183] = class13_1.id;
+											anInt1183++;
+										}
+									} else if (anInt1171 == 1 && class13_1.aBoolean229) {
+										if ((anInt1173 & 0x10) == 16) {
+											aStringArray1184[anInt1183] = aString1174 + " @lre@" + class16.name;
+											anIntArray981[anInt1183] = 361;
+											anIntArray982[anInt1183] = class16.id;
+											anIntArray979[anInt1183] = l2;
+											anIntArray980[anInt1183] = class13_1.id;
+											anInt1183++;
+										}
+									} else {
+										if (class13_1.aBoolean229) {
+											for (int i4 = 4; i4 >= 3; i4--)
+												if (class16.inventoryActions != null
+														&& class16.inventoryActions[i4] != null) {
+													aStringArray1184[anInt1183] = class16.inventoryActions[i4]
+															+ " @lre@" + class16.name;
+													if (i4 == 3)
+														anIntArray981[anInt1183] = 227;
+													if (i4 == 4)
+														anIntArray981[anInt1183] = 891;
+													anIntArray982[anInt1183] = class16.id;
+													anIntArray979[anInt1183] = l2;
+													anIntArray980[anInt1183] = class13_1.id;
+													anInt1183++;
+												} else if (i4 == 4) {
+													aStringArray1184[anInt1183] = "Drop @lre@" + class16.name;
+													anIntArray981[anInt1183] = 891;
+													anIntArray982[anInt1183] = class16.id;
+													anIntArray979[anInt1183] = l2;
+													anIntArray980[anInt1183] = class13_1.id;
+													anInt1183++;
+												}
+
+										}
+										if (class13_1.aBoolean288) {
+											aStringArray1184[anInt1183] = "Use @lre@" + class16.name;
+											anIntArray981[anInt1183] = 52;
+											anIntArray982[anInt1183] = class16.id;
+											anIntArray979[anInt1183] = l2;
+											anIntArray980[anInt1183] = class13_1.id;
+											anInt1183++;
+										}
+										if (class13_1.aBoolean229 && class16.inventoryActions != null) {
+											for (int j4 = 2; j4 >= 0; j4--)
+												if (class16.inventoryActions[j4] != null) {
+													aStringArray1184[anInt1183] = class16.inventoryActions[j4]
+															+ " @lre@" + class16.name;
+													if (j4 == 0)
+														anIntArray981[anInt1183] = 961;
+													if (j4 == 1)
+														anIntArray981[anInt1183] = 399;
+													if (j4 == 2)
+														anIntArray981[anInt1183] = 324;
+													anIntArray982[anInt1183] = class16.id;
+													anIntArray979[anInt1183] = l2;
+													anIntArray980[anInt1183] = class13_1.id;
+													anInt1183++;
+												}
+
+										}
+										if (class13_1.options != null) {
+											for (int k4 = 4; k4 >= 0; k4--)
+												if (class13_1.options[k4] != null) {
+													aStringArray1184[anInt1183] = class13_1.options[k4]
+															+ " @lre@" + class16.name;
+													if (k4 == 0)
+														anIntArray981[anInt1183] = 9;
+													if (k4 == 1)
+														anIntArray981[anInt1183] = 225;
+													if (k4 == 2)
+														anIntArray981[anInt1183] = 444;
+													if (k4 == 3)
+														anIntArray981[anInt1183] = 564;
+													if (k4 == 4)
+														anIntArray981[anInt1183] = 894;
+													anIntArray982[anInt1183] = class16.id;
+													anIntArray979[anInt1183] = l2;
+													anIntArray980[anInt1183] = class13_1.id;
+													anInt1183++;
+												}
+
+										}
+										aStringArray1184[anInt1183] = "Examine @lre@" + class16.name;
+										anIntArray981[anInt1183] = 1094;
+										anIntArray982[anInt1183] = class16.id;
+										anIntArray979[anInt1183] = l2;
+										anIntArray980[anInt1183] = class13_1.id;
+										anInt1183++;
+									}
+								}
+							}
+							l2++;
 						}
+
 					}
-					Game.anInt1142++;
-					if (Game.anInt1142 <= 1151) {
+
+				}
+			}
+		}
+
+	}
+
+	public void method67(int i) {
+		for (int j = 0; j < anInt1133; j++) {
+			int k = anIntArray1134[j];
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[k];
+			if (class50_sub1_sub4_sub3_sub1 != null)
+				method68(class50_sub1_sub4_sub3_sub1.npcDefinition.boundaryDimension, (byte) -97, class50_sub1_sub4_sub3_sub1);
+		}
+
+		if (i != -37214)
+			outBuffer.putByte(41);
+	}
+
+	public void method68(int i, byte byte0, Actor class50_sub1_sub4_sub3) {
+		if (class50_sub1_sub4_sub3.unitX < 128 || class50_sub1_sub4_sub3.unitY < 128
+				|| class50_sub1_sub4_sub3.unitX >= 13184 || class50_sub1_sub4_sub3.unitY >= 13184) {
+			class50_sub1_sub4_sub3.animation = -1;
+			class50_sub1_sub4_sub3.spotAnimationId = -1;
+			class50_sub1_sub4_sub3.anInt1606 = 0;
+			class50_sub1_sub4_sub3.anInt1607 = 0;
+			class50_sub1_sub4_sub3.unitX = class50_sub1_sub4_sub3.pathX[0] * 128
+					+ class50_sub1_sub4_sub3.boundaryDimension * 64;
+			class50_sub1_sub4_sub3.unitY = class50_sub1_sub4_sub3.pathY[0] * 128
+					+ class50_sub1_sub4_sub3.boundaryDimension * 64;
+			class50_sub1_sub4_sub3.resetPath();
+		}
+		if (class50_sub1_sub4_sub3 == thisPlayer
+				&& (class50_sub1_sub4_sub3.unitX < 1536 || class50_sub1_sub4_sub3.unitY < 1536
+						|| class50_sub1_sub4_sub3.unitX >= 11776 || class50_sub1_sub4_sub3.unitY >= 11776)) {
+			class50_sub1_sub4_sub3.animation = -1;
+			class50_sub1_sub4_sub3.spotAnimationId = -1;
+			class50_sub1_sub4_sub3.anInt1606 = 0;
+			class50_sub1_sub4_sub3.anInt1607 = 0;
+			class50_sub1_sub4_sub3.unitX = class50_sub1_sub4_sub3.pathX[0] * 128
+					+ class50_sub1_sub4_sub3.boundaryDimension * 64;
+			class50_sub1_sub4_sub3.unitY = class50_sub1_sub4_sub3.pathY[0] * 128
+					+ class50_sub1_sub4_sub3.boundaryDimension * 64;
+			class50_sub1_sub4_sub3.resetPath();
+		}
+		if (class50_sub1_sub4_sub3.anInt1606 > pulseCycle)
+			method69(class50_sub1_sub4_sub3, true);
+		else if (class50_sub1_sub4_sub3.anInt1607 >= pulseCycle)
+			method70(class50_sub1_sub4_sub3, -31135);
+		else
+			method71(class50_sub1_sub4_sub3, 0);
+		method72((byte) 8, class50_sub1_sub4_sub3);
+		method73(class50_sub1_sub4_sub3, -136);
+		if (byte0 == -97)
+			;
+	}
+
+	public void method69(Actor class50_sub1_sub4_sub3, boolean flag) {
+		if (!flag)
+			aBoolean963 = !aBoolean963;
+		int i = class50_sub1_sub4_sub3.anInt1606 - pulseCycle;
+		int j = class50_sub1_sub4_sub3.anInt1602 * 128 + class50_sub1_sub4_sub3.boundaryDimension * 64;
+		int k = class50_sub1_sub4_sub3.anInt1604 * 128 + class50_sub1_sub4_sub3.boundaryDimension * 64;
+		class50_sub1_sub4_sub3.unitX += (j - class50_sub1_sub4_sub3.unitX) / i;
+		class50_sub1_sub4_sub3.unitY += (k - class50_sub1_sub4_sub3.unitY) / i;
+		class50_sub1_sub4_sub3.anInt1623 = 0;
+		if (class50_sub1_sub4_sub3.anInt1608 == 0)
+			class50_sub1_sub4_sub3.anInt1584 = 1024;
+		if (class50_sub1_sub4_sub3.anInt1608 == 1)
+			class50_sub1_sub4_sub3.anInt1584 = 1536;
+		if (class50_sub1_sub4_sub3.anInt1608 == 2)
+			class50_sub1_sub4_sub3.anInt1584 = 0;
+		if (class50_sub1_sub4_sub3.anInt1608 == 3)
+			class50_sub1_sub4_sub3.anInt1584 = 512;
+	}
+
+	public void method70(Actor class50_sub1_sub4_sub3, int i) {
+		if (class50_sub1_sub4_sub3.anInt1607 == pulseCycle
+				|| class50_sub1_sub4_sub3.animation == -1
+				|| class50_sub1_sub4_sub3.animationDelay != 0
+				|| class50_sub1_sub4_sub3.anInt1626 + 1 > AnimationSequence.animations[class50_sub1_sub4_sub3.animation]
+						.getFrameLength(class50_sub1_sub4_sub3.anInt1625)) {
+			int j = class50_sub1_sub4_sub3.anInt1607 - class50_sub1_sub4_sub3.anInt1606;
+			int k = pulseCycle - class50_sub1_sub4_sub3.anInt1606;
+			int l = class50_sub1_sub4_sub3.anInt1602 * 128 + class50_sub1_sub4_sub3.boundaryDimension * 64;
+			int i1 = class50_sub1_sub4_sub3.anInt1604 * 128 + class50_sub1_sub4_sub3.boundaryDimension * 64;
+			int j1 = class50_sub1_sub4_sub3.anInt1603 * 128 + class50_sub1_sub4_sub3.boundaryDimension * 64;
+			int k1 = class50_sub1_sub4_sub3.anInt1605 * 128 + class50_sub1_sub4_sub3.boundaryDimension * 64;
+			class50_sub1_sub4_sub3.unitX = (l * (j - k) + j1 * k) / j;
+			class50_sub1_sub4_sub3.unitY = (i1 * (j - k) + k1 * k) / j;
+		}
+		class50_sub1_sub4_sub3.anInt1623 = 0;
+		if (class50_sub1_sub4_sub3.anInt1608 == 0)
+			class50_sub1_sub4_sub3.anInt1584 = 1024;
+		if (class50_sub1_sub4_sub3.anInt1608 == 1)
+			class50_sub1_sub4_sub3.anInt1584 = 1536;
+		if (class50_sub1_sub4_sub3.anInt1608 == 2)
+			class50_sub1_sub4_sub3.anInt1584 = 0;
+		if (class50_sub1_sub4_sub3.anInt1608 == 3)
+			class50_sub1_sub4_sub3.anInt1584 = 512;
+		class50_sub1_sub4_sub3.anInt1612 = class50_sub1_sub4_sub3.anInt1584;
+		if (i == -31135)
+			;
+	}
+
+	public void method71(Actor class50_sub1_sub4_sub3, int i) {
+		class50_sub1_sub4_sub3.anInt1588 = class50_sub1_sub4_sub3.standAnimationId;
+		if (class50_sub1_sub4_sub3.pathLength == 0) {
+			class50_sub1_sub4_sub3.anInt1623 = 0;
+			return;
+		}
+		if (class50_sub1_sub4_sub3.animation != -1 && class50_sub1_sub4_sub3.animationDelay == 0) {
+			AnimationSequence class14 = AnimationSequence.animations[class50_sub1_sub4_sub3.animation];
+			if (class50_sub1_sub4_sub3.anInt1613 > 0 && class14.anInt305 == 0) {
+				class50_sub1_sub4_sub3.anInt1623++;
+				return;
+			}
+			if (class50_sub1_sub4_sub3.anInt1613 <= 0 && class14.priority == 0) {
+				class50_sub1_sub4_sub3.anInt1623++;
+				return;
+			}
+		}
+		int j = class50_sub1_sub4_sub3.unitX;
+		int k = class50_sub1_sub4_sub3.unitY;
+		int l = class50_sub1_sub4_sub3.pathX[class50_sub1_sub4_sub3.pathLength - 1] * 128
+				+ class50_sub1_sub4_sub3.boundaryDimension * 64;
+		int i1 = class50_sub1_sub4_sub3.pathY[class50_sub1_sub4_sub3.pathLength - 1] * 128
+				+ class50_sub1_sub4_sub3.boundaryDimension * 64;
+		if (l - j > 256 || l - j < -256 || i1 - k > 256 || i1 - k < -256) {
+			class50_sub1_sub4_sub3.unitX = l;
+			class50_sub1_sub4_sub3.unitY = i1;
+			return;
+		}
+		if (j < l) {
+			if (k < i1)
+				class50_sub1_sub4_sub3.anInt1584 = 1280;
+			else if (k > i1)
+				class50_sub1_sub4_sub3.anInt1584 = 1792;
+			else
+				class50_sub1_sub4_sub3.anInt1584 = 1536;
+		} else if (j > l) {
+			if (k < i1)
+				class50_sub1_sub4_sub3.anInt1584 = 768;
+			else if (k > i1)
+				class50_sub1_sub4_sub3.anInt1584 = 256;
+			else
+				class50_sub1_sub4_sub3.anInt1584 = 512;
+		} else if (k < i1)
+			class50_sub1_sub4_sub3.anInt1584 = 1024;
+		else
+			class50_sub1_sub4_sub3.anInt1584 = 0;
+		int j1 = class50_sub1_sub4_sub3.anInt1584 - class50_sub1_sub4_sub3.anInt1612 & 0x7ff;
+		if (j1 > 1024)
+			j1 -= 2048;
+		int k1 = class50_sub1_sub4_sub3.anInt1620;
+		if (i != 0)
+			outBuffer.putByte(34);
+		if (j1 >= -256 && j1 <= 256)
+			k1 = class50_sub1_sub4_sub3.anInt1619;
+		else if (j1 >= 256 && j1 < 768)
+			k1 = class50_sub1_sub4_sub3.anInt1622;
+		else if (j1 >= -768 && j1 <= -256)
+			k1 = class50_sub1_sub4_sub3.anInt1621;
+		if (k1 == -1)
+			k1 = class50_sub1_sub4_sub3.anInt1619;
+		class50_sub1_sub4_sub3.anInt1588 = k1;
+		int l1 = 4;
+		if (class50_sub1_sub4_sub3.anInt1612 != class50_sub1_sub4_sub3.anInt1584
+				&& class50_sub1_sub4_sub3.anInt1609 == -1 && class50_sub1_sub4_sub3.anInt1600 != 0)
+			l1 = 2;
+		if (class50_sub1_sub4_sub3.pathLength > 2)
+			l1 = 6;
+		if (class50_sub1_sub4_sub3.pathLength > 3)
+			l1 = 8;
+		if (class50_sub1_sub4_sub3.anInt1623 > 0 && class50_sub1_sub4_sub3.pathLength > 1) {
+			l1 = 8;
+			class50_sub1_sub4_sub3.anInt1623--;
+		}
+		if (class50_sub1_sub4_sub3.runningQueue[class50_sub1_sub4_sub3.pathLength - 1])
+			l1 <<= 1;
+		if (l1 >= 8 && class50_sub1_sub4_sub3.anInt1588 == class50_sub1_sub4_sub3.anInt1619
+				&& class50_sub1_sub4_sub3.anInt1629 != -1)
+			class50_sub1_sub4_sub3.anInt1588 = class50_sub1_sub4_sub3.anInt1629;
+		if (j < l) {
+			class50_sub1_sub4_sub3.unitX += l1;
+			if (class50_sub1_sub4_sub3.unitX > l)
+				class50_sub1_sub4_sub3.unitX = l;
+		} else if (j > l) {
+			class50_sub1_sub4_sub3.unitX -= l1;
+			if (class50_sub1_sub4_sub3.unitX < l)
+				class50_sub1_sub4_sub3.unitX = l;
+		}
+		if (k < i1) {
+			class50_sub1_sub4_sub3.unitY += l1;
+			if (class50_sub1_sub4_sub3.unitY > i1)
+				class50_sub1_sub4_sub3.unitY = i1;
+		} else if (k > i1) {
+			class50_sub1_sub4_sub3.unitY -= l1;
+			if (class50_sub1_sub4_sub3.unitY < i1)
+				class50_sub1_sub4_sub3.unitY = i1;
+		}
+		if (class50_sub1_sub4_sub3.unitX == l && class50_sub1_sub4_sub3.unitY == i1) {
+			class50_sub1_sub4_sub3.pathLength--;
+			if (class50_sub1_sub4_sub3.anInt1613 > 0)
+				class50_sub1_sub4_sub3.anInt1613--;
+		}
+	}
+
+	public void method72(byte byte0, Actor class50_sub1_sub4_sub3) {
+		if (byte0 != 8)
+			anInt928 = incomingRandom.nextInt();
+		if (class50_sub1_sub4_sub3.anInt1600 == 0)
+			return;
+		if (class50_sub1_sub4_sub3.anInt1609 != -1 && class50_sub1_sub4_sub3.anInt1609 < 32768) {
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[class50_sub1_sub4_sub3.anInt1609];
+			if (class50_sub1_sub4_sub3_sub1 != null) {
+				int l = class50_sub1_sub4_sub3.unitX - ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX;
+				int j1 = class50_sub1_sub4_sub3.unitY - ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY;
+				if (l != 0 || j1 != 0)
+					class50_sub1_sub4_sub3.anInt1584 = (int) (Math.atan2(l, j1) * 325.94900000000001D) & 0x7ff;
+			}
+		}
+		if (class50_sub1_sub4_sub3.anInt1609 >= 32768) {
+			int i = class50_sub1_sub4_sub3.anInt1609 - 32768;
+			if (i == thisPlayerServerId)
+				i = thisPlayerId;
+			Player class50_sub1_sub4_sub3_sub2 = players[i];
+			if (class50_sub1_sub4_sub3_sub2 != null) {
+				int k1 = class50_sub1_sub4_sub3.unitX - ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX;
+				int l1 = class50_sub1_sub4_sub3.unitY - ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY;
+				if (k1 != 0 || l1 != 0)
+					class50_sub1_sub4_sub3.anInt1584 = (int) (Math.atan2(k1, l1) * 325.94900000000001D) & 0x7ff;
+			}
+		}
+		if ((class50_sub1_sub4_sub3.anInt1598 != 0 || class50_sub1_sub4_sub3.anInt1599 != 0)
+				&& (class50_sub1_sub4_sub3.pathLength == 0 || class50_sub1_sub4_sub3.anInt1623 > 0)) {
+			int j = class50_sub1_sub4_sub3.unitX - (class50_sub1_sub4_sub3.anInt1598 - nextTopLeftTileX - nextTopLeftTileX) * 64;
+			int i1 = class50_sub1_sub4_sub3.unitY - (class50_sub1_sub4_sub3.anInt1599 - nextTopRightTileY - nextTopRightTileY) * 64;
+			if (j != 0 || i1 != 0)
+				class50_sub1_sub4_sub3.anInt1584 = (int) (Math.atan2(j, i1) * 325.94900000000001D) & 0x7ff;
+			class50_sub1_sub4_sub3.anInt1598 = 0;
+			class50_sub1_sub4_sub3.anInt1599 = 0;
+		}
+		int k = class50_sub1_sub4_sub3.anInt1584 - class50_sub1_sub4_sub3.anInt1612 & 0x7ff;
+		if (k != 0) {
+			if (k < class50_sub1_sub4_sub3.anInt1600 || k > 2048 - class50_sub1_sub4_sub3.anInt1600)
+				class50_sub1_sub4_sub3.anInt1612 = class50_sub1_sub4_sub3.anInt1584;
+			else if (k > 1024)
+				class50_sub1_sub4_sub3.anInt1612 -= class50_sub1_sub4_sub3.anInt1600;
+			else
+				class50_sub1_sub4_sub3.anInt1612 += class50_sub1_sub4_sub3.anInt1600;
+			class50_sub1_sub4_sub3.anInt1612 &= 0x7ff;
+			if (class50_sub1_sub4_sub3.anInt1588 == class50_sub1_sub4_sub3.standAnimationId
+					&& class50_sub1_sub4_sub3.anInt1612 != class50_sub1_sub4_sub3.anInt1584) {
+				if (class50_sub1_sub4_sub3.anInt1635 != -1) {
+					class50_sub1_sub4_sub3.anInt1588 = class50_sub1_sub4_sub3.anInt1635;
+					return;
+				}
+				class50_sub1_sub4_sub3.anInt1588 = class50_sub1_sub4_sub3.anInt1619;
+			}
+		}
+	}
+
+	public void method73(Actor class50_sub1_sub4_sub3, int i) {
+		while (i >= 0)
+			anInt1328 = incomingRandom.nextInt();
+		class50_sub1_sub4_sub3.aBoolean1592 = false;
+		if (class50_sub1_sub4_sub3.anInt1588 != -1) {
+			AnimationSequence class14 = AnimationSequence.animations[class50_sub1_sub4_sub3.anInt1588];
+			class50_sub1_sub4_sub3.anInt1590++;
+			if (class50_sub1_sub4_sub3.anInt1589 < class14.frameCount
+					&& class50_sub1_sub4_sub3.anInt1590 > class14.getFrameLength(class50_sub1_sub4_sub3.anInt1589)) {
+				class50_sub1_sub4_sub3.anInt1590 = 1;
+				class50_sub1_sub4_sub3.anInt1589++;
+			}
+			if (class50_sub1_sub4_sub3.anInt1589 >= class14.frameCount) {
+				class50_sub1_sub4_sub3.anInt1590 = 1;
+				class50_sub1_sub4_sub3.anInt1589 = 0;
+			}
+		}
+		if (class50_sub1_sub4_sub3.spotAnimationId != -1 && pulseCycle >= class50_sub1_sub4_sub3.anInt1617) {
+			if (class50_sub1_sub4_sub3.currentAnimationFrame < 0)
+				class50_sub1_sub4_sub3.currentAnimationFrame = 0;
+			AnimationSequence class14_1 = SpotAnimation.cache[class50_sub1_sub4_sub3.spotAnimationId].sequences;
+			class50_sub1_sub4_sub3.anInt1616++;
+			if (class50_sub1_sub4_sub3.currentAnimationFrame < class14_1.frameCount
+					&& class50_sub1_sub4_sub3.anInt1616 > class14_1.getFrameLength(class50_sub1_sub4_sub3.currentAnimationFrame)) {
+				class50_sub1_sub4_sub3.anInt1616 = 1;
+				class50_sub1_sub4_sub3.currentAnimationFrame++;
+			}
+			if (class50_sub1_sub4_sub3.currentAnimationFrame >= class14_1.frameCount
+					&& (class50_sub1_sub4_sub3.currentAnimationFrame < 0 || class50_sub1_sub4_sub3.currentAnimationFrame >= class14_1.frameCount))
+				class50_sub1_sub4_sub3.spotAnimationId = -1;
+		}
+		if (class50_sub1_sub4_sub3.animation != -1 && class50_sub1_sub4_sub3.animationDelay <= 1) {
+			AnimationSequence class14_2 = AnimationSequence.animations[class50_sub1_sub4_sub3.animation];
+			if (class14_2.anInt305 == 1 && class50_sub1_sub4_sub3.anInt1613 > 0
+					&& class50_sub1_sub4_sub3.anInt1606 <= pulseCycle && class50_sub1_sub4_sub3.anInt1607 < pulseCycle) {
+				class50_sub1_sub4_sub3.animationDelay = 1;
+				return;
+			}
+		}
+		if (class50_sub1_sub4_sub3.animation != -1 && class50_sub1_sub4_sub3.animationDelay == 0) {
+			AnimationSequence class14_3 = AnimationSequence.animations[class50_sub1_sub4_sub3.animation];
+			class50_sub1_sub4_sub3.anInt1626++;
+			if (class50_sub1_sub4_sub3.anInt1625 < class14_3.frameCount
+					&& class50_sub1_sub4_sub3.anInt1626 > class14_3.getFrameLength(class50_sub1_sub4_sub3.anInt1625)) {
+				class50_sub1_sub4_sub3.anInt1626 = 1;
+				class50_sub1_sub4_sub3.anInt1625++;
+			}
+			if (class50_sub1_sub4_sub3.anInt1625 >= class14_3.frameCount) {
+				class50_sub1_sub4_sub3.anInt1625 -= class14_3.frameStep;
+				class50_sub1_sub4_sub3.anInt1628++;
+				if (class50_sub1_sub4_sub3.anInt1628 >= class14_3.anInt304)
+					class50_sub1_sub4_sub3.animation = -1;
+				if (class50_sub1_sub4_sub3.anInt1625 < 0 || class50_sub1_sub4_sub3.anInt1625 >= class14_3.frameCount)
+					class50_sub1_sub4_sub3.animation = -1;
+			}
+			class50_sub1_sub4_sub3.aBoolean1592 = class14_3.aBoolean300;
+		}
+		if (class50_sub1_sub4_sub3.animationDelay > 0)
+			class50_sub1_sub4_sub3.animationDelay--;
+	}
+
+	public void method74(int i) {
+		if (anInt1053 != -1 && (anInt1071 == 2 || super.imageProducer != null)) {
+			if (anInt1071 == 2) {
+				method88(anInt951, anInt1053, (byte) 5);
+				if (anInt960 != -1)
+					method88(anInt951, anInt960, (byte) 5);
+				anInt951 = 0;
+				method147(anInt1140);
+				super.imageProducer.createRasterizer();
+				Rasterizer3D.lineOffsets = anIntArray1003;
+				Rasterizer.resetPixels();
+				aBoolean1046 = true;
+				Widget class13 = Widget.forId(anInt1053);
+				if (class13.anInt241 == 512 && class13.anInt238 == 334 && class13.anInt236 == 0) {
+					class13.anInt241 = 765;
+					class13.anInt238 = 503;
+				}
+				method142(0, 0, class13, 0, 8);
+				if (anInt960 != -1) {
+					Widget class13_1 = Widget.forId(anInt960);
+					if (class13_1.anInt241 == 512 && class13_1.anInt238 == 334 && class13_1.anInt236 == 0) {
+						class13_1.anInt241 = 765;
+						class13_1.anInt238 = 503;
+					}
+					method142(0, 0, class13_1, 0, 8);
+				}
+				if (!aBoolean1065) {
+					method91(-521);
+					method34((byte) -79);
+				} else {
+					method128(false);
+				}
+			}
+			super.imageProducer.drawGraphics(0, 0, super.gameGraphics);
+			return;
+		}
+		if (aBoolean1046) {
+			method122(-906);
+			aBoolean1046 = false;
+			aClass18_906.drawGraphics(0, 4, super.gameGraphics);
+			aClass18_907.drawGraphics(0, 357, super.gameGraphics);
+			aClass18_908.drawGraphics(722, 4, super.gameGraphics);
+			aClass18_909.drawGraphics(743, 205, super.gameGraphics);
+			aClass18_910.drawGraphics(0, 0, super.gameGraphics);
+			aClass18_911.drawGraphics(516, 4, super.gameGraphics);
+			aClass18_912.drawGraphics(516, 205, super.gameGraphics);
+			aClass18_913.drawGraphics(496, 357, super.gameGraphics);
+			aClass18_914.drawGraphics(0, 338, super.gameGraphics);
+			aBoolean1181 = true;
+			redrawChatbox = true;
+			aBoolean950 = true;
+			aBoolean1212 = true;
+			if (anInt1071 != 2) {
+				aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
+				aClass18_1157.drawGraphics(550, 4, super.gameGraphics);
+			}
+			anInt1237++;
+			if (anInt1237 > 85) {
+				anInt1237 = 0;
+				outBuffer.putOpcode(168);
+			}
+		}
+		if (anInt1071 == 2)
+			method151(2);
+		if (aBoolean1065 && anInt1304 == 1)
+			aBoolean1181 = true;
+		if (anInt1089 != -1) {
+			boolean flag = method88(anInt951, anInt1089, (byte) 5);
+			if (flag)
+				aBoolean1181 = true;
+		}
+		if (anInt1332 == 2)
+			aBoolean1181 = true;
+		if (anInt1113 == 2)
+			aBoolean1181 = true;
+		if (aBoolean1181) {
+			method134((byte) 7);
+			aBoolean1181 = false;
+		}
+		if (anInt988 == -1 && inputType == 0) {
+			aClass13_1249.anInt231 = anInt1107 - anInt851 - 77;
+			if (super.mouseX > 448 && super.mouseX < 560 && super.mouseY > 332)
+				method42(anInt1107, 0, aClass13_1249, (byte) 102, super.mouseY - 357, -1, super.mouseX - 17, 77, 463);
+			int j = anInt1107 - 77 - aClass13_1249.anInt231;
+			if (j < 0)
+				j = 0;
+			if (j > anInt1107 - 77)
+				j = anInt1107 - 77;
+			if (anInt851 != j) {
+				anInt851 = j;
+				redrawChatbox = true;
+			}
+		}
+		if (anInt988 == -1 && inputType == 3) {
+			int k = anInt862 * 14 + 7;
+			aClass13_1249.anInt231 = anInt865;
+			if (super.mouseX > 448 && super.mouseX < 560 && super.mouseY > 332)
+				method42(k, 0, aClass13_1249, (byte) 102, super.mouseY - 357, -1, super.mouseX - 17, 77, 463);
+			int i1 = aClass13_1249.anInt231;
+			if (i1 < 0)
+				i1 = 0;
+			if (i1 > k - 77)
+				i1 = k - 77;
+			if (anInt865 != i1) {
+				anInt865 = i1;
+				redrawChatbox = true;
+			}
+		}
+		if (anInt988 != -1) {
+			boolean flag1 = method88(anInt951, anInt988, (byte) 5);
+			if (flag1)
+				redrawChatbox = true;
+		}
+		if (anInt1332 == 3)
+			redrawChatbox = true;
+		if (anInt1113 == 3)
+			redrawChatbox = true;
+		if (aString1058 != null)
+			redrawChatbox = true;
+		if (aBoolean1065 && anInt1304 == 2)
+			redrawChatbox = true;
+		if (redrawChatbox) {
+			drawChatbox(0);
+			redrawChatbox = false;
+		}
+		if (anInt1071 == 2) {
+			method87(503);
+			aClass18_1157.drawGraphics(550, 4, super.gameGraphics);
+		}
+		if (anInt1213 != -1)
+			aBoolean950 = true;
+		if (aBoolean950) {
+			if (anInt1213 != -1 && anInt1213 == anInt1285) {
+				anInt1213 = -1;
+				outBuffer.putOpcode(119);
+				outBuffer.putByte(anInt1285);
+			}
+			aBoolean950 = false;
+			aClass18_1110.createRasterizer();
+			anIndexedImage1054.drawImage(0, 0);
+			if (anInt1089 == -1) {
+				if (anIntArray1081[anInt1285] != -1) {
+					if (anInt1285 == 0)
+						aClass50_Sub1_Sub1_Sub3_880.drawImage(10, 22);
+					if (anInt1285 == 1)
+						aClass50_Sub1_Sub1_Sub3_881.drawImage(8, 54);
+					if (anInt1285 == 2)
+						aClass50_Sub1_Sub1_Sub3_881.drawImage(8, 82);
+					if (anInt1285 == 3)
+						aClass50_Sub1_Sub1_Sub3_882.drawImage(8, 110);
+					if (anInt1285 == 4)
+						aClass50_Sub1_Sub1_Sub3_884.drawImage(8, 153);
+					if (anInt1285 == 5)
+						aClass50_Sub1_Sub1_Sub3_884.drawImage(8, 181);
+					if (anInt1285 == 6)
+						aClass50_Sub1_Sub1_Sub3_883.drawImage(9, 209);
+				}
+				if (anIntArray1081[0] != -1 && (anInt1213 != 0 || pulseCycle % 20 < 10))
+					tabIcon[0].drawImage(13, 29);
+				if (anIntArray1081[1] != -1 && (anInt1213 != 1 || pulseCycle % 20 < 10))
+					tabIcon[1].drawImage(11, 53);
+				if (anIntArray1081[2] != -1 && (anInt1213 != 2 || pulseCycle % 20 < 10))
+					tabIcon[2].drawImage(11, 82);
+				if (anIntArray1081[3] != -1 && (anInt1213 != 3 || pulseCycle % 20 < 10))
+					tabIcon[3].drawImage(12, 115);
+				if (anIntArray1081[4] != -1 && (anInt1213 != 4 || pulseCycle % 20 < 10))
+					tabIcon[4].drawImage(13, 153);
+				if (anIntArray1081[5] != -1 && (anInt1213 != 5 || pulseCycle % 20 < 10))
+					tabIcon[5].drawImage(11, 180);
+				if (anIntArray1081[6] != -1 && (anInt1213 != 6 || pulseCycle % 20 < 10))
+					tabIcon[6].drawImage(13, 208);
+			}
+			aClass18_1110.drawGraphics(516, 160, super.gameGraphics);
+			aClass18_1109.createRasterizer();
+			anIndexedImage1053.drawImage(0, 0);
+			if (anInt1089 == -1) {
+				if (anIntArray1081[anInt1285] != -1) {
+					if (anInt1285 == 7)
+						aClass50_Sub1_Sub1_Sub3_983.drawImage(0, 42);
+					if (anInt1285 == 8)
+						aClass50_Sub1_Sub1_Sub3_984.drawImage(0, 74);
+					if (anInt1285 == 9)
+						aClass50_Sub1_Sub1_Sub3_984.drawImage(0, 102);
+					if (anInt1285 == 10)
+						aClass50_Sub1_Sub1_Sub3_985.drawImage(1, 130);
+					if (anInt1285 == 11)
+						aClass50_Sub1_Sub1_Sub3_987.drawImage(0, 173);
+					if (anInt1285 == 12)
+						aClass50_Sub1_Sub1_Sub3_987.drawImage(0, 201);
+					if (anInt1285 == 13)
+						aClass50_Sub1_Sub1_Sub3_986.drawImage(0, 229);
+				}
+				if (anIntArray1081[8] != -1 && (anInt1213 != 8 || pulseCycle % 20 < 10))
+					tabIcon[7].drawImage(2, 74);
+				if (anIntArray1081[9] != -1 && (anInt1213 != 9 || pulseCycle % 20 < 10))
+					tabIcon[8].drawImage(3, 102);
+				if (anIntArray1081[10] != -1 && (anInt1213 != 10 || pulseCycle % 20 < 10))
+					tabIcon[9].drawImage(4, 137);
+				if (anIntArray1081[11] != -1 && (anInt1213 != 11 || pulseCycle % 20 < 10))
+					tabIcon[10].drawImage(2, 174);
+				if (anIntArray1081[12] != -1 && (anInt1213 != 12 || pulseCycle % 20 < 10))
+					tabIcon[11].drawImage(2, 201);
+				if (anIntArray1081[13] != -1 && (anInt1213 != 13 || pulseCycle % 20 < 10))
+					tabIcon[12].drawImage(2, 226);
+			}
+			aClass18_1109.drawGraphics(496, 466, super.gameGraphics);
+			aClass18_1158.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1002;
+		}
+		if (aBoolean1212) {
+			aBoolean1212 = false;
+			aClass18_1108.createRasterizer();
+			anIndexedImage1052.drawImage(0, 0);
+			fontNormal.method471(true, anInt1056, 0xffffff, 28, 55, "Public chat");
+			if (anInt1006 == 0)
+				fontNormal.method471(true, anInt1056, 65280, 41, 55, "On");
+			if (anInt1006 == 1)
+				fontNormal.method471(true, anInt1056, 0xffff00, 41, 55, "Friends");
+			if (anInt1006 == 2)
+				fontNormal.method471(true, anInt1056, 0xff0000, 41, 55, "Off");
+			if (anInt1006 == 3)
+				fontNormal.method471(true, anInt1056, 65535, 41, 55, "Hide");
+			fontNormal.method471(true, anInt1056, 0xffffff, 28, 184, "Private chat");
+			if (anInt887 == 0)
+				fontNormal.method471(true, anInt1056, 65280, 41, 184, "On");
+			if (anInt887 == 1)
+				fontNormal.method471(true, anInt1056, 0xffff00, 41, 184, "Friends");
+			if (anInt887 == 2)
+				fontNormal.method471(true, anInt1056, 0xff0000, 41, 184, "Off");
+			fontNormal.method471(true, anInt1056, 0xffffff, 28, 324, "Trade/compete");
+			if (anInt1227 == 0)
+				fontNormal.method471(true, anInt1056, 65280, 41, 324, "On");
+			if (anInt1227 == 1)
+				fontNormal.method471(true, anInt1056, 0xffff00, 41, 324, "Friends");
+			if (anInt1227 == 2)
+				fontNormal.method471(true, anInt1056, 0xff0000, 41, 324, "Off");
+			fontNormal.method471(true, anInt1056, 0xffffff, 33, 458, "Report abuse");
+			aClass18_1108.drawGraphics(0, 453, super.gameGraphics);
+			aClass18_1158.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1002;
+		}
+		anInt951 = 0;
+		if (i != 7) {
+			for (int l = 1; l > 0; l++);
+		}
+	}
+
+	public void method75(int i) {
+		size += i;
+		if (anInt1223 == 0)
+			return;
+		TypeFace class50_sub1_sub1_sub2 = fontNormal;
+		int j = 0;
+		if (anInt1057 != 0)
+			j = 1;
+		for (int k = 0; k < 100; k++)
+			if (aStringArray1298[k] != null) {
+				int l = anIntArray1296[k];
+				String s = aStringArray1297[k];
+				byte byte0 = 0;
+				if (s != null && s.startsWith("@cr1@")) {
+					s = s.substring(5);
+					byte0 = 1;
+				}
+				if (s != null && s.startsWith("@cr2@")) {
+					s = s.substring(5);
+					byte0 = 2;
+				}
+				if ((l == 3 || l == 7) && (l == 7 || anInt887 == 0 || anInt887 == 1 && method148(13292, s))) {
+					int i1 = 329 - j * 13;
+					int l1 = 4;
+					class50_sub1_sub1_sub2.method474(2245, l1, 0, i1, "From");
+					class50_sub1_sub1_sub2.method474(2245, l1, 65535, i1 - 1, "From");
+					l1 += class50_sub1_sub1_sub2.method472((byte) 35, "From ");
+					if (byte0 == 1) {
+						moderatorIcon[0].drawImage(i1 - 12, l1);
+						l1 += 14;
+					}
+					if (byte0 == 2) {
+						moderatorIcon[1].drawImage(i1 - 12, l1);
+						l1 += 14;
+					}
+					class50_sub1_sub1_sub2.method474(2245, l1, 0, i1, s + ": " + aStringArray1298[k]);
+					class50_sub1_sub1_sub2.method474(2245, l1, 65535, i1 - 1, s + ": " + aStringArray1298[k]);
+					if (++j >= 5)
+						return;
+				}
+				if (l == 5 && anInt887 < 2) {
+					int j1 = 329 - j * 13;
+					class50_sub1_sub1_sub2.method474(2245, 4, 0, j1, aStringArray1298[k]);
+					class50_sub1_sub1_sub2.method474(2245, 4, 65535, j1 - 1, aStringArray1298[k]);
+					if (++j >= 5)
+						return;
+				}
+				if (l == 6 && anInt887 < 2) {
+					int k1 = 329 - j * 13;
+					class50_sub1_sub1_sub2.method474(2245, 4, 0, k1, "To " + s + ": " + aStringArray1298[k]);
+					class50_sub1_sub1_sub2.method474(2245, 4, 65535, k1 - 1, "To " + s + ": " + aStringArray1298[k]);
+					if (++j >= 5)
+						return;
+				}
+			}
+
+	}
+
+	public void init() {
+		world = Integer.parseInt(getParameter("nodeid"));
+		portOffset = Integer.parseInt(getParameter("portoff"));
+		String s = getParameter("lowmem");
+		if (s != null && s.equals("1"))
+			switchToLowMem();
+		else
+			switchToHighMem();
+		String s1 = getParameter("free");
+		if (s1 != null && s1.equals("1"))
+			memberServer = false;
+		else
+			memberServer = true;
+		initializeApplet(765, 503);
+	}
+
+	public void method76(int i) {
+		while (i >= 0)
+			groundItems = null;
+		for (GameAnimableObject gameAnimableObject = (GameAnimableObject) aClass6_1210.first(); gameAnimableObject != null; gameAnimableObject = (GameAnimableObject) aClass6_1210
+				.next())
+			if (gameAnimableObject.plane != plane || gameAnimableObject.transformCompleted)
+				gameAnimableObject.remove();
+			else if (pulseCycle >= gameAnimableObject.loopCycle) {
+				gameAnimableObject.nextFrame(anInt951);
+				if (gameAnimableObject.transformCompleted)
+					gameAnimableObject.remove();
+				else
+					currentScene.method252(-1, gameAnimableObject, gameAnimableObject.x,
+							gameAnimableObject.z, false, 0, gameAnimableObject.plane, 60,
+							gameAnimableObject.y, 0);
+			}
+
+	}
+
+	public void method77(boolean flag) {
+		if (flag)
+			opcode = -1;
+		do {
+			FileNode class50_sub1_sub3;
+			do {
+				class50_sub1_sub3 = onDemandFetcher.method330();
+				if (class50_sub1_sub3 == null)
+					return;
+				if (class50_sub1_sub3.type == 0) {
+					Model.loadModelHeader(class50_sub1_sub3.buf, class50_sub1_sub3.id);
+					if ((onDemandFetcher.method325(class50_sub1_sub3.id, -493) & 0x62) != 0) {
+						aBoolean1181 = true;
+						if (anInt988 != -1 || anInt1191 != -1)
+							redrawChatbox = true;
+					}
+				}
+				if (class50_sub1_sub3.type == 1 && class50_sub1_sub3.buf != null)
+					Animation.method236(class50_sub1_sub3.buf);
+				if (class50_sub1_sub3.type == 2 && class50_sub1_sub3.id == nextSong && class50_sub1_sub3.buf != null)
+					method24(songChanging, class50_sub1_sub3.buf, 659);
+				if (class50_sub1_sub3.type == 3 && anInt1071 == 1) {
+					for (int i = 0; i < aByteArrayArray838.length; i++) {
+						if (anIntArray857[i] == class50_sub1_sub3.id) {
+							aByteArrayArray838[i] = class50_sub1_sub3.buf;
+							if (class50_sub1_sub3.buf == null)
+								anIntArray857[i] = -1;
+							break;
+						}
+						if (anIntArray858[i] != class50_sub1_sub3.id)
+							continue;
+						aByteArrayArray1232[i] = class50_sub1_sub3.buf;
+						if (class50_sub1_sub3.buf == null)
+							anIntArray858[i] = -1;
 						break;
 					}
-					Game.anInt1142 = 0;
-					outBuffer.putOpcode(246);
-					outBuffer.put(0);
-					int i_593_ = outBuffer.offset;
-					if ((int) (Math.random() * 2.0) == 0) {
-						outBuffer.put(101);
-					}
-					outBuffer.put(197);
-					outBuffer.putShort((int) (Math.random() * 65536.0));
-					outBuffer.put((int) (Math.random() * 256.0));
-					outBuffer.put(67);
-					outBuffer.putShort(14214);
-					if ((int) (Math.random() * 2.0) == 0) {
-						outBuffer.putShort(29487);
-					}
-					outBuffer.putShort((int) (Math.random() * 65536.0));
-					if ((int) (Math.random() * 2.0) == 0) {
-						outBuffer.put(220);
-					}
-					outBuffer.put(180);
-					outBuffer.putSizeByte(outBuffer.offset - i_593_);
+
 				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("13593, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
+			} while (class50_sub1_sub3.type != 93 || !onDemandFetcher.method334(class50_sub1_sub3.id, false));
+			MapArea.method169(onDemandFetcher, new Buffer(class50_sub1_sub3.buf), (byte) -3);
+		} while (true);
 	}
 
-	public final String method93(int i, int i_594_) {
+
+
+	public void login(String username, String password, boolean reconnecting) {
+		SignLink.errorname = username;
 		try {
-			if (i <= 0) {
-				opcode = inBuffer.getUnsignedByte();
+			if (!reconnecting) {
+				statusLineOne = "";
+				statusLineTwo = "Connecting to server...";
+				method131((byte) -50, true);
 			}
-			if (i_594_ < 999999999) {
-				return String.valueOf(i_594_);
+			bufferedConnection = new JagSocket((byte) 2, openSocket(43594 + portOffset), this);
+			long base37name = TextUtils.nameToLong(username);
+			int hash = (int) (base37name >> 16 & 31L);
+			outBuffer.offset = 0;
+			outBuffer.putByte(14);
+			outBuffer.putByte(hash);
+			bufferedConnection.putBytes(0, 2, 0, outBuffer.buffer);
+			for (int j = 0; j < 8; j++)
+				bufferedConnection.getByte();
+
+			int returnCode = bufferedConnection.getByte();
+			int i1 = returnCode;
+			if (returnCode == 0) {
+				bufferedConnection.getBytes(buffer.buffer, 0, 8);
+				buffer.offset = 0;
+				serverSeed = buffer.getLong();
+				int seed[] = new int[4];
+				seed[0] = (int) (Math.random() * 99999999D);
+				seed[1] = (int) (Math.random() * 99999999D);
+				seed[2] = (int) (serverSeed >> 32);
+				seed[3] = (int) serverSeed;
+				outBuffer.offset = 0;
+				outBuffer.putByte(10);
+				outBuffer.putInt(seed[0]);
+				outBuffer.putInt(seed[1]);
+				outBuffer.putInt(seed[2]);
+				outBuffer.putInt(seed[3]);
+				outBuffer.putInt(SignLink.uid);
+				outBuffer.putString(username);
+				outBuffer.putString(password);
+				outBuffer.rsa(JAGEX_MODULUS, JAGEX_PUBLIC_KEY);
+				tempBuffer.offset = 0;
+				if (reconnecting)
+					tempBuffer.putByte(18);
+				else
+					tempBuffer.putByte(16);
+				tempBuffer.putByte(outBuffer.offset + 36 + 1 + 1 + 2);
+				tempBuffer.putByte(255);
+				tempBuffer.putShort(377);
+				tempBuffer.putByte(lowMemory ? 1 : 0);
+				for (int i = 0; i < 9; i++)
+					tempBuffer.putInt(archiveHashes[i]);
+
+				tempBuffer.putBytes(outBuffer.buffer, 0, outBuffer.offset);
+				outBuffer.random = new IsaacRandom(seed);
+				for (int i = 0; i < 4; i++)
+					seed[i] += 50;
+
+				incomingRandom = new IsaacRandom(seed);
+				bufferedConnection.putBytes(0, tempBuffer.offset, 0, tempBuffer.buffer);
+				returnCode = bufferedConnection.getByte();
 			}
-			return "*";
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("1025, " + i + ", " + i_594_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			if (returnCode == 1) {
+				try {
+					Thread.sleep(2000L);
+				} catch (Exception _ex) {
+				}
+				login(username, password, reconnecting);
+				return;
+			}
+			if (returnCode == 2) {
+				playerRights = bufferedConnection.getByte();
+				accountFlagged = bufferedConnection.getByte() == 1;
+				aLong902 = 0L;
+				anInt1299 = 0;
+				mouseCapturer.coord = 0;
+				super.awtFocus = true;
+				aBoolean1275 = true;
+				loggedIn = true;
+				outBuffer.offset = 0;
+				buffer.offset = 0;
+				opcode = -1;
+				anInt903 = -1;
+				anInt904 = -1;
+				anInt905 = -1;
+				size = 0;
+				anInt871 = 0;
+				anInt1057 = 0;
+				anInt873 = 0;
+				anInt1197 = 0;
+				anInt1183 = 0;
+				aBoolean1065 = false;
+				super.idleTime = 0;
+				for (int j1 = 0; j1 < 100; j1++)
+					aStringArray1298[j1] = null;
+
+				anInt1146 = 0;
+				anInt1171 = 0;
+				anInt1071 = 0;
+				currentSound = 0;
+				anInt853 = (int) (Math.random() * 100D) - 50;
+				anInt1009 = (int) (Math.random() * 110D) - 55;
+				anInt1255 = (int) (Math.random() * 80D) - 40;
+				anInt916 = (int) (Math.random() * 120D) - 60;
+				anInt1233 = (int) (Math.random() * 30D) - 20;
+				anInt1252 = (int) (Math.random() * 20D) - 10 & 0x7ff;
+				minimapState = 0;
+				anInt1276 = -1;
+				destinationX = 0;
+				anInt1121 = 0;
+				localPlayerCount = 0;
+				anInt1133 = 0;
+				for (int i2 = 0; i2 < anInt968; i2++) {
+					players[i2] = null;
+					cachedAppearances[i2] = null;
+				}
+
+				for (int k2 = 0; k2 < 16384; k2++)
+					npcs[k2] = null;
+
+				thisPlayer = players[thisPlayerId] = new Player();
+				aClass6_1282.clear();
+				aClass6_1210.clear();
+				for (int l2 = 0; l2 < 4; l2++) {
+					for (int i3 = 0; i3 < 104; i3++) {
+						for (int k3 = 0; k3 < 104; k3++)
+							groundItems[l2][i3][k3] = null;
+
+					}
+
+				}
+
+				aClass6_1261 = new LinkedList();
+				friendListStatus = 0;
+				friendsCount = 0;
+				method44(aBoolean1190, anInt1191);
+				anInt1191 = -1;
+				method44(aBoolean1190, anInt988);
+				anInt988 = -1;
+				method44(aBoolean1190, openWidgetId);
+				openWidgetId = -1;
+				method44(aBoolean1190, anInt1053);
+				anInt1053 = -1;
+				method44(aBoolean1190, anInt960);
+				anInt960 = -1;
+				method44(aBoolean1190, anInt1089);
+				anInt1089 = -1;
+				method44(aBoolean1190, anInt1279);
+				anInt1279 = -1;
+				aBoolean1239 = false;
+				anInt1285 = 3;
+				inputType = 0;
+				aBoolean1065 = false;
+				messagePromptRaised = false;
+				aString1058 = null;
+				anInt1319 = 0;
+				anInt1213 = -1;
+				characterEditChangeGenger = true;
+				method25(anInt1015);
+				for (int j3 = 0; j3 < 5; j3++)
+					characterEditColors[j3] = 0;
+
+				for (int l3 = 0; l3 < 5; l3++) {
+					aStringArray1069[l3] = null;
+					aBooleanArray1070[l3] = false;
+				}
+
+				anInt1100 = 0;
+				anInt1165 = 0;
+				anInt1235 = 0;
+				anInt1052 = 0;
+				anInt1139 = 0;
+				anInt841 = 0;
+				anInt1230 = 0;
+				anInt1013 = 0;
+				anInt1049 = 0;
+				anInt1162 = 0;
+				method122(-906);
+				return;
+			}
+			if (returnCode == 3) {
+				statusLineOne = "";
+				statusLineTwo = "Invalid username or password.";
+				return;
+			}
+			if (returnCode == 4) {
+				statusLineOne = "Your account has been disabled.";
+				statusLineTwo = "Please check your message-centre for details.";
+				return;
+			}
+			if (returnCode == 5) {
+				statusLineOne = "Your account is already logged in.";
+				statusLineTwo = "Try again in 60 secs...";
+				return;
+			}
+			if (returnCode == 6) {
+				statusLineOne = "RuneScape has been updated!";
+				statusLineTwo = "Please reload this page.";
+				return;
+			}
+			if (returnCode == 7) {
+				statusLineOne = "This world is full.";
+				statusLineTwo = "Please use a different world.";
+				return;
+			}
+			if (returnCode == 8) {
+				statusLineOne = "Unable to connect.";
+				statusLineTwo = "Login server offline.";
+				return;
+			}
+			if (returnCode == 9) {
+				statusLineOne = "Login limit exceeded.";
+				statusLineTwo = "Too many connections from your address.";
+				return;
+			}
+			if (returnCode == 10) {
+				statusLineOne = "Unable to connect.";
+				statusLineTwo = "Bad session id.";
+				return;
+			}
+			if (returnCode == 12) {
+				statusLineOne = "You need a members account to login to this world.";
+				statusLineTwo = "Please subscribe, or use a different world.";
+				return;
+			}
+			if (returnCode == 13) {
+				statusLineOne = "Could not complete login.";
+				statusLineTwo = "Please try using a different world.";
+				return;
+			}
+			if (returnCode == 14) {
+				statusLineOne = "The server is being updated.";
+				statusLineTwo = "Please wait 1 minute and try again.";
+				return;
+			}
+			if (returnCode == 15) {
+				loggedIn = true;
+				outBuffer.offset = 0;
+				buffer.offset = 0;
+				opcode = -1;
+				anInt903 = -1;
+				anInt904 = -1;
+				anInt905 = -1;
+				size = 0;
+				anInt871 = 0;
+				anInt1057 = 0;
+				anInt1183 = 0;
+				aBoolean1065 = false;
+				aLong1229 = System.currentTimeMillis();
+				return;
+			}
+			if (returnCode == 16) {
+				statusLineOne = "Login attempts exceeded.";
+				statusLineTwo = "Please wait 1 minute and try again.";
+				return;
+			}
+			if (returnCode == 17) {
+				statusLineOne = "You are standing in a members-only area.";
+				statusLineTwo = "To play on this world move to a free area first";
+				return;
+			}
+			if (returnCode == 18) {
+				statusLineOne = "Account locked as we suspect it has been stolen.";
+				statusLineTwo = "Press 'recover a locked account' on front page.";
+				return;
+			}
+			if (returnCode == 20) {
+				statusLineOne = "Invalid loginserver requested";
+				statusLineTwo = "Please try using a different world.";
+				return;
+			}
+			if (returnCode == 21) {
+				int k1 = bufferedConnection.getByte();
+				for (k1 += 3; k1 >= 0; k1--) {
+					statusLineOne = "You have only just left another world";
+					statusLineTwo = "Your profile will be transferred in: " + k1;
+					method131((byte) -50, true);
+					try {
+						Thread.sleep(1200L);
+					} catch (Exception _ex) {
+					}
+				}
+
+				login(username, password, reconnecting);
+				return;
+			}
+			if (returnCode == 22) {
+				statusLineOne = "Malformed login packet.";
+				statusLineTwo = "Please try again.";
+				return;
+			}
+			if (returnCode == 23) {
+				statusLineOne = "No reply from loginserver.";
+				statusLineTwo = "Please try again.";
+				return;
+			}
+			if (returnCode == 24) {
+				statusLineOne = "Error loading your profile.";
+				statusLineTwo = "Please contact customer support.";
+				return;
+			}
+			if (returnCode == 25) {
+				statusLineOne = "Unexpected loginserver response.";
+				statusLineTwo = "Please try using a different world.";
+				return;
+			}
+			if (returnCode == 26) {
+				statusLineOne = "This computers address has been blocked";
+				statusLineTwo = "as it was used to break our rules";
+				return;
+			}
+			if (returnCode == -1) {
+				if (i1 == 0) {
+					if (anInt850 < 2) {
+						try {
+							Thread.sleep(2000L);
+						} catch (Exception _ex) {
+						}
+						anInt850++;
+						login(username, password, reconnecting);
+						return;
+					} else {
+						statusLineOne = "No response from loginserver";
+						statusLineTwo = "Please wait 1 minute and try again.";
+						return;
+					}
+				} else {
+					statusLineOne = "No response from server";
+					statusLineTwo = "Please try using a different world.";
+					return;
+				}
+			} else {
+				System.out.println("response:" + returnCode);
+				statusLineOne = "Unexpected server response";
+				statusLineTwo = "Please try using a different world.";
+				return;
+			}
+		} catch (IOException _ex) {
+			statusLineOne = "";
+		}
+		statusLineTwo = "Error connecting to server.";
+	}
+
+	public boolean method80(int dstY, int j, int dstX, int l) {
+		int i1 = l >> 14 & 0x7fff;
+		int j1 = currentScene.method271(plane, dstX, dstY, l);
+		if (j1 == -1)
+			return false;
+		int objectType = j1 & 0x1f;
+		int l1 = j1 >> 6 & 3;
+		if (objectType == 10 || objectType == 11 || objectType == 22) {
+			GameObjectDefinition class47 = GameObjectDefinition.getDefinition(i1);
+			int i2;
+			int j2;
+			if (l1 == 0 || l1 == 2) {
+				i2 = class47.anInt801;
+				j2 = class47.anInt775;
+			} else {
+				i2 = class47.anInt775;
+				j2 = class47.anInt801;
+			}
+			int k2 = class47.anInt764;
+			if (l1 != 0)
+				k2 = (k2 << l1 & 0xf) + (k2 >> 4 - l1);
+			walk(true, false, dstY, ((Actor) (thisPlayer)).pathY[0], i2, j2, 2, 0, dstX, k2, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+		} else {
+			walk(true, false, dstY, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, objectType + 1, dstX, 0, l1,
+					((Actor) (thisPlayer)).pathX[0]);
+		}
+		anInt1020 = super.clickX;
+		anInt1021 = super.clickY;
+		anInt1023 = 2;
+		anInt1022 = 0;
+		size += j;
+		return true;
+	}
+
+	public void method81(byte byte0) {
+		char c = '\u0100';
+		for (int i = 10; i < 117; i++) {
+			int j = (int) (Math.random() * 100D);
+			if (j < 50)
+				anIntArray1084[i + (c - 2 << 7)] = 255;
+		}
+
+		for (int k = 0; k < 100; k++) {
+			int l = (int) (Math.random() * 124D) + 2;
+			int j1 = (int) (Math.random() * 128D) + 128;
+			int j2 = l + (j1 << 7);
+			anIntArray1084[j2] = 192;
+		}
+
+		for (int i1 = 1; i1 < c - 1; i1++) {
+			for (int k1 = 1; k1 < 127; k1++) {
+				int k2 = k1 + (i1 << 7);
+				anIntArray1085[k2] = (anIntArray1084[k2 - 1] + anIntArray1084[k2 + 1] + anIntArray1084[k2 - 128] + anIntArray1084[k2 + 128]) / 4;
+			}
+
+		}
+
+		anInt1238 += 128;
+		if (anInt1238 > anIntArray1176.length) {
+			anInt1238 -= anIntArray1176.length;
+			int l1 = (int) (Math.random() * 12D);
+			method83(titleFlameEmblem[l1], 0);
+		}
+		for (int i2 = 1; i2 < c - 1; i2++) {
+			for (int l2 = 1; l2 < 127; l2++) {
+				int k3 = l2 + (i2 << 7);
+				int i4 = anIntArray1085[k3 + 128] - anIntArray1176[k3 + anInt1238 & anIntArray1176.length - 1] / 5;
+				if (i4 < 0)
+					i4 = 0;
+				anIntArray1084[k3] = i4;
+			}
+
+		}
+
+		if (byte0 == 1) {
+			byte0 = 0;
+		} else {
+			for (int i3 = 1; i3 > 0; i3++);
+		}
+		for (int j3 = 0; j3 < c - 1; j3++)
+			anIntArray1166[j3] = anIntArray1166[j3 + 1];
+
+		anIntArray1166[c - 1] = (int) (Math.sin((double) pulseCycle / 14D) * 16D + Math.sin((double) pulseCycle / 15D)
+				* 14D + Math.sin((double) pulseCycle / 16D) * 12D);
+		if (anInt1047 > 0)
+			anInt1047 -= 4;
+		if (anInt1048 > 0)
+			anInt1048 -= 4;
+		if (anInt1047 == 0 && anInt1048 == 0) {
+			int l3 = (int) (Math.random() * 2000D);
+			if (l3 == 0)
+				anInt1047 = 1024;
+			if (l3 == 1)
+				anInt1048 = 1024;
 		}
 	}
 
-	public final void method94(int i) {
-		do {
-			try {
-				if (i != -13873) {
-					for (int i_595_ = 1; i_595_ > 0; i_595_++) {
-						/* empty */
+	public void method82(ActorDefinition class37, int i, int j, int k, byte byte0) {
+		if (byte0 != -76)
+			groundItems = null;
+		if (anInt1183 >= 400)
+			return;
+		if (class37.anIntArray622 != null)
+			class37 = class37.method363(false);
+		if (class37 == null)
+			return;
+		if (!class37.aBoolean631)
+			return;
+		String s = class37.aString652;
+		if (class37.anInt639 != 0)
+			s = s + method92(class37.anInt639, thisPlayer.anInt1753, 736) + " (level-" + class37.anInt639 + ")";
+		if (anInt1146 == 1) {
+			aStringArray1184[anInt1183] = "Use " + aString1150 + " with @yel@" + s;
+			anIntArray981[anInt1183] = 347;
+			anIntArray982[anInt1183] = k;
+			anIntArray979[anInt1183] = j;
+			anIntArray980[anInt1183] = i;
+			anInt1183++;
+			return;
+		}
+		if (anInt1171 == 1) {
+			if ((anInt1173 & 2) == 2) {
+				aStringArray1184[anInt1183] = aString1174 + " @yel@" + s;
+				anIntArray981[anInt1183] = 67;
+				anIntArray982[anInt1183] = k;
+				anIntArray979[anInt1183] = j;
+				anIntArray980[anInt1183] = i;
+				anInt1183++;
+				return;
+			}
+		} else {
+			if (class37.aStringArray646 != null) {
+				for (int l = 4; l >= 0; l--)
+					if (class37.aStringArray646[l] != null && !class37.aStringArray646[l].equalsIgnoreCase("attack")) {
+						aStringArray1184[anInt1183] = class37.aStringArray646[l] + " @yel@" + s;
+						if (l == 0)
+							anIntArray981[anInt1183] = 318;
+						if (l == 1)
+							anIntArray981[anInt1183] = 921;
+						if (l == 2)
+							anIntArray981[anInt1183] = 118;
+						if (l == 3)
+							anIntArray981[anInt1183] = 553;
+						if (l == 4)
+							anIntArray981[anInt1183] = 432;
+						anIntArray982[anInt1183] = k;
+						anIntArray979[anInt1183] = j;
+						anIntArray980[anInt1183] = i;
+						anInt1183++;
+					}
+
+			}
+			if (class37.aStringArray646 != null) {
+				for (int i1 = 4; i1 >= 0; i1--)
+					if (class37.aStringArray646[i1] != null && class37.aStringArray646[i1].equalsIgnoreCase("attack")) {
+						char c = '\0';
+						if (class37.anInt639 > thisPlayer.anInt1753)
+							c = '\u07D0';
+						aStringArray1184[anInt1183] = class37.aStringArray646[i1] + " @yel@" + s;
+						if (i1 == 0)
+							anIntArray981[anInt1183] = 318 + c;
+						if (i1 == 1)
+							anIntArray981[anInt1183] = 921 + c;
+						if (i1 == 2)
+							anIntArray981[anInt1183] = 118 + c;
+						if (i1 == 3)
+							anIntArray981[anInt1183] = 553 + c;
+						if (i1 == 4)
+							anIntArray981[anInt1183] = 432 + c;
+						anIntArray982[anInt1183] = k;
+						anIntArray979[anInt1183] = j;
+						anIntArray980[anInt1183] = i;
+						anInt1183++;
+					}
+
+			}
+			aStringArray1184[anInt1183] = "Examine @yel@" + s;
+			anIntArray981[anInt1183] = 1668;
+			anIntArray982[anInt1183] = k;
+			anIntArray979[anInt1183] = j;
+			anIntArray980[anInt1183] = i;
+			anInt1183++;
+		}
+	}
+
+	public void method83(IndexedImage class50_sub1_sub1_sub3, int i) {
+		size += i;
+		int j = 256;
+		for (int k = 0; k < anIntArray1176.length; k++)
+			anIntArray1176[k] = 0;
+
+		for (int l = 0; l < 5000; l++) {
+			int i1 = (int) (Math.random() * 128D * (double) j);
+			anIntArray1176[i1] = (int) (Math.random() * 256D);
+		}
+
+		for (int j1 = 0; j1 < 20; j1++) {
+			for (int k1 = 1; k1 < j - 1; k1++) {
+				for (int i2 = 1; i2 < 127; i2++) {
+					int k2 = i2 + (k1 << 7);
+					anIntArray1177[k2] = (anIntArray1176[k2 - 1] + anIntArray1176[k2 + 1] + anIntArray1176[k2 - 128] + anIntArray1176[k2 + 128]) / 4;
+				}
+
+			}
+
+			int ai[] = anIntArray1176;
+			anIntArray1176 = anIntArray1177;
+			anIntArray1177 = ai;
+		}
+
+		if (class50_sub1_sub1_sub3 != null) {
+			int l1 = 0;
+			for (int j2 = 0; j2 < class50_sub1_sub1_sub3.anInt1519; j2++) {
+				for (int l2 = 0; l2 < class50_sub1_sub1_sub3.width2; l2++)
+					if (class50_sub1_sub1_sub3.pixels[l1++] != 0) {
+						int i3 = l2 + 16 + class50_sub1_sub1_sub3.anInt1520;
+						int j3 = j2 + 16 + class50_sub1_sub1_sub3.anInt1521;
+						int k3 = i3 + (j3 << 7);
+						anIntArray1176[k3] = 0;
+					}
+
+			}
+
+		}
+	}
+
+	public void drawChatbox(int i) {
+		chatboxProducingGraphicsBuffer.createRasterizer();
+		Rasterizer3D.lineOffsets = chatboxLineOffsets;
+		chatboxBackgroundImage.drawImage(0, 0);
+		if (messagePromptRaised) {
+			fontBold.drawStringLeft(chatboxInputMessage, 239, 40, 0);
+			fontBold.drawStringLeft(chatMessage + "*", 239, 60, 128);
+		} else if (inputType == 1) {
+			fontBold.drawStringLeft("Enter amount:", 239, 40, 0);
+			fontBold.drawStringLeft(inputInputMessage + "*", 239, 60, 128);
+		} else if (inputType == 2) {
+			fontBold.drawStringLeft("Enter name:", 239, 40, 0);
+			fontBold.drawStringLeft(inputInputMessage + "*", 239, 60, 128);
+		} else if (inputType == 3) {
+			if (inputInputMessage != aString861) {
+				method14(inputInputMessage, 2);
+				aString861 = inputInputMessage;
+			}
+			TypeFace class50_sub1_sub1_sub2 = fontNormal;
+			Rasterizer.setCoordinates(0, 0, 77, 463);
+			for (int j = 0; j < anInt862; j++) {
+				int l = (18 + j * 14) - anInt865;
+				if (l > 0 && l < 110)
+					class50_sub1_sub1_sub2.drawStringLeft(aStringArray863[j], 239, l, 0);
+			}
+
+			Rasterizer.resetCoordinates();
+			if (anInt862 > 5)
+				method56(true, anInt865, 463, 77, anInt862 * 14 + 7, 0);
+			if (inputInputMessage.length() == 0)
+					fontBold.drawStringLeft("Enter object name", 239, 40, 255);
+			else if (anInt862 == 0)
+				fontBold.drawStringLeft("No matching objects found, please shorten search", 239, 40, 0
+				);
+			class50_sub1_sub1_sub2.drawStringLeft(inputInputMessage + "*", 239, 90, 0);
+			Rasterizer.drawHorizontalLine(0, 77, 479, 0);
+		} else if (aString1058 != null) {
+			fontBold.drawStringLeft(aString1058, 239, 40, 0);
+			fontBold.drawStringLeft("Click to continue", 239, 60, 128);
+		} else if (anInt988 != -1)
+			method142(0, 0, Widget.forId(anInt988), 0, 8);
+		else if (anInt1191 != -1) {
+			method142(0, 0, Widget.forId(anInt1191), 0, 8);
+		} else {
+			TypeFace class50_sub1_sub1_sub2_1 = fontNormal;
+			int k = 0;
+			Rasterizer.setCoordinates(0, 0, 77, 463);
+			for (int i1 = 0; i1 < 100; i1++)
+				if (aStringArray1298[i1] != null) {
+					int j1 = anIntArray1296[i1];
+					int k1 = (70 - k * 14) + anInt851;
+					String s1 = aStringArray1297[i1];
+					byte byte0 = 0;
+					if (s1 != null && s1.startsWith("@cr1@")) {
+						s1 = s1.substring(5);
+						byte0 = 1;
+					}
+					if (s1 != null && s1.startsWith("@cr2@")) {
+						s1 = s1.substring(5);
+						byte0 = 2;
+					}
+					if (j1 == 0) {
+						if (k1 > 0 && k1 < 110)
+							class50_sub1_sub1_sub2_1.method474(2245, 4, 0, k1, aStringArray1298[i1]);
+						k++;
+					}
+					if ((j1 == 1 || j1 == 2) && (j1 == 1 || anInt1006 == 0 || anInt1006 == 1 && method148(13292, s1))) {
+						if (k1 > 0 && k1 < 110) {
+							int l1 = 4;
+							if (byte0 == 1) {
+								moderatorIcon[0].drawImage(k1 - 12, l1);
+								l1 += 14;
+							}
+							if (byte0 == 2) {
+								moderatorIcon[1].drawImage(k1 - 12, l1);
+								l1 += 14;
+							}
+							class50_sub1_sub1_sub2_1.method474(2245, l1, 0, k1, s1 + ":");
+							l1 += class50_sub1_sub1_sub2_1.method472((byte) 35, s1) + 8;
+							class50_sub1_sub1_sub2_1.method474(2245, l1, 255, k1, aStringArray1298[i1]);
+						}
+						k++;
+					}
+					if ((j1 == 3 || j1 == 7) && anInt1223 == 0
+							&& (j1 == 7 || anInt887 == 0 || anInt887 == 1 && method148(13292, s1))) {
+						if (k1 > 0 && k1 < 110) {
+							int i2 = 4;
+							class50_sub1_sub1_sub2_1.method474(2245, i2, 0, k1, "From");
+							i2 += class50_sub1_sub1_sub2_1.method472((byte) 35, "From ");
+							if (byte0 == 1) {
+								moderatorIcon[0].drawImage(k1 - 12, i2);
+								i2 += 14;
+							}
+							if (byte0 == 2) {
+								moderatorIcon[1].drawImage(k1 - 12, i2);
+								i2 += 14;
+							}
+							class50_sub1_sub1_sub2_1.method474(2245, i2, 0, k1, s1 + ":");
+							i2 += class50_sub1_sub1_sub2_1.method472((byte) 35, s1) + 8;
+							class50_sub1_sub1_sub2_1.method474(2245, i2, 0x800000, k1, aStringArray1298[i1]);
+						}
+						k++;
+					}
+					if (j1 == 4 && (anInt1227 == 0 || anInt1227 == 1 && method148(13292, s1))) {
+						if (k1 > 0 && k1 < 110)
+							class50_sub1_sub1_sub2_1.method474(2245, 4, 0x800080, k1, s1 + " " + aStringArray1298[i1]);
+						k++;
+					}
+					if (j1 == 5 && anInt1223 == 0 && anInt887 < 2) {
+						if (k1 > 0 && k1 < 110)
+							class50_sub1_sub1_sub2_1.method474(2245, 4, 0x800000, k1, aStringArray1298[i1]);
+						k++;
+					}
+					if (j1 == 6 && anInt1223 == 0 && anInt887 < 2) {
+						if (k1 > 0 && k1 < 110) {
+							class50_sub1_sub1_sub2_1.method474(2245, 4, 0, k1, "To " + s1 + ":");
+							class50_sub1_sub1_sub2_1.method474(2245, 12 + class50_sub1_sub1_sub2_1.method472((byte) 35,
+									"To " + s1), 0x800000, k1, aStringArray1298[i1]);
+						}
+						k++;
+					}
+					if (j1 == 8 && (anInt1227 == 0 || anInt1227 == 1 && method148(13292, s1))) {
+						if (k1 > 0 && k1 < 110)
+							class50_sub1_sub1_sub2_1.method474(2245, 4, 0x7e3200, k1, s1 + " " + aStringArray1298[i1]);
+						k++;
 					}
 				}
-				Graphics graphics = getComponent().getGraphics();
-				graphics.setColor(Color.black);
-				graphics.fillRect(0, 0, 765, 503);
-				this.setFrameRate(1);
-				if (aBoolean951) {
-					aBoolean856 = false;
-					graphics.setFont(new Font("Helvetica", 1, 16));
-					graphics.setColor(Color.yellow);
-					int i_596_ = 35;
-					graphics.drawString("Sorry, an error has occured whilst loading RuneScape", 30, i_596_);
-					i_596_ += 50;
-					graphics.setColor(Color.white);
-					graphics.drawString("To fix this try the following (in order):", 30, i_596_);
-					i_596_ += 50;
-					graphics.setColor(Color.white);
-					graphics.setFont(new Font("Helvetica", 1, 12));
-					graphics.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, i_596_);
-					i_596_ += 30;
-					graphics.drawString("2: Try clearing your web-browsers cache from tools->internet options", 30,
-							i_596_);
-					i_596_ += 30;
-					graphics.drawString("3: Try using a different game-world", 30, i_596_);
-					i_596_ += 30;
-					graphics.drawString("4: Try rebooting your computer", 30, i_596_);
-					i_596_ += 30;
-					graphics.drawString("5: Try selecting a different version of Java from the play-game menu", 30,
-							i_596_);
+
+			Rasterizer.resetCoordinates();
+			anInt1107 = k * 14 + 7;
+			if (anInt1107 < 78)
+				anInt1107 = 78;
+			method56(true, anInt1107 - anInt851 - 77, 463, 77, anInt1107, 0);
+			String s;
+			if (thisPlayer != null && thisPlayer.username != null)
+				s = thisPlayer.username;
+			else
+				s = TextUtils.formatName(username);
+			class50_sub1_sub1_sub2_1.method474(2245, 4, 0, 90, s + ":");
+			class50_sub1_sub1_sub2_1.method474(2245, 6 + class50_sub1_sub1_sub2_1.method472((byte) 35, s + ": "), 255,
+					90, chatboxInput + "*");
+			Rasterizer.drawHorizontalLine(0, 77, 479, 0);
+		}
+		if (aBoolean1065 && anInt1304 == 2)
+			method128(false);
+		chatboxProducingGraphicsBuffer.drawGraphics(17, 357, super.gameGraphics);
+		aClass18_1158.createRasterizer();
+		Rasterizer3D.lineOffsets = anIntArray1002;
+		if (i != 0)
+			groundItems = null;
+	}
+
+	public void method85(int i) {
+		for (int j = -1; j < localPlayerCount; j++) {
+			int k;
+			if (j == -1)
+				k = thisPlayerId;
+			else
+				k = localPlayers[j];
+			Player class50_sub1_sub4_sub3_sub2 = players[k];
+			if (class50_sub1_sub4_sub3_sub2 != null && ((Actor) (class50_sub1_sub4_sub3_sub2)).anInt1582 > 0) {
+				class50_sub1_sub4_sub3_sub2.anInt1582--;
+				if (((Actor) (class50_sub1_sub4_sub3_sub2)).anInt1582 == 0)
+					class50_sub1_sub4_sub3_sub2.forcedChat = null;
+			}
+		}
+
+		size += i;
+		for (int l = 0; l < anInt1133; l++) {
+			int i1 = anIntArray1134[l];
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[i1];
+			if (class50_sub1_sub4_sub3_sub1 != null && ((Actor) (class50_sub1_sub4_sub3_sub1)).anInt1582 > 0) {
+				class50_sub1_sub4_sub3_sub1.anInt1582--;
+				if (((Actor) (class50_sub1_sub4_sub3_sub1)).anInt1582 == 0)
+					class50_sub1_sub4_sub3_sub1.forcedChat = null;
+			}
+		}
+
+	}
+
+	public void connectWebServer() {
+		int i = 5;
+		archiveHashes[8] = 0;
+		int k = 0;
+		while (archiveHashes[8] == 0) {
+			String s = "Unknown problem";
+			drawLoadingText(20, "Connecting to web server");
+			try {
+				DataInputStream datainputstream = method31("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
+				Buffer class50_sub1_sub2 = new Buffer(new byte[40]);
+				datainputstream.readFully(class50_sub1_sub2.buffer, 0, 40);
+				datainputstream.close();
+				for (int i1 = 0; i1 < 9; i1++)
+					archiveHashes[i1] = class50_sub1_sub2.getInt();
+
+				int j1 = class50_sub1_sub2.getInt();
+				int k1 = 1234;
+				for (int l1 = 0; l1 < 9; l1++)
+					k1 = (k1 << 1) + archiveHashes[l1];
+
+				if (j1 != k1) {
+					s = "checksum problem";
+					archiveHashes[8] = 0;
 				}
-				if (aBoolean1201) {
-					aBoolean856 = false;
-					graphics.setFont(new Font("Helvetica", 1, 20));
-					graphics.setColor(Color.white);
-					graphics.drawString("Error - unable to load game!", 50, 50);
-					graphics.drawString("To play RuneScape make sure you play from", 50, 100);
-					graphics.drawString("http://www.runescape.com", 50, 150);
+			} catch (EOFException _ex) {
+				s = "EOF problem";
+				archiveHashes[8] = 0;
+			} catch (IOException _ex) {
+				s = "bufferedConnection problem";
+				archiveHashes[8] = 0;
+			} catch (Exception _ex) {
+				s = "logic problem";
+				archiveHashes[8] = 0;
+				if (!SignLink.reporterror)
+					return;
+			}
+			if (archiveHashes[8] == 0) {
+				k++;
+				for (int l = i; l > 0; l--) {
+					if (k >= 10) {
+						drawLoadingText(10, "Game updated - please reload page");
+						l = 10;
+					} else {
+						drawLoadingText(10, s + " - Will retry in " + l + " secs.");
+					}
+					try {
+						Thread.sleep(1000L);
+					} catch (Exception _ex) {
+					}
 				}
-				if (!aBoolean1277) {
+
+				i *= 2;
+				if (i > 60)
+					i = 60;
+				aBoolean900 = !aBoolean900;
+			}
+		}
+	}
+
+	public void method87(int i) {
+		aClass18_1157.createRasterizer();
+		if (minimapState == 2) {
+			byte abyte0[] = minimapBackgroundImage.pixels;
+			int ai[] = Rasterizer.pixels;
+			int l2 = abyte0.length;
+			for (int j5 = 0; j5 < l2; j5++)
+				if (abyte0[j5] == 0)
+					ai[j5] = 0;
+
+			minimapCompass.method465(0, 567, 33, 25, 33, anIntArray1286, 0, anInt1252, 256,
+					anIntArray1180, 25);
+			aClass18_1158.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1002;
+			return;
+		}
+		int j = anInt1252 + anInt916 & 0x7ff;
+		int k = 48 + ((Actor) (thisPlayer)).unitX / 32;
+		i = 58 / i;
+		int i3 = 464 - ((Actor) (thisPlayer)).unitY / 32;
+		minimapImage.method465(5, 567, 151, k, 146, anIntArray920, 25, j, 256 + anInt1233,
+				anIntArray1019, i3);
+		minimapCompass.method465(0, 567, 33, 25, 33, anIntArray1286, 0, anInt1252, 256, anIntArray1180,
+				25);
+		for (int k5 = 0; k5 < minimapHintCount; k5++) {
+			int l = (minimapHintX[k5] * 4 + 2) - ((Actor) (thisPlayer)).unitX / 32;
+			int j3 = (minimapHintY[k5] * 4 + 2) - ((Actor) (thisPlayer)).unitY / 32;
+			method130(j3, true, minimapHint[k5], l);
+		}
+
+		for (int l5 = 0; l5 < 104; l5++) {
+			for (int i6 = 0; i6 < 104; i6++) {
+				LinkedList class6 = groundItems[plane][l5][i6];
+				if (class6 != null) {
+					int i1 = (l5 * 4 + 2) - ((Actor) (thisPlayer)).unitX / 32;
+					int k3 = (i6 * 4 + 2) - ((Actor) (thisPlayer)).unitY / 32;
+					method130(k3, true, mapdotItem, i1);
+				}
+			}
+
+		}
+
+		for (int j6 = 0; j6 < anInt1133; j6++) {
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[anIntArray1134[j6]];
+			if (class50_sub1_sub4_sub3_sub1 != null && class50_sub1_sub4_sub3_sub1.isVisible()) {
+				ActorDefinition class37 = class50_sub1_sub4_sub3_sub1.npcDefinition;
+				if (class37.anIntArray622 != null)
+					class37 = class37.method363(false);
+				if (class37 != null && class37.aBoolean636 && class37.aBoolean631) {
+					int j1 = ((Actor) (class50_sub1_sub4_sub3_sub1)).unitX / 32
+							- ((Actor) (thisPlayer)).unitX / 32;
+					int l3 = ((Actor) (class50_sub1_sub4_sub3_sub1)).unitY / 32
+							- ((Actor) (thisPlayer)).unitY / 32;
+					method130(l3, true, mapdotActor, j1);
+				}
+			}
+		}
+
+		for (int k6 = 0; k6 < localPlayerCount; k6++) {
+			Player class50_sub1_sub4_sub3_sub2 = players[localPlayers[k6]];
+			if (class50_sub1_sub4_sub3_sub2 != null && class50_sub1_sub4_sub3_sub2.isVisible()) {
+				int k1 = ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX / 32
+						- ((Actor) (thisPlayer)).unitX / 32;
+				int i4 = ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY / 32
+						- ((Actor) (thisPlayer)).unitY / 32;
+				boolean flag = false;
+				long l6 = TextUtils.nameToLong(class50_sub1_sub4_sub3_sub2.username);
+				for (int i7 = 0; i7 < friendsCount; i7++) {
+					if (l6 != friends[i7] || anIntArray1267[i7] == 0)
+						continue;
+					flag = true;
 					break;
 				}
-				aBoolean856 = false;
-				graphics.setColor(Color.yellow);
-				int i_597_ = 35;
-				graphics.drawString("Error a copy of RuneScape already appears to be loaded", 30, i_597_);
-				i_597_ += 50;
-				graphics.setColor(Color.white);
-				graphics.drawString("To fix this try the following (in order):", 30, i_597_);
-				i_597_ += 50;
-				graphics.setColor(Color.white);
-				graphics.setFont(new Font("Helvetica", 1, 12));
-				graphics.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, i_597_);
-				i_597_ += 30;
-				graphics.drawString("2: Try rebooting your computer, and reloading", 30, i_597_);
-				i_597_ += 30;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("4031, " + i + ", " + runtimeexception.toString());
-				throw new RuntimeException();
+
+				boolean flag1 = false;
+				if (thisPlayer.team != 0 && class50_sub1_sub4_sub3_sub2.team != 0
+						&& thisPlayer.team == class50_sub1_sub4_sub3_sub2.team)
+					flag1 = true;
+				if (flag)
+					method130(i4, true, mapdotFriend, k1);
+				else if (flag1)
+					method130(i4, true, mapdotTeammate, k1);
+				else
+					method130(i4, true, mapdotPlayer, k1);
 			}
-			break;
-		} while (false);
+		}
+
+		if (anInt1197 != 0 && pulseCycle % 20 < 10) {
+			if (anInt1197 == 1 && anInt1226 >= 0 && anInt1226 < npcs.length) {
+				Npc class50_sub1_sub4_sub3_sub1_1 = npcs[anInt1226];
+				if (class50_sub1_sub4_sub3_sub1_1 != null) {
+					int l1 = ((Actor) (class50_sub1_sub4_sub3_sub1_1)).unitX / 32
+							- ((Actor) (thisPlayer)).unitX / 32;
+					int j4 = ((Actor) (class50_sub1_sub4_sub3_sub1_1)).unitY / 32
+							- ((Actor) (thisPlayer)).unitY / 32;
+					method55(j4, aClass50_Sub1_Sub1_Sub1_1037, -687, l1);
+				}
+			}
+			if (anInt1197 == 2) {
+				int i2 = ((anInt844 - nextTopLeftTileX) * 4 + 2) - ((Actor) (thisPlayer)).unitX / 32;
+				int k4 = ((anInt845 - nextTopRightTileY) * 4 + 2) - ((Actor) (thisPlayer)).unitY / 32;
+				method55(k4, aClass50_Sub1_Sub1_Sub1_1037, -687, i2);
+			}
+			if (anInt1197 == 10 && anInt1151 >= 0 && anInt1151 < players.length) {
+				Player class50_sub1_sub4_sub3_sub2_1 = players[anInt1151];
+				if (class50_sub1_sub4_sub3_sub2_1 != null) {
+					int j2 = ((Actor) (class50_sub1_sub4_sub3_sub2_1)).unitX / 32
+							- ((Actor) (thisPlayer)).unitX / 32;
+					int l4 = ((Actor) (class50_sub1_sub4_sub3_sub2_1)).unitY / 32
+							- ((Actor) (thisPlayer)).unitY / 32;
+					method55(l4, aClass50_Sub1_Sub1_Sub1_1037, -687, j2);
+				}
+			}
+		}
+		if (destinationX != 0) {
+			int k2 = (destinationX * 4 + 2) - ((Actor) (thisPlayer)).unitX / 32;
+			int i5 = (anInt1121 * 4 + 2) - ((Actor) (thisPlayer)).unitY / 32;
+			method130(i5, true, mapFlagMarker, k2);
+		}
+		Rasterizer.drawFilledRectangle(97, 78, 3, 3, 0xffffff);
+		aClass18_1158.createRasterizer();
+		Rasterizer3D.lineOffsets = anIntArray1002;
 	}
 
-	@Override
-	public final URL getCodeBase() {
-		if (SignLink.applet != null) {
-			return SignLink.applet.getCodeBase();
-		}
+	public URL getCodeBase() {
+		if (SignLink.mainapp != null)
+			return SignLink.mainapp.getCodeBase();
 		try {
-			if (gameFrame != null) {
-				return new URL("http://127.0.0.1:" + (80 + Game.portOffset));
-			}
-		} catch (Exception exception) {
-			/* empty */
+			if (super.gameFrame != null)
+				return new URL("http://127.0.0.1:" + (10080 + portOffset));
+		} catch (Exception _ex) {
 		}
 		return super.getCodeBase();
 	}
 
-	public final void method95() {
-		do {
-			try {
-				for (int i = 0; i < actorCount; i++) {
-					int actorId = anIntArray862[i];
-					Npc npc = localNpcs[actorId];
-					if (npc != null) {
-						method96(npc);
+	public boolean method88(int i, int j, byte byte0) {
+		boolean flag = false;
+		Widget class13 = Widget.forId(j);
+		for (int k = 0; k < class13.anIntArray258.length; k++) {
+			if (class13.anIntArray258[k] == -1)
+				break;
+			Widget class13_1 = Widget.forId(class13.anIntArray258[k]);
+			if (class13_1.anInt236 == 0)
+				flag |= method88(i, class13_1.id, (byte) 5);
+			if (class13_1.anInt236 == 6 && (class13_1.anInt286 != -1 || class13_1.anInt287 != -1)) {
+				boolean flag1 = method95(class13_1, -693);
+				int i1;
+				if (flag1)
+					i1 = class13_1.anInt287;
+				else
+					i1 = class13_1.anInt286;
+				if (i1 != -1) {
+					AnimationSequence class14 = AnimationSequence.animations[i1];
+					for (class13_1.anInt227 += i; class13_1.anInt227 > class14.getFrameLength(class13_1.anInt235);) {
+						class13_1.anInt227 -= class14.getFrameLength(class13_1.anInt235);
+						class13_1.anInt235++;
+						if (class13_1.anInt235 >= class14.frameCount) {
+							class13_1.anInt235 -= class14.frameStep;
+							if (class13_1.anInt235 < 0 || class13_1.anInt235 >= class14.frameCount)
+								class13_1.anInt235 = 0;
+						}
+						flag = true;
 					}
+
 				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("41621, " + runtimeexception.toString());
-				throw new RuntimeException();
 			}
-			break;
-		} while (false);
+			if (class13_1.anInt236 == 6 && class13_1.anInt218 != 0) {
+				int l = class13_1.anInt218 >> 16;
+				int j1 = (class13_1.anInt218 << 16) >> 16;
+				l *= i;
+				j1 *= i;
+				class13_1.anInt252 = class13_1.anInt252 + l & 0x7ff;
+				class13_1.anInt253 = class13_1.anInt253 + j1 & 0x7ff;
+				flag = true;
+			}
+		}
+
+		if (byte0 == 5)
+			byte0 = 0;
+		else
+			anInt1236 = -424;
+		return flag;
 	}
 
-	public final void method96(Actor actor) {
+	public String method89(int i, int j) {
+		if (j < 8 || j > 8)
+			throw new NullPointerException();
+		if (i < 0x3b9ac9ff)
+			return String.valueOf(i);
+		else
+			return "*";
+	}
+
+	public void method90(int i, long l) {
 		try {
-			if (actor.xWithBoundary < 128 || actor.yWithBoundary < 128 || actor.xWithBoundary >= 13184
-					|| actor.yWithBoundary >= 13184) {
-				actor.animation = -1;
-				actor.spotAnimationId = -1;
-				actor.anInt1567 = 0;
-				actor.anInt1568 = 0;
-				actor.xWithBoundary = actor.pathX[0] * 128 + actor.boundaryDimension * 64;
-				actor.yWithBoundary = actor.pathY[0] * 128 + actor.boundaryDimension * 64;
-				actor.resetPath();
+			if (i != -916)
+				opcode = buffer.getUnsignedByte();
+			if (l == 0L)
+				return;
+			if (ignoresCount >= 100) {
+				pushMessage("", (byte) -123, "Your ignore list is full. Max of 100 hit", 0);
+				return;
 			}
-			if (actor == Game.localPlayer
-					&& (actor.xWithBoundary < 1536 || actor.yWithBoundary < 1536 || actor.xWithBoundary >= 11776 || actor.yWithBoundary >= 11776)) {
-				actor.animation = -1;
-				actor.spotAnimationId = -1;
-				actor.anInt1567 = 0;
-				actor.anInt1568 = 0;
-				actor.xWithBoundary = actor.pathX[0] * 128 + actor.boundaryDimension * 64;
-				actor.yWithBoundary = actor.pathY[0] * 128 + actor.boundaryDimension * 64;
-				actor.resetPath();
-			}
-			if (actor.anInt1567 > Game.currentCycle) {
-				method97(actor, true);
-			} else if (actor.anInt1568 >= Game.currentCycle) {
-				method98(actor, aByte1037);
-			} else {
-				method99((byte) 34, actor);
-			}
-			method100(actor);
-			method101(actor);
+			String s = TextUtils.formatName(TextUtils.longToName(l));
+			for (int j = 0; j < ignoresCount; j++)
+				if (ignores[j] == l) {
+					pushMessage("", (byte) -123, s + " is already on your ignore list", 0);
+					return;
+				}
+
+			for (int k = 0; k < friendsCount; k++)
+				if (friends[k] == l) {
+					pushMessage("", (byte) -123, "Please remove " + s + " from your friend list first", 0);
+					return;
+				}
+
+			ignores[ignoresCount++] = l;
+			aBoolean1181 = true;
+			outBuffer.putOpcode(217);
+			outBuffer.putLong(l);
+			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("29397, " + actor + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			SignLink.reporterror("27939, " + i + ", " + l + ", " + runtimeexception.toString());
 		}
+		throw new RuntimeException();
 	}
 
-	public final void method97(Actor actor, boolean bool) {
-		do {
-			try {
-				int cycle = actor.anInt1567 - Game.currentCycle;
-				int x = actor.anInt1563 * 128 + actor.boundaryDimension * 64;
-				int y = actor.anInt1565 * 128 + actor.boundaryDimension * 64;
-				actor.xWithBoundary += (x - actor.xWithBoundary) / cycle;
-				if (bool) {
-					actor.yWithBoundary += (y - actor.yWithBoundary) / cycle;
-					actor.anInt1523 = 0;
-					if (actor.anInt1569 == 0) {
-						actor.anInt1530 = 1024;
-					}
-					if (actor.anInt1569 == 1) {
-						actor.anInt1530 = 1536;
-					}
-					if (actor.anInt1569 == 2) {
-						actor.anInt1530 = 0;
-					}
-					if (actor.anInt1569 != 3) {
-						break;
-					}
-					actor.anInt1530 = 512;
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("99888, " + actor + ", " + bool + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
+	public void doLogic() {
+		if (aBoolean1016 || aBoolean1283 || aBoolean1097)
+			return;
+		pulseCycle++;
+		if (!loggedIn)
+			method149(-724);
+		else
+			method28((byte) 4);
+		method77(false);
 	}
 
-	public final void method98(Actor actor, byte b) {
-		do {
-			try {
-				if (actor.anInt1568 == Game.currentCycle
-						|| actor.animation == -1
-						|| actor.aniomationDelay != 0
-						|| actor.anInt1548 + 1 > AnimationSequence.cache[actor.animation]
-								.getFrameLength(actor.anInt1547)) {
-					int i = actor.anInt1568 - actor.anInt1567;
-					int i_603_ = Game.currentCycle - actor.anInt1567;
-					int i_604_ = actor.anInt1563 * 128 + actor.boundaryDimension * 64;
-					int i_605_ = actor.anInt1565 * 128 + actor.boundaryDimension * 64;
-					int i_606_ = actor.anInt1564 * 128 + actor.boundaryDimension * 64;
-					int i_607_ = actor.anInt1566 * 128 + actor.boundaryDimension * 64;
-					actor.xWithBoundary = (i_604_ * (i - i_603_) + i_606_ * i_603_) / i;
-					actor.yWithBoundary = (i_605_ * (i - i_603_) + i_607_ * i_603_) / i;
-				}
-				actor.anInt1523 = 0;
-				if (actor.anInt1569 == 0) {
-					actor.anInt1530 = 1024;
-				}
-				if (actor.anInt1569 == 1) {
-					actor.anInt1530 = 1536;
-				}
-				if (actor.anInt1569 == 2) {
-					actor.anInt1530 = 0;
-				}
-				if (actor.anInt1569 == 3) {
-					actor.anInt1530 = 512;
-				}
-				actor.anInt1572 = actor.anInt1530;
-				if (b == aByte1037) {
-					break;
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("10794, " + actor + ", " + b + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method99(byte b, Actor actor) {
-		do {
-			try {
-				actor.anInt1537 = actor.standAnimationId;
-				if (actor.pathLength == 0) {
-					actor.anInt1523 = 0;
-				} else {
-					if (actor.animation != -1 && actor.aniomationDelay == 0) {
-						AnimationSequence animationsequence = AnimationSequence.cache[actor.animation];
-						if (actor.anInt1562 > 0 && animationsequence.anInt61 == 0) {
-							actor.anInt1523++;
-							break;
-						}
-						if (actor.anInt1562 <= 0 && animationsequence.priority == 0) {
-							actor.anInt1523++;
-							break;
-						}
-					}
-					int i = actor.xWithBoundary;
-					int i_608_ = actor.yWithBoundary;
-					int i_609_ = actor.pathX[actor.pathLength - 1] * 128 + actor.boundaryDimension * 64;
-					int i_610_ = actor.pathY[actor.pathLength - 1] * 128 + actor.boundaryDimension * 64;
-					if (i_609_ - i > 256 || i_609_ - i < -256 || i_610_ - i_608_ > 256 || i_610_ - i_608_ < -256) {
-						actor.xWithBoundary = i_609_;
-						actor.yWithBoundary = i_610_;
-					} else {
-						if (i < i_609_) {
-							if (i_608_ < i_610_) {
-								actor.anInt1530 = 1280;
-							} else if (i_608_ > i_610_) {
-								actor.anInt1530 = 1792;
-							} else {
-								actor.anInt1530 = 1536;
-							}
-						} else if (i > i_609_) {
-							if (i_608_ < i_610_) {
-								actor.anInt1530 = 768;
-							} else if (i_608_ > i_610_) {
-								actor.anInt1530 = 256;
-							} else {
-								actor.anInt1530 = 512;
-							}
-						} else if (i_608_ < i_610_) {
-							actor.anInt1530 = 1024;
-						} else {
-							actor.anInt1530 = 0;
-						}
-						int i_611_ = actor.anInt1530 - actor.anInt1572 & 0x7ff;
-						if (i_611_ > 1024) {
-							i_611_ -= 2048;
-						}
-						int animation = actor.turnAroundAnimationId;
-						if (i_611_ >= -256 && i_611_ <= 256) {
-							animation = actor.walkAnimationId;
-						} else if (i_611_ >= 256 && i_611_ < 768) {
-							animation = actor.turnLeftAnimationId;
-						} else if (i_611_ >= -768 && i_611_ <= -256) {
-							animation = actor.turnRightAnimationId;
-						}
-						if (animation == -1) {
-							animation = actor.walkAnimationId;
-						}
-						actor.anInt1537 = animation;
-						int i_613_ = 4;
-						if (actor.anInt1572 != actor.anInt1530 && actor.interactingEntity == -1 && actor.anInt1524 != 0) {
-							i_613_ = 2;
-						}
-						if (actor.pathLength > 2) {
-							i_613_ = 6;
-						}
-						if (actor.pathLength > 3) {
-							i_613_ = 8;
-						}
-						if (actor.anInt1523 > 0 && actor.pathLength > 1) {
-							i_613_ = 8;
-							actor.anInt1523--;
-						}
-						if (actor.pathRun[actor.pathLength - 1]) {
-							i_613_ <<= 1;
-						}
-						if (i_613_ >= 8 && actor.anInt1537 == actor.walkAnimationId && actor.runAnimationId != -1) {
-							actor.anInt1537 = actor.runAnimationId;
-						}
-						if (i < i_609_) {
-							actor.xWithBoundary += i_613_;
-							if (actor.xWithBoundary > i_609_) {
-								actor.xWithBoundary = i_609_;
-							}
-						} else if (i > i_609_) {
-							actor.xWithBoundary -= i_613_;
-							if (actor.xWithBoundary < i_609_) {
-								actor.xWithBoundary = i_609_;
-							}
-						}
-						if (i_608_ < i_610_) {
-							actor.yWithBoundary += i_613_;
-							if (actor.yWithBoundary > i_610_) {
-								actor.yWithBoundary = i_610_;
-							}
-						} else if (i_608_ > i_610_) {
-							actor.yWithBoundary -= i_613_;
-							if (actor.yWithBoundary < i_610_) {
-								actor.yWithBoundary = i_610_;
-							}
-						}
-						if (actor.xWithBoundary != i_609_ || actor.yWithBoundary != i_610_) {
-							break;
-						}
-						actor.pathLength--;
-						if (actor.anInt1562 <= 0) {
-							break;
-						}
-						actor.anInt1562--;
-					}
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("41887, " + b + ", " + actor + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method100(Actor actor) {
-		do {
-			try {
-				if (actor.anInt1524 != 0) {
-					if (actor.interactingEntity != -1 && actor.interactingEntity < 32768) {
-						Npc npc = localNpcs[actor.interactingEntity];
-						if (npc != null) {
-							int i_614_ = actor.xWithBoundary - npc.xWithBoundary;
-							int i_615_ = actor.yWithBoundary - npc.yWithBoundary;
-							if (i_614_ != 0 || i_615_ != 0) {
-								actor.anInt1530 = (int) (Math.atan2(i_614_, i_615_) * 325.949) & 0x7ff;
-							}
-						}
-					}
-					if (actor.interactingEntity >= 32768) {
-						int i_616_ = actor.interactingEntity - 32768;
-						if (i_616_ == anInt909) {
-							i_616_ = localPlayerId;
-						}
-						Player player = players[i_616_];
-						if (player != null) {
-							int i_617_ = actor.xWithBoundary - player.xWithBoundary;
-							int i_618_ = actor.yWithBoundary - player.yWithBoundary;
-							if (i_617_ != 0 || i_618_ != 0) {
-								actor.anInt1530 = (int) (Math.atan2(i_617_, i_618_) * 325.949) & 0x7ff;
-							}
-						}
-					}
-					if ((actor.faceTowardX != 0 || actor.faceTowardY != 0)
-							&& (actor.pathLength == 0 || actor.anInt1523 > 0)) {
-						int i_619_ = actor.xWithBoundary
-								- (actor.faceTowardX - regionAbsoluteBaseX - regionAbsoluteBaseX) * 64;
-						int i_620_ = actor.yWithBoundary
-								- (actor.faceTowardY - regionAbsoluteBaseY - regionAbsoluteBaseY) * 64;
-						if (i_619_ != 0 || i_620_ != 0) {
-							actor.anInt1530 = (int) (Math.atan2(i_619_, i_620_) * 325.949) & 0x7ff;
-						}
-						actor.faceTowardX = 0;
-						actor.faceTowardY = 0;
-					}
-					int i_621_ = actor.anInt1530 - actor.anInt1572 & 0x7ff;
-					if (i_621_ == 0) {
-						break;
-					}
-					if (i_621_ < actor.anInt1524 || i_621_ > 2048 - actor.anInt1524) {
-						actor.anInt1572 = actor.anInt1530;
-					} else if (i_621_ > 1024) {
-						actor.anInt1572 -= actor.anInt1524;
-					} else {
-						actor.anInt1572 += actor.anInt1524;
-					}
-					actor.anInt1572 &= 0x7ff;
-					if (actor.anInt1537 != actor.standAnimationId || actor.anInt1572 == actor.anInt1530) {
-						break;
-					}
-					if (actor.standTurnAnimationId != -1) {
-						actor.anInt1537 = actor.standTurnAnimationId;
-					} else {
-						actor.anInt1537 = actor.walkAnimationId;
-					}
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("73745, " + actor + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method101(Actor actor) {
-		do {
-			try {
-				actor.aBoolean1561 = false;
-				if (actor.anInt1537 != -1) {
-					AnimationSequence animationsequence = AnimationSequence.cache[actor.anInt1537];
-					actor.anInt1539++;
-					if (actor.anInt1538 < animationsequence.frameCount
-							&& actor.anInt1539 > animationsequence.getFrameLength(actor.anInt1538)) {
-						actor.anInt1539 = 0;
-						actor.anInt1538++;
-					}
-					if (actor.anInt1538 >= animationsequence.frameCount) {
-						actor.anInt1539 = 0;
-						actor.anInt1538 = 0;
-					}
-				}
-				if (actor.spotAnimationId != -1 && Game.currentCycle >= actor.spotAnimationEndCycle) {
-					if (actor.currentAnimationFrame < 0) {
-						actor.currentAnimationFrame = 0;
-					}
-					AnimationSequence animationsequence = SpotAnimation.cache[actor.spotAnimationId].sequences;
-					for (actor.anInt1542++; actor.currentAnimationFrame < animationsequence.frameCount
-							&& actor.anInt1542 > animationsequence.getFrameLength(actor.currentAnimationFrame); actor.currentAnimationFrame++) {
-						actor.anInt1542 -= animationsequence.getFrameLength(actor.currentAnimationFrame);
-					}
-					if (actor.currentAnimationFrame >= animationsequence.frameCount
-							&& (actor.currentAnimationFrame < 0 || actor.currentAnimationFrame >= animationsequence.frameCount)) {
-						actor.spotAnimationId = -1;
-					}
-				}
-				if (actor.animation != -1 && actor.aniomationDelay <= 1) {
-					AnimationSequence animationsequence = AnimationSequence.cache[actor.animation];
-					if (animationsequence.anInt61 == 1 && actor.anInt1562 > 0 && actor.anInt1567 <= Game.currentCycle
-							&& actor.anInt1568 < Game.currentCycle) {
-						actor.aniomationDelay = 1;
-						break;
-					}
-				}
-				if (actor.animation != -1 && actor.aniomationDelay == 0) {
-					AnimationSequence animationsequence = AnimationSequence.cache[actor.animation];
-					for (actor.anInt1548++; actor.anInt1547 < animationsequence.frameCount
-							&& actor.anInt1548 > animationsequence.getFrameLength(actor.anInt1547); actor.anInt1547++) {
-						actor.anInt1548 -= animationsequence.getFrameLength(actor.anInt1547);
-					}
-					if (actor.anInt1547 >= animationsequence.frameCount) {
-						actor.anInt1547 -= animationsequence.frameStep;
-						actor.anInt1550++;
-						if (actor.anInt1550 >= animationsequence.anInt60) {
-							actor.animation = -1;
-						}
-						if (actor.anInt1547 < 0 || actor.anInt1547 >= animationsequence.frameCount) {
-							actor.animation = -1;
-						}
-					}
-					actor.aBoolean1561 = animationsequence.aBoolean56;
-				}
-				if (actor.aniomationDelay <= 0) {
-					break;
-				}
-				actor.aniomationDelay--;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("56331, " + actor + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void processDrawing() {
-		if (redraw) {
-			redraw = false;
-			aProducingGraphicsBuffer928.drawGraphics(0, 4, gameGraphics);
-			aProducingGraphicsBuffer929.drawGraphics(0, 357, gameGraphics);
-			aProducingGraphicsBuffer930.drawGraphics(722, 4, gameGraphics);
-			aProducingGraphicsBuffer931.drawGraphics(743, 205, gameGraphics);
-			aProducingGraphicsBuffer932.drawGraphics(0, 0, gameGraphics);
-			aProducingGraphicsBuffer933.drawGraphics(516, 4, gameGraphics);
-			aProducingGraphicsBuffer934.drawGraphics(516, 205, gameGraphics);
-			aProducingGraphicsBuffer935.drawGraphics(496, 357, gameGraphics);
-			aProducingGraphicsBuffer936.drawGraphics(0, 338, gameGraphics);
-			redrawTab = true;
+	public void method91(int i) {
+		if (anInt1113 != 0)
+			return;
+		aStringArray1184[0] = "Cancel";
+		anIntArray981[0] = 1016;
+		anInt1183 = 1;
+		if (i >= 0)
+			anInt1004 = incomingRandom.nextInt();
+		if (anInt1053 != -1) {
+			anInt915 = 0;
+			anInt1315 = 0;
+			method66(0, Widget.forId(anInt1053), 0, 0, 0, super.mouseX, 23658, super.mouseY);
+			if (anInt915 != anInt1302)
+				anInt1302 = anInt915;
+			if (anInt1315 != anInt1129)
+				anInt1129 = anInt1315;
+			return;
+		}
+		method111(anInt1178);
+		anInt915 = 0;
+		anInt1315 = 0;
+		if (super.mouseX > 4 && super.mouseY > 4 && super.mouseX < 516 && super.mouseY < 338)
+			if (openWidgetId != -1)
+				method66(4, Widget.forId(openWidgetId), 0, 0, 4, super.mouseX, 23658, super.mouseY);
+			else
+				method43((byte) 7);
+		if (anInt915 != anInt1302)
+			anInt1302 = anInt915;
+		if (anInt1315 != anInt1129)
+			anInt1129 = anInt1315;
+		anInt915 = 0;
+		anInt1315 = 0;
+		if (super.mouseX > 553 && super.mouseY > 205 && super.mouseX < 743 && super.mouseY < 466)
+			if (anInt1089 != -1)
+				method66(205, Widget.forId(anInt1089), 1, 0, 553, super.mouseX, 23658, super.mouseY);
+			else if (anIntArray1081[anInt1285] != -1)
+				method66(205, Widget.forId(anIntArray1081[anInt1285]), 1, 0, 553, super.mouseX, 23658,
+						super.mouseY);
+		if (anInt915 != anInt1280) {
+			aBoolean1181 = true;
+			anInt1280 = anInt915;
+		}
+		if (anInt1315 != anInt1044) {
+			aBoolean1181 = true;
+			anInt1044 = anInt1315;
+		}
+		anInt915 = 0;
+		anInt1315 = 0;
+		if (super.mouseX > 17 && super.mouseY > 357 && super.mouseX < 496 && super.mouseY < 453)
+			if (anInt988 != -1)
+				method66(357, Widget.forId(anInt988), 2, 0, 17, super.mouseX, 23658, super.mouseY);
+			else if (anInt1191 != -1)
+				method66(357, Widget.forId(anInt1191), 3, 0, 17, super.mouseX, 23658, super.mouseY);
+			else if (super.mouseY < 434 && super.mouseX < 426 && inputType == 0)
+				method113(466, super.mouseX - 17, super.mouseY - 357);
+		if ((anInt988 != -1 || anInt1191 != -1) && anInt915 != anInt1106) {
 			redrawChatbox = true;
-			drawTabIcons = true;
-			redrawChatSettings = true;
-			if (anInt1048 != 2) {
-				currentSceneBuffer.drawGraphics(4, 4, gameGraphics);
-				aProducingGraphicsBuffer1189.drawGraphics(550, 4, gameGraphics);
-			}
+			anInt1106 = anInt915;
 		}
-		if (anInt1048 == 2) {
-			method146();
-		}
-		if (actionMenuOpen && actionMenuArea == 1) {
-			redrawTab = true;
-		}
-		if (anInt1214 != -1) {
-			boolean bool_622_ = method119(anInt970, anInt1214);
-			if (bool_622_) {
-				redrawTab = true;
-			}
-		}
-		if (anInt1271 == 2) {
-			redrawTab = true;
-		}
-		if (anInt1111 == 2) {
-			redrawTab = true;
-		}
-		if (redrawTab) {
-			drawTab();
-			redrawTab = false;
-		}
-		if (chatboxWidgetId == -1) {
-			aWidget1084.scrollPosition = anInt1236 - anInt1114 - 77;
-			if (mouseEventX > 448 && mouseEventX < 560 && mouseEventY > 332) {
-				method65(463, 77, mouseEventX - 17, mouseEventY - 357, aWidget1084, 0, false, anInt1236, 0);
-			}
-			int i = anInt1236 - 77 - aWidget1084.scrollPosition;
-			if (i < 0) {
-				i = 0;
-			}
-			if (i > anInt1236 - 77) {
-				i = anInt1236 - 77;
-			}
-			if (anInt1114 != i) {
-				anInt1114 = i;
-				redrawChatbox = true;
-			}
-		}
-		if (chatboxWidgetId != -1) {
-			boolean bool_623_ = method119(anInt970, chatboxWidgetId);
-			if (bool_623_) {
-				redrawChatbox = true;
-			}
-		}
-		if (anInt1271 == 3) {
+		if ((anInt988 != -1 || anInt1191 != -1) && anInt1315 != anInt1284) {
 			redrawChatbox = true;
+			anInt1284 = anInt1315;
 		}
-		if (anInt1111 == 3) {
-			redrawChatbox = true;
+		for (boolean flag = false; !flag;) {
+			flag = true;
+			for (int j = 0; j < anInt1183 - 1; j++)
+				if (anIntArray981[j] < 1000 && anIntArray981[j + 1] > 1000) {
+					String s = aStringArray1184[j];
+					aStringArray1184[j] = aStringArray1184[j + 1];
+					aStringArray1184[j + 1] = s;
+					int k = anIntArray981[j];
+					anIntArray981[j] = anIntArray981[j + 1];
+					anIntArray981[j + 1] = k;
+					k = anIntArray979[j];
+					anIntArray979[j] = anIntArray979[j + 1];
+					anIntArray979[j + 1] = k;
+					k = anIntArray980[j];
+					anIntArray980[j] = anIntArray980[j + 1];
+					anIntArray980[j + 1] = k;
+					k = anIntArray982[j];
+					anIntArray982[j] = anIntArray982[j + 1];
+					anIntArray982[j + 1] = k;
+					flag = false;
+				}
+
 		}
-		if (aString869 != null) {
-			redrawChatbox = true;
-		}
-		if (actionMenuOpen && actionMenuArea == 2) {
-			redrawChatbox = true;
-		}
-		if (redrawChatbox) {
-			drawChatbox();
-			redrawChatbox = false;
-		}
-		if (anInt1048 == 2) {
-			method126();
-			aProducingGraphicsBuffer1189.drawGraphics(550, 4, gameGraphics);
-		}
-		if (flashingSidebar != -1) {
-			drawTabIcons = true;
-		}
-		if (drawTabIcons) {
-			if (flashingSidebar != -1 && flashingSidebar == currentTabId) {
-				flashingSidebar = -1;
-				outBuffer.putOpcode(120);
-				outBuffer.put(currentTabId);
-			}
-			drawTabIcons = false;
-			aProducingGraphicsBuffer1150.createRasterizer();
-			anIndexedImage1054.drawImage(0, 0);
-			if (anInt1214 == -1) {
-				if (tabWidgetIds[currentTabId] != -1) {
-					if (currentTabId == 0) {
-						anIndexedImage1168.drawImage(22, 10);
-					}
-					if (currentTabId == 1) {
-						anIndexedImage1169.drawImage(54, 8);
-					}
-					if (currentTabId == 2) {
-						anIndexedImage1169.drawImage(82, 8);
-					}
-					if (currentTabId == 3) {
-						anIndexedImage1170.drawImage(110, 8);
-					}
-					if (currentTabId == 4) {
-						anIndexedImage1172.drawImage(153, 8);
-					}
-					if (currentTabId == 5) {
-						anIndexedImage1172.drawImage(181, 8);
-					}
-					if (currentTabId == 6) {
-						anIndexedImage1171.drawImage(209, 9);
-					}
-				}
-				if (tabWidgetIds[0] != -1 && (flashingSidebar != 0 || Game.currentCycle % 20 < 10)) {
-					tabIcon[0].drawImage(29, 13);
-				}
-				if (tabWidgetIds[1] != -1 && (flashingSidebar != 1 || Game.currentCycle % 20 < 10)) {
-					tabIcon[1].drawImage(53, 11);
-				}
-				if (tabWidgetIds[2] != -1 && (flashingSidebar != 2 || Game.currentCycle % 20 < 10)) {
-					tabIcon[2].drawImage(82, 11);
-				}
-				if (tabWidgetIds[3] != -1 && (flashingSidebar != 3 || Game.currentCycle % 20 < 10)) {
-					tabIcon[3].drawImage(115, 12);
-				}
-				if (tabWidgetIds[4] != -1 && (flashingSidebar != 4 || Game.currentCycle % 20 < 10)) {
-					tabIcon[4].drawImage(153, 13);
-				}
-				if (tabWidgetIds[5] != -1 && (flashingSidebar != 5 || Game.currentCycle % 20 < 10)) {
-					tabIcon[5].drawImage(180, 11);
-				}
-				if (tabWidgetIds[6] != -1 && (flashingSidebar != 6 || Game.currentCycle % 20 < 10)) {
-					tabIcon[6].drawImage(208, 13);
-				}
-			}
-			aProducingGraphicsBuffer1150.drawGraphics(516, 160, gameGraphics);
-			aProducingGraphicsBuffer1149.createRasterizer();
-			anIndexedImage1053.drawImage(0, 0);
-			if (anInt1214 == -1) {
-				if (tabWidgetIds[currentTabId] != -1) {
-					if (currentTabId == 7) {
-						anIndexedImage890.drawImage(42, 0);
-					}
-					if (currentTabId == 8) {
-						anIndexedImage891.drawImage(74, 0);
-					}
-					if (currentTabId == 9) {
-						anIndexedImage891.drawImage(102, 0);
-					}
-					if (currentTabId == 10) {
-						anIndexedImage892.drawImage(130, 1);
-					}
-					if (currentTabId == 11) {
-						anIndexedImage894.drawImage(173, 0);
-					}
-					if (currentTabId == 12) {
-						anIndexedImage894.drawImage(201, 0);
-					}
-					if (currentTabId == 13) {
-						anIndexedImage893.drawImage(229, 0);
-					}
-				}
-				if (tabWidgetIds[8] != -1 && (flashingSidebar != 8 || Game.currentCycle % 20 < 10)) {
-					tabIcon[7].drawImage(74, 2);
-				}
-				if (tabWidgetIds[9] != -1 && (flashingSidebar != 9 || Game.currentCycle % 20 < 10)) {
-					tabIcon[8].drawImage(102, 3);
-				}
-				if (tabWidgetIds[10] != -1 && (flashingSidebar != 10 || Game.currentCycle % 20 < 10)) {
-					tabIcon[9].drawImage(137, 4);
-				}
-				if (tabWidgetIds[11] != -1 && (flashingSidebar != 11 || Game.currentCycle % 20 < 10)) {
-					tabIcon[10].drawImage(174, 2);
-				}
-				if (tabWidgetIds[12] != -1 && (flashingSidebar != 12 || Game.currentCycle % 20 < 10)) {
-					tabIcon[11].drawImage(201, 2);
-				}
-				if (tabWidgetIds[13] != -1 && (flashingSidebar != 13 || Game.currentCycle % 20 < 10)) {
-					tabIcon[12].drawImage(226, 2);
-				}
-			}
-			aProducingGraphicsBuffer1149.drawGraphics(496, 466, gameGraphics);
-			currentSceneBuffer.createRasterizer();
-		}
-		if (redrawChatSettings) {
-			redrawChatSettings = false;
-			aProducingGraphicsBuffer1148.createRasterizer();
-			anIndexedImage1052.drawImage(0, 0);
-			fontNormal.drawStringCenter("Public chat", 55, 28, 0xFFFFFF, true);
-			if (publicChatSetting == 0) {
-				fontNormal.drawStringCenter("On", 55, 41, 0x00FF00, true);
-			}
-			if (publicChatSetting == 1) {
-				fontNormal.drawStringCenter("Friends", 55, 41, 0xFFFF00, true);
-			}
-			if (publicChatSetting == 2) {
-				fontNormal.drawStringCenter("Off", 55, 41, 0xFF0000, true);
-			}
-			if (publicChatSetting == 3) {
-				fontNormal.drawStringCenter("Hide", 55, 41, 0xFFFF, true);
-			}
-			fontNormal.drawStringCenter("Private chat", 184, 28, 0xFFFFFF, true);
-			if (privateChatSetting == 0) {
-				fontNormal.drawStringCenter("On", 184, 41, 0x00FF00, true);
-			}
-			if (privateChatSetting == 1) {
-				fontNormal.drawStringCenter("Friends", 184, 41, 0xFFFF00, true);
-			}
-			if (privateChatSetting == 2) {
-				fontNormal.drawStringCenter("Off", 184, 41, 0xFF0000, true);
-			}
-			fontNormal.drawStringCenter("Trade/compete", 324, 28, 0xFFFFFF, true);
-			if (tradeSetting == 0) {
-				fontNormal.drawStringCenter("On", 324, 41, 0x00FF00, true);
-			}
-			if (tradeSetting == 1) {
-				fontNormal.drawStringCenter("Friends", 324, 41, 0xFFFF00, true);
-			}
-			if (tradeSetting == 2) {
-				fontNormal.drawStringCenter("Off", 324, 41, 0xFF0000, true);
-			}
-			fontNormal.drawStringCenter("Report abuse", 458, 33, 0xFFFFFF, true);
-			aProducingGraphicsBuffer1148.drawGraphics(0, 453, gameGraphics);
-			currentSceneBuffer.createRasterizer();
-		}
-		anInt970 = 0;
+
 	}
 
-	public final boolean method103(Widget widget, boolean bool) {
+	public static String method92(int i, int j, int k) {
+		if (k <= 0)
+			throw new NullPointerException();
+		int l = j - i;
+		if (l < -9)
+			return "@red@";
+		if (l < -6)
+			return "@or3@";
+		if (l < -3)
+			return "@or2@";
+		if (l < 0)
+			return "@or1@";
+		if (l > 9)
+			return "@gre@";
+		if (l > 6)
+			return "@gr3@";
+		if (l > 3)
+			return "@gr2@";
+		if (l > 0)
+			return "@gr1@";
+		else
+			return "@yel@";
+	}
+
+	public void method93(int i) {
 		try {
-			int i = widget.contentType;
-			if (bool) {
-				startup();
+			anInt1276 = -1;
+			aClass6_1210.clear();
+			aClass6_1282.clear();
+			Rasterizer3D.method495((byte) 71);
+			resetModelCaches();
+			currentScene.method241((byte) 7);
+			System.gc();
+			for (int plane = 0; plane < 4; plane++)
+				currentCollisionMap[plane].clear();
+
+			for (int i1 = 0; i1 < 4; i1++) {
+				for (int l1 = 0; l1 < 104; l1++) {
+					for (int k2 = 0; k2 < 104; k2++)
+						currentSceneTileFlags[i1][l1][k2] = 0;
+
+				}
+
 			}
-			if (i >= 1 && i <= 200 || i >= 701 && i <= 900) {
-				if (i >= 801) {
-					i -= 701;
-				} else if (i >= 701) {
-					i -= 601;
-				} else if (i >= 101) {
-					i -= 101;
-				} else {
-					i--;
+
+			MapArea class8 = new MapArea(anIntArrayArrayArray891, 14290, currentSceneTileFlags, 104, 104);
+			int l2 = aByteArrayArray838.length;
+			outBuffer.putOpcode(40);
+			if (!aBoolean1163) {
+				for (int j3 = 0; j3 < l2; j3++) {
+					int j4 = (coordinates[j3] >> 8) * 64 - nextTopLeftTileX;
+					int l5 = (coordinates[j3] & 0xff) * 64 - nextTopRightTileY;
+					byte abyte0[] = aByteArrayArray838[j3];
+					if (abyte0 != null)
+						class8.method174(l5, false, (chunkY - 6) * 8, j4, abyte0, (chunkX - 6) * 8,
+								currentCollisionMap);
 				}
-				menuActionNames[menuActionRow] = "Remove @whi@" + friendsListNames[i];
-				menuActionIds[menuActionRow] = 792;
-				menuActionRow++;
-				menuActionNames[menuActionRow] = "Message @whi@" + friendsListNames[i];
-				menuActionIds[menuActionRow] = 639;
-				menuActionRow++;
-				return true;
+
+				for (int k4 = 0; k4 < l2; k4++) {
+					int i6 = (coordinates[k4] >> 8) * 64 - nextTopLeftTileX;
+					int l7 = (coordinates[k4] & 0xff) * 64 - nextTopRightTileY;
+					byte abyte2[] = aByteArrayArray838[k4];
+					if (abyte2 == null && chunkY < 800)
+						class8.method180(i6, l7, 64, -810, 64);
+				}
+
+				outBuffer.putOpcode(40);
+				for (int j6 = 0; j6 < l2; j6++) {
+					byte abyte1[] = aByteArrayArray1232[j6];
+					if (abyte1 != null) {
+						int l8 = (coordinates[j6] >> 8) * 64 - nextTopLeftTileX;
+						int k9 = (coordinates[j6] & 0xff) * 64 - nextTopRightTileY;
+						class8.method179(k9, currentCollisionMap, l8, -571, currentScene, abyte1);
+					}
+				}
+
 			}
-			if (i >= 401 && i <= 500) {
-				menuActionNames[menuActionRow] = "Remove @whi@" + widget.disabledText;
-				menuActionIds[menuActionRow] = 322;
-				menuActionRow++;
-				return true;
-			}
-			return false;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("96874, " + widget + ", " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method104(boolean bool) {
-		try {
-			GameAnimableObject animableobject = (GameAnimableObject) aLinkedList1081.getBack();
-			loggedIn &= bool;
-			for (/**/; animableobject != null; animableobject = (GameAnimableObject) aLinkedList1081.getPrevious()) {
-				if (animableobject.plane != currentSceneId || animableobject.transformCompleted) {
-					animableobject.remove();
-				} else if (Game.currentCycle >= animableobject.loopCycle) {
-					animableobject.nextFrame(anInt970);
-					if (animableobject.transformCompleted) {
-						animableobject.remove();
-					} else {
-						currentScene.method507(animableobject.plane, 0, (byte) 6, animableobject.z, -1,
-								animableobject.y, 60, animableobject.x, animableobject, false);
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("28956, " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method105(int i_624_, int i_625_, Widget widget, int i_626_) {
-		try {
-			if (widget.type == 0
-					&& widget.children != null
-					&& (!widget.hiddenUntilHovered || anInt1051 == widget.id || anInt1073 == widget.id || anInt1064 == widget.id)) {
-				int i_627_ = Rasterizer.topX;
-				int i_628_ = Rasterizer.topY;
-				int i_629_ = Rasterizer.bottomX;
-				int i_630_ = Rasterizer.bottomY;
-				Rasterizer.setCoordinates(i_625_, i_626_, i_625_ + widget.width, i_626_ + widget.height);
-				int i_631_ = widget.children.length;
-				for (int i_632_ = 0; i_632_ < i_631_; i_632_++) {
-					int i_633_ = widget.childrenX[i_632_] + i_625_;
-					int i_634_ = widget.childrenY[i_632_] + i_626_ - i_624_;
-					Widget widget_635_ = Widget.cache[widget.children[i_632_]];
-					i_633_ += widget_635_.x;
-					i_634_ += widget_635_.y;
-					if (widget_635_.contentType > 0) {
-						method75(widget_635_);
-					}
-					if (widget_635_.type == 0) {
-						if (widget_635_.scrollPosition > widget_635_.scrollLimit - widget_635_.height) {
-							widget_635_.scrollPosition = widget_635_.scrollLimit - widget_635_.height;
-						}
-						if (widget_635_.scrollPosition < 0) {
-							widget_635_.scrollPosition = 0;
-						}
-						method105(widget_635_.scrollPosition, i_633_, widget_635_, i_634_);
-						if (widget_635_.scrollLimit > widget_635_.height) {
-							processScroll(widget_635_.height, widget_635_.scrollPosition, i_634_, i_633_
-									+ widget_635_.width, widget_635_.scrollLimit);
-						}
-					} else if (widget_635_.type != 1) {
-						if (widget_635_.type == 2) {
-							int i_636_ = 0;
-							for (int i_637_ = 0; i_637_ < widget_635_.height; i_637_++) {
-								for (int i_638_ = 0; i_638_ < widget_635_.width; i_638_++) {
-									int i_639_ = i_633_ + i_638_ * (32 + widget_635_.itemSpritePadsX);
-									int i_640_ = i_634_ + i_637_ * (32 + widget_635_.itemSpritePadsY);
-									if (i_636_ < 20) {
-										i_639_ += widget_635_.imageX[i_636_];
-										i_640_ += widget_635_.imageY[i_636_];
-									}
-									if (widget_635_.items[i_636_] > 0) {
-										int i_641_ = 0;
-										int i_642_ = 0;
-										int i_643_ = widget_635_.items[i_636_] - 1;
-										if (i_639_ > Rasterizer.topX - 32 && i_639_ < Rasterizer.bottomX
-												&& i_640_ > Rasterizer.topY - 32 && i_640_ < Rasterizer.bottomY
-												|| anInt1111 != 0 && anInt1110 == i_636_) {
-											int i_644_ = 0;
-											if (anInt1307 == 1 && anInt1308 == i_636_ && anInt1309 == widget_635_.id) {
-												i_644_ = 0xFFFFFF;
-											}
-											ImageRGB imagergb = ItemDefinition.getSprite(i_643_,
-													widget_635_.itemAmounts[i_636_], i_644_);
-											if (imagergb != null) {
-												if (anInt1111 != 0 && anInt1110 == i_636_
-														&& anInt1109 == widget_635_.id) {
-													i_641_ = mouseEventX - anInt1112;
-													i_642_ = mouseEventY - anInt1113;
-													if (i_641_ < 5 && i_641_ > -5) {
-														i_641_ = 0;
-													}
-													if (i_642_ < 5 && i_642_ > -5) {
-														i_642_ = 0;
-													}
-													if (anInt1014 < 5) {
-														i_641_ = 0;
-														i_642_ = 0;
-													}
-													imagergb.drawImageAlpha(i_639_ + i_641_, i_640_ + i_642_, 128);
-													if (i_640_ + i_642_ < Rasterizer.topY && widget.scrollPosition > 0) {
-														int i_645_ = anInt970 * (Rasterizer.topY - i_640_ - i_642_) / 3;
-														if (i_645_ > anInt970 * 10) {
-															i_645_ = anInt970 * 10;
-														}
-														if (i_645_ > widget.scrollPosition) {
-															i_645_ = widget.scrollPosition;
-														}
-														widget.scrollPosition -= i_645_;
-														anInt1113 += i_645_;
-													}
-													if (i_640_ + i_642_ + 32 > Rasterizer.bottomY
-															&& widget.scrollPosition < widget.scrollLimit
-																	- widget.height) {
-														int i_646_ = anInt970
-																* (i_640_ + i_642_ + 32 - Rasterizer.bottomY) / 3;
-														if (i_646_ > anInt970 * 10) {
-															i_646_ = anInt970 * 10;
-														}
-														if (i_646_ > widget.scrollLimit - widget.height
-																- widget.scrollPosition) {
-															i_646_ = widget.scrollLimit - widget.height
-																	- widget.scrollPosition;
-														}
-														widget.scrollPosition += i_646_;
-														anInt1113 -= i_646_;
-													}
-												} else if (anInt1271 != 0 && anInt1270 == i_636_
-														&& anInt1269 == widget_635_.id) {
-													imagergb.drawImageAlpha(i_639_, i_640_, 128);
-												} else {
-													imagergb.drawImage(i_639_, i_640_);
-												}
-												if (imagergb.maxWidth == 33 || widget_635_.itemAmounts[i_636_] != 1) {
-													int i_647_ = widget_635_.itemAmounts[i_636_];
-													fontSmall.drawString(Game.method43(-33245, i_647_), i_639_ + 1
-															+ i_641_, i_640_ + 10 + i_642_, 0);
-													fontSmall.drawString(Game.method43(-33245, i_647_),
-															i_639_ + i_641_, i_640_ + 9 + i_642_, 0xFFFF00);
-												}
-											}
-										}
-									} else if (widget_635_.images != null && i_636_ < 20) {
-										ImageRGB imagergb = widget_635_.images[i_636_];
-										if (imagergb != null) {
-											imagergb.drawImage(i_639_, i_640_);
-										}
-									}
-									i_636_++;
-								}
-							}
-						} else if (widget_635_.type == 3) {
-							boolean bool = false;
-							if (anInt1064 == widget_635_.id || anInt1073 == widget_635_.id
-									|| anInt1051 == widget_635_.id) {
-								bool = true;
-							}
-							int i_648_;
-							if (method131(widget_635_)) {
-								i_648_ = widget_635_.enabledColor;
-								if (bool && widget_635_.enabledHoveredColor != 0) {
-									i_648_ = widget_635_.enabledHoveredColor;
-								}
-							} else {
-								i_648_ = widget_635_.disabledColor;
-								if (bool && widget_635_.disabledHoveredColor != 0) {
-									i_648_ = widget_635_.disabledHoveredColor;
-								}
-							}
-							if (widget_635_.alpha == 0) {
-								if (widget_635_.filled) {
-									Rasterizer.drawFilledRectangle(i_633_, i_634_, widget_635_.width,
-											widget_635_.height, i_648_);
-								} else {
-									Rasterizer.drawUnfilledRectangle(i_633_, i_634_, widget_635_.width,
-											widget_635_.height, i_648_);
-								}
-							} else if (widget_635_.filled) {
-								Rasterizer.drawFilledRectangleAlhpa(i_633_, i_634_, widget_635_.width,
-										widget_635_.height, i_648_, 256 - (widget_635_.alpha & 0xff));
-							} else {
-								Rasterizer.drawUnfilledRectangleAlpha(i_633_, i_634_, widget_635_.width,
-										widget_635_.height, i_648_, 256 - (widget_635_.alpha & 0xff));
-							}
-						} else if (widget_635_.type == 4) {
-							TypeFace typeface = widget_635_.typeFaces;
-							String string = widget_635_.disabledText;
-							boolean bool = false;
-							if (anInt1064 == widget_635_.id || anInt1073 == widget_635_.id
-									|| anInt1051 == widget_635_.id) {
-								bool = true;
-							}
-							int i_649_;
-							if (method131(widget_635_)) {
-								i_649_ = widget_635_.enabledColor;
-								if (bool && widget_635_.enabledHoveredColor != 0) {
-									i_649_ = widget_635_.enabledHoveredColor;
-								}
-								if (widget_635_.enabledText.length() > 0) {
-									string = widget_635_.enabledText;
-								}
-							} else {
-								i_649_ = widget_635_.disabledColor;
-								if (bool && widget_635_.disabledHoveredColor != 0) {
-									i_649_ = widget_635_.disabledHoveredColor;
-								}
-							}
-							if (widget_635_.actionType == 6 && aBoolean1174) {
-								string = "Please wait...";
-								i_649_ = widget_635_.disabledColor;
-							}
-							if (Rasterizer.width == 479) {
-								if (i_649_ == 0xFFFF00) {
-									i_649_ = 255;
-								}
-								if (i_649_ == 49152) {
-									i_649_ = 0xFFFFFF;
-								}
-							}
-							int i_650_ = i_634_ + typeface.characterDefaultHeight;
-							while (string.length() > 0) {
-								if (string.indexOf("%") != -1) {
-									for (;;) {
-										int i_651_ = string.indexOf("%1");
-										if (i_651_ == -1) {
-											break;
-										}
-										string = string.substring(0, i_651_)
-												+ method93(369, parseWidgetOpcode(widget_635_, 0))
-												+ string.substring(i_651_ + 2);
-									}
-									for (;;) {
-										int i_652_ = string.indexOf("%2");
-										if (i_652_ == -1) {
-											break;
-										}
-										string = string.substring(0, i_652_)
-												+ method93(369, parseWidgetOpcode(widget_635_, 1))
-												+ string.substring(i_652_ + 2);
-									}
-									for (;;) {
-										int i_653_ = string.indexOf("%3");
-										if (i_653_ == -1) {
-											break;
-										}
-										string = string.substring(0, i_653_)
-												+ method93(369, parseWidgetOpcode(widget_635_, 2))
-												+ string.substring(i_653_ + 2);
-									}
-									for (;;) {
-										int i_654_ = string.indexOf("%4");
-										if (i_654_ == -1) {
-											break;
-										}
-										string = string.substring(0, i_654_)
-												+ method93(369, parseWidgetOpcode(widget_635_, 3))
-												+ string.substring(i_654_ + 2);
-									}
-									for (;;) {
-										int i_655_ = string.indexOf("%5");
-										if (i_655_ == -1) {
-											break;
-										}
-										string = string.substring(0, i_655_)
-												+ method93(369, parseWidgetOpcode(widget_635_, 4))
-												+ string.substring(i_655_ + 2);
-									}
-								}
-								int i_656_ = string.indexOf("\\n");
-								String string_657_;
-								if (i_656_ != -1) {
-									string_657_ = string.substring(0, i_656_);
-									string = string.substring(i_656_ + 2);
-								} else {
-									string_657_ = string;
-									string = "";
-								}
-								if (widget_635_.typeFaceCentered) {
-									typeface.drawStringCenter(string_657_, i_633_ + widget_635_.width / 2, i_650_,
-											i_649_, widget_635_.typeFaceShadowed);
-								} else {
-									typeface.drawShadowedString(string_657_, i_633_, i_650_,
-											widget_635_.typeFaceShadowed, i_649_);
-								}
-								i_650_ += typeface.characterDefaultHeight;
-							}
-						} else if (widget_635_.type == 5) {
-							ImageRGB imagergb;
-							if (method131(widget_635_)) {
-								imagergb = widget_635_.enabledImage;
-							} else {
-								imagergb = widget_635_.disabledImage;
-							}
-							if (imagergb != null) {
-								imagergb.drawImage(i_633_, i_634_);
-							}
-						} else if (widget_635_.type == 6) {
-							int i_658_ = Rasterizer3D.centerX;
-							int i_659_ = Rasterizer3D.centerY;
-							Rasterizer3D.centerX = i_633_ + widget_635_.width / 2;
-							Rasterizer3D.centerY = i_634_ + widget_635_.height / 2;
-							int i_660_ = Rasterizer3D.SINE[widget_635_.rotationX] * widget_635_.zoom >> 16;
-							int i_661_ = Rasterizer3D.COSINE[widget_635_.rotationX] * widget_635_.zoom >> 16;
-							boolean bool = method131(widget_635_);
-							int i_662_;
-							if (bool) {
-								i_662_ = widget_635_.enabledAnimation;
-							} else {
-								i_662_ = widget_635_.disabledAnimation;
-							}
-							Model model;
-							if (i_662_ == -1) {
-								model = widget_635_.getAnimatedModel(-1, -1, bool);
-							} else {
-								AnimationSequence animationsequence = AnimationSequence.cache[i_662_];
-								model = widget_635_.getAnimatedModel(
-										animationsequence.frame1Ids[widget_635_.animationFrame],
-										animationsequence.frame2Ids[widget_635_.animationFrame], bool);
-							}
-							if (model != null) {
-								model.method430(0, widget_635_.rotationY, 0, widget_635_.rotationX, 0, i_660_, i_661_);
-							}
-							Rasterizer3D.centerX = i_658_;
-							Rasterizer3D.centerY = i_659_;
-						} else if (widget_635_.type == 7) {
-							TypeFace typeface = widget_635_.typeFaces;
-							int i_663_ = 0;
-							for (int i_664_ = 0; i_664_ < widget_635_.height; i_664_++) {
-								for (int i_665_ = 0; i_665_ < widget_635_.width; i_665_++) {
-									if (widget_635_.items[i_663_] > 0) {
-										ItemDefinition itemdefinition = ItemDefinition
-												.getDefinition(widget_635_.items[i_663_] - 1);
-										String string = itemdefinition.name;
-										if (itemdefinition.stackable || widget_635_.itemAmounts[i_663_] != 1) {
-											string += " x" + Game.formatAmount(widget_635_.itemAmounts[i_663_]);
-										}
-										int i_666_ = i_633_ + i_665_ * (115 + widget_635_.itemSpritePadsX);
-										int i_667_ = i_634_ + i_664_ * (12 + widget_635_.itemSpritePadsY);
-										if (widget_635_.typeFaceCentered) {
-											typeface.drawStringCenter(string, i_666_ + widget_635_.width / 2, i_667_,
-													widget_635_.disabledColor, widget_635_.typeFaceShadowed);
-										} else {
-											typeface.drawShadowedString(string, i_666_, i_667_,
-													widget_635_.typeFaceShadowed, widget_635_.disabledColor);
-										}
-									}
-									i_663_++;
-								}
-							}
-						}
-					}
-				}
-				Rasterizer.setCoordinates(i_627_, i_628_, i_629_, i_630_);
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("5217, " + i_624_ + ", " + i_625_ + ", " + widget + ", " + i_626_ + ", "
-					+ runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method106(IndexedImage indexedimage, int i) {
-		do {
-			try {
-				int i_668_ = 256;
-				if (i >= 0) {
-					outBuffer.put(126);
-				}
-				for (int i_669_ = 0; i_669_ < anIntArray1215.length; i_669_++) {
-					anIntArray1215[i_669_] = 0;
-				}
-				for (int i_670_ = 0; i_670_ < 5000; i_670_++) {
-					int i_671_ = (int) (Math.random() * 128.0 * i_668_);
-					anIntArray1215[i_671_] = (int) (Math.random() * 256.0);
-				}
-				for (int i_672_ = 0; i_672_ < 20; i_672_++) {
-					for (int i_673_ = 1; i_673_ < i_668_ - 1; i_673_++) {
-						for (int i_674_ = 1; i_674_ < 127; i_674_++) {
-							int i_675_ = i_674_ + (i_673_ << 7);
-							anIntArray1216[i_675_] = (anIntArray1215[i_675_ - 1] + anIntArray1215[i_675_ + 1]
-									+ anIntArray1215[i_675_ - 128] + anIntArray1215[i_675_ + 128]) / 4;
-						}
-					}
-					int[] is = anIntArray1215;
-					anIntArray1215 = anIntArray1216;
-					anIntArray1216 = is;
-				}
-				if (indexedimage == null) {
-					break;
-				}
-				int i_676_ = 0;
-				for (int i_677_ = 0; i_677_ < indexedimage.height; i_677_++) {
-					for (int i_678_ = 0; i_678_ < indexedimage.width; i_678_++) {
-						if (indexedimage.pixels[i_676_++] != 0) {
-							int i_679_ = i_678_ + 16 + indexedimage.xDrawOffset;
-							int i_680_ = i_677_ + 16 + indexedimage.yDrawOffset;
-							int i_681_ = i_679_ + (i_680_ << 7);
-							anIntArray1215[i_681_] = 0;
-						}
-					}
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("98023, " + indexedimage + ", " + i + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	private final void updatePlayerMask(int mask, int playerId, Buffer buffer, Player player) {
-		do {
-			try {
-
-				if ((mask & 0x400) != 0) {
-					player.anInt1563 = buffer.getUnsignedByteS();
-					player.anInt1565 = buffer.getUnsignedByteS();
-					player.anInt1564 = buffer.getUnsignedByteS();
-					player.anInt1566 = buffer.getUnsignedByteS();
-					player.anInt1567 = buffer.getUnsignedShortA() + Game.currentCycle;
-					player.anInt1568 = buffer.getUnsignedLEShortA() + Game.currentCycle;
-					player.anInt1569 = buffer.getUnsignedByteS();
-					player.resetPath();
-				}
-
-				if ((mask & 0x100) != 0) {
-					player.spotAnimationId = buffer.getUnsignedShort();
-					int spotAnimationDelay = buffer.getInt();
-					player.spotAnimationDelay = spotAnimationDelay >> 16;
-					player.spotAnimationEndCycle = Game.currentCycle + (spotAnimationDelay & 0xffff);
-					player.currentAnimationFrame = 0;
-					player.anInt1542 = 0;
-					if (player.spotAnimationEndCycle > Game.currentCycle) {
-						player.currentAnimationFrame = -1;
-					}
-					if (player.spotAnimationId == 0xFFFF) {
-						player.spotAnimationId = -1;
-					}
-				}
-
-				if ((mask & 0x8) != 0) {
-					int animationId = buffer.getUnsignedShort();
-					if (animationId == 0xFFFF) {
-						animationId = -1;
-					}
-					int animationDelay = buffer.getUnsignedByteC();
-					if (animationId == player.animation && animationId != -1) {
-						int i_686_ = AnimationSequence.cache[animationId].anInt63;
-						if (i_686_ == 1) {
-							player.anInt1547 = 0;
-							player.anInt1548 = 0;
-							player.aniomationDelay = animationDelay;
-							player.anInt1550 = 0;
-						}
-						if (i_686_ == 2) {
-							player.anInt1550 = 0;
-						}
-					} else if (animationId == -1
-							|| player.animation == -1
-							|| AnimationSequence.cache[animationId].anInt57 >= AnimationSequence.cache[player.animation].anInt57) {
-						player.animation = animationId;
-						player.anInt1547 = 0;
-						player.anInt1548 = 0;
-						player.aniomationDelay = animationDelay;
-						player.anInt1550 = 0;
-						player.anInt1562 = player.pathLength;
-					}
-				}
-
-				if ((mask & 0x4) != 0) {
-					player.forcedChat = buffer.getString();
-					if (player.forcedChat.charAt(0) == '~') {
-						player.forcedChat = player.forcedChat.substring(1);
-						sendMessage(player.forcedChat, 2, player.playerName);
-					} else if (player == Game.localPlayer) {
-						sendMessage(player.forcedChat, 2, player.playerName);
-					}
-					player.chatColor = 0;
-					player.chatEffect = 0;
-					player.anInt1555 = 150;
-				}
-
-				if ((mask & 0x80) != 0) {
-					int chatEffects = buffer.getUnsignedShort();
-					int playerRights = buffer.getUnsignedByte();
-					int chatTextLength = buffer.getUnsignedByteC();
-					int originalOffset = buffer.offset;
-					if (player.playerName != null && player.visibile) {
-						long l = TextUtils.nameToLong(player.playerName);
-						boolean bool = false;
-						if (playerRights <= 1) {
-							for (int i_691_ = 0; i_691_ < ignoreListCount; i_691_++) {
-								if (ignoreList[i_691_] == l) {
-									bool = true;
+			if (aBoolean1163) {
+				for (int k3 = 0; k3 < 4; k3++) {
+					for (int l4 = 0; l4 < 13; l4++) {
+						for (int k6 = 0; k6 < 13; k6++) {
+							boolean flag = false;
+							int i9 = constructedMapPalette[k3][l4][k6];
+							if (i9 != -1) {
+								int l9 = i9 >> 24 & 3;
+								int j10 = i9 >> 1 & 3;
+								int l10 = i9 >> 14 & 0x3ff;
+								int j11 = i9 >> 3 & 0x7ff;
+								int l11 = (l10 / 8 << 8) + j11 / 8;
+								for (int j12 = 0; j12 < coordinates.length; j12++) {
+									if (coordinates[j12] != l11 || aByteArrayArray838[j12] == null)
+										continue;
+									class8.method168(j10, (j11 & 7) * 8, false, aByteArrayArray838[j12], k3, l9,
+											l4 * 8, currentCollisionMap, k6 * 8, (l10 & 7) * 8);
+									flag = true;
 									break;
 								}
+
 							}
+							if (!flag)
+								class8.method166(anInt1072, k3, k6 * 8, l4 * 8);
 						}
-						if (!bool && inTutorial == 0) {
-							try {
-								aBuffer859.offset = 0;
-								buffer.getBytes(chatTextLength, 0, aBuffer859.payload);
-								aBuffer859.offset = 0;
-								String forcedChat = ChatEncoder.get(chatTextLength, aBuffer859);
-								forcedChat = ChatCensor.censorString(forcedChat);
-								player.forcedChat = forcedChat;
-								player.chatColor = chatEffects >> 8;
-								player.chatEffect = chatEffects & 0xff;
-								player.anInt1555 = 150;
-								if (playerRights == 2 || playerRights == 3) {
-									sendMessage(forcedChat, 1, "@cr2@" + player.playerName);
-								} else if (playerRights == 1) {
-									sendMessage(forcedChat, 1, "@cr1@" + player.playerName);
-								} else {
-									sendMessage(forcedChat, 2, player.playerName);
+
+					}
+
+				}
+
+				for (int i5 = 0; i5 < 13; i5++) {
+					for (int l6 = 0; l6 < 13; l6++) {
+						int i8 = constructedMapPalette[0][i5][l6];
+						if (i8 == -1)
+							class8.method180(i5 * 8, l6 * 8, 8, -810, 8);
+					}
+
+				}
+
+				outBuffer.putOpcode(40);
+				for (int i7 = 0; i7 < 4; i7++) {
+					for (int j8 = 0; j8 < 13; j8++) {
+						for (int j9 = 0; j9 < 13; j9++) {
+							int i10 = constructedMapPalette[i7][j8][j9];
+							if (i10 != -1) {
+								int k10 = i10 >> 24 & 3;
+								int i11 = i10 >> 1 & 3;
+								int k11 = i10 >> 14 & 0x3ff;
+								int i12 = i10 >> 3 & 0x7ff;
+								int k12 = (k11 / 8 << 8) + i12 / 8;
+								for (int l12 = 0; l12 < coordinates.length; l12++) {
+									if (coordinates[l12] != k12 || aByteArrayArray1232[l12] == null)
+										continue;
+									class8.method172(i7, currentCollisionMap, currentScene, false,
+											aByteArrayArray1232[l12], j9 * 8, i11, (k11 & 7) * 8, j8 * 8,
+											(i12 & 7) * 8, k10);
+									break;
 								}
-							} catch (Exception exception) {
-								SignLink.reportError("cde2");
+
 							}
 						}
+
 					}
-					buffer.offset = originalOffset + chatTextLength;
+
 				}
 
-				if ((mask & 0x1) != 0) {
-					player.interactingEntity = buffer.getUnsignedShort();
-					if (player.interactingEntity == 0xFFFF) {
-						player.interactingEntity = -1;
-					}
-				}
-
-				if ((mask & 0x10) != 0) {
-					int appearanceBufferSize = buffer.getUnsignedByteC();
-					byte[] _appearanceBuffer = new byte[appearanceBufferSize];
-					Buffer appearanceBuffer = new Buffer(_appearanceBuffer);
-					buffer.getBytes(_appearanceBuffer, 0, appearanceBufferSize);
-					playerBuffer[playerId] = appearanceBuffer;
-					player.updatePlayer(appearanceBuffer);
-				}
-
-				if ((mask & 0x2) != 0) {
-					player.faceTowardX = buffer.getUnsignedShortA();
-					player.faceTowardY = buffer.getUnsignedShort();
-				}
-
-				if ((mask & 0x20) != 0) {
-					int hitDamage = buffer.getUnsignedByte();
-					int hitType = buffer.getUnsignedByteA();
-					player.updateHits(hitType, hitDamage, Game.currentCycle);
-					player.endCycle = Game.currentCycle + 300;
-					player.maxHealth = buffer.getUnsignedByteC();
-					player.currentHealth = buffer.getUnsignedByte();
-				}
-
-				if ((mask & 0x200) != 0) {
-					int hitDamage = buffer.getUnsignedByte();
-					int hitType = buffer.getUnsignedByteS();
-					player.updateHits(hitType, hitDamage, Game.currentCycle);
-					player.endCycle = Game.currentCycle + 300;
-					player.maxHealth = buffer.getUnsignedByte();
-					player.currentHealth = buffer.getUnsignedByteC();
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("50326, " + mask + ", " + playerId + ", " + buffer + ", " + player + ", "
-						+ runtimeexception.toString());
-				throw new RuntimeException();
 			}
-			break;
-		} while (false);
+			outBuffer.putOpcode(40);
+			class8.method167(currentCollisionMap, anInt1318, currentScene);
+			if (aClass18_1158 != null) {
+				aClass18_1158.createRasterizer();
+				Rasterizer3D.lineOffsets = anIntArray1002;
+			}
+			outBuffer.putOpcode(40);
+			int l3 = MapArea.anInt150;
+			if (l3 > plane)
+				l3 = plane;
+			if (l3 < plane - 1)
+				l3 = plane - 1;
+			if (lowMemory)
+				currentScene.method242(MapArea.anInt150, true);
+			else
+				currentScene.method242(0, true);
+			for (int j5 = 0; j5 < 104; j5++) {
+				for (int j7 = 0; j7 < 104; j7++)
+					method26(j5, j7);
+
+			}
+
+			method18((byte) 3);
+		} catch (Exception exception) {
+		}
+		GameObjectDefinition.modelCache.removeAll();
+		if (super.gameFrame != null) {
+			outBuffer.putOpcode(78);
+			outBuffer.putInt(0x3f008edd);
+		}
+		if (lowMemory && SignLink.cache_dat != null) {
+			int k = onDemandFetcher.fileCount(0);
+			for (int j1 = 0; j1 < k; j1++) {
+				int i2 = onDemandFetcher.method325(j1, -493);
+				if ((i2 & 0x79) == 0)
+					Model.resetModel(j1);
+			}
+
+		}
+		System.gc();
+		Rasterizer3D.method496(20);
+		onDemandFetcher.method336((byte) -125);
+		int l = (chunkX - 6) / 8 - 1;
+		int k1 = (chunkX + 6) / 8 + 1;
+		int j2 = (chunkY - 6) / 8 - 1;
+		int i3 = (chunkY + 6) / 8 + 1;
+		i = 94 / i;
+		if (aBoolean1067) {
+			l = 49;
+			k1 = 50;
+			j2 = 49;
+			i3 = 50;
+		}
+		for (int i4 = l; i4 <= k1; i4++) {
+			for (int k5 = j2; k5 <= i3; k5++)
+				if (i4 == l || i4 == k1 || k5 == j2 || k5 == i3) {
+					int k7 = onDemandFetcher.method344(0, i4, k5, 0);
+					if (k7 != -1)
+						onDemandFetcher.method337(k7, 3, aByte936);
+					int k8 = onDemandFetcher.method344(0, i4, k5, 1);
+					if (k8 != -1)
+						onDemandFetcher.method337(k8, 3, aByte936);
+				}
+
+		}
+
 	}
 
-	public final void method108(int i) {
-		do {
-			try {
-				if (i != 3) {
-					opcode = -1;
+	public void method94(int i, int j, int k, int l, int i1, int j1, byte byte0) {
+		int k1 = 2048 - k & 0x7ff;
+		int l1 = 2048 - i1 & 0x7ff;
+		if (byte0 != -103)
+			opcode = -1;
+		int i2 = 0;
+		int j2 = 0;
+		int k2 = l;
+		if (k1 != 0) {
+			int l2 = Model.anIntArray1710[k1];
+			int j3 = Model.anIntArray1711[k1];
+			int l3 = j2 * j3 - k2 * l2 >> 16;
+			k2 = j2 * l2 + k2 * j3 >> 16;
+			j2 = l3;
+		}
+		if (l1 != 0) {
+			int i3 = Model.anIntArray1710[l1];
+			int k3 = Model.anIntArray1711[l1];
+			int i4 = k2 * i3 + i2 * k3 >> 16;
+			k2 = k2 * k3 - i2 * i3 >> 16;
+			i2 = i4;
+		}
+		anInt1216 = j - i2;
+		anInt1217 = i - j2;
+		anInt1218 = j1 - k2;
+		anInt1219 = k;
+		anInt1220 = i1;
+	}
+
+	public boolean method95(Widget class13, int i) {
+		if (i >= 0)
+			anInt1175 = 276;
+		if (class13.anIntArray273 == null)
+			return false;
+		for (int j = 0; j < class13.anIntArray273.length; j++) {
+			int k = method129(3, j, class13);
+			int l = class13.anIntArray256[j];
+			if (class13.anIntArray273[j] == 2) {
+				if (k >= l)
+					return false;
+			} else if (class13.anIntArray273[j] == 3) {
+				if (k <= l)
+					return false;
+			} else if (class13.anIntArray273[j] == 4) {
+				if (k == l)
+					return false;
+			} else if (k != l)
+				return false;
+		}
+
+		return true;
+	}
+
+	public void updatePlayers(int packetSize, int j, Buffer vec) {
+		removePlayerCount = 0;
+		updatedPlayerCount = 0;
+		updateThisPlayerMovement(packetSize, aBoolean1274, vec);
+		updateOtherPlayerMovement(packetSize, vec);
+		j = 40 / j;
+		addNewPlayers(packetSize, vec);
+		parsePlayerBlocks(vec, packetSize);
+		for (int k = 0; k < removePlayerCount; k++) {
+			int l = removePlayers[k];
+			if (((Actor) (players[l])).pulseCycle != pulseCycle)
+				players[l] = null;
+		}
+
+		if (vec.offset != packetSize) {
+			SignLink
+					.reporterror("Error packet size mismatch in getplayer coord:" + vec.offset + " psize:" + packetSize);
+			throw new RuntimeException("eek");
+		}
+		for (int i1 = 0; i1 < localPlayerCount; i1++)
+			if (players[localPlayers[i1]] == null) {
+				SignLink.reporterror(username + " null entry in pl list - coord:" + i1 + " size:"
+						+ localPlayerCount);
+				throw new RuntimeException("eek");
+			}
+
+	}
+
+	public void method97(int i, long l) {
+		try {
+			if (l == 0L)
+				return;
+			for (int j = 0; j < ignoresCount; j++) {
+				if (ignores[j] != l)
+					continue;
+				ignoresCount--;
+				aBoolean1181 = true;
+				for (int k = j; k < ignoresCount; k++)
+					ignores[k] = ignores[k + 1];
+
+				outBuffer.putOpcode(160);
+				outBuffer.putLong(l);
+				break;
+			}
+
+			i = 42 / i;
+			return;
+		} catch (RuntimeException runtimeexception) {
+			SignLink.reporterror("45745, " + i + ", " + l + ", " + runtimeexception.toString());
+		}
+		throw new RuntimeException();
+	}
+
+	public String getParameter(String s) {
+		if (SignLink.mainapp != null)
+			return SignLink.mainapp.getParameter(s);
+		else
+			return super.getParameter(s);
+	}
+
+	public void method98(int i) {
+		char c = '\u0100';
+		if (anInt1047 > 0) {
+			for (int j = 0; j < 256; j++)
+				if (anInt1047 > 768)
+					anIntArray1310[j] = method106(anIntArray1311[j], anIntArray1312[j], 1024 - anInt1047, 8);
+				else if (anInt1047 > 256)
+					anIntArray1310[j] = anIntArray1312[j];
+				else
+					anIntArray1310[j] = method106(anIntArray1312[j], anIntArray1311[j], 256 - anInt1047, 8);
+
+		} else if (anInt1048 > 0) {
+			for (int k = 0; k < 256; k++)
+				if (anInt1048 > 768)
+					anIntArray1310[k] = method106(anIntArray1311[k], anIntArray1313[k], 1024 - anInt1048, 8);
+				else if (anInt1048 > 256)
+					anIntArray1310[k] = anIntArray1313[k];
+				else
+					anIntArray1310[k] = method106(anIntArray1313[k], anIntArray1311[k], 256 - anInt1048, 8);
+
+		} else {
+			for (int l = 0; l < 256; l++)
+				anIntArray1310[l] = anIntArray1311[l];
+
+		}
+		for (int i1 = 0; i1 < 33920; i1++)
+			flameLeftBackground.pixels[i1] = anImageRGB1226.pixels[i1];
+
+		int j1 = 0;
+		int k1 = 1152;
+		for (int l1 = 1; l1 < c - 1; l1++) {
+			int i2 = (anIntArray1166[l1] * (c - l1)) / c;
+			int k2 = 22 + i2;
+			if (k2 < 0)
+				k2 = 0;
+			j1 += k2;
+			for (int i3 = k2; i3 < 128; i3++) {
+				int k3 = anIntArray1084[j1++];
+				if (k3 != 0) {
+					int i4 = k3;
+					int k4 = 256 - k3;
+					k3 = anIntArray1310[k3];
+					int i5 = flameLeftBackground.pixels[k1];
+					flameLeftBackground.pixels[k1++] = ((k3 & 0xff00ff) * i4 + (i5 & 0xff00ff) * k4 & 0xff00ff00)
+							+ ((k3 & 0xff00) * i4 + (i5 & 0xff00) * k4 & 0xff0000) >> 8;
+				} else {
+					k1++;
 				}
-				try {
-					int i_698_ = Game.localPlayer.xWithBoundary + anInt1303;
-					int i_699_ = Game.localPlayer.yWithBoundary + anInt1156;
-					if (anInt1039 - i_698_ < -500 || anInt1039 - i_698_ > 500 || anInt1040 - i_699_ < -500
-							|| anInt1040 - i_699_ > 500) {
-						anInt1039 = i_698_;
-						anInt1040 = i_699_;
+			}
+
+			k1 += k2;
+		}
+
+		flameLeftBackground.drawGraphics(0, 0, super.gameGraphics);
+		i = 66 / i;
+		for (int j2 = 0; j2 < 33920; j2++)
+			flameRightBackground.pixels[j2] = anImageRGB1227.pixels[j2];
+
+		j1 = 0;
+		k1 = 1176;
+		for (int l2 = 1; l2 < c - 1; l2++) {
+			int j3 = (anIntArray1166[l2] * (c - l2)) / c;
+			int l3 = 103 - j3;
+			k1 += j3;
+			for (int j4 = 0; j4 < l3; j4++) {
+				int l4 = anIntArray1084[j1++];
+				if (l4 != 0) {
+					int j5 = l4;
+					int k5 = 256 - l4;
+					l4 = anIntArray1310[l4];
+					int l5 = flameRightBackground.pixels[k1];
+					flameRightBackground.pixels[k1++] = ((l4 & 0xff00ff) * j5 + (l5 & 0xff00ff) * k5 & 0xff00ff00)
+							+ ((l4 & 0xff00) * j5 + (l5 & 0xff00) * k5 & 0xff0000) >> 8;
+				} else {
+					k1++;
+				}
+			}
+
+			j1 += 128 - l3;
+			k1 += 128 - l3 - j3;
+		}
+
+		flameRightBackground.drawGraphics(637, 0, super.gameGraphics);
+	}
+
+	public void adjustVolume(boolean flag, byte byte0, int i) {
+		if (byte0 != 8)
+			outBuffer.putByte(49);
+		SignLink.midiVolume = i;
+		if (flag)
+			SignLink.midi = "voladjust";
+	}
+
+	public void method100(int i) {
+		for (int j = -1; j < localPlayerCount; j++) {
+			int k;
+			if (j == -1)
+				k = thisPlayerId;
+			else
+				k = localPlayers[j];
+			Player class50_sub1_sub4_sub3_sub2 = players[k];
+			if (class50_sub1_sub4_sub3_sub2 != null)
+				method68(1, (byte) -97, class50_sub1_sub4_sub3_sub2);
+		}
+
+		if (i < anInt1222 || i > anInt1222) {
+			for (int l = 1; l > 0; l++);
+		}
+	}
+
+	public static void switchToLowMem() {
+		SceneGraph.lowMemory = true;
+		Rasterizer3D.lowMemory = true;
+		lowMemory = true;
+		MapArea.lowMemory = true;
+		GameObjectDefinition.lowMemory = true;
+	}
+
+	public void method102(long l, int i) {
+		try {
+			if (l == 0L)
+				return;
+			if (friendsCount >= 100 && playerMembers != 1) {
+				pushMessage("", (byte) -123, "Your friendlist is full. Max of 100 for free users, and 200 for members", 0);
+				return;
+			}
+			if (friendsCount >= 200) {
+				pushMessage("", (byte) -123, "Your friendlist is full. Max of 100 for free users, and 200 for members", 0);
+				return;
+			}
+			String s = TextUtils.formatName(TextUtils.longToName(l));
+			for (int j = 0; j < friendsCount; j++)
+				if (friends[j] == l) {
+					pushMessage("", (byte) -123, s + " is already on your friend list", 0);
+					return;
+				}
+
+			for (int k = 0; k < ignoresCount; k++)
+				if (ignores[k] == l) {
+					pushMessage("", (byte) -123, "Please remove " + s + " from your ignore list first", 0);
+					return;
+				}
+
+			if (s.equals(thisPlayer.username))
+				return;
+			friendsListNames[friendsCount] = s;
+			if (i != -45229)
+				anInt1178 = -30;
+			friends[friendsCount] = l;
+			anIntArray1267[friendsCount] = 0;
+			friendsCount++;
+			aBoolean1181 = true;
+			outBuffer.putOpcode(120);
+			outBuffer.putLong(l);
+			return;
+		} catch (RuntimeException runtimeexception) {
+			SignLink.reporterror("94629, " + l + ", " + i + ", " + runtimeexception.toString());
+		}
+		throw new RuntimeException();
+	}
+
+	public void method103(byte byte0, Widget class13) {
+		if (byte0 == 2)
+			byte0 = 0;
+		else
+			anInt1004 = -82;
+		int i = class13.contentType;
+		if (i >= 1 && i <= 100 || i >= 701 && i <= 800) {
+			if (i == 1 && friendListStatus == 0) {
+				class13.aString230 = "Loading friend list";
+				class13.anInt289 = 0;
+				return;
+			}
+			if (i == 1 && friendListStatus == 1) {
+				class13.aString230 = "Connecting to friendserver";
+				class13.anInt289 = 0;
+				return;
+			}
+			if (i == 2 && friendListStatus != 2) {
+				class13.aString230 = "Please wait...";
+				class13.anInt289 = 0;
+				return;
+			}
+			int j = friendsCount;
+			if (friendListStatus != 2)
+				j = 0;
+			if (i > 700)
+				i -= 601;
+			else
+				i--;
+			if (i >= j) {
+				class13.aString230 = "";
+				class13.anInt289 = 0;
+				return;
+			} else {
+				class13.aString230 = friendsListNames[i];
+				class13.anInt289 = 1;
+				return;
+			}
+		}
+		if (i >= 101 && i <= 200 || i >= 801 && i <= 900) {
+			int k = friendsCount;
+			if (friendListStatus != 2)
+				k = 0;
+			if (i > 800)
+				i -= 701;
+			else
+				i -= 101;
+			if (i >= k) {
+				class13.aString230 = "";
+				class13.anInt289 = 0;
+				return;
+			}
+			if (anIntArray1267[i] == 0)
+				class13.aString230 = "@red@Offline";
+			else if (anIntArray1267[i] < 200) {
+				if (anIntArray1267[i] == world)
+					class13.aString230 = "@gre@World" + (anIntArray1267[i] - 9);
+				else
+					class13.aString230 = "@yel@World" + (anIntArray1267[i] - 9);
+			} else if (anIntArray1267[i] == world)
+				class13.aString230 = "@gre@Classic" + (anIntArray1267[i] - 219);
+			else
+				class13.aString230 = "@yel@Classic" + (anIntArray1267[i] - 219);
+			class13.anInt289 = 1;
+			return;
+		}
+		if (i == 203) {
+			int l = friendsCount;
+			if (friendListStatus != 2)
+				l = 0;
+			class13.anInt285 = l * 15 + 20;
+			if (class13.anInt285 <= class13.anInt238)
+				class13.anInt285 = class13.anInt238 + 1;
+			return;
+		}
+		if (i >= 401 && i <= 500) {
+			if ((i -= 401) == 0 && friendListStatus == 0) {
+				class13.aString230 = "Loading ignore list";
+				class13.anInt289 = 0;
+				return;
+			}
+			if (i == 1 && friendListStatus == 0) {
+				class13.aString230 = "Please wait...";
+				class13.anInt289 = 0;
+				return;
+			}
+			int i1 = ignoresCount;
+			if (friendListStatus == 0)
+				i1 = 0;
+			if (i >= i1) {
+				class13.aString230 = "";
+				class13.anInt289 = 0;
+				return;
+			} else {
+				class13.aString230 = TextUtils.formatName(TextUtils.longToName(ignores[i]));
+				class13.anInt289 = 1;
+				return;
+			}
+		}
+		if (i == 503) {
+			class13.anInt285 = ignoresCount * 15 + 20;
+			if (class13.anInt285 <= class13.anInt238)
+				class13.anInt285 = class13.anInt238 + 1;
+			return;
+		}
+		if (i == 327) {
+			class13.anInt252 = 150;
+			class13.anInt253 = (int) (Math.sin((double) pulseCycle / 40D) * 256D) & 0x7ff;
+			if (aBoolean1277) {
+				for (int j1 = 0; j1 < 7; j1++) {
+					int i2 = characterEditIdentityKits[j1];
+					if (i2 >= 0 && !IdentityKit.identityKits[i2].isBodyDownloaded())
+						return;
+				}
+
+				aBoolean1277 = false;
+				Model aclass50_sub1_sub4_sub4[] = new Model[7];
+				int j2 = 0;
+				for (int k2 = 0; k2 < 7; k2++) {
+					int l2 = characterEditIdentityKits[k2];
+					if (l2 >= 0)
+						aclass50_sub1_sub4_sub4[j2++] = IdentityKit.identityKits[l2].getBodyModel();
+				}
+
+				Model class50_sub1_sub4_sub4 = new Model(j2, aclass50_sub1_sub4_sub4);
+				for (int i3 = 0; i3 < 5; i3++)
+					if (characterEditColors[i3] != 0) {
+						class50_sub1_sub4_sub4.replaceColor(playerColours[i3][0],
+								playerColours[i3][characterEditColors[i3]]);
+						if (i3 == 1)
+							class50_sub1_sub4_sub4.replaceColor(anIntArray1268[0], anIntArray1268[characterEditColors[i3]]);
 					}
-					if (anInt1039 != i_698_) {
-						anInt1039 += (i_698_ - anInt1039) / 16;
-					}
-					if (anInt1040 != i_699_) {
-						anInt1040 += (i_699_ - anInt1040) / 16;
-					}
-					if (keyStatus[1] == 1) {
-						anInt1211 += (-24 - anInt1211) / 2;
-					} else if (keyStatus[2] == 1) {
-						anInt1211 += (24 - anInt1211) / 2;
-					} else {
-						anInt1211 /= 2;
-					}
-					if (keyStatus[3] == 1) {
-						anInt1212 += (12 - anInt1212) / 2;
-					} else if (keyStatus[4] == 1) {
-						anInt1212 += (-12 - anInt1212) / 2;
-					} else {
-						anInt1212 /= 2;
-					}
-					anInt1210 = anInt1210 + anInt1211 / 2 & 0x7ff;
-					anInt1209 += anInt1212 / 2;
-					if (anInt1209 < 128) {
-						anInt1209 = 128;
-					}
-					if (anInt1209 > 383) {
-						anInt1209 = 383;
-					}
-					int i_700_ = anInt1039 >> 7;
-					int i_701_ = anInt1040 >> 7;
-					int i_702_ = method42(currentSceneId, anInt1040, true, anInt1039);
-					int i_703_ = 0;
-					if (i_700_ > 3 && i_701_ > 3 && i_700_ < 100 && i_701_ < 100) {
-						for (int i_704_ = i_700_ - 4; i_704_ <= i_700_ + 4; i_704_++) {
-							for (int i_705_ = i_701_ - 4; i_705_ <= i_701_ + 4; i_705_++) {
-								int i_706_ = currentSceneId;
-								if (i_706_ < 3 && (currentSceneTileFlags[1][i_704_][i_705_] & 0x2) == 2) {
-									i_706_++;
-								}
-								int i_707_ = i_702_ - anIntArrayArrayArray1239[i_706_][i_704_][i_705_];
-								if (i_707_ > i_703_) {
-									i_703_ = i_707_;
-								}
+
+				class50_sub1_sub4_sub4.createBones();
+				class50_sub1_sub4_sub4.applyTransform(
+						AnimationSequence.animations[((Actor) (thisPlayer)).standAnimationId].frame2Ids[0]);
+				class50_sub1_sub4_sub4.applyLighting(64, 850, -30, -50, -30, true);
+				class13.anInt283 = 5;
+				class13.anInt284 = 0;
+				Widget.method201(5, class50_sub1_sub4_sub4, 0, 6);
+			}
+			return;
+		}
+		if (i == 324) {
+			if (aClass50_Sub1_Sub1_Sub1_1102 == null) {
+				aClass50_Sub1_Sub1_Sub1_1102 = class13.aClass50_Sub1_Sub1_Sub1_212;
+				aClass50_Sub1_Sub1_Sub1_1103 = class13.aClass50_Sub1_Sub1_Sub1_245;
+			}
+			if (characterEditChangeGenger) {
+				class13.aClass50_Sub1_Sub1_Sub1_212 = aClass50_Sub1_Sub1_Sub1_1103;
+				return;
+			} else {
+				class13.aClass50_Sub1_Sub1_Sub1_212 = aClass50_Sub1_Sub1_Sub1_1102;
+				return;
+			}
+		}
+		if (i == 325) {
+			if (aClass50_Sub1_Sub1_Sub1_1102 == null) {
+				aClass50_Sub1_Sub1_Sub1_1102 = class13.aClass50_Sub1_Sub1_Sub1_212;
+				aClass50_Sub1_Sub1_Sub1_1103 = class13.aClass50_Sub1_Sub1_Sub1_245;
+			}
+			if (characterEditChangeGenger) {
+				class13.aClass50_Sub1_Sub1_Sub1_212 = aClass50_Sub1_Sub1_Sub1_1102;
+				return;
+			} else {
+				class13.aClass50_Sub1_Sub1_Sub1_212 = aClass50_Sub1_Sub1_Sub1_1103;
+				return;
+			}
+		}
+		if (i == 600) {
+			class13.aString230 = reportedName;
+			if (pulseCycle % 20 < 10) {
+				class13.aString230 += "|";
+				return;
+			} else {
+				class13.aString230 += " ";
+				return;
+			}
+		}
+		if (i == 620)
+			if (playerRights >= 1) {
+				if (reportMutePlayer) {
+					class13.anInt240 = 0xff0000;
+					class13.aString230 = "Moderator option: Mute player for 48 hours: <ON>";
+				} else {
+					class13.anInt240 = 0xffffff;
+					class13.aString230 = "Moderator option: Mute player for 48 hours: <OFF>";
+				}
+			} else {
+				class13.aString230 = "";
+			}
+		if (i == 660) {
+			int k1 = anInt1170 - anInt1215;
+			String s1;
+			if (k1 <= 0)
+				s1 = "earlier today";
+			else if (k1 == 1)
+				s1 = "yesterday";
+			else
+				s1 = k1 + " days ago";
+			class13.aString230 = "You last logged in @red@" + s1 + "@bla@ from: @red@" + SignLink.dns;
+		}
+		if (i == 661)
+			if (anInt1034 == 0)
+				class13.aString230 = "\\nYou have not yet set any recovery questions.\\nIt is @lre@strongly@yel@ recommended that you do so.\\n\\nIf you don't you will be @lre@unable to recover your\\n@lre@password@yel@ if you forget it, or it is stolen.";
+			else if (anInt1034 <= anInt1170) {
+				class13.aString230 = "\\n\\nRecovery Questions Last Set:\\n@gre@" + method104(anInt1034, (byte) 83);
+			} else {
+				int l1 = (anInt1170 + 14) - anInt1034;
+				String s2;
+				if (l1 <= 0)
+					s2 = "Earlier today";
+				else if (l1 == 1)
+					s2 = "Yesterday";
+				else
+					s2 = l1 + " days ago";
+				class13.aString230 = s2
+						+ " you requested@lre@ new recovery\\n@lre@questions.@yel@ The requested change will occur\\non: @lre@"
+						+ method104(anInt1034, (byte) 83)
+						+ "\\n\\nIf you do not remember making this request\\ncancel it immediately, and change your password.";
+			}
+		if (i == 662) {
+			String s;
+			if (anInt1273 == 0)
+				s = "@yel@0 unread messages";
+			else if (anInt1273 == 1)
+				s = "@gre@1 unread message";
+			else
+				s = "@gre@" + anInt1273 + " unread messages";
+			class13.aString230 = "You have " + s + "\\nin your message centre.";
+		}
+		if (i == 663)
+			if (anInt1083 <= 0 || anInt1083 > anInt1170 + 10)
+				class13.aString230 = "Last password change:\\n@gre@Never changed";
+			else
+				class13.aString230 = "Last password change:\\n@gre@" + method104(anInt1083, (byte) 83);
+		if (i == 665)
+			if (anInt992 > 2 && !memberServer)
+				class13.aString230 = "This is a non-members\\nworld. To enjoy your\\nmembers benefits we\\nrecommend you play on a\\nmembers world instead.";
+			else if (anInt992 > 2)
+				class13.aString230 = "\\n\\nYou have @gre@" + anInt992 + "@yel@ days of\\nmember credit remaining.";
+			else if (anInt992 > 0)
+				class13.aString230 = "You have @gre@"
+						+ anInt992
+						+ "@yel@ days of\\nmember credit remaining.\\n\\n@lre@Credit low! Renew now\\n@lre@to avoid losing members.";
+			else
+				class13.aString230 = "You are not a member.\\n\\nChoose to subscribe and\\nyou'll get loads of extra\\nbenefits and features.";
+		if (i == 667)
+			if (anInt992 > 2 && !memberServer)
+				class13.aString230 = "To switch to a members-only world:\\n1) Logout and return to the world selection page.\\n2) Choose one of the members world with a gold star next to it's name.\\n\\nIf you prefer you can continue to use this world,\\nbut members only features will be unavailable here.";
+			else if (anInt992 > 0)
+				class13.aString230 = "To extend or cancel a subscription:\\n1) Logout and return to the frontpage of this website.\\n2)Choose the relevant option from the 'membership' section.\\n\\nNote: If you are a credit card subscriber a top-up payment will\\nautomatically be taken when 3 days credit remain.\\n(unless you cancel your subscription, which can be done at any time.)";
+			else
+				class13.aString230 = "To initializeApplication a subscripton:\\n1) Logout and return to the frontpage of this website.\\n2) Choose 'Start a new subscription'";
+		if (i == 668) {
+			if (anInt1034 > anInt1170) {
+				class13.aString230 = "To cancel this request:\\n1) Logout and return to the frontpage of this website.\\n2) Choose 'Cancel recovery questions'.";
+				return;
+			}
+			class13.aString230 = "To change your recovery questions:\\n1) Logout and return to the frontpage of this website.\\n2) Choose 'Set new recovery questions'.";
+		}
+	}
+
+	public String method104(int i, byte byte0) {
+		if (byte0 != 83)
+			opcode = buffer.getUnsignedByte();
+		if (i > anInt1170 + 10) {
+			return "Unknown";
+		} else {
+			long l = ((long) i + 11745L) * 0x5265c00L;
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTime(new Date(l));
+			int j = calendar.get(5);
+			int k = calendar.get(2);
+			int i1 = calendar.get(1);
+			String as[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+			return j + "-" + as[k] + "-" + i1;
+		}
+	}
+
+	public void method105(int i, int j) {
+		size += i;
+		int action = Varp.aClass43Array704[j].anInt712;
+		if (action == 0)
+			return;
+		int config = widgetSettings[j];
+		if (action == 1) {
+			if (config == 1)
+				Rasterizer3D.method501(0.90000000000000002D);
+			if (config == 2)
+				Rasterizer3D.method501(0.80000000000000004D);
+			if (config == 3)
+				Rasterizer3D.method501(0.69999999999999996D);
+			if (config == 4)
+				Rasterizer3D.method501(0.59999999999999998D);
+			ItemDefinition.rgbImageCache.removeAll();
+			aBoolean1046 = true;
+		}
+		if (action == 3) {
+			boolean flag = musicEnabled;
+			if (config == 0) {
+				adjustVolume(musicEnabled, (byte) 8, 0);
+				musicEnabled = true;
+			}
+			if (config == 1) {
+				adjustVolume(musicEnabled, (byte) 8, -400);
+				musicEnabled = true;
+			}
+			if (config == 2) {
+				adjustVolume(musicEnabled, (byte) 8, -800);
+				musicEnabled = true;
+			}
+			if (config == 3) {
+				adjustVolume(musicEnabled, (byte) 8, -1200);
+				musicEnabled = true;
+			}
+			if (config == 4)
+				musicEnabled = false;
+			if (musicEnabled != flag && !lowMemory) {
+				if (musicEnabled) {
+					nextSong = currentSong;
+					songChanging = true;
+					onDemandFetcher.request(2, nextSong);
+				} else {
+					stopMidi();
+				}
+				previousSong = 0;
+			}
+		}
+		if (action == 4) {
+			SoundPlayer.setVolume(config);
+			if (config == 0) {
+				aBoolean1301 = true;
+				setWaveVolume(0);
+			}
+			if (config == 1) {
+				aBoolean1301 = true;
+				setWaveVolume(-400);
+			}
+			if (config == 2) {
+				aBoolean1301 = true;
+				setWaveVolume(-800);
+			}
+			if (config == 3) {
+				aBoolean1301 = true;
+				setWaveVolume(-1200);
+			}
+			if (config == 4)
+				aBoolean1301 = false;
+		}
+		if (action == 5)
+			anInt1300 = config;
+		if (action == 6)
+			anInt998 = config;
+		if (action == 8) {
+			anInt1223 = config;
+			redrawChatbox = true;
+		}
+		if (action == 9)
+			anInt955 = config;
+	}
+
+	public int method106(int i, int j, int k, int l) {
+		if (l < 8 || l > 8)
+			outBuffer.putByte(235);
+		int i1 = 256 - k;
+		return ((i & 0xff00ff) * i1 + (j & 0xff00ff) * k & 0xff00ff00)
+				+ ((i & 0xff00) * i1 + (j & 0xff00) * k & 0xff0000) >> 8;
+	}
+
+	public void method107(int i) {
+		anInt1246 = 0;
+		int j = (((Actor) (thisPlayer)).unitX >> 7) + nextTopLeftTileX;
+		int k;
+		for (k = (((Actor) (thisPlayer)).unitY >> 7) + nextTopRightTileY; i >= 0;)
+			return;
+
+		if (j >= 3053 && j <= 3156 && k >= 3056 && k <= 3136)
+			anInt1246 = 1;
+		if (j >= 3072 && j <= 3118 && k >= 9492 && k <= 9535)
+			anInt1246 = 1;
+		if (anInt1246 == 1 && j >= 3139 && j <= 3199 && k >= 3008 && k <= 3062)
+			anInt1246 = 0;
+	}
+
+	public void method108(int i) {
+		int j = fontBold.method472((byte) 35, "Choose Option");
+		for (int k = 0; k < anInt1183; k++) {
+			int l = fontBold.method472((byte) 35, aStringArray1184[k]);
+			if (l > j)
+				j = l;
+		}
+
+		j += 8;
+		if (i <= 0)
+			aBoolean1190 = !aBoolean1190;
+		int i1 = 15 * anInt1183 + 21;
+		if (super.clickX > 4 && super.clickY > 4 && super.clickX < 516 && super.clickY < 338) {
+			int j1 = super.clickX - 4 - j / 2;
+			if (j1 + j > 512)
+				j1 = 512 - j;
+			if (j1 < 0)
+				j1 = 0;
+			int i2 = super.clickY - 4;
+			if (i2 + i1 > 334)
+				i2 = 334 - i1;
+			if (i2 < 0)
+				i2 = 0;
+			aBoolean1065 = true;
+			anInt1304 = 0;
+			anInt1305 = j1;
+			anInt1306 = i2;
+			anInt1307 = j;
+			anInt1308 = 15 * anInt1183 + 22;
+		}
+		if (super.clickX > 553 && super.clickY > 205 && super.clickX < 743 && super.clickY < 466) {
+			int k1 = super.clickX - 553 - j / 2;
+			if (k1 < 0)
+				k1 = 0;
+			else if (k1 + j > 190)
+				k1 = 190 - j;
+			int j2 = super.clickY - 205;
+			if (j2 < 0)
+				j2 = 0;
+			else if (j2 + i1 > 261)
+				j2 = 261 - i1;
+			aBoolean1065 = true;
+			anInt1304 = 1;
+			anInt1305 = k1;
+			anInt1306 = j2;
+			anInt1307 = j;
+			anInt1308 = 15 * anInt1183 + 22;
+		}
+		if (super.clickX > 17 && super.clickY > 357 && super.clickX < 496 && super.clickY < 453) {
+			int l1 = super.clickX - 17 - j / 2;
+			if (l1 < 0)
+				l1 = 0;
+			else if (l1 + j > 479)
+				l1 = 479 - j;
+			int k2 = super.clickY - 357;
+			if (k2 < 0)
+				k2 = 0;
+			else if (k2 + i1 > 96)
+				k2 = 96 - i1;
+			aBoolean1065 = true;
+			anInt1304 = 2;
+			anInt1305 = l1;
+			anInt1306 = k2;
+			anInt1307 = j;
+			anInt1308 = 15 * anInt1183 + 22;
+		}
+	}
+
+	public void method109(int i) {
+		if (i != 30729)
+			anInt1056 = incomingRandom.nextInt();
+		method75(0);
+		if (anInt1023 == 1)
+			cursorCross[anInt1022 / 100].method461(anInt1021 - 8 - 4, anInt1020 - 8 - 4, -488);
+		if (anInt1023 == 2)
+			cursorCross[4 + anInt1022 / 100].method461(anInt1021 - 8 - 4, anInt1020 - 8 - 4, -488);
+		if (anInt1279 != -1) {
+			method88(anInt951, anInt1279, (byte) 5);
+			method142(0, 0, Widget.forId(anInt1279), 0, 8);
+		}
+		if (openWidgetId != -1) {
+			method88(anInt951, openWidgetId, (byte) 5);
+			method142(0, 0, Widget.forId(openWidgetId), 0, 8);
+		}
+		method107(-7);
+		if (!aBoolean1065) {
+			method91(-521);
+			method34((byte) -79);
+		} else if (anInt1304 == 0)
+			method128(false);
+		if (anInt1319 == 1)
+			aClass50_Sub1_Sub1_Sub1_1086.method461(296, 472, -488);
+		if (fps) {
+			char c = '\u01FB';
+			int k = 20;
+			int i1 = 0xffff00;
+			if (super.fps < 30 && lowMemory)
+				i1 = 0xff0000;
+			if (super.fps < 20 && !lowMemory)
+				i1 = 0xff0000;
+			fontNormal.method469(true, "Fps:" + super.fps, i1, c, k);
+			k += 15;
+			Runtime runtime = Runtime.getRuntime();
+			int j1 = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
+			i1 = 0xffff00;
+			if (j1 > 0x2000000 && lowMemory)
+				i1 = 0xff0000;
+			if (j1 > 0x4000000 && !lowMemory)
+				i1 = 0xff0000;
+			fontNormal.method469(true, "Mem:" + j1 + "k", 0xffff00, c, k);
+			k += 15;
+		}
+		if (anInt1057 != 0) {
+			int j = anInt1057 / 50;
+			int l = j / 60;
+			j %= 60;
+			if (j < 10)
+				fontNormal.method474(2245, 4, 0xffff00, 329, "System update in: " + l + ":0" + j);
+			else
+				fontNormal.method474(2245, 4, 0xffff00, 329, "System update in: " + l + ":" + j);
+			anInt895++;
+			if (anInt895 > 112) {
+				anInt895 = 0;
+				outBuffer.putOpcode(197);
+				outBuffer.putInt(0);
+			}
+		}
+	}
+
+	public void run() {
+		if (aBoolean1314) {
+			method17((byte) 4);
+		} else {
+			super.run();
+		}
+	}
+
+	public int method110(int i, int j, byte byte0, int k) {
+		int l = j >> 7;
+		int i1 = i >> 7;
+		if (l < 0 || i1 < 0 || l > 103 || i1 > 103)
+			return 0;
+		int j1 = k;
+		if (j1 < 3 && (currentSceneTileFlags[1][l][i1] & 2) == 2)
+			j1++;
+		int k1 = j & 0x7f;
+		int l1 = i & 0x7f;
+		if (byte0 != 9)
+			aBoolean953 = !aBoolean953;
+		int i2 = anIntArrayArrayArray891[j1][l][i1] * (128 - k1) + anIntArrayArrayArray891[j1][l + 1][i1] * k1 >> 7;
+		int j2 = anIntArrayArrayArray891[j1][l][i1 + 1] * (128 - k1) + anIntArrayArrayArray891[j1][l + 1][i1 + 1] * k1 >> 7;
+		return i2 * (128 - l1) + j2 * l1 >> 7;
+	}
+
+	public AppletContext getAppletContext() {
+		if (SignLink.mainapp != null)
+			return SignLink.mainapp.getAppletContext();
+		else
+			return super.getAppletContext();
+	}
+
+	public void method111(int i) {
+		i = 21 / i;
+		if (anInt1223 == 0)
+			return;
+		int j = 0;
+		if (anInt1057 != 0)
+			j = 1;
+		for (int k = 0; k < 100; k++)
+			if (aStringArray1298[k] != null) {
+				int l = anIntArray1296[k];
+				String s = aStringArray1297[k];
+				if (s != null && s.startsWith("@cr1@")) {
+					s = s.substring(5);
+				}
+				if (s != null && s.startsWith("@cr2@")) {
+					s = s.substring(5);
+				}
+				if ((l == 3 || l == 7) && (l == 7 || anInt887 == 0 || anInt887 == 1 && method148(13292, s))) {
+					int i1 = 329 - j * 13;
+					if (super.mouseX > 4 && super.mouseY - 4 > i1 - 10 && super.mouseY - 4 <= i1 + 3) {
+						int j1 = fontNormal.method472((byte) 35, "From:  " + s + aStringArray1298[k]) + 25;
+						if (j1 > 450)
+							j1 = 450;
+						if (super.mouseX < 4 + j1) {
+							if (playerRights >= 1) {
+								aStringArray1184[anInt1183] = "Report abuse @whi@" + s;
+								anIntArray981[anInt1183] = 2507;
+								anInt1183++;
 							}
+							aStringArray1184[anInt1183] = "Add ignore @whi@" + s;
+							anIntArray981[anInt1183] = 2574;
+							anInt1183++;
+							aStringArray1184[anInt1183] = "Add friend @whi@" + s;
+							anIntArray981[anInt1183] = 2762;
+							anInt1183++;
 						}
 					}
-					Game.anInt1030++;
-					if (Game.anInt1030 > 1512) {
-						Game.anInt1030 = 0;
-						outBuffer.putOpcode(77);
-						outBuffer.put(0);
-						int i_708_ = outBuffer.offset;
-						outBuffer.put((int) (Math.random() * 256.0));
-						outBuffer.put(101);
-						outBuffer.put(233);
-						outBuffer.putShort(45092);
-						if ((int) (Math.random() * 2.0) == 0) {
-							outBuffer.putShort(35784);
+					if (++j >= 5)
+						return;
+				}
+				if ((l == 5 || l == 6) && anInt887 < 2 && ++j >= 5)
+					return;
+			}
+
+	}
+
+	public void method112(byte byte0, int i) {
+		if (byte0 != 36)
+			outBuffer.putByte(6);
+		Widget class13 = Widget.forId(i);
+		for (int j = 0; j < class13.anIntArray258.length; j++) {
+			if (class13.anIntArray258[j] == -1)
+				break;
+			Widget class13_1 = Widget.forId(class13.anIntArray258[j]);
+			if (class13_1.anInt236 == 1)
+				method112((byte) 36, class13_1.id);
+			class13_1.anInt235 = 0;
+			class13_1.anInt227 = 0;
+		}
+
+	}
+
+	public void method113(int i, int j, int k) {
+		int l = 0;
+		i = 44 / i;
+		for (int i1 = 0; i1 < 100; i1++) {
+			if (aStringArray1298[i1] == null)
+				continue;
+			int j1 = anIntArray1296[i1];
+			int k1 = (70 - l * 14) + anInt851 + 4;
+			if (k1 < -20)
+				break;
+			String s = aStringArray1297[i1];
+			if (s != null && s.startsWith("@cr1@")) {
+				s = s.substring(5);
+			}
+			if (s != null && s.startsWith("@cr2@")) {
+				s = s.substring(5);
+			}
+			if (j1 == 0)
+				l++;
+			if ((j1 == 1 || j1 == 2) && (j1 == 1 || anInt1006 == 0 || anInt1006 == 1 && method148(13292, s))) {
+				if (k > k1 - 14 && k <= k1 && !s.equals(thisPlayer.username)) {
+					if (playerRights >= 1) {
+						aStringArray1184[anInt1183] = "Report abuse @whi@" + s;
+						anIntArray981[anInt1183] = 507;
+						anInt1183++;
+					}
+					aStringArray1184[anInt1183] = "Add ignore @whi@" + s;
+					anIntArray981[anInt1183] = 574;
+					anInt1183++;
+					aStringArray1184[anInt1183] = "Add friend @whi@" + s;
+					anIntArray981[anInt1183] = 762;
+					anInt1183++;
+				}
+				l++;
+			}
+			if ((j1 == 3 || j1 == 7) && anInt1223 == 0
+					&& (j1 == 7 || anInt887 == 0 || anInt887 == 1 && method148(13292, s))) {
+				if (k > k1 - 14 && k <= k1) {
+					if (playerRights >= 1) {
+						aStringArray1184[anInt1183] = "Report abuse @whi@" + s;
+						anIntArray981[anInt1183] = 507;
+						anInt1183++;
+					}
+					aStringArray1184[anInt1183] = "Add ignore @whi@" + s;
+					anIntArray981[anInt1183] = 574;
+					anInt1183++;
+					aStringArray1184[anInt1183] = "Add friend @whi@" + s;
+					anIntArray981[anInt1183] = 762;
+					anInt1183++;
+				}
+				l++;
+			}
+			if (j1 == 4 && (anInt1227 == 0 || anInt1227 == 1 && method148(13292, s))) {
+				if (k > k1 - 14 && k <= k1) {
+					aStringArray1184[anInt1183] = "Accept trade @whi@" + s;
+					anIntArray981[anInt1183] = 544;
+					anInt1183++;
+				}
+				l++;
+			}
+			if ((j1 == 5 || j1 == 6) && anInt1223 == 0 && anInt887 < 2)
+				l++;
+			if (j1 == 8 && (anInt1227 == 0 || anInt1227 == 1 && method148(13292, s))) {
+				if (k > k1 - 14 && k <= k1) {
+					aStringArray1184[anInt1183] = "Accept challenge @whi@" + s;
+					anIntArray981[anInt1183] = 695;
+					anInt1183++;
+				}
+				l++;
+			}
+		}
+
+	}
+
+	public void updateOtherPlayerMovement(int packetSize, Buffer buffer) {
+		int playerCount = buffer.getBits(8);
+		if (playerCount < localPlayerCount) {
+			for (int l = playerCount; l < localPlayerCount; l++)
+				removePlayers[removePlayerCount++] = localPlayers[l];
+
+		}
+		if (playerCount > localPlayerCount) {
+			SignLink.reporterror(username + " Too many players");
+			throw new RuntimeException("eek");
+		}
+		localPlayerCount = 0;
+		for (int i = 0; i < playerCount; i++) {
+			int id = localPlayers[i];
+			Player plr = players[id];
+			int updated = buffer.getBits(1);
+			if (updated == 0) {
+				localPlayers[localPlayerCount++] = id;
+				plr.pulseCycle = pulseCycle;
+			} else {
+				int moveType = buffer.getBits(2);
+				if (moveType == 0) {
+					localPlayers[localPlayerCount++] = id;
+					plr.pulseCycle = pulseCycle;
+					updatedPlayers[updatedPlayerCount++] = id;
+				} else if (moveType == 1) {
+					localPlayers[localPlayerCount++] = id;
+					plr.pulseCycle = pulseCycle;
+					int direction = buffer.getBits(3);
+					plr.move(direction, false);
+					int blockUpdateRequired = buffer.getBits(1);
+					if (blockUpdateRequired == 1)
+						updatedPlayers[updatedPlayerCount++] = id;
+				} else if (moveType == 2) {
+					localPlayers[localPlayerCount++] = id;
+					plr.pulseCycle = pulseCycle;
+					int direction1 = buffer.getBits(3);
+					plr.move(direction1, true);
+					int direction2 = buffer.getBits(3);
+					plr.move(direction2, true);
+					int updateRequired = buffer.getBits(1);
+					if (updateRequired == 1)
+						updatedPlayers[updatedPlayerCount++] = id;
+				} else if (moveType == 3)
+					removePlayers[removePlayerCount++] = id;
+			}
+		}
+
+	}
+
+	public void renderViewport(int plane) {
+		int pixels[] = minimapImage.pixels;
+		int pixelAmount = pixels.length;
+		for (int pixel = 0; pixel < pixelAmount; pixel++)
+			pixels[pixel] = 0;
+
+		for (int viewportY = 1; viewportY < 103; viewportY++) {
+			int drawPoint = 24628 + (103 - viewportY) * 512 * 4;
+			for (int viewportX = 1; viewportX < 103; viewportX++) {
+				if ((currentSceneTileFlags[plane][viewportX][viewportY] & 0x18) == 0)
+					currentScene.renderMinimapDot(pixels, drawPoint, 512, plane, viewportX, viewportY);
+				if (plane < 3 && (currentSceneTileFlags[plane + 1][viewportX][viewportY] & 8) != 0)
+					currentScene.renderMinimapDot(pixels, drawPoint, 512, plane + 1, viewportX, viewportY);
+				drawPoint += 4;
+			}
+
+		}
+
+		int primaryColour = ((238 + (int) (Math.random() * 20D)) - 10 << 16) + ((238 + (int) (Math.random() * 20D)) - 10 << 8)
+				+ ((238 + (int) (Math.random() * 20D)) - 10);
+		int secondaryColour = (238 + (int) (Math.random() * 20D)) - 10 << 16;
+		minimapImage.createRasterizer();
+		for (int viewportY = 1; viewportY < 103; viewportY++) {
+			for (int viewportX = 1; viewportX < 103; viewportX++) {
+				if ((currentSceneTileFlags[plane][viewportX][viewportY] & 0x18) == 0)
+					method150(viewportY, plane, viewportX, secondaryColour, 563, primaryColour);
+				if (plane < 3 && (currentSceneTileFlags[plane + 1][viewportX][viewportY] & 8) != 0)
+					method150(viewportY, plane + 1, viewportX, secondaryColour, 563, primaryColour);
+			}
+
+		}
+
+		if (aClass18_1158 != null) {
+			aClass18_1158.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1002;
+		}
+		anInt1082++;
+		if (anInt1082 > 177) {
+			anInt1082 = 0;
+			outBuffer.putOpcode(173);
+			outBuffer.putTriByte(0x288b80);
+		}
+		minimapHintCount = 0;
+		for (int viewportX = 0; viewportX < 104; viewportX++) {
+			for (int viewportY = 0; viewportY < 104; viewportY++) {
+				int floorHash = currentScene.getFloorDecorationHash(this.plane, viewportX, viewportY);
+				if (floorHash != 0) {
+					floorHash = floorHash >> 14 & 0x7fff;
+					int icon = GameObjectDefinition.getDefinition(floorHash).icon;
+					if (icon >= 0) {
+						int drawPointX = viewportX;
+						int drawPointY = viewportY;
+						if (icon != 22 && icon != 29 && icon != 34 && icon != 36 && icon != 46 && icon != 47 && icon != 48) {
+							byte regionWidth = 104;
+							byte regionHeight = 104;
+							int flags[][] = currentCollisionMap[this.plane].adjacency;
+							for (int off = 0; off < 10; off++) {
+								int randPlane = (int) (Math.random() * 4D);
+								if (randPlane == 0 && drawPointX > 0 && drawPointX > viewportX - 3 && (flags[drawPointX - 1][drawPointY] & 0x1280108) == 0)
+									drawPointX--;
+								if (randPlane == 1 && drawPointX < regionWidth - 1 && drawPointX < viewportX + 3 && (flags[drawPointX + 1][drawPointY] & 0x1280180) == 0)
+									drawPointX++;
+								if (randPlane == 2 && drawPointY > 0 && drawPointY > viewportY - 3 && (flags[drawPointX][drawPointY - 1] & 0x1280102) == 0)
+									drawPointY--;
+								if (randPlane == 3 && drawPointY < regionHeight - 1 && drawPointY < viewportY + 3 && (flags[drawPointX][drawPointY + 1] & 0x1280120) == 0)
+									drawPointY++;
+							}
+
 						}
-						outBuffer.put((int) (Math.random() * 256.0));
-						outBuffer.put(64);
-						outBuffer.put(38);
-						outBuffer.putShort((int) (Math.random() * 65536.0));
-						outBuffer.putShort((int) (Math.random() * 65536.0));
-						outBuffer.putSizeByte(outBuffer.offset - i_708_);
+						minimapHint[minimapHintCount] = worldMapHintIcons[icon];
+						minimapHintX[minimapHintCount] = drawPointX;
+						minimapHintY[minimapHintCount] = drawPointY;
+						minimapHintCount++;
 					}
-					int i_709_ = i_703_ * 192;
-					if (i_709_ > 98048) {
-						i_709_ = 98048;
+				}
+			}
+
+		}
+
+	}
+
+	public boolean method116(int j, byte[] abyte0) {
+		if (abyte0 == null)
+			return true;
+		else
+			return SignLink.saveWave(abyte0, j);
+	}
+
+	public int method117(byte byte0) {
+		int i = 3;
+		if (byte0 == aByte956)
+			byte0 = 0;
+		else
+			startup();
+		if (anInt1219 < 310) {
+			anInt978++;
+			if (anInt978 > 1457) {
+				anInt978 = 0;
+				outBuffer.putOpcode(244);
+				outBuffer.putByte(0);
+				int j = outBuffer.offset;
+				outBuffer.putByte(219);
+				outBuffer.putShort(37745);
+				outBuffer.putByte(61);
+				outBuffer.putShort(43756);
+				outBuffer.putShort((int) (Math.random() * 65536D));
+				outBuffer.putByte((int) (Math.random() * 256D));
+				outBuffer.putShort(51171);
+				if ((int) (Math.random() * 2D) == 0)
+					outBuffer.putShort(15808);
+				outBuffer.putByte(97);
+				outBuffer.putByte((int) (Math.random() * 256D));
+				outBuffer.putLength(outBuffer.offset - j);
+			}
+			int k = anInt1216 >> 7;
+			int l = anInt1218 >> 7;
+			int i1 = ((Actor) (thisPlayer)).unitX >> 7;
+			int j1 = ((Actor) (thisPlayer)).unitY >> 7;
+			if ((currentSceneTileFlags[plane][k][l] & 4) != 0)
+				i = plane;
+			int k1;
+			if (i1 > k)
+				k1 = i1 - k;
+			else
+				k1 = k - i1;
+			int l1;
+			if (j1 > l)
+				l1 = j1 - l;
+			else
+				l1 = l - j1;
+			if (k1 > l1) {
+				int i2 = (l1 * 0x10000) / k1;
+				int k2 = 32768;
+				while (k != i1) {
+					if (k < i1)
+						k++;
+					else if (k > i1)
+						k--;
+					if ((currentSceneTileFlags[plane][k][l] & 4) != 0)
+						i = plane;
+					k2 += i2;
+					if (k2 >= 0x10000) {
+						k2 -= 0x10000;
+						if (l < j1)
+							l++;
+						else if (l > j1)
+							l--;
+						if ((currentSceneTileFlags[plane][k][l] & 4) != 0)
+							i = plane;
 					}
-					if (i_709_ < 32768) {
-						i_709_ = 32768;
+				}
+			} else {
+				int j2 = (k1 * 0x10000) / l1;
+				int l2 = 32768;
+				while (l != j1) {
+					if (l < j1)
+						l++;
+					else if (l > j1)
+						l--;
+					if ((currentSceneTileFlags[plane][k][l] & 4) != 0)
+						i = plane;
+					l2 += j2;
+					if (l2 >= 0x10000) {
+						l2 -= 0x10000;
+						if (k < i1)
+							k++;
+						else if (k > i1)
+							k--;
+						if ((currentSceneTileFlags[plane][k][l] & 4) != 0)
+							i = plane;
 					}
-					if (i_709_ > anInt1009) {
-						anInt1009 += (i_709_ - anInt1009) / 24;
-					} else {
-						if (i_709_ >= anInt1009) {
+				}
+			}
+		}
+		if ((currentSceneTileFlags[plane][((Actor) (thisPlayer)).unitX >> 7][((Actor) (thisPlayer)).unitY >> 7] & 4) != 0)
+			i = plane;
+		return i;
+	}
+
+	public int method118(int i) {
+		int j = method110(anInt1218, anInt1216, (byte) 9, plane);
+		while (i >= 0)
+			opcode = buffer.getUnsignedByte();
+		if (j - anInt1217 < 800 && (currentSceneTileFlags[plane][anInt1216 >> 7][anInt1218 >> 7] & 4) != 0)
+			return plane;
+		else
+			return 3;
+	}
+
+	public void startRunnable(Runnable runnable, int i) {
+		if (i > 10)
+			i = 10;
+		if (SignLink.mainapp != null) {
+			SignLink.startThread(runnable, i);
+			return;
+		} else {
+			super.startRunnable(runnable, i);
+			return;
+		}
+	}
+
+	public void method119(int i, boolean flag) {
+		if (((Actor) (thisPlayer)).unitX >> 7 == destinationX
+				&& ((Actor) (thisPlayer)).unitY >> 7 == anInt1121)
+			destinationX = 0;
+		int j = localPlayerCount;
+		if (flag)
+			j = 1;
+		for (int k = 0; k < j; k++) {
+			Player class50_sub1_sub4_sub3_sub2;
+			int l;
+			if (flag) {
+				class50_sub1_sub4_sub3_sub2 = thisPlayer;
+				l = thisPlayerId << 14;
+			} else {
+				class50_sub1_sub4_sub3_sub2 = players[localPlayers[k]];
+				l = localPlayers[k] << 14;
+			}
+			if (class50_sub1_sub4_sub3_sub2 == null || !class50_sub1_sub4_sub3_sub2.isVisible())
+				continue;
+			class50_sub1_sub4_sub3_sub2.aBoolean1763 = false;
+			if ((lowMemory && localPlayerCount > 50 || localPlayerCount > 200)
+					&& !flag
+					&& ((Actor) (class50_sub1_sub4_sub3_sub2)).anInt1588 == ((Actor) (class50_sub1_sub4_sub3_sub2)).standAnimationId)
+				class50_sub1_sub4_sub3_sub2.aBoolean1763 = true;
+			int i1 = ((Actor) (class50_sub1_sub4_sub3_sub2)).unitX >> 7;
+			int j1 = ((Actor) (class50_sub1_sub4_sub3_sub2)).unitY >> 7;
+			if (i1 < 0 || i1 >= 104 || j1 < 0 || j1 >= 104)
+				continue;
+			if (class50_sub1_sub4_sub3_sub2.aClass50_Sub1_Sub4_Sub4_1746 != null
+					&& pulseCycle >= class50_sub1_sub4_sub3_sub2.anInt1764
+					&& pulseCycle < class50_sub1_sub4_sub3_sub2.anInt1765) {
+				class50_sub1_sub4_sub3_sub2.aBoolean1763 = false;
+				class50_sub1_sub4_sub3_sub2.anInt1750 = method110(
+						((Actor) (class50_sub1_sub4_sub3_sub2)).unitY,
+						((Actor) (class50_sub1_sub4_sub3_sub2)).unitX, (byte) 9, plane);
+				currentScene.method253(class50_sub1_sub4_sub3_sub2.anInt1750, class50_sub1_sub4_sub3_sub2.anInt1769,
+						60, 7, class50_sub1_sub4_sub3_sub2, class50_sub1_sub4_sub3_sub2.anInt1768,
+						((Actor) (class50_sub1_sub4_sub3_sub2)).unitY, class50_sub1_sub4_sub3_sub2.anInt1771,
+						((Actor) (class50_sub1_sub4_sub3_sub2)).unitX,
+						((Actor) (class50_sub1_sub4_sub3_sub2)).anInt1612, class50_sub1_sub4_sub3_sub2.anInt1770,
+						plane, l);
+				continue;
+			}
+			if ((((Actor) (class50_sub1_sub4_sub3_sub2)).unitX & 0x7f) == 64
+					&& (((Actor) (class50_sub1_sub4_sub3_sub2)).unitY & 0x7f) == 64) {
+				if (anIntArrayArray886[i1][j1] == anInt1138)
+					continue;
+				anIntArrayArray886[i1][j1] = anInt1138;
+			}
+			class50_sub1_sub4_sub3_sub2.anInt1750 = method110(((Actor) (class50_sub1_sub4_sub3_sub2)).unitY,
+					((Actor) (class50_sub1_sub4_sub3_sub2)).unitX, (byte) 9, plane);
+			currentScene.method252(l, class50_sub1_sub4_sub3_sub2,
+					((Actor) (class50_sub1_sub4_sub3_sub2)).unitX, class50_sub1_sub4_sub3_sub2.anInt1750,
+					((Actor) (class50_sub1_sub4_sub3_sub2)).aBoolean1592, 0, plane, 60,
+					((Actor) (class50_sub1_sub4_sub3_sub2)).unitY,
+					((Actor) (class50_sub1_sub4_sub3_sub2)).anInt1612);
+		}
+
+		if (i == 0)
+			;
+	}
+
+	public void method120(int i, int j) {
+		if (i < 0)
+			return;
+		int slot = anIntArray979[i];
+		int interfaceId = anIntArray980[i];
+		int menuActionId = anIntArray981[i];
+		int id = anIntArray982[i];
+		if (j < anInt921 || j > anInt921)
+			opcode = buffer.getUnsignedByte();
+		if (menuActionId >= 2000)
+			menuActionId -= 2000;
+		if (inputType != 0 && menuActionId != 1016) {
+			inputType = 0;
+			redrawChatbox = true;
+		}
+		if (menuActionId == 200) {
+			Player class50_sub1_sub4_sub3_sub2 = players[id];
+			if (class50_sub1_sub4_sub3_sub2 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(245);
+				outBuffer.putLEShortAdded(id);
+			}
+		}
+		if (menuActionId == 227) {
+			anInt1165++;
+			if (anInt1165 >= 62) {
+				outBuffer.putOpcode(165);
+				outBuffer.putByte(206);
+				anInt1165 = 0;
+			}
+			outBuffer.putOpcode(228);
+			outBuffer.putLEShortDup(slot);
+			outBuffer.putShortAdded(id);
+			outBuffer.putShort(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 876) {
+			Player class50_sub1_sub4_sub3_sub2_1 = players[id];
+			if (class50_sub1_sub4_sub3_sub2_1 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2_1)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2_1)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(45);
+				outBuffer.putShortAdded(id);
+			}
+		}
+		if (menuActionId == 921) {
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(67);
+				outBuffer.putShortAdded(id);
+			}
+		}
+		if (menuActionId == 961) {
+			anInt1139 += id;
+			if (anInt1139 >= 115) {
+				outBuffer.putOpcode(126);
+				outBuffer.putByte(125);
+				anInt1139 = 0;
+			}
+			outBuffer.putOpcode(203);
+			outBuffer.putShortAdded(interfaceId);
+			outBuffer.putLEShortDup(slot);
+			outBuffer.putLEShortDup(id);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 467 && method80(interfaceId, 0, slot, id)) {
+			outBuffer.putOpcode(152);
+			outBuffer.putLEShortDup(id >> 14 & 0x7fff);
+			outBuffer.putLEShortDup(anInt1148);
+			outBuffer.putLEShortDup(anInt1149);
+			outBuffer.putLEShortDup(interfaceId + nextTopRightTileY);
+			outBuffer.putShort(anInt1147);
+			outBuffer.putLEShortAdded(slot + nextTopLeftTileX);
+		}
+		if (menuActionId == 9) {
+			outBuffer.putOpcode(3);
+			outBuffer.putShortAdded(id);
+			outBuffer.putShort(interfaceId);
+			outBuffer.putShort(slot);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 553) {
+			Npc class50_sub1_sub4_sub3_sub1_1 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_1 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1_1)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1_1)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(42);
+				outBuffer.putLEShortDup(id);
+			}
+		}
+		if (menuActionId == 677) {
+			Player class50_sub1_sub4_sub3_sub2_2 = players[id];
+			if (class50_sub1_sub4_sub3_sub2_2 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2_2)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2_2)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(116);
+				outBuffer.putLEShortDup(id);
+			}
+		}
+		if (menuActionId == 762 || menuActionId == 574 || menuActionId == 775 || menuActionId == 859) {
+			String s = aStringArray1184[i];
+			int l1 = s.indexOf("@whi@");
+			if (l1 != -1) {
+				long l3 = TextUtils.nameToLong(s.substring(l1 + 5).trim());
+				if (menuActionId == 762)
+					method102(l3, -45229);
+				if (menuActionId == 574)
+					method90(anInt1154, l3);
+				if (menuActionId == 775)
+					method53(l3, 0);
+				if (menuActionId == 859)
+					method97(325, l3);
+			}
+		}
+		if (menuActionId == 930) {
+			boolean flag = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag)
+				flag = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			outBuffer.putOpcode(54);
+			outBuffer.putShortAdded(id);
+			outBuffer.putLEShortDup(interfaceId + nextTopRightTileY);
+			outBuffer.putShort(slot + nextTopLeftTileX);
+		}
+		if (menuActionId == 399) {
+			outBuffer.putOpcode(24);
+			outBuffer.putLEShortDup(interfaceId);
+			outBuffer.putLEShortDup(id);
+			outBuffer.putShortAdded(slot);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 347) {
+			Npc class50_sub1_sub4_sub3_sub1_2 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_2 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1_2)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1_2)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(57);
+				outBuffer.putShort(id);
+				outBuffer.putLEShortDup(anInt1149);
+				outBuffer.putLEShortAdded(anInt1148);
+				outBuffer.putShort(anInt1147);
+			}
+		}
+		if (menuActionId == 890) {
+			outBuffer.putOpcode(79);
+			outBuffer.putShort(interfaceId);
+			Widget inter = Widget.forId(interfaceId);
+			if (inter.anIntArrayArray234 != null && inter.anIntArrayArray234[0][0] == 5) {
+				int i2 = inter.anIntArrayArray234[0][1];
+				widgetSettings[i2] = 1 - widgetSettings[i2];
+				method105(0, i2);
+				aBoolean1181 = true;
+			}
+		}
+		if (menuActionId == 493) {
+			Player class50_sub1_sub4_sub3_sub2_3 = players[id];
+			if (class50_sub1_sub4_sub3_sub2_3 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2_3)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2_3)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(233);
+				outBuffer.putShortAdded(id);
+			}
+		}
+		if (menuActionId == 14)
+			if (!aBoolean1065)
+				currentScene.method279(0, super.clickX - 4, super.clickY - 4);
+			else
+				currentScene.method279(0, slot - 4, interfaceId - 4);
+		if (menuActionId == 903) {
+			outBuffer.putOpcode(1);
+			outBuffer.putShort(id);
+			outBuffer.putLEShortDup(anInt1147);
+			outBuffer.putLEShortDup(anInt1149);
+			outBuffer.putLEShortAdded(anInt1148);
+			outBuffer.putShortAdded(slot);
+			outBuffer.putShortAdded(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 361) {
+			outBuffer.putOpcode(36);
+			outBuffer.putShort(anInt1172);
+			outBuffer.putShortAdded(interfaceId);
+			outBuffer.putShortAdded(slot);
+			outBuffer.putShortAdded(id);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 118) {
+			Npc class50_sub1_sub4_sub3_sub1_3 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_3 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1_3)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1_3)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				anInt1235 += id;
+				if (anInt1235 >= 143) {
+					outBuffer.putOpcode(157);
+					outBuffer.putInt(0);
+					anInt1235 = 0;
+				}
+				outBuffer.putOpcode(13);
+				outBuffer.putLEShortAdded(id);
+			}
+		}
+		if (menuActionId == 376 && method80(interfaceId, 0, slot, id)) {
+			outBuffer.putOpcode(210);
+			outBuffer.putShort(anInt1172);
+			outBuffer.putLEShortDup(id >> 14 & 0x7fff);
+			outBuffer.putShortAdded(slot + nextTopLeftTileX);
+			outBuffer.putLEShortDup(interfaceId + nextTopRightTileY);
+		}
+		if (menuActionId == 432) {
+			Npc class50_sub1_sub4_sub3_sub1_4 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_4 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1_4)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1_4)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(8);
+				outBuffer.putLEShortDup(id);
+			}
+		}
+		if (menuActionId == 639)
+			closeWidgets();
+		if (menuActionId == 918) {
+			Player class50_sub1_sub4_sub3_sub2_4 = players[id];
+			if (class50_sub1_sub4_sub3_sub2_4 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2_4)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2_4)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(31);
+				outBuffer.putShort(id);
+				outBuffer.putLEShortDup(anInt1172);
+			}
+		}
+		if (menuActionId == 67) {
+			Npc class50_sub1_sub4_sub3_sub1_5 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_5 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1_5)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1_5)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(104);
+				outBuffer.putShortAdded(anInt1172);
+				outBuffer.putLEShortDup(id);
+			}
+		}
+		if (menuActionId == 68) {
+			boolean flag1 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag1)
+				flag1 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			outBuffer.putOpcode(77);
+			outBuffer.putShortAdded(slot + nextTopLeftTileX);
+			outBuffer.putShort(interfaceId + nextTopRightTileY);
+			outBuffer.putLEShortAdded(id);
+		}
+		if (menuActionId == 684) {
+			boolean flag2 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag2)
+				flag2 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			if ((id & 3) == 0)
+				anInt1052++;
+			if (anInt1052 >= 84) {
+				outBuffer.putOpcode(222);
+				outBuffer.putTriByte(0xabc842);
+				anInt1052 = 0;
+			}
+			outBuffer.putOpcode(71);
+			outBuffer.putLEShortAdded(id);
+			outBuffer.putLEShortAdded(slot + nextTopLeftTileX);
+			outBuffer.putShortAdded(interfaceId + nextTopRightTileY);
+		}
+		if (menuActionId == 544 || menuActionId == 695) {
+			String s1 = aStringArray1184[i];
+			int j2 = s1.indexOf("@whi@");
+			if (j2 != -1) {
+				s1 = s1.substring(j2 + 5).trim();
+				String s7 = TextUtils.formatName(TextUtils.longToName(TextUtils.nameToLong(s1)));
+				boolean flag8 = false;
+				for (int j3 = 0; j3 < localPlayerCount; j3++) {
+					Player player = players[localPlayers[j3]];
+					if (player == null || player.username == null
+							|| !player.username.equalsIgnoreCase(s7))
+						continue;
+					walk(false, false, ((Actor) (player)).pathY[0],
+							((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+							((Actor) (player)).pathX[0], 0, 0,
+							((Actor) (thisPlayer)).pathX[0]);
+					if (menuActionId == 544) {
+						outBuffer.putOpcode(116);
+						outBuffer.putLEShortDup(localPlayers[j3]);
+					}
+					if (menuActionId == 695) {
+						outBuffer.putOpcode(245);
+						outBuffer.putLEShortAdded(localPlayers[j3]);
+					}
+					flag8 = true;
+					break;
+				}
+
+				if (!flag8)
+					pushMessage("", (byte) -123, "Unable to find " + s7, 0);
+			}
+		}
+		if (menuActionId == 225) {
+			outBuffer.putOpcode(177); // second item action
+			outBuffer.putShortAdded(slot);
+			outBuffer.putLEShortDup(id);
+			outBuffer.putLEShortDup(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 70) {
+			Widget class13_1 = Widget.forId(interfaceId);
+			anInt1171 = 1;
+			anInt1172 = interfaceId;
+			anInt1173 = class13_1.anInt222;
+			anInt1146 = 0;
+			aBoolean1181 = true;
+			String s4 = class13_1.aString281;
+			if (s4.indexOf(" ") != -1)
+				s4 = s4.substring(0, s4.indexOf(" "));
+			String s8 = class13_1.aString281;
+			if (s8.indexOf(" ") != -1)
+				s8 = s8.substring(s8.indexOf(" ") + 1);
+			aString1174 = s4 + " " + class13_1.aString211 + " " + s8;
+			if (anInt1173 == 16) {
+				aBoolean1181 = true;
+				anInt1285 = 3;
+				aBoolean950 = true;
+			}
+			return;
+		}
+		if (menuActionId == 891) {
+			outBuffer.putOpcode(4);
+			outBuffer.putLEShortDup(slot);
+			outBuffer.putLEShortAdded(id);
+			outBuffer.putLEShortAdded(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 894) {
+			outBuffer.putOpcode(158); // fifth item action event
+			outBuffer.putLEShortAdded(slot);
+			outBuffer.putLEShortAdded(id);
+			outBuffer.putLEShortDup(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 1280) {
+			method80(interfaceId, 0, slot, id);
+			outBuffer.putOpcode(55);
+			outBuffer.putLEShortDup(id >> 14 & 0x7fff);
+			outBuffer.putLEShortDup(interfaceId + nextTopRightTileY);
+			outBuffer.putShort(slot + nextTopLeftTileX);
+		}
+		if (menuActionId == 35) {
+			method80(interfaceId, 0, slot, id);
+			outBuffer.putOpcode(181);
+			outBuffer.putShortAdded(slot + nextTopLeftTileX);
+			outBuffer.putLEShortDup(interfaceId + nextTopRightTileY);
+			outBuffer.putLEShortDup(id >> 14 & 0x7fff);
+		}
+		if (menuActionId == 888) {
+			method80(interfaceId, 0, slot, id);
+			outBuffer.putOpcode(50);
+			outBuffer.putShortAdded(interfaceId + nextTopRightTileY);
+			outBuffer.putLEShortDup(id >> 14 & 0x7fff);
+			outBuffer.putLEShortAdded(slot + nextTopLeftTileX);
+		}
+		if (menuActionId == 324) {
+			outBuffer.putOpcode(161);
+			outBuffer.putLEShortAdded(slot);
+			outBuffer.putLEShortAdded(id);
+			outBuffer.putLEShortDup(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 1094) {
+			ItemDefinition class16 = ItemDefinition.forId(id);
+			Widget class13_4 = Widget.forId(interfaceId);
+			String s5;
+			if (class13_4 != null && class13_4.itemAmounts[slot] >= 0x186a0)
+				s5 = class13_4.itemAmounts[slot] + " x " + class16.name;
+			else if (class16.description != null)
+				s5 = new String(class16.description);
+			else
+				s5 = "It's a " + class16.name + ".";
+			pushMessage("", (byte) -123, s5, 0);
+		}
+		if (menuActionId == 352) {
+			Widget class13_2 = Widget.forId(interfaceId);
+			boolean flag7 = true;
+			if (class13_2.contentType > 0)
+				flag7 = handleWidgetDynamicAction(class13_2);
+			if (flag7) {
+				outBuffer.putOpcode(79);
+				outBuffer.putShort(interfaceId);
+			}
+		}
+		if (menuActionId == 1412) {
+			int k1 = id >> 14 & 0x7fff;
+			GameObjectDefinition class47 = GameObjectDefinition.getDefinition(k1);
+			String s9;
+			if (class47.description != null)
+				s9 = new String(class47.description);
+			else
+				s9 = "It's a " + class47.name + ".";
+			pushMessage("", (byte) -123, s9, 0);
+		}
+		if (menuActionId == 575 && !aBoolean1239) {
+			outBuffer.putOpcode(226);
+			outBuffer.putShort(interfaceId);
+			aBoolean1239 = true;
+		}
+		if (menuActionId == 892) {
+			method80(interfaceId, 0, slot, id);
+			outBuffer.putOpcode(136);
+			outBuffer.putShort(slot + nextTopLeftTileX);
+			outBuffer.putLEShortDup(interfaceId + nextTopRightTileY);
+			outBuffer.putShort(id >> 14 & 0x7fff);
+		}
+		if (menuActionId == 270) {
+			boolean flag3 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag3)
+				flag3 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			outBuffer.putOpcode(230);
+			outBuffer.putLEShortDup(id);
+			outBuffer.putShortAdded(slot + nextTopLeftTileX);
+			outBuffer.putShort(interfaceId + nextTopRightTileY);
+		}
+		if (menuActionId == 596) {
+			Player class50_sub1_sub4_sub3_sub2_5 = players[id];
+			if (class50_sub1_sub4_sub3_sub2_5 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2_5)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2_5)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(143);
+				outBuffer.putLEShortDup(anInt1149);
+				outBuffer.putLEShortAdded(anInt1147);
+				outBuffer.putShort(anInt1148);
+				outBuffer.putShortAdded(id);
+			}
+		}
+		if (menuActionId == 100) {
+			boolean flag4 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag4)
+				flag4 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			outBuffer.putOpcode(211);
+			outBuffer.putLEShortAdded(anInt1147);
+			outBuffer.putShortAdded(anInt1149);
+			outBuffer.putLEShortAdded(interfaceId + nextTopRightTileY);
+			outBuffer.putLEShortAdded(slot + nextTopLeftTileX);
+			outBuffer.putLEShortDup(anInt1148);
+			outBuffer.putLEShortDup(id);
+		}
+		if (menuActionId == 1668) {
+			Npc class50_sub1_sub4_sub3_sub1_6 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_6 != null) {
+				ActorDefinition class37 = class50_sub1_sub4_sub3_sub1_6.npcDefinition;
+				if (class37.anIntArray622 != null)
+					class37 = class37.method363(false);
+				if (class37 != null) {
+					String s10;
+					if (class37.aByteArray660 != null)
+						s10 = new String(class37.aByteArray660);
+					else
+						s10 = "It's a " + class37.aString652 + ".";
+					pushMessage("", (byte) -123, s10, 0);
+				}
+			}
+		}
+		if (menuActionId == 26) {
+			boolean flag5 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag5)
+				flag5 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			anInt1100++;
+			if (anInt1100 >= 120) {
+				outBuffer.putOpcode(95);
+				outBuffer.putInt(0);
+				anInt1100 = 0;
+			}
+			outBuffer.putOpcode(100);
+			outBuffer.putShort(slot + nextTopLeftTileX);
+			outBuffer.putShortAdded(interfaceId + nextTopRightTileY);
+			outBuffer.putLEShortAdded(id);
+		}
+		if (menuActionId == 444) {
+			outBuffer.putOpcode(91); // third item action
+			outBuffer.putLEShortDup(id);
+			outBuffer.putLEShortAdded(slot);
+			outBuffer.putShort(interfaceId);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 507) {
+			String string = aStringArray1184[i];
+			int i_389_ = string.indexOf("@whi@");
+			if (i_389_ != -1)
+				if (openWidgetId == -1) {
+					closeWidgets();
+					reportedName = string.substring(i_389_ + 5).trim();
+					reportMutePlayer = false;
+					anInt1231 = openWidgetId = Widget.anInt246;
+				} else {
+					pushMessage("", (byte) -123, "Please close the interface you have open before using 'report abuse'", 0);
+				}
+		}
+		if (menuActionId == 389) {
+			method80(interfaceId, 0, slot, id);
+			outBuffer.putOpcode(241);
+			outBuffer.putShort(id >> 14 & 0x7fff);
+			outBuffer.putShort(slot + nextTopLeftTileX);
+			outBuffer.putShortAdded(interfaceId + nextTopRightTileY);
+		}
+		if (menuActionId == 564) {
+			outBuffer.putOpcode(231); // fourth item action event
+			outBuffer.putLEShortAdded(interfaceId);
+			outBuffer.putLEShortDup(slot);
+			outBuffer.putShort(id);
+			anInt1329 = 0;
+			anInt1330 = interfaceId;
+			anInt1331 = slot;
+			anInt1332 = 2;
+			if (Widget.forId(interfaceId).anInt248 == openWidgetId)
+				anInt1332 = 1;
+			if (Widget.forId(interfaceId).anInt248 == anInt988)
+				anInt1332 = 3;
+		}
+		if (menuActionId == 984) {
+			String s3 = aStringArray1184[i];
+			int l2 = s3.indexOf("@whi@");
+			if (l2 != -1) {
+				long l4 = TextUtils.nameToLong(s3.substring(l2 + 5).trim());
+				int k3 = -1;
+				for (int i4 = 0; i4 < friendsCount; i4++) {
+					if (friends[i4] != l4)
+						continue;
+					k3 = i4;
+					break;
+				}
+
+				if (k3 != -1 && anIntArray1267[k3] > 0) {
+					redrawChatbox = true;
+					inputType = 0;
+					messagePromptRaised = true;
+					chatMessage = "";
+					friendsListAction = 3;
+					aLong1141 = friends[k3];
+					chatboxInputMessage = "Enter message to send to " + friendsListNames[k3];
+				}
+			}
+		}
+		if (menuActionId == 518) {
+			outBuffer.putOpcode(79);
+			outBuffer.putShort(interfaceId);
+			Widget class13_3 = Widget.forId(interfaceId);
+			if (class13_3.anIntArrayArray234 != null && class13_3.anIntArrayArray234[0][0] == 5) {
+				int i3 = class13_3.anIntArrayArray234[0][1];
+				if (widgetSettings[i3] != class13_3.anIntArray256[0]) {
+					widgetSettings[i3] = class13_3.anIntArray256[0];
+					method105(0, i3);
+					aBoolean1181 = true;
+				}
+			}
+		}
+		if (menuActionId == 318) {
+			Npc class50_sub1_sub4_sub3_sub1_7 = npcs[id];
+			if (class50_sub1_sub4_sub3_sub1_7 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub1_7)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub1_7)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(112);
+				outBuffer.putLEShortDup(id);
+			}
+		}
+		if (menuActionId == 199) {
+			boolean flag6 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 0, 0, 2, 0, slot, 0, 0,
+					((Actor) (thisPlayer)).pathX[0]);
+			if (!flag6)
+				flag6 = walk(false, false, interfaceId, ((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0, slot, 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+			anInt1020 = super.clickX;
+			anInt1021 = super.clickY;
+			anInt1023 = 2;
+			anInt1022 = 0;
+			outBuffer.putOpcode(83);
+			outBuffer.putLEShortDup(id);
+			outBuffer.putShort(interfaceId + nextTopRightTileY);
+			outBuffer.putLEShortDup(anInt1172);
+			outBuffer.putLEShortAdded(slot + nextTopLeftTileX);
+		}
+		if (menuActionId == 55) {
+			method44(aBoolean1190, anInt1191);
+			anInt1191 = -1;
+			redrawChatbox = true;
+		}
+		if (menuActionId == 52) {
+			anInt1146 = 1;
+			anInt1147 = slot;
+			anInt1148 = interfaceId;
+			anInt1149 = id;
+			aString1150 = String.valueOf(ItemDefinition.forId(id).name);
+			anInt1171 = 0;
+			aBoolean1181 = true;
+			return;
+		}
+		if (menuActionId == 1564) {
+			ItemDefinition class16_1 = ItemDefinition.forId(id);
+			String s6;
+			if (class16_1.description != null)
+				s6 = new String(class16_1.description);
+			else
+				s6 = "It's a " + class16_1.name + ".";
+			pushMessage("", (byte) -123, s6, 0);
+		}
+		if (menuActionId == 408) {
+			Player class50_sub1_sub4_sub3_sub2_6 = players[id];
+			if (class50_sub1_sub4_sub3_sub2_6 != null) {
+				walk(false, false, ((Actor) (class50_sub1_sub4_sub3_sub2_6)).pathY[0],
+						((Actor) (thisPlayer)).pathY[0], 1, 1, 2, 0,
+						((Actor) (class50_sub1_sub4_sub3_sub2_6)).pathX[0], 0, 0,
+						((Actor) (thisPlayer)).pathX[0]);
+				anInt1020 = super.clickX;
+				anInt1021 = super.clickY;
+				anInt1023 = 2;
+				anInt1022 = 0;
+				outBuffer.putOpcode(194);
+				outBuffer.putLEShortDup(id);
+			}
+		}
+		anInt1146 = 0;
+		anInt1171 = 0;
+		aBoolean1181 = true;
+	}
+
+	public void method121(boolean flag) {
+		anInt939 = 0;
+		for (int i = -1; i < localPlayerCount + anInt1133; i++) {
+			Object obj;
+			if (i == -1)
+				obj = thisPlayer;
+			else if (i < localPlayerCount)
+				obj = players[localPlayers[i]];
+			else
+				obj = npcs[anIntArray1134[i - localPlayerCount]];
+			if (obj == null || !((Actor) (obj)).isVisible())
+				continue;
+			if (obj instanceof Npc) {
+				ActorDefinition class37 = ((Npc) obj).npcDefinition;
+				if (class37.anIntArray622 != null)
+					class37 = class37.method363(false);
+				if (class37 == null)
+					continue;
+			}
+			if (i < localPlayerCount) {
+				int k = 30;
+				Player class50_sub1_sub4_sub3_sub2 = (Player) obj;
+				if (class50_sub1_sub4_sub3_sub2.anInt1756 != -1 || class50_sub1_sub4_sub3_sub2.anInt1748 != -1) {
+					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
+					if (anInt932 > -1) {
+						if (class50_sub1_sub4_sub3_sub2.anInt1756 != -1) {
+							aClass50_Sub1_Sub1_Sub1Array1288[class50_sub1_sub4_sub3_sub2.anInt1756].method461(anInt933
+									- k, anInt932 - 12, -488);
+							k += 25;
+						}
+						if (class50_sub1_sub4_sub3_sub2.anInt1748 != -1) {
+							aClass50_Sub1_Sub1_Sub1Array1079[class50_sub1_sub4_sub3_sub2.anInt1748].method461(anInt933
+									- k, anInt932 - 12, -488);
+							k += 25;
+						}
+					}
+				}
+				if (i >= 0 && anInt1197 == 10 && anInt1151 == localPlayers[i]) {
+					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
+					if (anInt932 > -1)
+						aClass50_Sub1_Sub1_Sub1Array954[1].method461(anInt933 - k, anInt932 - 12, -488);
+				}
+			} else {
+				ActorDefinition class37_1 = ((Npc) obj).npcDefinition;
+				if (class37_1.anInt638 >= 0 && class37_1.anInt638 < aClass50_Sub1_Sub1_Sub1Array1079.length) {
+					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
+					if (anInt932 > -1)
+						aClass50_Sub1_Sub1_Sub1Array1079[class37_1.anInt638].method461(anInt933 - 30, anInt932 - 12,
+								-488);
+				}
+				if (anInt1197 == 1 && anInt1226 == anIntArray1134[i - localPlayerCount] && pulseCycle % 20 < 10) {
+					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
+					if (anInt932 > -1)
+						aClass50_Sub1_Sub1_Sub1Array954[0].method461(anInt933 - 28, anInt932 - 12, -488);
+				}
+			}
+			if (((Actor) (obj)).forcedChat != null
+					&& (i >= localPlayerCount || anInt1006 == 0 || anInt1006 == 3 || anInt1006 == 1
+							&& method148(13292, ((Player) obj).username))) {
+				method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight);
+				if (anInt932 > -1 && anInt939 < anInt940) {
+					anIntArray944[anInt939] = fontBold.method473(((Actor) (obj)).forcedChat,
+							(byte) -53) / 2;
+					anIntArray943[anInt939] = fontBold.anInt1506;
+					anIntArray941[anInt939] = anInt932;
+					anIntArray942[anInt939] = anInt933;
+					anIntArray945[anInt939] = ((Actor) (obj)).anInt1583;
+					anIntArray946[anInt939] = ((Actor) (obj)).anInt1593;
+					anIntArray947[anInt939] = ((Actor) (obj)).anInt1582;
+					aStringArray948[anInt939++] = ((Actor) (obj)).forcedChat;
+					if (anInt998 == 0 && ((Actor) (obj)).anInt1593 >= 1 && ((Actor) (obj)).anInt1593 <= 3) {
+						anIntArray943[anInt939] += 10;
+						anIntArray942[anInt939] += 5;
+					}
+					if (anInt998 == 0 && ((Actor) (obj)).anInt1593 == 4)
+						anIntArray944[anInt939] = 60;
+					if (anInt998 == 0 && ((Actor) (obj)).anInt1593 == 5)
+						anIntArray943[anInt939] += 5;
+				}
+			}
+			if (((Actor) (obj)).endCycle > pulseCycle) {
+				method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
+				if (anInt932 > -1) {
+					int l = (((Actor) (obj)).anInt1596 * 30) / ((Actor) (obj)).anInt1597;
+					if (l > 30)
+						l = 30;
+					Rasterizer.drawFilledRectangle(anInt932 - 15, anInt933 - 3, l, 5, 65280);
+					Rasterizer.drawFilledRectangle((anInt932 - 15) + l, anInt933 - 3, 30 - l, 5, 0xff0000);
+				}
+			}
+			for (int i1 = 0; i1 < 4; i1++)
+				if (((Actor) (obj)).hitCycles[i1] > pulseCycle) {
+					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight / 2);
+					if (anInt932 > -1) {
+						if (i1 == 1)
+							anInt933 -= 20;
+						if (i1 == 2) {
+							anInt932 -= 15;
+							anInt933 -= 10;
+						}
+						if (i1 == 3) {
+							anInt932 += 15;
+							anInt933 -= 10;
+						}
+						aClass50_Sub1_Sub1_Sub1Array1182[((Actor) (obj)).hitTypes[i1]].method461(
+								anInt933 - 12, anInt932 - 12, -488);
+						fontSmall.drawStringLeft(String
+								.valueOf(((Actor) (obj)).hitDamages[i1]), anInt932, anInt933 + 4, 0);
+						fontSmall.drawStringLeft(String
+								.valueOf(((Actor) (obj)).hitDamages[i1]), anInt932 - 1, anInt933 + 3, 0xffffff);
+					}
+				}
+
+		}
+
+		for (int j = 0; j < anInt939; j++) {
+			int j1 = anIntArray941[j];
+			int k1 = anIntArray942[j];
+			int l1 = anIntArray944[j];
+			int i2 = anIntArray943[j];
+			boolean flag1 = true;
+			while (flag1) {
+				flag1 = false;
+				for (int j2 = 0; j2 < j; j2++)
+					if (k1 + 2 > anIntArray942[j2] - anIntArray943[j2] && k1 - i2 < anIntArray942[j2] + 2
+							&& j1 - l1 < anIntArray941[j2] + anIntArray944[j2]
+							&& j1 + l1 > anIntArray941[j2] - anIntArray944[j2]
+							&& anIntArray942[j2] - anIntArray943[j2] < k1) {
+						k1 = anIntArray942[j2] - anIntArray943[j2];
+						flag1 = true;
+					}
+
+			}
+			anInt932 = anIntArray941[j];
+			anInt933 = anIntArray942[j] = k1;
+			String s = aStringArray948[j];
+			if (anInt998 == 0) {
+				int k2 = 0xffff00;
+				if (anIntArray945[j] < 6)
+					k2 = anIntArray842[anIntArray945[j]];
+				if (anIntArray945[j] == 6)
+					k2 = anInt1138 % 20 >= 10 ? 0xffff00 : 0xff0000;
+				if (anIntArray945[j] == 7)
+					k2 = anInt1138 % 20 >= 10 ? 65535 : 255;
+				if (anIntArray945[j] == 8)
+					k2 = anInt1138 % 20 >= 10 ? 0x80ff80 : 45056;
+				if (anIntArray945[j] == 9) {
+					int l2 = 150 - anIntArray947[j];
+					if (l2 < 50)
+						k2 = 0xff0000 + 1280 * l2;
+					else if (l2 < 100)
+						k2 = 0xffff00 - 0x50000 * (l2 - 50);
+					else if (l2 < 150)
+						k2 = 65280 + 5 * (l2 - 100);
+				}
+				if (anIntArray945[j] == 10) {
+					int i3 = 150 - anIntArray947[j];
+					if (i3 < 50)
+						k2 = 0xff0000 + 5 * i3;
+					else if (i3 < 100)
+						k2 = 0xff00ff - 0x50000 * (i3 - 50);
+					else if (i3 < 150)
+						k2 = (255 + 0x50000 * (i3 - 100)) - 5 * (i3 - 100);
+				}
+				if (anIntArray945[j] == 11) {
+					int j3 = 150 - anIntArray947[j];
+					if (j3 < 50)
+						k2 = 0xffffff - 0x50005 * j3;
+					else if (j3 < 100)
+						k2 = 65280 + 0x50005 * (j3 - 50);
+					else if (j3 < 150)
+						k2 = 0xffffff - 0x50000 * (j3 - 100);
+				}
+				if (anIntArray946[j] == 0) {
+					fontBold.drawStringLeft(s, anInt932,anInt933 + 1, 0);
+					fontBold.drawStringLeft(s, anInt932, anInt933, k2);
+				}
+				if (anIntArray946[j] == 1) {
+					fontBold.method475(anInt933 + 1, (byte) 4, anInt1138, s, anInt932, 0);
+					fontBold.method475(anInt933, (byte) 4, anInt1138, s, anInt932, k2);
+				}
+				if (anIntArray946[j] == 2) {
+					fontBold.method476(anInt933 + 1, 0, (byte) 1, s, anInt932, anInt1138);
+					fontBold.method476(anInt933, k2, (byte) 1, s, anInt932, anInt1138);
+				}
+				if (anIntArray946[j] == 3) {
+					fontBold.method477(-601, s, 0, anInt932, anInt933 + 1, 150 - anIntArray947[j],
+							anInt1138);
+					fontBold.method477(-601, s, k2, anInt932, anInt933, 150 - anIntArray947[j],
+							anInt1138);
+				}
+				if (anIntArray946[j] == 4) {
+					int k3 = fontBold.method473(s, (byte) -53);
+					int i4 = ((150 - anIntArray947[j]) * (k3 + 100)) / 150;
+					Rasterizer.setCoordinates(0, anInt932 - 50, 334, anInt932 + 50);
+					fontBold.method474(2245, (anInt932 + 50) - i4, 0, anInt933 + 1, s);
+					fontBold.method474(2245, (anInt932 + 50) - i4, k2, anInt933, s);
+					Rasterizer.resetCoordinates();
+				}
+				if (anIntArray946[j] == 5) {
+					int l3 = 150 - anIntArray947[j];
+					int j4 = 0;
+					if (l3 < 25)
+						j4 = l3 - 25;
+					else if (l3 > 125)
+						j4 = l3 - 125;
+					Rasterizer.setCoordinates(anInt933 - fontBold.anInt1506 - 1, 0, anInt933 + 5,
+							512);
+					fontBold.drawStringLeft(s, anInt932, anInt933 + 1 + j4, 0);
+					fontBold.drawStringLeft(s, anInt932, anInt933 + j4, k2);
+					Rasterizer.resetCoordinates();
+				}
+			} else {
+				fontBold.drawStringLeft(s, anInt932, anInt933 + 1, 0);
+				fontBold.drawStringLeft(s, anInt932, anInt933, 0xffff00);
+			}
+		}
+
+		if (flag)
+			opcode = -1;
+	}
+
+	public void method122(int i) {
+		while (i >= 0)
+			aBoolean1242 = !aBoolean1242;
+		if (chatboxProducingGraphicsBuffer != null) {
+			return;
+		} else {
+			method141();
+			super.imageProducer = null;
+			aClass18_1198 = null;
+			aClass18_1199 = null;
+			aClass18_1200 = null;
+			flameLeftBackground = null;
+			flameRightBackground = null;
+			aClass18_1203 = null;
+			aClass18_1204 = null;
+			aClass18_1205 = null;
+			aClass18_1206 = null;
+			chatboxProducingGraphicsBuffer = new ProducingGraphicsBuffer(479, 96, getParentComponent());
+			aClass18_1157 = new ProducingGraphicsBuffer(172, 156, getParentComponent());
+			Rasterizer.resetPixels();
+			minimapBackgroundImage.drawImage(0, 0);
+			aClass18_1156 = new ProducingGraphicsBuffer(190, 261, getParentComponent());
+			aClass18_1158 = new ProducingGraphicsBuffer(512, 334, getParentComponent());
+			Rasterizer.resetPixels();
+			aClass18_1108 = new ProducingGraphicsBuffer(496, 50, getParentComponent());
+			aClass18_1109 = new ProducingGraphicsBuffer(269, 37, getParentComponent());
+			aClass18_1110 = new ProducingGraphicsBuffer(249, 45, getParentComponent());
+			aBoolean1046 = true;
+			aClass18_1158.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1002;
+			return;
+		}
+	}
+
+	public void method123(int i) {
+		Graphics g = getParentComponent().getGraphics();
+		g.setColor(Color.black);
+		i = 68 / i;
+		g.fillRect(0, 0, 765, 503);
+		setFrameRate(1);
+		if (aBoolean1283) {
+			aBoolean1243 = false;
+			g.setFont(new Font("Helvetica", 1, 16));
+			g.setColor(Color.yellow);
+			int j = 35;
+			g.drawString("Sorry, an error has occured whilst loading RuneScape", 30, j);
+			j += 50;
+			g.setColor(Color.white);
+			g.drawString("To fix this try the following (in order):", 30, j);
+			j += 50;
+			g.setColor(Color.white);
+			g.setFont(new Font("Helvetica", 1, 12));
+			g.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, j);
+			j += 30;
+			g.drawString("2: Try clearing your web-browsers cache from tools->internet options", 30, j);
+			j += 30;
+			g.drawString("3: Try using a different game-world", 30, j);
+			j += 30;
+			g.drawString("4: Try rebooting your computer", 30, j);
+			j += 30;
+			g.drawString("5: Try selecting a different version of Java from the play-game menu", 30, j);
+		}
+		if (aBoolean1097) {
+			aBoolean1243 = false;
+			g.setFont(new Font("Helvetica", 1, 20));
+			g.setColor(Color.white);
+			g.drawString("Error - unable to load game!", 50, 50);
+			g.drawString("To play RuneScape make sure you play from", 50, 100);
+			g.drawString("http://www.runescape.com", 50, 150);
+		}
+		if (aBoolean1016) {
+			aBoolean1243 = false;
+			g.setColor(Color.yellow);
+			int k = 35;
+			g.drawString("Error a copy of RuneScape already appears to be loaded", 30, k);
+			k += 50;
+			g.setColor(Color.white);
+			g.drawString("To fix this try the following (in order):", 30, k);
+			k += 50;
+			g.setColor(Color.white);
+			g.setFont(new Font("Helvetica", 1, 12));
+			g.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, k);
+			k += 30;
+			g.drawString("2: Try rebooting your computer, and reloading", 30, k);
+			k += 30;
+		}
+	}
+
+	public void logout() {
+		try {
+			if (bufferedConnection != null)
+				bufferedConnection.close();
+		} catch (Exception _ex) {
+		}
+		bufferedConnection = null;
+		loggedIn = false;
+		loginScreenState = 0;
+		username = "";
+		password = "";
+		resetModelCaches();
+		currentScene.method241((byte) 7);
+		for (int plane = 0; plane < 4; plane++)
+			currentCollisionMap[plane].clear();
+
+		System.gc();
+
+		stopMidi();
+		currentSong = -1;
+		nextSong = -1;
+		previousSong = 0;
+	}
+
+	public void method125(String s, String s1) {
+		if (aClass18_1158 != null) {
+			aClass18_1158.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1002;
+			int j = 151;
+			if (s != null)
+				j -= 7;
+			fontNormal.drawStringLeft(s1, 257, j, 0);
+			fontNormal.drawStringLeft(s1, 256, j - 1, 0xffffff);
+			j += 15;
+			if (s != null) {
+				fontNormal.drawStringLeft(s, 257, j, 0);
+				fontNormal.drawStringLeft(s, 256, j - 1, 0xffffff);
+			}
+			aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
+			return;
+		}
+		if (super.imageProducer != null) {
+			super.imageProducer.createRasterizer();
+			Rasterizer3D.lineOffsets = anIntArray1003;
+			int k = 251;
+			char c = '\u012C';
+			byte byte0 = 50;
+			Rasterizer.drawFilledRectangle(383 - c / 2, k - 5 - byte0 / 2, c, byte0, 0);
+			Rasterizer.drawUnfilledRectangle(383 - c / 2, k - 5 - byte0 / 2, c, byte0, 0xffffff);
+			if (s != null)
+				k -= 7;
+			fontNormal.drawStringLeft(s1, 383, k, 0);
+			fontNormal.drawStringLeft(s1, 382, k - 1, 0xffffff);
+			k += 15;
+			if (s != null) {
+				fontNormal.drawStringLeft(s, 383, k, 0);
+				fontNormal.drawStringLeft(s, 382, k - 1, 0xffffff);
+			}
+			super.imageProducer.drawGraphics(0, 0, super.gameGraphics);
+		}
+	}
+
+	public boolean method126(int i, byte byte0) {
+		if (i < 0)
+			return false;
+		int j = anIntArray981[i];
+		if (byte0 != 97)
+			throw new NullPointerException();
+		if (j >= 2000)
+			j -= 2000;
+		return j == 762;
+	}
+
+	public void method127(boolean flag) {
+		if (!flag) //never remove
+			anInt1056 = incomingRandom.nextInt();
+		if (anInt1197 != 2)
+			return;
+		method137((anInt844 - nextTopLeftTileX << 7) + anInt847, anInt846 * 2, (anInt845 - nextTopRightTileY << 7) + anInt848, -214);
+		if (anInt932 > -1 && pulseCycle % 20 < 10)
+			aClass50_Sub1_Sub1_Sub1Array954[0].method461(anInt933 - 28, anInt932 - 12, -488);
+	}
+
+	public void repaintGame() {
+		if (aBoolean1016 || aBoolean1283 || aBoolean1097) {
+			method123(281);
+			return;
+		}
+		anInt1309++;
+		if (!loggedIn)
+			method131((byte) -50, false);
+		else
+			method74(7);
+		anInt1094 = 0;
+	}
+
+	public void method128(boolean flag) {
+		if (flag)
+			outBuffer.putByte(23);
+		int i = anInt1305;
+		int j = anInt1306;
+		int k = anInt1307;
+		int l = anInt1308;
+		int i1 = 0x5d5447;
+		Rasterizer.drawFilledRectangle(i, j, k, l, i1);
+		Rasterizer.drawFilledRectangle(i + 1, j + 1, k - 2, 16, 0);
+		Rasterizer.drawUnfilledRectangle(i + 1, j + 18, k - 2, l - 19, 0);
+		fontBold.method474(2245, i + 3, i1, j + 14, "Choose Option");
+		int j1 = super.mouseX;
+		int k1 = super.mouseY;
+		if (anInt1304 == 0) {
+			j1 -= 4;
+			k1 -= 4;
+		}
+		if (anInt1304 == 1) {
+			j1 -= 553;
+			k1 -= 205;
+		}
+		if (anInt1304 == 2) {
+			j1 -= 17;
+			k1 -= 357;
+		}
+		for (int l1 = 0; l1 < anInt1183; l1++) {
+			int i2 = j + 31 + (anInt1183 - 1 - l1) * 15;
+			int j2 = 0xffffff;
+			if (j1 > i && j1 < i + k && k1 > i2 - 13 && k1 < i2 + 3)
+				j2 = 0xffff00;
+			fontBold.method478(j2, i + 3, i2, true, aStringArray1184[l1], -39629);
+		}
+
+	}
+
+	public int method129(int i, int j, Widget class13) {
+		if (i != 3)
+			return anInt1222;
+		if (class13.anIntArrayArray234 == null || j >= class13.anIntArrayArray234.length)
+			return -2;
+		try {
+			int ai[] = class13.anIntArrayArray234[j];
+			int k = 0;
+			int l = 0;
+			int i1 = 0;
+			do {
+				int j1 = ai[l++];
+				int k1 = 0;
+				byte byte0 = 0;
+				if (j1 == 0)
+					return k;
+				if (j1 == 1)
+					k1 = anIntArray1029[ai[l++]];
+				if (j1 == 2)
+					k1 = anIntArray1054[ai[l++]];
+				if (j1 == 3)
+					k1 = anIntArray843[ai[l++]];
+				if (j1 == 4) {
+					Widget class13_1 = Widget.forId(ai[l++]);
+					int k2 = ai[l++];
+					if (k2 >= 0 && k2 < ItemDefinition.count && (!ItemDefinition.forId(k2).members || memberServer)) {
+						for (int j3 = 0; j3 < class13_1.itemIds.length; j3++)
+							if (class13_1.itemIds[j3] == k2 + 1)
+								k1 += class13_1.itemAmounts[j3];
+
+					}
+				}
+				if (j1 == 5)
+					k1 = widgetSettings[ai[l++]];
+				if (j1 == 6)
+					k1 = xpForSkillLevel[anIntArray1054[ai[l++]] - 1];
+				if (j1 == 7)
+					k1 = (widgetSettings[ai[l++]] * 100) / 46875;
+				if (j1 == 8)
+					k1 = thisPlayer.anInt1753;
+				if (j1 == 9) {
+					for (int l1 = 0; l1 < SkillConstants.SKILL_COUNT; l1++)
+						if (SkillConstants.SKILL_TOGGLES[l1])
+							k1 += anIntArray1054[l1];
+
+				}
+				if (j1 == 10) {
+					Widget class13_2 = Widget.forId(ai[l++]);
+					int l2 = ai[l++] + 1;
+					if (l2 >= 0 && l2 < ItemDefinition.count && (!ItemDefinition.forId(l2).members || memberServer)) {
+						for (int k3 = 0; k3 < class13_2.itemIds.length; k3++) {
+							if (class13_2.itemIds[k3] != l2)
+								continue;
+							k1 = 0x3b9ac9ff;
 							break;
 						}
-						anInt1009 += (i_709_ - anInt1009) / 80;
+
 					}
-				} catch (Exception exception) {
-					SignLink.reportError("glfc_ex " + Game.localPlayer.xWithBoundary + ","
-							+ Game.localPlayer.yWithBoundary + "," + anInt1039 + "," + anInt1040 + "," + anInt1094
-							+ "," + anInt1095 + "," + regionAbsoluteBaseX + "," + regionAbsoluteBaseY);
-					throw new RuntimeException("eek");
 				}
-				break;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("25141, " + i + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-		} while (false);
-	}
-
-	@Override
-	public final void repaintGame() {
-		if (aBoolean1277 || aBoolean951 || aBoolean1201) {
-			method94(-13873);
-		} else {
-			Game.anInt1086++;
-			if (!loggedIn) {
-				drawLoginScreen(false);
-			} else {
-				processDrawing();
-			}
-			anInt1238 = 0;
-		}
-	}
-
-	public final boolean method109(boolean bool, String string) {
-		try {
-			if (string == null) {
-				return false;
-			}
-			for (int i = 0; i < friendsListCount; i++) {
-				if (string.equalsIgnoreCase(friendsListNames[i])) {
-					return true;
+				if (j1 == 11)
+					k1 = anInt1324;
+				if (j1 == 12)
+					k1 = anInt1030;
+				if (j1 == 13) {
+					int i2 = widgetSettings[ai[l++]];
+					int i3 = ai[l++];
+					k1 = (i2 & 1 << i3) == 0 ? 0 : 1;
 				}
-			}
-			if (bool) {
-				outBuffer.put(138);
-			}
-			if (string.equalsIgnoreCase(Game.localPlayer.playerName)) {
-				return true;
-			}
-			return false;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("24883, " + bool + ", " + string + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public static final String method110(int i, int i_710_, boolean bool) {
-		try {
-			if (!bool) {
-				throw new NullPointerException();
-			}
-			int i_711_ = i - i_710_;
-			if (i_711_ < -9) {
-				return "@red@";
-			}
-			if (i_711_ < -6) {
-				return "@or3@";
-			}
-			if (i_711_ < -3) {
-				return "@or2@";
-			}
-			if (i_711_ < 0) {
-				return "@or1@";
-			}
-			if (i_711_ > 9) {
-				return "@gre@";
-			}
-			if (i_711_ > 6) {
-				return "@gr3@";
-			}
-			if (i_711_ > 3) {
-				return "@gr2@";
-			}
-			if (i_711_ > 0) {
-				return "@gr1@";
-			}
-			return "@yel@";
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("19760, " + i + ", " + i_710_ + ", " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void setWaveVolume(int i) {
-		try {
-			SignLink.waveVolume = i;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("83178, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method112() {
-		method76();
-
-		if (lastClickType == 1) {
-			cursorCross[anInt941 / 100].drawImage(lastClickX - 8 - 4, lastClickY - 8 - 4);
-			Game.anInt1167++;
-			if (Game.anInt1167 > 67) {
-				Game.anInt1167 = 0;
-				outBuffer.putOpcode(78);
-			}
-		}
-
-		if (lastClickType == 2) {
-			cursorCross[4 + anInt941 / 100].drawImage(lastClickX - 8 - 4, lastClickY - 8 - 4);
-		}
-
-		if (walkableWidgetId != -1) {
-			method119(anInt970, walkableWidgetId);
-			method105(0, 0, Widget.cache[walkableWidgetId], 0);
-		}
-
-		if (openWidgetId != -1) {
-			method119(anInt970, openWidgetId);
-			method105(0, 0, Widget.cache[openWidgetId], 0);
-		}
-
-		processInTutorial();
-
-		if (!actionMenuOpen) {
-			processClickingAreas();
-			method125();
-		} else if (actionMenuArea == 0) {
-			drawActionMenu();
-		}
-		if (anInt1080 == 1) {
-			anImageRGBArray1120[1].drawImage(472, 296);
-		}
-
-		if (Game.debug) {
-			int x = 507;
-			int y = 20;
-			int color = fps > 15 ? 0xFFFF00 : 0xFF0000;
-			Runtime runtime = Runtime.getRuntime();
-			int usage = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
-
-			fontNormal.drawStringRight("FPS: " + fps, x, y, color);
-			y += 15;
-
-			color = 0xFFFF00;
-
-			if (usage > 0x2000000 && Game.lowMemory) {
-				color = 0xFF0000;
-			}
-			fontNormal.drawStringRight("Mem: " + usage + "k (" + (usage / 1024L) + "MB)", x, y, 0xFFFF00);
-			y += 15;
-
-			fontNormal.drawStringRight("Menu area: " + actionMenuArea, x, y, 0xFFFF00);
-			y += 15;
-		}
-
-		if (systemUpdateTime != 0) {
-			int seconds = systemUpdateTime / 50;
-			int minutes = seconds / 60;
-			seconds %= 60;
-			fontNormal.drawString("System update in: " + minutes + ":" + (seconds > 10 ? seconds : ("0" + seconds)), 4,
-					329, 0xFFFF00);
-		}
-	}
-
-	public final void addIgnore(long ignore, int i) {
-		try {
-			if (ignore != 0L) {
-				if (ignoreListCount >= 100) {
-					sendMessage("Your ignore list is full. Max of 100 hit", 0, "");
+				if (j1 == 14) {
+					int j2 = ai[l++];
+					Varbit class49 = Varbit.cache[j2];
+					int l3 = class49.varpId;
+					int i4 = class49.leastSignificantBit;
+					int j4 = class49.mostSignificantBit;
+					int k4 = BITFIELD_MAX_VALUE[j4 - i4];
+					k1 = widgetSettings[l3] >> i4 & k4;
+				}
+				if (j1 == 15)
+					byte0 = 1;
+				if (j1 == 16)
+					byte0 = 2;
+				if (j1 == 17)
+					byte0 = 3;
+				if (j1 == 18)
+					k1 = (((Actor) (thisPlayer)).unitX >> 7) + nextTopLeftTileX;
+				if (j1 == 19)
+					k1 = (((Actor) (thisPlayer)).unitY >> 7) + nextTopRightTileY;
+				if (j1 == 20)
+					k1 = ai[l++];
+				if (byte0 == 0) {
+					if (i1 == 0)
+						k += k1;
+					if (i1 == 1)
+						k -= k1;
+					if (i1 == 2 && k1 != 0)
+						k /= k1;
+					if (i1 == 3)
+						k *= k1;
+					i1 = 0;
 				} else {
-					String ignoreName = TextUtils.formatName(TextUtils.longToName(ignore));
-					for (int index = 0; index < ignoreListCount; index++) {
-						if (ignoreList[index] == ignore) {
-							sendMessage(ignoreName + " is already on your ignore list", 0, "");
-							return;
-						}
-					}
-					if (i >= 4 && i <= 4) {
-						for (int index = 0; index < friendsListCount; index++) {
-							if (friendsListLongs[index] == ignore) {
-								sendMessage("Please remove " + ignoreName + " from your friend list first", 0, "");
-								return;
-							}
-						}
-						ignoreList[ignoreListCount++] = ignore;
-						redrawTab = true;
-						outBuffer.putOpcode(133);
-						outBuffer.putLong(ignore);
-					}
+					i1 = byte0;
 				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("45688, " + ignore + ", " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method114() {
-		try {
-			for (int i = -1; i < playerCount; i++) {
-				int playerId;
-				if (i == -1) {
-					playerId = localPlayerId;
-				} else {
-					playerId = anIntArray917[i];
-				}
-				Player player = players[playerId];
-				if (player != null) {
-					method96(player);
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("2450, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	private final void method115() {
-		do {
-			try {
-				if (anInt1048 != 2) {
-					break;
-				}
-				for (SpawnObjectNode node = (SpawnObjectNode) spawnObjectNodeList.getBack(); node != null; node = (SpawnObjectNode) spawnObjectNodeList
-						.getPrevious()) {
-					if (node.anInt1344 > 0) {
-						node.anInt1344--;
-					}
-					if (node.anInt1344 == 0) {
-						if (node.id < 0 || Region.method460(node.id, node.anInt1351, 8)) {
-							method142(node.y, node.plane, node.face, node.anInt1351, node.x, node.type, node.id);
-							node.remove();
-						}
-					} else {
-						if (node.anInt1352 > 0) {
-							node.anInt1352--;
-						}
-						if (node.anInt1352 == 0 && node.x >= 1 && node.y >= 1 && node.x <= 102 && node.y <= 102
-								&& (node.anInt1341 < 0 || Region.method460(node.anInt1341, node.anInt1343, 8))) {
-							method142(node.y, node.plane, node.anInt1342, node.anInt1343, node.x, node.type,
-									node.anInt1341);
-							node.anInt1352 = -1;
-							if (node.anInt1341 == node.id && node.id == -1) {
-								node.remove();
-							} else if (node.anInt1341 == node.id && node.anInt1342 == node.face
-									&& node.anInt1343 == node.anInt1351) {
-								node.remove();
-							}
-						}
-					}
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("99295, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void processMenuHovering() {
-		do {
-			try {
-				int width = fontBold.getStringEffectWidth("Choose Option");
-				for (int i = 0; i < menuActionRow; i++) {
-					int actionWidth = fontBold.getStringEffectWidth(menuActionNames[i]);
-					if (actionWidth > width) {
-						width = actionWidth;
-					}
-				}
-				width += 8;
-				int menuHeight = (15 * menuActionRow) + 21;
-				if (clickX > 4 && clickY > 4 && clickX < 516 && clickY < 338) {
-					int menuX = clickX - 4 - width / 2;
-					if (menuX + width > 512) {
-						menuX = 512 - width;
-					}
-					if (menuX < 0) {
-						menuX = 0;
-					}
-					int menuY = clickY - 4;
-					if (menuY + menuHeight > 334) {
-						menuY = 334 - menuHeight;
-					}
-					if (menuY < 0) {
-						menuY = 0;
-					}
-					actionMenuOpen = true;
-					actionMenuArea = 0;
-					anInt974 = menuX;
-					anInt975 = menuY;
-					anInt976 = width;
-					anInt977 = 15 * menuActionRow + 22;
-				}
-				if (clickX > 553 && clickY > 205 && clickX < 743 && clickY < 466) {
-					int menuX = clickX - 553 - width / 2;
-					if (menuX < 0) {
-						menuX = 0;
-					} else if (menuX + width > 190) {
-						menuX = 190 - width;
-					}
-					int menuY = clickY - 205;
-					if (menuY < 0) {
-						menuY = 0;
-					} else if (menuY + menuHeight > 261) {
-						menuY = 261 - menuHeight;
-					}
-					actionMenuOpen = true;
-					actionMenuArea = 1;
-					anInt974 = menuX;
-					anInt975 = menuY;
-					anInt976 = width;
-					anInt977 = 15 * menuActionRow + 22;
-				}
-				if (clickX <= 17 || clickY <= 357 || clickX >= 496 || clickY >= 453) {
-					break;
-				}
-				int menuX = clickX - 17 - width / 2;
-				if (menuX < 0) {
-					menuX = 0;
-				} else if (menuX + width > 479) {
-					menuX = 479 - width;
-				}
-				int menuY = clickY - 357;
-				if (menuY < 0) {
-					menuY = 0;
-				} else if (menuY + menuHeight > 96) {
-					menuY = 96 - menuHeight;
-				}
-				actionMenuOpen = true;
-				actionMenuArea = 2;
-				anInt974 = menuX;
-				anInt975 = menuY;
-				anInt976 = width;
-				anInt977 = 15 * menuActionRow + 22;
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("40223, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	private final void method117(Buffer buffer) {
-		try {
-			buffer.initBitAccess();
-			opcode = buffer.getUnsignedByte();
-			int i_730_ = buffer.getBits(1);
-			if (i_730_ != 0) {
-				int i_731_ = buffer.getBits(2);
-				if (i_731_ == 0) {
-					anIntArray919[anInt918++] = localPlayerId;
-				} else if (i_731_ == 1) {
-					int i_732_ = buffer.getBits(3);
-					Game.localPlayer.move(i_732_, false);
-					int i_733_ = buffer.getBits(1);
-					if (i_733_ == 1) {
-						anIntArray919[anInt918++] = localPlayerId;
-					}
-				} else if (i_731_ == 2) {
-					int i_734_ = buffer.getBits(3);
-					Game.localPlayer.move(i_734_, true);
-					int i_735_ = buffer.getBits(3);
-					Game.localPlayer.move(i_735_, true);
-					int i_736_ = buffer.getBits(1);
-					if (i_736_ == 1) {
-						anIntArray919[anInt918++] = localPlayerId;
-					}
-				} else if (i_731_ == 3) {
-					currentSceneId = buffer.getBits(2);
-					buffer.getBits(1);
-					int i_738_ = buffer.getBits(1);
-					if (i_738_ == 1) {
-						anIntArray919[anInt918++] = localPlayerId;
-					}
-					int i_739_ = buffer.getBits(7);
-					int i_740_ = buffer.getBits(7);
-					Game.localPlayer.setPosition(i_740_, i_739_);
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("453, " + buffer + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method118() {
-		try {
-			aBoolean856 = false;
-			while (aBoolean987) {
-				aBoolean856 = false;
-				try {
-					Thread.sleep(50L);
-				} catch (Exception exception) {
-					/* empty */
-				}
-			}
-			titleboxImage = null;
-			titleboxButtonImage = null;
-			titleFlameEmblem = null;
-			anIntArray875 = null;
-			anIntArray876 = null;
-			anIntArray877 = null;
-			anIntArray878 = null;
-			anIntArray1215 = null;
-			anIntArray1216 = null;
-			anIntArray853 = null;
-			anIntArray854 = null;
-			anImageRGB1226 = null;
-			anImageRGB1227 = null;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("81448, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final boolean method119(int i, int widgetId) {
-		try {
-			boolean bool_742_ = false;
-			Widget widget = Widget.cache[widgetId];
-			for (int element : widget.children) {
-				if (element == -1) {
-					break;
-				}
-				Widget widget_744_ = Widget.cache[element];
-				if (widget_744_.type == 1) {
-					bool_742_ |= method119(i, widget_744_.id);
-				}
-				if (widget_744_.type == 6
-						&& (widget_744_.disabledAnimation != -1 || widget_744_.enabledAnimation != -1)) {
-					boolean bool_745_ = method131(widget_744_);
-					int i_746_;
-					if (bool_745_) {
-						i_746_ = widget_744_.enabledAnimation;
-					} else {
-						i_746_ = widget_744_.disabledAnimation;
-					}
-					if (i_746_ != -1) {
-						AnimationSequence animationsequence = AnimationSequence.cache[i_746_];
-						widget_744_.animationDuration += i;
-						while (widget_744_.animationDuration > animationsequence
-								.getFrameLength(widget_744_.animationFrame)) {
-							widget_744_.animationDuration -= animationsequence
-									.getFrameLength(widget_744_.animationFrame) + 1;
-							widget_744_.animationFrame++;
-							if (widget_744_.animationFrame >= animationsequence.frameCount) {
-								widget_744_.animationFrame -= animationsequence.frameStep;
-								if (widget_744_.animationFrame < 0
-										|| widget_744_.animationFrame >= animationsequence.frameCount) {
-									widget_744_.animationFrame = 0;
-								}
-							}
-							bool_742_ = true;
-						}
-					}
-				}
-			}
-			return bool_742_;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("91882, " + i + ", " + widgetId + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final int method120() {
-		try {
-			int i_747_ = 3;
-			if (anInt886 < 310) {
-				int i_748_ = anInt883 >> 7;
-				int i_749_ = anInt885 >> 7;
-				int i_750_ = Game.localPlayer.xWithBoundary >> 7;
-				int i_751_ = Game.localPlayer.yWithBoundary >> 7;
-				if ((currentSceneTileFlags[currentSceneId][i_748_][i_749_] & 0x4) != 0) {
-					i_747_ = currentSceneId;
-				}
-				int i_752_;
-				if (i_750_ > i_748_) {
-					i_752_ = i_750_ - i_748_;
-				} else {
-					i_752_ = i_748_ - i_750_;
-				}
-				int i_753_;
-				if (i_751_ > i_749_) {
-					i_753_ = i_751_ - i_749_;
-				} else {
-					i_753_ = i_749_ - i_751_;
-				}
-				if (i_752_ > i_753_) {
-					int i_754_ = i_753_ * 65536 / i_752_;
-					int i_755_ = 32768;
-					while (i_748_ != i_750_) {
-						if (i_748_ < i_750_) {
-							i_748_++;
-						} else if (i_748_ > i_750_) {
-							i_748_--;
-						}
-						if ((currentSceneTileFlags[currentSceneId][i_748_][i_749_] & 0x4) != 0) {
-							i_747_ = currentSceneId;
-						}
-						i_755_ += i_754_;
-						if (i_755_ >= 65536) {
-							i_755_ -= 65536;
-							if (i_749_ < i_751_) {
-								i_749_++;
-							} else if (i_749_ > i_751_) {
-								i_749_--;
-							}
-							if ((currentSceneTileFlags[currentSceneId][i_748_][i_749_] & 0x4) != 0) {
-								i_747_ = currentSceneId;
-							}
-						}
-					}
-				} else {
-					int i_756_ = i_752_ * 65536 / i_753_;
-					int i_757_ = 32768;
-					while (i_749_ != i_751_) {
-						if (i_749_ < i_751_) {
-							i_749_++;
-						} else if (i_749_ > i_751_) {
-							i_749_--;
-						}
-						if ((currentSceneTileFlags[currentSceneId][i_748_][i_749_] & 0x4) != 0) {
-							i_747_ = currentSceneId;
-						}
-						i_757_ += i_756_;
-						if (i_757_ >= 65536) {
-							i_757_ -= 65536;
-							if (i_748_ < i_750_) {
-								i_748_++;
-							} else if (i_748_ > i_750_) {
-								i_748_--;
-							}
-							if ((currentSceneTileFlags[currentSceneId][i_748_][i_749_] & 0x4) != 0) {
-								i_747_ = currentSceneId;
-							}
-						}
-					}
-				}
-			}
-			if ((currentSceneTileFlags[currentSceneId][Game.localPlayer.xWithBoundary >> 7][Game.localPlayer.yWithBoundary >> 7] & 0x4) != 0) {
-				i_747_ = currentSceneId;
-			}
-			return i_747_;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("62088, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final int method121(int i) {
-		try {
-			while (i >= 0) {
-				outBuffer.put(21);
-			}
-			int i_758_ = method42(currentSceneId, anInt885, true, anInt883);
-			if (i_758_ - anInt884 < 800
-					&& (currentSceneTileFlags[currentSceneId][anInt883 >> 7][anInt885 >> 7] & 0x4) != 0) {
-				return currentSceneId;
-			}
-			return 3;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("3005, " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method122(int i, long l) {
-		try {
-			if (i != 3) {
-				startup();
-			}
-			if (l != 0L) {
-				for (int i_759_ = 0; i_759_ < ignoreListCount; i_759_++) {
-					if (ignoreList[i_759_] == l) {
-						ignoreListCount--;
-						redrawTab = true;
-						for (int i_760_ = i_759_; i_760_ < ignoreListCount; i_760_++) {
-							ignoreList[i_760_] = ignoreList[i_760_ + 1];
-						}
-						outBuffer.putOpcode(74);
-						outBuffer.putLong(l);
-						break;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("47229, " + i + ", " + l + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	@Override
-	public final String getParameter(String string) {
-		if (SignLink.applet != null) {
-			return SignLink.applet.getParameter(string);
-		}
-		return super.getParameter(string);
-	}
-
-	public final void setMidiVolume(boolean bool, int volume) {
-		do {
-			try {
-				SignLink.midiVolume = volume;
-				if (!bool) {
-					break;
-				}
-				SignLink.midi = "voladjust";
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("30156, " + bool + ", " + volume + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final int parseWidgetOpcode(Widget widget, int widgetId) {
-		if (widget.opcodes == null || widgetId >= widget.opcodes.length) {
-			return -2;
-		}
-		try {
-			int[] opcodes = widget.opcodes[widgetId];
-			int result = 0;
-			int counter = 0;
-			int type = 0;
-			while (true) {
-				int opcode = opcodes[counter++];
-				int value = 0;
-				int tempType = 0;
-				if (opcode == 0) {
-					return result;
-				}
-				if (opcode == 1) {
-					value = skillLevel[opcodes[counter++]];
-				}
-				if (opcode == 2) {
-					value = skillMaxLevel[opcodes[counter++]];
-				}
-				if (opcode == 3) {
-					value = skillExperience[opcodes[counter++]];
-				}
-				if (opcode == 4) {
-					Widget itemWidget = Widget.cache[opcodes[counter++]];
-					int itemId = opcodes[counter++];
-					if (itemId >= 0 && itemId < ItemDefinition.itemCount
-							&& (!ItemDefinition.getDefinition(itemId).membersOnly || Game.membersWorld)) {
-						for (int item = 0; item < itemWidget.items.length; item++) {
-							if (itemWidget.items[item] == itemId + 1) {
-								value += itemWidget.itemAmounts[item];
-							}
-						}
-					}
-				}
-				if (opcode == 5) {
-					value = widgetSettings[opcodes[counter++]];
-				}
-				if (opcode == 6) {
-					value = Game.xpForSkillLevel[skillMaxLevel[opcodes[counter++]] - 1];
-				}
-				if (opcode == 7) {
-					value = widgetSettings[opcodes[counter++]] * 100 / 46875;
-				}
-				if (opcode == 8) {
-					value = Game.localPlayer.combatLevel;
-				}
-				if (opcode == 9) {
-					for (int skilll = 0; skilll < SkillConstants.SKILL_COUNT; skilll++) {
-						if (SkillConstants.SKILL_TOGGLES[skilll]) {
-							value += skillMaxLevel[skilll];
-						}
-					}
-				}
-				if (opcode == 10) {
-					Widget itemWidget = Widget.cache[opcodes[counter++]];
-					int itemId = opcodes[counter++] + 1;
-					if (itemId >= 0 && itemId < ItemDefinition.itemCount
-							&& (!ItemDefinition.getDefinition(itemId).membersOnly || Game.membersWorld)) {
-						for (int item2 : itemWidget.items) {
-							if (item2 == itemId) {
-								value = 999999999;
-								break;
-							}
-						}
-					}
-				}
-				if (opcode == 11) {
-					value = playerEnergy;
-				}
-				if (opcode == 12) {
-					value = playerWeight;
-				}
-				if (opcode == 13) {
-					int setting = widgetSettings[opcodes[counter++]];
-					int info = opcodes[counter++];
-					value = (setting & 1 << info) != 0 ? 1 : 0;
-				}
-				if (opcode == 14) {
-					int i_777_ = opcodes[counter++];
-					VarBit varbit = VarBit.cache[i_777_];
-					int i_778_ = varbit.configId;
-					int i_779_ = varbit.leastSignificantBit;
-					int i_780_ = varbit.mostSignificantBit;
-					int i_781_ = Game.BITFIELD_MAX_VALUE[i_780_ - i_779_];
-					value = widgetSettings[i_778_] >> i_779_ & i_781_;
-				}
-				if (opcode == 15) {
-					tempType = 1;
-				}
-				if (opcode == 16) {
-					tempType = 2;
-				}
-				if (opcode == 17) {
-					tempType = 3;
-				}
-				if (opcode == 18) {
-					value = (Game.localPlayer.xWithBoundary >> 7) + regionAbsoluteBaseX;
-				}
-				if (opcode == 19) {
-					value = (Game.localPlayer.yWithBoundary >> 7) + regionAbsoluteBaseY;
-				}
-				if (opcode == 20) {
-					value = opcodes[counter++];
-				}
-				if (tempType == 0) {
-					if (type == 0) {
-						result += value;
-					}
-					if (type == 1) {
-						result -= value;
-					}
-					if (type == 2 && value != 0) {
-						result /= value;
-					}
-					if (type == 3) {
-						result *= value;
-					}
-					type = 0;
-				} else {
-					type = tempType;
-				}
-			}
-		} catch (Exception exception) {
+			} while (true);
+		} catch (Exception _ex) {
 			return -1;
 		}
 	}
 
-	public final void method125() {
-		do {
-			try {
-				if (menuActionRow >= 2 || anInt1307 != 0 || anInt1161 != 0) {
-					String action;
-					if (anInt1307 == 1 && menuActionRow < 2) {
-						action = "Use " + aString1311 + " with...";
-					} else if (anInt1161 == 1 && menuActionRow < 2) {
-						action = aString1164 + "...";
-					} else {
-						action = menuActionNames[menuActionRow - 1];
-					}
-					if (menuActionRow > 2) {
-						action += "@whi@ / " + (menuActionRow - 2) + " more options";
-					}
-					fontBold.drawShadowedSeededAlphaString(action, 4, 15, Game.currentCycle / 1000, 0xFFFFFF);
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("86922, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
+	public void method130(int i, boolean flag, ImageRGB class50_sub1_sub1_sub1, int j) {
+		if (class50_sub1_sub1_sub1 == null)
+			return;
+		int k = anInt1252 + anInt916 & 0x7ff;
+		int l = j * j + i * i;
+		if (l > 6400)
+			return;
+		int i1 = Model.anIntArray1710[k];
+		int j1 = Model.anIntArray1711[k];
+		i1 = (i1 * 256) / (anInt1233 + 256);
+		j1 = (j1 * 256) / (anInt1233 + 256);
+		if (!flag)
+			opcode = buffer.getUnsignedByte();
+		int k1 = i * i1 + j * j1 >> 16;
+		int l1 = i * j1 - j * i1 >> 16;
+		if (l > 2500) {
+			class50_sub1_sub1_sub1.method467(minimapBackgroundImage, 83 - l1 - class50_sub1_sub1_sub1.anInt1495
+					/ 2 - 4, -49993, ((94 + k1) - class50_sub1_sub1_sub1.anInt1494 / 2) + 4);
+			return;
+		} else {
+			class50_sub1_sub1_sub1.method461(83 - l1 - class50_sub1_sub1_sub1.anInt1495 / 2 - 4,
+					((94 + k1) - class50_sub1_sub1_sub1.anInt1494 / 2) + 4, -488);
+			return;
+		}
 	}
 
-	public final void method126() {
-		try {
-			aProducingGraphicsBuffer1189.createRasterizer();
-			if (minimapState == 2) {
-				byte[] mapbackPixels = minimapBackgroundImage.pixels;
-				int[] rasterPixels = Rasterizer.pixels;
-				int length = mapbackPixels.length;
-				for (int i = 0; i < length; i++) {
-					if (mapbackPixels[i] == 0) {
-						rasterPixels[i] = 0;
-					}
-				}
-				minimapCompass.shapeImageToPixels(33, anInt1210, anIntArray1082, 256, anIntArray993, 25, 0, 0, 33, 25);
-				currentSceneBuffer.createRasterizer();
+	public void method131(byte byte0, boolean flag) {
+		method64(-188);
+		aClass18_1200.createRasterizer();
+		titleboxImage.drawImage(0, 0);
+		char c = '\u0168';
+		char c1 = '\310';
+		if (byte0 != -50) {
+			for (int i = 1; i > 0; i++);
+		}
+		if (loginScreenState == 0) {
+			int j = c1 / 2 + 80;
+			fontSmall.method471(true, anInt1056, 0x75a9a9, j, c / 2, onDemandFetcher.aString1347);
+			j = c1 / 2 - 20;
+			fontBold.method471(true, anInt1056, 0xffff00, j, c / 2, "Welcome to RuneScape");
+			j += 30;
+			int i1 = c / 2 - 80;
+			int l1 = c1 / 2 + 20;
+			titleboxButtonImage.drawImage(l1 - 20, i1 - 73);
+			fontBold.method471(true, anInt1056, 0xffffff, l1 + 5, i1, "New User");
+			i1 = c / 2 + 80;
+			titleboxButtonImage.drawImage(l1 - 20, i1 - 73);
+			fontBold.method471(true, anInt1056, 0xffffff, l1 + 5, i1, "Existing User");
+		}
+		if (loginScreenState == 2) {
+			int k = c1 / 2 - 40;
+			if (statusLineOne.length() > 0) {
+				fontBold.method471(true, anInt1056, 0xffff00, k - 15, c / 2, statusLineOne);
+				fontBold.method471(true, anInt1056, 0xffff00, k, c / 2, statusLineTwo);
+				k += 30;
 			} else {
-				int mapRotation = anInt1210 + anInt1234 & 0x7ff;
-				int mapX = 48 + Game.localPlayer.xWithBoundary / 32;
-				int mapY = 464 - Game.localPlayer.yWithBoundary / 32;
-				minimapImage.shapeImageToPixels(151, mapRotation, anIntArray1254, 256 + anInt1195, anIntArray1077,
-						mapY, 5, 25, 146, mapX);
-				minimapCompass.shapeImageToPixels(33, anInt1210, anIntArray1082, 256, anIntArray993, 25, 0, 0, 33, 25);
-
-				for (int i = 0; i < minimapHintCount; i++) {
-					mapX = minimapHintX[i] * 4 + 2 - Game.localPlayer.xWithBoundary / 32;
-					mapY = minimapHintY[i] * 4 + 2 - Game.localPlayer.yWithBoundary / 32;
-					method141(minimapHint[i], mapX, mapY);
-				}
-
-				/* Ground Items */
-				for (int x = 0; x < 104; x++) {
-					for (int y = 0; y < 104; y++) {
-						LinkedList groundItems = groundItemNodes[currentSceneId][x][y];
-						if (groundItems != null) {
-							mapX = x * 4 + 2 - Game.localPlayer.xWithBoundary / 32;
-							mapY = y * 4 + 2 - Game.localPlayer.yWithBoundary / 32;
-							method141(mapdotItem, mapX, mapY);
-						}
-					}
-				}
-
-				/* Actors */
-				for (int i = 0; i < actorCount; i++) {
-					Npc npc = localNpcs[anIntArray862[i]];
-					if (npc != null && npc.isVisibile()) {
-						ActorDefinition definition = npc.npcDefinition;
-						if (definition.childrenIds != null) {
-							definition = definition.getChildDefinition();
-						}
-						if (definition != null && definition.minimapVisible && definition.clickable) {
-							mapX = npc.xWithBoundary / 32 - Game.localPlayer.xWithBoundary / 32;
-							mapY = npc.yWithBoundary / 32 - Game.localPlayer.yWithBoundary / 32;
-							method141(mapdotActor, mapX, mapY);
-						}
-					}
-				}
-
-				/* Players */
-				for (int playerId = 0; playerId < playerCount; playerId++) {
-					Player player = players[anIntArray917[playerId]];
-					if (player != null && player.isVisibile()) {
-						mapX = player.xWithBoundary / 32 - Game.localPlayer.xWithBoundary / 32;
-						mapY = player.yWithBoundary / 32 - Game.localPlayer.yWithBoundary / 32;
-						boolean isFriend = false;
-						long nameLong = TextUtils.nameToLong(player.playerName);
-						for (int i_792_ = 0; i_792_ < friendsListCount; i_792_++) {
-							if (nameLong == friendsListLongs[i_792_] && friendsListWorlds[i_792_] != 0) {
-								isFriend = true;
-								break;
-							}
-						}
-						boolean isTeammate = false;
-						if (Game.localPlayer.teamId != 0 && player.teamId != 0
-								&& Game.localPlayer.teamId == player.teamId) {
-							isTeammate = true;
-						}
-						if (isFriend) {
-							method141(mapdotFriend, mapX, mapY);
-						} else if (isTeammate) {
-							method141(mapdotTeammate, mapX, mapY);
-						} else {
-							method141(mapdotPlayer, mapX, mapY);
-						}
-					}
-				}
-
-				/* Hints */
-				if (hintIconType != 0 && Game.currentCycle % 20 < 10) {
-					if (hintIconType == 1 && hintIconActorId >= 0 && hintIconActorId < localNpcs.length) {
-						Npc npc = localNpcs[hintIconActorId];
-						if (npc != null) {
-							mapX = npc.xWithBoundary / 32 - Game.localPlayer.xWithBoundary / 32;
-							mapY = npc.yWithBoundary / 32 - Game.localPlayer.yWithBoundary / 32;
-							method81(anImageRGB896, -760, mapY, mapX);
-						}
-					}
-					if (hintIconType == 2) {
-						mapX = (hintIconX - regionAbsoluteBaseX) * 4 + 2 - Game.localPlayer.xWithBoundary / 32;
-						mapY = (hintIconY - regionAbsoluteBaseY) * 4 + 2 - Game.localPlayer.yWithBoundary / 32;
-						method81(anImageRGB896, -760, mapY, mapX);
-					}
-					if (hintIconType == 10 && hintIconId >= 0 && hintIconId < players.length) {
-						Player player = players[hintIconId];
-						if (player != null) {
-							mapX = player.xWithBoundary / 32 - Game.localPlayer.xWithBoundary / 32;
-							mapY = player.yWithBoundary / 32 - Game.localPlayer.yWithBoundary / 32;
-							method81(anImageRGB896, -760, mapY, mapX);
-						}
-					}
-				}
-
-				/* Flag Marker */
-				if (destinationX != 0) {
-					mapX = destinationX * 4 + 2 - Game.localPlayer.xWithBoundary / 32;
-					mapY = destinationY * 4 + 2 - Game.localPlayer.yWithBoundary / 32;
-					method141(mapFlagMarker, mapX, mapY);
-				}
-
-				Rasterizer.drawFilledRectangle(97, 78, 3, 3, 0xFFFFFF);
-				currentSceneBuffer.createRasterizer();
+				fontBold.method471(true, anInt1056, 0xffff00, k - 7, c / 2, statusLineTwo);
+				k += 30;
 			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("83200, " + runtimeexception.toString());
-			throw new RuntimeException();
+			fontBold.method478(0xffffff, c / 2 - 90, k, true, "Username: " + username
+					+ ((anInt977 == 0) & (pulseCycle % 40 < 20) ? "@yel@|" : ""), -39629);
+			k += 15;
+			fontBold.method478(0xffffff, c / 2 - 88, k, true, "Password: "
+					+ TextUtils.censorPassword(password) + ((anInt977 == 1) & (pulseCycle % 40 < 20) ? "@yel@|" : ""),
+					-39629);
+			k += 15;
+			if (!flag) {
+				int j1 = c / 2 - 80;
+				int i2 = c1 / 2 + 50;
+				titleboxButtonImage.drawImage(i2 - 20, j1 - 73);
+				fontBold.method471(true, anInt1056, 0xffffff, i2 + 5, j1, "Login");
+				j1 = c / 2 + 80;
+				titleboxButtonImage.drawImage(i2 - 20, j1 - 73);
+				fontBold.method471(true, anInt1056, 0xffffff, i2 + 5, j1, "Cancel");
+			}
+		}
+		if (loginScreenState == 3) {
+			fontBold.method471(true, anInt1056, 0xffff00, c1 / 2 - 60, c / 2,
+					"Create a free account");
+			int l = c1 / 2 - 35;
+			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
+					"To create a new account you need to");
+			l += 15;
+			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
+					"go back to the main RuneScape webpage");
+			l += 15;
+			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
+					"and choose the 'create account'");
+			l += 15;
+			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
+					"button near the top of that page.");
+			l += 15;
+			int k1 = c / 2;
+			int j2 = c1 / 2 + 50;
+			titleboxButtonImage.drawImage(j2 - 20, k1 - 73);
+			fontBold.method471(true, anInt1056, 0xffffff, j2 + 5, k1, "Cancel");
+		}
+		aClass18_1200.drawGraphics(202, 171, super.gameGraphics);
+		if (aBoolean1046) {
+			aBoolean1046 = false;
+			aClass18_1198.drawGraphics(128, 0, super.gameGraphics);
+			aClass18_1199.drawGraphics(202, 371, super.gameGraphics);
+			aClass18_1203.drawGraphics(0, 265, super.gameGraphics);
+			aClass18_1204.drawGraphics(562, 265, super.gameGraphics);
+			aClass18_1205.drawGraphics(128, 171, super.gameGraphics);
+			aClass18_1206.drawGraphics(562, 171, super.gameGraphics);
 		}
 	}
 
-	public final void method127(boolean bool, Actor actor, int i) {
-		try {
-			if (!bool) {
-				opcode = inBuffer.getUnsignedByte();
-			}
-			method128(actor.xWithBoundary, i, anInt900, actor.yWithBoundary);
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("30100, " + bool + ", " + actor + ", " + i + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void method128(int i, int i_794_, int i_795_, int i_796_) {
-		try {
-			if (i < 128 || i_796_ < 128 || i > 13056 || i_796_ > 13056) {
-				anInt988 = -1;
-				anInt989 = -1;
-			} else {
-				int i_797_ = method42(currentSceneId, i_796_, true, i) - i_794_;
-				i -= anInt883;
-				i_797_ -= anInt884;
-				i_796_ -= anInt885;
-				int i_798_ = Model.SINE[anInt886];
-				int i_799_ = Model.COSINE[anInt886];
-				int i_800_ = Model.SINE[anInt887];
-				int i_801_ = Model.COSINE[anInt887];
-				int i_802_ = i_796_ * i_800_ + i * i_801_ >> 16;
-				i_796_ = i_796_ * i_801_ - i * i_800_ >> 16;
-				i = i_802_;
-				if (i_795_ >= 0) {
-					outBuffer.put(27);
-				}
-				i_802_ = i_797_ * i_799_ - i_796_ * i_798_ >> 16;
-				i_796_ = i_797_ * i_798_ + i_796_ * i_799_ >> 16;
-				i_797_ = i_802_;
-				if (i_796_ >= 50) {
-					anInt988 = Rasterizer3D.centerX + (i << 9) / i_796_;
-					anInt989 = Rasterizer3D.centerY + (i_797_ << 9) / i_796_;
-				} else {
-					anInt988 = -1;
-					anInt989 = -1;
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("97939, " + i + ", " + i_794_ + ", " + i_795_ + ", " + i_796_ + ", "
-					+ runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processClickingPrivateMessages() {
-		try {
-			if (anInt1220 != 0) {
-				int lineId = 0;
-				if (systemUpdateTime != 0) {
-					lineId = 1;
-				}
-				for (int i = 0; i < 100; i++) {
-					if (chatboxMessages[i] != null) {
-						int messageType = chatboxMessageTypes[i];
-						String name = chatboxMessageNames[i];
-						if (name != null) {
-							if (name.startsWith("@cr1@") || name.startsWith("@cr2@")) {
-								name = name.substring(5);
-							}
-						}
-						if ((messageType == 3 || messageType == 7)
-								&& (messageType == 7 || privateChatSetting == 0 || privateChatSetting == 1
-										&& method109(false, name))) {
-							int areaHeight = 329 - (lineId * 13);
-							if (mouseEventX > 4 && mouseEventY - 4 > areaHeight - 10
-									&& mouseEventY - 4 <= areaHeight + 3) {
-								int areaWidth = fontNormal.getStringEffectWidth("From:  " + name + chatboxMessages[i]) + 25;
-								if (areaWidth > 450) {
-									areaWidth = 450;
-								}
-								if (mouseEventX < 4 + areaWidth) {
-									if (playerRights >= 1) {
-										menuActionNames[menuActionRow] = "Report abuse @whi@" + name;
-										menuActionIds[menuActionRow] = 2606;
-										menuActionRow++;
-									}
-									menuActionNames[menuActionRow] = "Add ignore @whi@" + name;
-									menuActionIds[menuActionRow] = 2042;
-									menuActionRow++;
-									menuActionNames[menuActionRow] = "Add friend @whi@" + name;
-									menuActionIds[menuActionRow] = 2337;
-									menuActionRow++;
-								}
-							}
-							if (++lineId >= 5) {
-								break;
-							}
-						}
-						if ((messageType == 5 || messageType == 6) && privateChatSetting < 2 && ++lineId >= 5) {
-							break;
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("61314, " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	private final void addSpawnObjectNode(int i_809_, int i_810_, int i_811_, int type, int y, int i_814_, int plane,
-			int x, int i_817_) {
-		SpawnObjectNode spawnObjectNode = null;
-		for (SpawnObjectNode listedSpawnObjectNode = (SpawnObjectNode) spawnObjectNodeList.getBack(); listedSpawnObjectNode != null; listedSpawnObjectNode = (SpawnObjectNode) spawnObjectNodeList
-				.getPrevious()) {
-			if (listedSpawnObjectNode.plane == plane && listedSpawnObjectNode.x == x && listedSpawnObjectNode.y == y
-					&& listedSpawnObjectNode.type == type) {
-				spawnObjectNode = listedSpawnObjectNode;
+	public void method132(Buffer class50_sub1_sub2, int i, boolean flag) {
+		if (flag)
+			anInt1140 = 287;
+		while (class50_sub1_sub2.bitPosition + 21 < i * 8) {
+			int j = class50_sub1_sub2.getBits(14);
+			if (j == 16383)
 				break;
-			}
+			if (npcs[j] == null)
+				npcs[j] = new Npc();
+			Npc class50_sub1_sub4_sub3_sub1 = npcs[j];
+			anIntArray1134[anInt1133++] = j;
+			class50_sub1_sub4_sub3_sub1.pulseCycle = pulseCycle;
+			int k = class50_sub1_sub2.getBits(1);
+			if (k == 1)
+				updatedPlayers[updatedPlayerCount++] = j;
+			int l = class50_sub1_sub2.getBits(5);
+			if (l > 15)
+				l -= 32;
+			int i1 = class50_sub1_sub2.getBits(5);
+			if (i1 > 15)
+				i1 -= 32;
+			int j1 = class50_sub1_sub2.getBits(1);
+			class50_sub1_sub4_sub3_sub1.npcDefinition = ActorDefinition.forId(class50_sub1_sub2.getBits(13));
+			class50_sub1_sub4_sub3_sub1.boundaryDimension = class50_sub1_sub4_sub3_sub1.npcDefinition.boundaryDimension;
+			class50_sub1_sub4_sub3_sub1.anInt1600 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt651;
+			class50_sub1_sub4_sub3_sub1.anInt1619 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt645;
+			class50_sub1_sub4_sub3_sub1.anInt1620 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt643;
+			class50_sub1_sub4_sub3_sub1.anInt1621 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt641;
+			class50_sub1_sub4_sub3_sub1.anInt1622 = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt633;
+			class50_sub1_sub4_sub3_sub1.standAnimationId = class50_sub1_sub4_sub3_sub1.npcDefinition.anInt621;
+			class50_sub1_sub4_sub3_sub1.setPosition(((Actor) (thisPlayer)).pathX[0] + i1, ((Actor) (thisPlayer)).pathY[0] + l,
+					j1 == 1);
 		}
-		if (spawnObjectNode == null) {
-			spawnObjectNode = new SpawnObjectNode();
-			spawnObjectNode.plane = plane;
-			spawnObjectNode.type = type;
-			spawnObjectNode.x = x;
-			spawnObjectNode.y = y;
-			method89(spawnObjectNode);
-			spawnObjectNodeList.insertBack(spawnObjectNode);
-		}
-		spawnObjectNode.anInt1341 = i_810_;
-		spawnObjectNode.anInt1343 = i_814_;
-		spawnObjectNode.anInt1342 = i_811_;
-		spawnObjectNode.anInt1352 = i_817_;
-		spawnObjectNode.anInt1344 = i_809_;
+		class50_sub1_sub2.finishBitAccess();
 	}
 
-	public final boolean method131(Widget widget) {
-		if (widget.conditionTypes == null) {
-			return false;
+	public void playSong(int id) {
+		if (currentSong != id) {
+			nextSong = id;
+			songChanging = true;
+			onDemandFetcher.request(2, nextSong);
+			currentSong = id;
 		}
-		for (int type = 0; type < widget.conditionTypes.length; type++) {
-			int opcode = parseWidgetOpcode(widget, type);
-			int condition = widget.conditionValues[type];
-			if (widget.conditionTypes[type] == 2) {
-				if (opcode >= condition) {
-					return false;
-				}
-			} else if (widget.conditionTypes[type] == 3) {
-				if (opcode <= condition) {
-					return false;
-				}
-			} else if (widget.conditionTypes[type] == 4) {
-				if (opcode == condition) {
-					return false;
-				}
-			} else if (opcode != condition) {
-				return false;
-			}
-		}
-		return true;
 	}
 
-	public final DataInputStream jaggrabRequest(String file) throws IOException {
-		if (!aBoolean897) {
-			if (SignLink.applet != null) {
-				return SignLink.openURL(file);
-			}
-			return new DataInputStream(new URL(getCodeBase(), file).openStream());
-		}
-		if (jaggrabSocket != null) {
-			jaggrabSocket.close();
-			jaggrabSocket = null;
-		}
-		jaggrabSocket = openSocket(43595);
-		jaggrabSocket.setSoTimeout(10000);
-		InputStream in = jaggrabSocket.getInputStream();
-		OutputStream out = jaggrabSocket.getOutputStream();
-		out.write(("JAGGRAB /" + file + "\n\n").getBytes());
-		return new DataInputStream(in);
+	public void stopMidi() {
+		SignLink.music.stop();
+		SignLink.fadeMidi = 0;
+		SignLink.midi = "stop";
 	}
 
-	public final void method133() {
-		do {
-			try {
-				int i = 256;
-				if (anInt1065 > 0) {
-					for (int i_821_ = 0; i_821_ < 256; i_821_++) {
-						if (anInt1065 > 768) {
-							anIntArray875[i_821_] = method83(anIntArray876[i_821_], anIntArray877[i_821_],
-									1024 - anInt1065);
-						} else if (anInt1065 > 256) {
-							anIntArray875[i_821_] = anIntArray877[i_821_];
+	private void adjustVolume(boolean updateMidi, int volume) {
+		SignLink.setVolume(volume);
+		if (updateMidi) {
+			SignLink.midi = "voladjust";
+		}
+	}
+
+	public void playSound(int id, int type, int delay, int volume) {
+		sound[currentSound] = id;
+		soundType[currentSound] = type;
+		soundDelay[currentSound] = delay + Sound.anIntArray669[id];
+		soundVolume[currentSound] = volume;
+		currentSound++;
+	}
+
+	public void parsePlacementPacket(Buffer buf, int opcode) {
+		if (opcode == 203) {
+			int k = buf.getShort();
+			int j3 = buf.getUnsignedByte();
+			int i6 = j3 >> 2;
+			int rotation = j3 & 3;
+			int k11 = anIntArray1032[i6];
+			byte byte0 = buf.getSignedByteNegated();
+			int offset = buf.getByteAdded();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			byte byte1 = buf.getSignedByteAdded();
+			int l19 = buf.method550();
+			int id = buf.method549();
+			byte byte2 = buf.getSignedByte();
+			byte byte3 = buf.getSignedByteAdded();
+			int l21 = buf.getShort();
+			Player player;
+			if (id == thisPlayerServerId)
+				player = thisPlayer;
+			else
+				player = players[id];
+			if (player != null) {
+				GameObjectDefinition class47 = GameObjectDefinition.getDefinition(k);
+				int i22 = anIntArrayArrayArray891[plane][x][y];
+				int j22 = anIntArrayArrayArray891[plane][x + 1][y];
+				int k22 = anIntArrayArrayArray891[plane][x + 1][y + 1];
+				int l22 = anIntArrayArrayArray891[plane][x][y + 1];
+				Model class50_sub1_sub4_sub4 = class47.getGameObjectModel(i6, rotation, i22, j22, k22, l22, -1);
+				if (class50_sub1_sub4_sub4 != null) {
+					method145(true, plane, x, 0, l19 + 1, 0, -1, l21 + 1, k11, y);
+					player.anInt1764 = l21 + pulseCycle;
+					player.anInt1765 = l19 + pulseCycle;
+					player.aClass50_Sub1_Sub4_Sub4_1746 = class50_sub1_sub4_sub4;
+					int i23 = class47.anInt801;
+					int j23 = class47.anInt775;
+					if (rotation == 1 || rotation == 3) {
+						i23 = class47.anInt775;
+						j23 = class47.anInt801;
+					}
+					player.anInt1743 = x * 128 + i23 * 64;
+					player.anInt1745 = y * 128 + j23 * 64;
+					player.anInt1744 = method110(player.anInt1745,
+							player.anInt1743, (byte) 9, plane);
+					if (byte1 > byte0) {
+						byte byte4 = byte1;
+						byte1 = byte0;
+						byte0 = byte4;
+					}
+					if (byte3 > byte2) {
+						byte byte5 = byte3;
+						byte3 = byte2;
+						byte2 = byte5;
+					}
+					player.anInt1768 = x + byte1;
+					player.anInt1770 = x + byte0;
+					player.anInt1769 = y + byte3;
+					player.anInt1771 = y + byte2;
+				}
+			}
+		}
+		if (opcode == 106) { // add ground item dropped by player
+			int offset = buf.getByteAdded();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			int amount = buf.getLittleShortA();
+			int id = buf.method550();
+			int playerId = buf.method550();
+			if (x >= 0 && y >= 0 && x < 104 && y < 104 && playerId != thisPlayerServerId) {
+				GroundItem item = new GroundItem();
+				item.id = id;
+				item.amount = amount;
+				if (groundItems[plane][x][y] == null)
+					groundItems[plane][x][y] = new LinkedList();
+				groundItems[plane][x][y].addLast(item);
+				method26(x, y);
+			}
+			return;
+		}
+		if (opcode == 142) {
+			int i1 = buf.getShort();
+			int l3 = buf.getByteAdded();
+			int k6 = l3 >> 2;
+			int j9 = l3 & 3;
+			int i12 = anIntArray1032[k6];
+			int j14 = buf.getUnsignedByte();
+			int x = placementX + (j14 >> 4 & 7);
+			int y = placementY + (j14 & 7);
+			if (x >= 0 && y >= 0 && x < 103 && y < 103) {
+				int l18 = anIntArrayArrayArray891[plane][x][y];
+				int j19 = anIntArrayArrayArray891[plane][x + 1][y];
+				int i20 = anIntArrayArrayArray891[plane][x + 1][y + 1];
+				int l20 = anIntArrayArrayArray891[plane][x][y + 1];
+				if (i12 == 0) {
+					Class44 class44 = currentScene.method263(plane, 17734, x, y);
+					if (class44 != null) {
+						int k21 = class44.anInt726 >> 14 & 0x7fff;
+						if (k6 == 2) {
+							class44.aClass50_Sub1_Sub4_724 = new GameObject(k21, 4 + j9, 2, j19, i20, l18, l20, i1,
+									false);
+							class44.aClass50_Sub1_Sub4_725 = new GameObject(k21, j9 + 1 & 3, 2, j19, i20, l18, l20, i1,
+									false);
 						} else {
-							anIntArray875[i_821_] = method83(anIntArray877[i_821_], anIntArray876[i_821_],
-									256 - anInt1065);
+							class44.aClass50_Sub1_Sub4_724 = new GameObject(k21, j9, k6, j19, i20, l18, l20, i1,
+									false);
 						}
 					}
-				} else if (anInt1066 > 0) {
-					for (int i_822_ = 0; i_822_ < 256; i_822_++) {
-						if (anInt1066 > 768) {
-							anIntArray875[i_822_] = method83(anIntArray876[i_822_], anIntArray878[i_822_],
-									1024 - anInt1066);
-						} else if (anInt1066 > 256) {
-							anIntArray875[i_822_] = anIntArray878[i_822_];
-						} else {
-							anIntArray875[i_822_] = method83(anIntArray878[i_822_], anIntArray876[i_822_],
-									256 - anInt1066);
-						}
-					}
-				} else {
-					for (int i_823_ = 0; i_823_ < 256; i_823_++) {
-						anIntArray875[i_823_] = anIntArray876[i_823_];
-					}
 				}
-				for (int i_824_ = 0; i_824_ < 33920; i_824_++) {
-					flameLeftBackground.pixels[i_824_] = anImageRGB1226.pixels[i_824_];
+				if (i12 == 1) {
+					Class35 class35 = currentScene.method264(plane, y, x, false);
+					if (class35 != null)
+						class35.aClass50_Sub1_Sub4_608 = new GameObject(class35.anInt609 >> 14 & 0x7fff, 0, 4, j19, i20, l18, l20, i1,
+								false);
 				}
-				int i_825_ = 0;
-				int i_826_ = 1152;
-				for (int i_827_ = 1; i_827_ < i - 1; i_827_++) {
-					int i_828_ = anIntArray994[i_827_] * (i - i_827_) / i;
-					int i_829_ = 22 + i_828_;
-					if (i_829_ < 0) {
-						i_829_ = 0;
-					}
-					i_825_ += i_829_;
-					for (int i_830_ = i_829_; i_830_ < 128; i_830_++) {
-						int i_831_ = anIntArray853[i_825_++];
-						if (i_831_ != 0) {
-							int i_832_ = i_831_;
-							int i_833_ = 256 - i_831_;
-							i_831_ = anIntArray875[i_831_];
-							int i_834_ = flameLeftBackground.pixels[i_826_];
-							flameLeftBackground.pixels[i_826_++] = ((i_831_ & 0xff00ff) * i_832_ + (i_834_ & 0xff00ff)
-									* i_833_ & ~0xff00ff)
-									+ ((i_831_ & 0xff00) * i_832_ + (i_834_ & 0xff00) * i_833_ & 0xff0000) >> 8;
-						} else {
-							i_826_++;
-						}
-					}
-					i_826_ += i_829_;
+				if (i12 == 2) {
+					Class5 class5 = currentScene.method265(x, (byte) 32, y, plane);
+					if (k6 == 11)
+						k6 = 10;
+					if (class5 != null)
+						class5.aClass50_Sub1_Sub4_117 = new GameObject(class5.anInt125 >> 14 & 0x7fff, j9, k6, j19, i20, l18, l20, i1,
+								false);
 				}
-				flameLeftBackground.drawGraphics(0, 0, gameGraphics);
-				for (int i_835_ = 0; i_835_ < 33920; i_835_++) {
-					flameRightBackground.pixels[i_835_] = anImageRGB1227.pixels[i_835_];
-				}
-				i_825_ = 0;
-				i_826_ = 1176;
-				for (int i_836_ = 1; i_836_ < i - 1; i_836_++) {
-					int i_837_ = anIntArray994[i_836_] * (i - i_836_) / i;
-					int i_838_ = 103 - i_837_;
-					i_826_ += i_837_;
-					for (int i_839_ = 0; i_839_ < i_838_; i_839_++) {
-						int i_840_ = anIntArray853[i_825_++];
-						if (i_840_ != 0) {
-							int i_841_ = i_840_;
-							int i_842_ = 256 - i_840_;
-							i_840_ = anIntArray875[i_840_];
-							int i_843_ = flameRightBackground.pixels[i_826_];
-							flameRightBackground.pixels[i_826_++] = ((i_840_ & 0xff00ff) * i_841_ + (i_843_ & 0xff00ff)
-									* i_842_ & ~0xff00ff)
-									+ ((i_840_ & 0xff00) * i_841_ + (i_843_ & 0xff00) * i_842_ & 0xff0000) >> 8;
-						} else {
-							i_826_++;
-						}
-					}
-					i_825_ += 128 - i_838_;
-					i_826_ += 128 - i_838_ - i_837_;
-				}
-				flameRightBackground.drawGraphics(637, 0, gameGraphics);
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("45513, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	private final void method134(Buffer buffer) {
-		do {
-			int i_844_ = buffer.getBits(8);
-			if (i_844_ < playerCount) {
-				for (int i_845_ = i_844_; i_845_ < playerCount; i_845_++) {
-					anIntArray865[anInt864++] = anIntArray917[i_845_];
+				if (i12 == 3) {
+					Class28 class28 = currentScene.method266(plane, y, 0, x);
+					if (class28 != null)
+						class28.aClass50_Sub1_Sub4_570 = new GameObject(class28.anInt571 >> 14 & 0x7fff, j9, 22, j19, i20, l18, l20, i1,
+								false);
 				}
 			}
-			if (i_844_ > playerCount) {
-				SignLink.reportError(username + " Too many players");
-				throw new RuntimeException("eek");
-			}
-			playerCount = 0;
-			for (int i_846_ = 0; i_846_ < i_844_; i_846_++) {
-				int i_847_ = anIntArray917[i_846_];
-				Player player = players[i_847_];
-				int i_848_ = buffer.getBits(1);
-				if (i_848_ == 0) {
-					anIntArray917[playerCount++] = i_847_;
-					player.anInt1557 = Game.currentCycle;
-				} else {
-					int i_849_ = buffer.getBits(2);
-					if (i_849_ == 0) {
-						anIntArray917[playerCount++] = i_847_;
-						player.anInt1557 = Game.currentCycle;
-						anIntArray919[anInt918++] = i_847_;
-					} else if (i_849_ == 1) {
-						anIntArray917[playerCount++] = i_847_;
-						player.anInt1557 = Game.currentCycle;
-						int i_850_ = buffer.getBits(3);
-						player.move(i_850_, false);
-						int i_851_ = buffer.getBits(1);
-						if (i_851_ == 1) {
-							anIntArray919[anInt918++] = i_847_;
-						}
-					} else if (i_849_ == 2) {
-						anIntArray917[playerCount++] = i_847_;
-						player.anInt1557 = Game.currentCycle;
-						int i_852_ = buffer.getBits(3);
-						player.move(i_852_, true);
-						int i_853_ = buffer.getBits(3);
-						player.move(i_853_, true);
-						int i_854_ = buffer.getBits(1);
-						if (i_854_ == 1) {
-							anIntArray919[anInt918++] = i_847_;
-						}
-					} else if (i_849_ == 3) {
-						anIntArray865[anInt864++] = i_847_;
-					}
-				}
-			}
-			break;
-		} while (false);
-	}
-
-	public final void drawLoginScreen(boolean hideButtons) {
-		do {
-			try {
-				method64();
-				aProducingGraphicsBuffer1134.createRasterizer();
-				titleboxImage.drawImage(0, 0);
-				int i = 360;
-				int i_856_ = 200;
-				if (loginScreenState == 0) {
-					int i_857_ = i_856_ / 2 + 80;
-					fontSmall.drawStringCenter(onDemandRequester.message, i / 2, i_857_, 0x75A9A9, true);
-					i_857_ = i_856_ / 2 - 20;
-					fontBold.drawStringCenter("Welcome to RuneScape", i / 2, i_857_, 0xFFFF00, true);
-					i_857_ += 30;
-					int x = i / 2 - 80;
-					int y = i_856_ / 2 + 20;
-					titleboxButtonImage.drawImage(x - 73, y - 20);
-					fontBold.drawStringCenter("New User", x, y + 5, 0xFFFFFF, true);
-					x = i / 2 + 80;
-					titleboxButtonImage.drawImage(x - 73, y - 20);
-					fontBold.drawStringCenter("Existing User", x, y + 5, 0xFFFFFF, true);
-				}
-				if (loginScreenState == 2) {
-					int i_860_ = i_856_ / 2 - 40;
-					if (loginMessage1.length() > 0) {
-						fontBold.drawStringCenter(loginMessage1, i / 2, i_860_ - 15, 0xFFFF00, true);
-						fontBold.drawStringCenter(loginMessage2, i / 2, i_860_, 0xFFFF00, true);
-						i_860_ += 30;
-					} else {
-						fontBold.drawStringCenter(loginMessage2, i / 2, i_860_ - 7, 0xFFFF00, true);
-						i_860_ += 30;
-					}
-					fontBold.drawShadowedString("Username: " + username
-							+ (anInt1241 == 0 & Game.currentCycle % 40 < 20 ? "@yel@|" : ""), i / 2 - 90, i_860_, true,
-							0xFFFFFF);
-					i_860_ += 15;
-					fontBold.drawShadowedString("Password: " + TextUtils.censorPassword(password)
-							+ (anInt1241 == 1 & Game.currentCycle % 40 < 20 ? "@yel@|" : ""), i / 2 - 88, i_860_, true,
-							0xFFFFFF);
-					i_860_ += 15;
-					if (!hideButtons) {
-						int i_861_ = i / 2 - 80;
-						int i_862_ = i_856_ / 2 + 50;
-						titleboxButtonImage.drawImage(i_861_ - 73, i_862_ - 20);
-						fontBold.drawStringCenter("Login", i_861_, i_862_ + 5, 0xFFFFFF, true);
-						i_861_ = i / 2 + 80;
-						titleboxButtonImage.drawImage(i_861_ - 73, i_862_ - 20);
-						fontBold.drawStringCenter("Cancel", i_861_, i_862_ + 5, 0xFFFFFF, true);
-					}
-				}
-				if (loginScreenState == 3) {
-					fontBold.drawStringCenter("Create a free account", i / 2, i_856_ / 2 - 60, 0xFFFF00, true);
-					int i_863_ = i_856_ / 2 - 35;
-					fontBold.drawStringCenter("To create a new account you need to", i / 2, i_863_, 0xFFFFFF, true);
-					i_863_ += 15;
-					fontBold.drawStringCenter("go back to the main RuneScape webpage", i / 2, i_863_, 0xFFFFFF, true);
-					i_863_ += 15;
-					fontBold.drawStringCenter("and choose the red 'create account'", i / 2, i_863_, 0xFFFFFF, true);
-					i_863_ += 15;
-					fontBold.drawStringCenter("button at the top right of that page.", i / 2, i_863_, 0xFFFFFF, true);
-					i_863_ += 15;
-					int i_864_ = i / 2;
-					int i_865_ = i_856_ / 2 + 50;
-					titleboxButtonImage.drawImage(i_864_ - 73, i_865_ - 20);
-					fontBold.drawStringCenter("Cancel", i_864_, i_865_ + 5, 0xFFFFFF, true);
-				}
-				aProducingGraphicsBuffer1134.drawGraphics(202, 171, gameGraphics);
-				if (!redraw) {
-					break;
-				}
-				redraw = false;
-				aProducingGraphicsBuffer1132.drawGraphics(128, 0, gameGraphics);
-				aProducingGraphicsBuffer1133.drawGraphics(202, 371, gameGraphics);
-				aProducingGraphicsBuffer1137.drawGraphics(0, 265, gameGraphics);
-				aProducingGraphicsBuffer1138.drawGraphics(562, 265, gameGraphics);
-				aProducingGraphicsBuffer1139.drawGraphics(128, 171, gameGraphics);
-				aProducingGraphicsBuffer1140.drawGraphics(562, 171, gameGraphics);
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("92290, " + hideButtons + ", " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
-
-	public final void method136(byte b) {
-		try {
-			aBoolean987 = true;
-			if (b != 59) {
-			}
-			try {
-				long l = System.currentTimeMillis();
-				int i = 0;
-				int i_866_ = 20;
-				while (aBoolean856) {
-					anInt1233++;
-					drawFlames();
-					drawFlames();
-					method133();
-					if (++i > 10) {
-						long l_867_ = System.currentTimeMillis();
-						int i_868_ = (int) (l_867_ - l) / 10 - i_866_;
-						i_866_ = 40 - i_868_;
-						if (i_866_ < 5) {
-							i_866_ = 5;
-						}
-						i = 0;
-						l = l_867_;
-					}
-					try {
-						Thread.sleep(i_866_);
-					} catch (Exception exception) {
-						/* empty */
-					}
-				}
-			} catch (Exception exception) {
-				/* empty */
-			}
-			aBoolean987 = false;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("48378, " + b + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			return;
 		}
-	}
-
-	public final void method137(int i, Buffer buffer, int opcode) {
-		try {
-			while (i >= 0) {
-				opcode = -1;
+		if (opcode == 107) { // add ground item (dropped by npc or "auto spawn")
+			int id = buf.getShort();
+			int offset = buf.getByteNegated();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			int amount = buf.method550();
+			if (x >= 0 && y >= 0 && x < 104 && y < 104) {
+				GroundItem item = new GroundItem();
+				item.id = id;
+				item.amount = amount;
+				if (groundItems[plane][x][y] == null)
+					groundItems[plane][x][y] = new LinkedList();
+				groundItems[plane][x][y].addLast(item);
+				method26(x, y);
 			}
-			if (opcode == 84) {
-				int i_870_ = buffer.getUnsignedByte();
-				int i_871_ = playerPositionX + (i_870_ >> 4 & 0x7);
-				int i_872_ = playerPositionY + (i_870_ & 0x7);
-				int i_873_ = buffer.getUnsignedLEShort();
-				int i_874_ = buffer.getUnsignedLEShort();
-				int i_875_ = buffer.getUnsignedLEShort();
-				if (i_871_ >= 0 && i_872_ >= 0 && i_871_ < 104 && i_872_ < 104) {
-					LinkedList linkedlist = groundItemNodes[currentSceneId][i_871_][i_872_];
-					if (linkedlist != null) {
-						for (Item item = (Item) linkedlist.getBack(); item != null; item = (Item) linkedlist
-								.getPrevious()) {
-							if (item.itemId == (i_873_ & 0x7fff) && item.itemCount == i_874_) {
-								item.itemCount = i_875_;
-								break;
-							}
-						}
-						sortGroundItems(i_871_, i_872_);
-					}
-				}
-			} else {
-				if (opcode == 105) {
-					int i_876_ = buffer.getUnsignedByte();
-					int i_877_ = playerPositionX + (i_876_ >> 4 & 0x7);
-					int i_878_ = playerPositionY + (i_876_ & 0x7);
-					int i_879_ = buffer.getUnsignedLEShort();
-					int i_880_ = buffer.getUnsignedByte();
-					int i_881_ = i_880_ >> 4 & 0xf;
-					int i_882_ = i_880_ & 0x7;
-					if (Game.localPlayer.pathX[0] >= i_877_ - i_881_ && Game.localPlayer.pathX[0] <= i_877_ + i_881_
-							&& Game.localPlayer.pathY[0] >= i_878_ - i_881_
-							&& Game.localPlayer.pathY[0] <= i_878_ + i_881_ && aBoolean873 && !Game.lowMemory
-							&& trackCount < 50) {
-						trackIds[trackCount] = i_879_;
-						trackLoop[trackCount] = i_882_;
-						trackDelay[trackCount] = SoundTrack.trackDelays[i_879_];
-						trackCount++;
-					}
-				}
-				if (opcode == 215) {
-					int i_883_ = buffer.getUnsignedLEShortA();
-					int i_884_ = buffer.getUnsignedByteS();
-					int i_885_ = playerPositionX + (i_884_ >> 4 & 0x7);
-					int i_886_ = playerPositionY + (i_884_ & 0x7);
-					int i_887_ = buffer.getUnsignedLEShortA();
-					int i_888_ = buffer.getUnsignedLEShort();
-					if (i_885_ >= 0 && i_886_ >= 0 && i_885_ < 104 && i_886_ < 104 && i_887_ != anInt909) {
-						Item item = new Item();
-						item.itemId = i_883_;
-						item.itemCount = i_888_;
-						if (groundItemNodes[currentSceneId][i_885_][i_886_] == null) {
-							groundItemNodes[currentSceneId][i_885_][i_886_] = new LinkedList();
-						}
-						groundItemNodes[currentSceneId][i_885_][i_886_].insertBack(item);
-						sortGroundItems(i_885_, i_886_);
-					}
-				} else if (opcode == 156) {
-					int i_889_ = buffer.getUnsignedByteA();
-					int i_890_ = playerPositionX + (i_889_ >> 4 & 0x7);
-					int i_891_ = playerPositionY + (i_889_ & 0x7);
-					int i_892_ = buffer.getUnsignedLEShort();
-					if (i_890_ >= 0 && i_891_ >= 0 && i_890_ < 104 && i_891_ < 104) {
-						LinkedList linkedlist = groundItemNodes[currentSceneId][i_890_][i_891_];
-						if (linkedlist != null) {
-							for (Item item = (Item) linkedlist.getBack(); item != null; item = (Item) linkedlist
-									.getPrevious()) {
-								if (item.itemId == (i_892_ & 0x7fff)) {
-									item.remove();
-									break;
-								}
-							}
-							if (linkedlist.getBack() == null) {
-								groundItemNodes[currentSceneId][i_890_][i_891_] = null;
-							}
-							sortGroundItems(i_890_, i_891_);
-						}
-					}
-				} else if (opcode == 160) {
-					int i_893_ = buffer.getUnsignedByteS();
-					int i_894_ = playerPositionX + (i_893_ >> 4 & 0x7);
-					int i_895_ = playerPositionY + (i_893_ & 0x7);
-					int i_896_ = buffer.getUnsignedByteS();
-					int i_897_ = i_896_ >> 2;
-					int i_898_ = i_896_ & 0x3;
-					int i_899_ = anIntArray1202[i_897_];
-					int i_900_ = buffer.getUnsignedLEShortA();
-					if (i_894_ >= 0 && i_895_ >= 0 && i_894_ < 103 && i_895_ < 103) {
-						int i_901_ = anIntArrayArrayArray1239[currentSceneId][i_894_][i_895_];
-						int i_902_ = anIntArrayArrayArray1239[currentSceneId][i_894_ + 1][i_895_];
-						int i_903_ = anIntArrayArrayArray1239[currentSceneId][i_894_ + 1][i_895_ + 1];
-						int i_904_ = anIntArrayArrayArray1239[currentSceneId][i_894_][i_895_ + 1];
-						if (i_899_ == 0) {
-							Wall wall = currentScene.getWall(currentSceneId, i_894_, i_895_);
-							if (wall != null) {
-								int i_905_ = wall.hash >> 14 & 0x7fff;
-								if (i_897_ == 2) {
-									wall.aRenderable769 = new GameObject(i_905_, 4 + i_898_, 2, i_902_, i_903_, i_901_,
-											i_904_, i_900_, false);
-									wall.aRenderable770 = new GameObject(i_905_, i_898_ + 1 & 0x3, 2, i_902_, i_903_,
-											i_901_, i_904_, i_900_, false);
-								} else {
-									wall.aRenderable769 = new GameObject(i_905_, i_898_, i_897_, i_902_, i_903_,
-											i_901_, i_904_, i_900_, false);
-								}
-							}
-						}
-						if (i_899_ == 1) {
-							WallDecoration walldecoration = currentScene.getWallDecoration(currentSceneId, i_894_,
-									i_895_);
-							if (walldecoration != null) {
-								walldecoration.renderable = new GameObject(walldecoration.hash >> 14 & 0x7fff, 0, 4,
-										i_902_, i_903_, i_901_, i_904_, i_900_, false);
-							}
-						}
-						if (i_899_ == 2) {
-							SceneSpawnRequest scenespawnrequest = currentScene.processSceneSpawnRequests(
-									currentSceneId, i_894_, i_895_);
-							if (i_897_ == 11) {
-								i_897_ = 10;
-							}
-							if (scenespawnrequest != null) {
-								scenespawnrequest.aRenderable601 = new GameObject(
-										scenespawnrequest.anInt609 >> 14 & 0x7fff, i_898_, i_897_, i_902_, i_903_,
-										i_901_, i_904_, i_900_, false);
-							}
-						}
-						if (i_899_ == 3) {
-							FloorDecoration floordecoration = currentScene.getFloorDecoration(currentSceneId, i_894_,
-									i_895_);
-							if (floordecoration != null) {
-								floordecoration.renderable = new GameObject(floordecoration.hash >> 14 & 0x7fff,
-										i_898_, 22, i_902_, i_903_, i_901_, i_904_, i_900_, false);
-							}
-						}
-					}
-				} else {
-					if (opcode == 147) {
-						int i_906_ = buffer.getUnsignedByteS();
-						int i_907_ = playerPositionX + (i_906_ >> 4 & 0x7);
-						int i_908_ = playerPositionY + (i_906_ & 0x7);
-						int i_909_ = buffer.getUnsignedLEShort();
-						int i_910_ = buffer.getByteS();
-						int i_911_ = buffer.getUnsignedShort();
-						int i_912_ = buffer.getByteC();
-						int i_913_ = buffer.getUnsignedLEShort();
-						int i_914_ = buffer.getUnsignedByteS();
-						int i_915_ = i_914_ >> 2;
-						int i_916_ = i_914_ & 0x3;
-						int i_917_ = anIntArray1202[i_915_];
-						int i_918_ = buffer.get();
-						int i_919_ = buffer.getUnsignedLEShort();
-						int i_920_ = buffer.getByteC();
-						Player player;
-						if (i_909_ == anInt909) {
-							player = Game.localPlayer;
-						} else {
-							player = players[i_909_];
-						}
-						if (player != null) {
-							GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_919_);
-							int i_921_ = anIntArrayArrayArray1239[currentSceneId][i_907_][i_908_];
-							int i_922_ = anIntArrayArrayArray1239[currentSceneId][i_907_ + 1][i_908_];
-							int i_923_ = anIntArrayArrayArray1239[currentSceneId][i_907_ + 1][i_908_ + 1];
-							int i_924_ = anIntArrayArrayArray1239[currentSceneId][i_907_][i_908_ + 1];
-							Model model = gameobjectdefinition.getGameObjectModel(i_915_, i_916_, i_921_, i_922_,
-									i_923_, i_924_, -1);
-							if (model != null) {
-								addSpawnObjectNode(i_913_ + 1, -1, 0, i_917_, i_908_, 0, currentSceneId, i_907_,
-										i_911_ + 1);
-								player.anInt1727 = i_911_ + Game.currentCycle;
-								player.anInt1728 = i_913_ + Game.currentCycle;
-								player.playerModel = model;
-								int i_925_ = gameobjectdefinition.sizeX;
-								int i_926_ = gameobjectdefinition.sizeY;
-								if (i_916_ == 1 || i_916_ == 3) {
-									i_925_ = gameobjectdefinition.sizeY;
-									i_926_ = gameobjectdefinition.sizeX;
-								}
-								player.anInt1731 = i_907_ * 128 + i_925_ * 64;
-								player.anInt1733 = i_908_ * 128 + i_926_ * 64;
-								player.anInt1732 = method42(currentSceneId, player.anInt1733, true, player.anInt1731);
-								if (i_918_ > i_910_) {
-									int i_927_ = i_918_;
-									i_918_ = i_910_;
-									i_910_ = i_927_;
-								}
-								if (i_920_ > i_912_) {
-									int i_928_ = i_920_;
-									i_920_ = i_912_;
-									i_912_ = i_928_;
-								}
-								player.anInt1739 = i_907_ + i_918_;
-								player.anInt1741 = i_907_ + i_910_;
-								player.anInt1740 = i_908_ + i_920_;
-								player.anInt1742 = i_908_ + i_912_;
-							}
-						}
-					}
-					if (opcode == 151) {
-						int i_929_ = buffer.getUnsignedByteA();
-						int i_930_ = playerPositionX + (i_929_ >> 4 & 0x7);
-						int i_931_ = playerPositionY + (i_929_ & 0x7);
-						int i_932_ = buffer.getUnsignedShort();
-						int i_933_ = buffer.getUnsignedByteS();
-						int i_934_ = i_933_ >> 2;
-						int i_935_ = i_933_ & 0x3;
-						int i_936_ = anIntArray1202[i_934_];
-						if (i_930_ >= 0 && i_931_ >= 0 && i_930_ < 104 && i_931_ < 104) {
-							addSpawnObjectNode(-1, i_932_, i_935_, i_936_, i_931_, i_934_, currentSceneId, i_930_, 0);
-						}
-					} else if (opcode == 4) {
-						int i_937_ = buffer.getUnsignedByte();
-						int i_938_ = playerPositionX + (i_937_ >> 4 & 0x7);
-						int i_939_ = playerPositionY + (i_937_ & 0x7);
-						int i_940_ = buffer.getUnsignedLEShort();
-						int i_941_ = buffer.getUnsignedByte();
-						int i_942_ = buffer.getUnsignedLEShort();
-						if (i_938_ >= 0 && i_939_ >= 0 && i_938_ < 104 && i_939_ < 104) {
-							i_938_ = i_938_ * 128 + 64;
-							i_939_ = i_939_ * 128 + 64;
-							GameAnimableObject animableobject = new GameAnimableObject(currentSceneId,
-									Game.currentCycle, i_942_, i_940_, method42(currentSceneId, i_939_, true, i_938_)
-											- i_941_, i_939_, i_938_);
-							aLinkedList1081.insertBack(animableobject);
-						}
-					} else if (opcode == 44) {
-						int i_943_ = buffer.getUnsignedShortA();
-						int i_944_ = buffer.getUnsignedLEShort();
-						int i_945_ = buffer.getUnsignedByte();
-						int i_946_ = playerPositionX + (i_945_ >> 4 & 0x7);
-						int i_947_ = playerPositionY + (i_945_ & 0x7);
-						if (i_946_ >= 0 && i_947_ >= 0 && i_946_ < 104 && i_947_ < 104) {
-							Item item = new Item();
-							item.itemId = i_943_;
-							item.itemCount = i_944_;
-							if (groundItemNodes[currentSceneId][i_946_][i_947_] == null) {
-								groundItemNodes[currentSceneId][i_946_][i_947_] = new LinkedList();
-							}
-							groundItemNodes[currentSceneId][i_946_][i_947_].insertBack(item);
-							sortGroundItems(i_946_, i_947_);
-						}
-					} else if (opcode == 101) {
-						int i_948_ = buffer.getUnsignedByteC();
-						int i_949_ = i_948_ >> 2;
-						int i_950_ = i_948_ & 0x3;
-						int i_951_ = anIntArray1202[i_949_];
-						int i_952_ = buffer.getUnsignedByte();
-						int i_953_ = playerPositionX + (i_952_ >> 4 & 0x7);
-						int i_954_ = playerPositionY + (i_952_ & 0x7);
-						if (i_953_ >= 0 && i_954_ >= 0 && i_953_ < 104 && i_954_ < 104) {
-							addSpawnObjectNode(-1, -1, i_950_, i_951_, i_954_, i_949_, currentSceneId, i_953_, 0);
-						}
-					} else if (opcode == 117) {
-						int projectileAngle = buffer.getUnsignedByte();
-						int projectileX = playerPositionX + (projectileAngle >> 4 & 0x7);
-						int projectileY = playerPositionY + (projectileAngle & 0x7);
-						int projectileOffsetX = projectileX + buffer.get();
-						int projectileOffsetY = projectileY + buffer.get();
-						int projectileAttacked = buffer.getShort();
-						int projectileEffectId = buffer.getUnsignedLEShort();
-						int projectileStartHeight = buffer.getUnsignedByte() * 4;
-						int projectileEndHight = buffer.getUnsignedByte() * 4;
-						int projectileCreatedTime = buffer.getUnsignedLEShort();
-						int projectileSpeed = buffer.getUnsignedLEShort();
-						int projectileInitialSlope = buffer.getUnsignedByte();
-						int projectileInitialDistanceFromSource = buffer.getUnsignedByte();
-						if (projectileX >= 0 && projectileY >= 0 && projectileX < 104 && projectileY < 104
-								&& projectileOffsetX >= 0 && projectileOffsetY >= 0 && projectileOffsetX < 104
-								&& projectileOffsetY < 104 && projectileEffectId != 0xFFFF) {
-							projectileX = projectileX * 128 + 64;
-							projectileY = projectileY * 128 + 64;
-							projectileOffsetX = projectileOffsetX * 128 + 64;
-							projectileOffsetY = projectileOffsetY * 128 + 64;
-							Projectile projectile = new Projectile(projectileInitialSlope, projectileEndHight,
-									projectileCreatedTime + Game.currentCycle, projectileSpeed + Game.currentCycle,
-									projectileInitialDistanceFromSource, currentSceneId, method42(currentSceneId,
-											projectileY, true, projectileX) - projectileStartHeight, projectileY,
-									projectileX, projectileAttacked, projectileEffectId);
-							projectile.trackTarget(projectileCreatedTime + Game.currentCycle, projectileOffsetY,
-									method42(currentSceneId, projectileOffsetY, true, projectileOffsetX)
-											- projectileEndHight, projectileOffsetX);
-							projectileList.insertBack(projectile);
-						}
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("29026, " + i + ", " + buffer + ", " + opcode + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			return;
 		}
-	}
-
-	public static final void setLowMemory() {
-		Scene.lowMemory = true;
-		Rasterizer3D.lowMemory = true;
-		Game.lowMemory = true;
-		Region.lowMemory = true;
-		GameObjectDefinition.lowMemory = true;
-	}
-
-	private final void method139(Buffer buffer, int i, int i_968_) {
-		try {
-			if (i >= 0) {
-			}
-			buffer.initBitAccess();
-			int i_969_ = buffer.getBits(8);
-			if (i_969_ < actorCount) {
-				for (int i_970_ = i_969_; i_970_ < actorCount; i_970_++) {
-					anIntArray865[anInt864++] = anIntArray862[i_970_];
-				}
-			}
-			if (i_969_ > actorCount) {
-				SignLink.reportError(username + " Too many npcs");
-				throw new RuntimeException("eek");
-			}
-			actorCount = 0;
-			for (int i_971_ = 0; i_971_ < i_969_; i_971_++) {
-				int i_972_ = anIntArray862[i_971_];
-				Npc npc = localNpcs[i_972_];
-				int i_973_ = buffer.getBits(1);
-				if (i_973_ == 0) {
-					anIntArray862[actorCount++] = i_972_;
-					npc.anInt1557 = Game.currentCycle;
-				} else {
-					int i_974_ = buffer.getBits(2);
-					if (i_974_ == 0) {
-						anIntArray862[actorCount++] = i_972_;
-						npc.anInt1557 = Game.currentCycle;
-						anIntArray919[anInt918++] = i_972_;
-					} else if (i_974_ == 1) {
-						anIntArray862[actorCount++] = i_972_;
-						npc.anInt1557 = Game.currentCycle;
-						int i_975_ = buffer.getBits(3);
-						npc.move(i_975_, false);
-						int i_976_ = buffer.getBits(1);
-						if (i_976_ == 1) {
-							anIntArray919[anInt918++] = i_972_;
-						}
-					} else if (i_974_ == 2) {
-						anIntArray862[actorCount++] = i_972_;
-						npc.anInt1557 = Game.currentCycle;
-						int i_977_ = buffer.getBits(3);
-						npc.move(i_977_, true);
-						int i_978_ = buffer.getBits(3);
-						npc.move(i_978_, true);
-						int i_979_ = buffer.getBits(1);
-						if (i_979_ == 1) {
-							anIntArray919[anInt918++] = i_972_;
-						}
-					} else if (i_974_ == 3) {
-						anIntArray865[anInt864++] = i_972_;
-					}
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("60808, " + buffer + ", " + i + ", " + i_968_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
-		}
-	}
-
-	public final void processLoginScreen() {
-		do {
-			try {
-				if (loginScreenState == 0) {
-					int i = width / 2 - 80;
-					int i_980_ = height / 2 + 20;
-					i_980_ += 20;
-					if (clickType == 1 && clickX >= i - 75 && clickX <= i + 75 && clickY >= i_980_ - 20
-							&& clickY <= i_980_ + 20) {
-						loginScreenState = 3;
-						anInt1241 = 0;
-					}
-					i = width / 2 + 80;
-					if (clickType == 1 && clickX >= i - 75 && clickX <= i + 75 && clickY >= i_980_ - 20
-							&& clickY <= i_980_ + 20) {
-						loginMessage1 = "";
-						loginMessage2 = "Enter your username & password.";
-						loginScreenState = 2;
-						anInt1241 = 0;
-					}
-				} else if (loginScreenState == 2) {
-					int i = height / 2 - 40;
-					i += 30;
-					i += 25;
-					if (clickType == 1 && clickY >= i - 15 && clickY < i) {
-						anInt1241 = 0;
-					}
-					i += 15;
-					if (clickType == 1 && clickY >= i - 15 && clickY < i) {
-						anInt1241 = 1;
-					}
-					i += 15;
-					int i_981_ = width / 2 - 80;
-					int i_982_ = height / 2 + 50;
-					i_982_ += 20;
-					if (clickType == 1 && clickX >= i_981_ - 75 && clickX <= i_981_ + 75 && clickY >= i_982_ - 20
-							&& clickY <= i_982_ + 20) {
-						anInt1063 = 0;
-						method84(username, password, false);
-						if (loggedIn) {
-							break;
-						}
-					}
-					i_981_ = width / 2 + 80;
-					if (clickType == 1 && clickX >= i_981_ - 75 && clickX <= i_981_ + 75 && clickY >= i_982_ - 20
-							&& clickY <= i_982_ + 20) {
-						loginScreenState = 0;
-						username = "";
-						password = "";
-					}
-					for (;;) {
-						int character = this.readCharacter();
-						if (character == -1) {
-							break;
-						}
-						boolean validCharacter = false;
-						for (int i_ = 0; i_ < Game.VALID_CHARACTERS.length(); i_++) {
-							if (character == Game.VALID_CHARACTERS.charAt(i_)) {
-								validCharacter = true;
-								break;
-							}
-						}
-						if (anInt1241 == 0) {
-							if (character == 8 && username.length() > 0) {
-								username = username.substring(0, username.length() - 1);
-							}
-							if (character == 9 || character == 10 || character == 13) {
-								anInt1241 = 1;
-							}
-							if (validCharacter) {
-								username += (char) character;
-							}
-							if (username.length() > 12) {
-								username = username.substring(0, 12);
-							}
-						} else if (anInt1241 == 1) {
-							if (character == 8 && password.length() > 0) {
-								password = password.substring(0, password.length() - 1);
-							}
-							if (character == 9 || character == 10 || character == 13) {
-								anInt1241 = 0;
-							}
-							if (validCharacter) {
-								password += (char) character;
-							}
-							if (password.length() > 20) {
-								password = password.substring(0, 20);
-							}
-						}
-					}
-				} else {
-					if (loginScreenState != 3) {
+		if (opcode == 121) { // update amount of ground item
+			int offset = buf.getUnsignedByte();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			int id = buf.getShort();
+			int amount = buf.getShort();
+			int newAmount = buf.getShort();
+			if (x >= 0 && y >= 0 && x < 104 && y < 104) {
+				LinkedList list = groundItems[plane][x][y];
+				if (list != null) {
+					for (GroundItem item = (GroundItem) list.first(); item != null; item = (GroundItem) list.next()) {
+						if (item.id != (id & 0x7fff) || item.amount != amount)
+							continue;
+						item.amount = newAmount;
 						break;
 					}
-					int i = width / 2;
-					int i_986_ = height / 2 + 50;
-					i_986_ += 20;
-					if (clickType != 1 || clickX < i - 75 || clickX > i + 75 || clickY < i_986_ - 20
-							|| clickY > i_986_ + 20) {
+
+					method26(x, y);
+				}
+			}
+			return;
+		}
+		if (opcode == 181) {
+			int offset = buf.getUnsignedByte();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			int i10 = x + buf.getSignedByte();
+			int l12 = y + buf.getSignedByte();
+			int l14 = buf.getSignedShort();
+			int k16 = buf.getShort();
+			int i18 = buf.getUnsignedByte() * 4;
+			int i19 = buf.getUnsignedByte() * 4;
+			int k19 = buf.getShort();
+			int j20 = buf.getShort();
+			int i21 = buf.getUnsignedByte();
+			int j21 = buf.getUnsignedByte();
+			if (x >= 0 && y >= 0 && x < 104 && y < 104 && i10 >= 0 && l12 >= 0 && i10 < 104 && l12 < 104
+					&& k16 != 65535) {
+				x = x * 128 + 64;
+				y = y * 128 + 64;
+				i10 = i10 * 128 + 64;
+				l12 = l12 * 128 + 64;
+				Projectile class50_sub1_sub4_sub2 = new Projectile(plane, i19, j21, y,
+						k16, j20 + pulseCycle, i21, l14, method110(y, x, (byte) 9, plane) - i18, x, k19 + pulseCycle);
+				class50_sub1_sub4_sub2.trackTarget(i10, l12, method110(l12, i10, (byte) 9, plane) - i19, k19
+						+ pulseCycle);
+				aClass6_1282.addLast(class50_sub1_sub4_sub2);
+			}
+			return;
+		}
+		if (opcode == 41) {
+			int offset = buf.getUnsignedByte();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			int soundId = buf.getShort();
+			int i13 = buf.getUnsignedByte();
+			int i15 = i13 >> 4 & 0xf;
+			int type = i13 & 7;
+			if (((Actor) (thisPlayer)).pathX[0] >= x - i15
+					&& ((Actor) (thisPlayer)).pathX[0] <= x + i15
+					&& ((Actor) (thisPlayer)).pathY[0] >= y - i15
+					&& ((Actor) (thisPlayer)).pathY[0] <= y + i15 && aBoolean1301 && !lowMemory
+					&& currentSound < 50) {
+				sound[currentSound] = soundId;
+				soundType[currentSound] = type;
+				soundDelay[currentSound] = Sound.anIntArray669[soundId];
+				currentSound++;
+			}
+		}
+		if (opcode == 59) {
+			int j2 = buf.getUnsignedByte();
+			int i5 = placementX + (j2 >> 4 & 7);
+			int l7 = placementY + (j2 & 7);
+			int k10 = buf.getShort();
+			int j13 = buf.getUnsignedByte();
+			int j15 = buf.getShort();
+			if (i5 >= 0 && l7 >= 0 && i5 < 104 && l7 < 104) {
+				i5 = i5 * 128 + 64;
+				l7 = l7 * 128 + 64;
+				GameAnimableObject gameAnimableObject = new GameAnimableObject(plane, pulseCycle, j15, k10, method110(l7, i5, (byte) 9, plane) - j13, l7, i5);
+				aClass6_1210.addLast(gameAnimableObject);
+			}
+			return;
+		}
+		if (opcode == 152) {
+			int k2 = buf.getByteNegated();
+			int j5 = k2 >> 2;
+			int i8 = k2 & 3;
+			int l10 = anIntArray1032[j5];
+			int k13 = buf.getLittleShortA();
+			int k15 = buf.getByteAdded();
+			int i17 = placementX + (k15 >> 4 & 7);
+			int j18 = placementY + (k15 & 7);
+			if (i17 >= 0 && j18 >= 0 && i17 < 104 && j18 < 104)
+				method145(true, plane, i17, i8, -1, j5, k13, 0, l10, j18);
+			return;
+		}
+		if (opcode == 208) { // remove ground item
+			int id = buf.method550();
+			int offset = buf.getByteAdded();
+			int x = placementX + (offset >> 4 & 7);
+			int y = placementY + (offset & 7);
+			if (x >= 0 && y >= 0 && x < 104 && y < 104) {
+				LinkedList list = groundItems[plane][x][y];
+				if (list != null) {
+					for (GroundItem item = (GroundItem) list.first(); item != null; item = (GroundItem) list.next()) {
+						if (item.id != (id & 0x7fff))
+							continue;
+						item.remove();
 						break;
 					}
-					loginScreenState = 0;
-				}
-			} catch (RuntimeException runtimeexception) {
-				SignLink.reportError("8370, " + runtimeexception.toString());
-				throw new RuntimeException();
-			}
-			break;
-		} while (false);
-	}
 
-	public final void method141(ImageRGB imagergb, int i, int i_987_) {
-		try {
-			int i_988_ = anInt1210 + anInt1234 & 0x7ff;
-			int i_989_ = i * i + i_987_ * i_987_;
-			if (i_989_ <= 6400) {
-				int i_990_ = Model.SINE[i_988_];
-				int i_991_ = Model.COSINE[i_988_];
-				i_990_ = i_990_ * 256 / (anInt1195 + 256);
-				i_991_ = i_991_ * 256 / (anInt1195 + 256);
-				int i_992_ = i_987_ * i_990_ + i * i_991_ >> 16;
-				int i_993_ = i_987_ * i_991_ - i * i_990_ >> 16;
-				if (i_989_ > 2500) {
-					imagergb.method351(minimapBackgroundImage, false, 83 - i_993_ - imagergb.maxHeight / 2 - 4, 94
-							+ i_992_ - imagergb.maxWidth / 2 + 4);
-				} else {
-					imagergb.drawImage(94 + i_992_ - imagergb.maxWidth / 2 + 4, 83 - i_993_ - imagergb.maxHeight / 2
-							- 4);
+					if (list.first() == null)
+						groundItems[plane][x][y] = null;
+					method26(x, y);
 				}
 			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("45113, " + imagergb + ", " + i + ", " + i_987_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			return;
+		}
+		if (opcode == 88) {
+			int i3 = buf.getByteSubtracted();
+			int l5 = placementX + (i3 >> 4 & 7);
+			int k8 = placementY + (i3 & 7);
+			int j11 = buf.getByteSubtracted();
+			int l13 = j11 >> 2;
+			int l15 = j11 & 3;
+			int j17 = anIntArray1032[l13];
+			if (l5 >= 0 && k8 >= 0 && l5 < 104 && k8 < 104)
+				method145(true, plane, l5, l15, -1, l13, -1, 0, j17, k8);
 		}
 	}
 
-	private final void method142(int y, int plane, int i_995_, int i_996_, int x, int type, int i_999_) {
-		do {
-			if (x < 1 || y < 1 || x > 102 || y > 102) {
-				break;
-			}
-			if (!Game.lowMemory || plane == currentSceneId) {
-				int hash = 0;
-				int i_1002_ = -1;
-				if (type == 0) {
-					hash = currentScene.method522(plane, x, y);
-				}
-				if (type == 1) {
-					hash = currentScene.getWallDecorationHash(plane, x, y);
-				}
-				if (type == 2) {
-					hash = currentScene.method524(plane, x, y);
-				}
-				if (type == 3) {
-					hash = currentScene.getFloorDecorationHash(plane, x, y);
-				}
-				if (hash != 0) {
-					int config = currentScene.getConfig(plane, x, y, hash);
-					i_1002_ = hash >> 14 & 0x7fff;
-					int position = config & 0x1f;
-					int orientation = config >> 6;
-					if (type == 0) {
-						currentScene.method513(x, plane, y, (byte) -119);
-						GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_1002_);
-						if (gameobjectdefinition.solid) {
-							currentCollisionMap[plane].unmarkWall(orientation, x, y, position,
-									gameobjectdefinition.walkable);
-						}
-					}
-					if (type == 1) {
-						currentScene.method514(0, y, plane, x);
-					}
-					if (type == 2) {
-						currentScene.method515(plane, -978, x, y);
-						GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_1002_);
-						if (x + gameobjectdefinition.sizeX > 103 || y + gameobjectdefinition.sizeX > 103
-								|| x + gameobjectdefinition.sizeY > 103 || y + gameobjectdefinition.sizeY > 103) {
-							break;
-						}
-						if (gameobjectdefinition.solid) {
-							currentCollisionMap[plane].unmarkSolidOccupant(x, y, gameobjectdefinition.sizeX,
-									gameobjectdefinition.sizeY, orientation, gameobjectdefinition.walkable);
-						}
-					}
-					if (type == 3) {
-						currentScene.method516((byte) 9, plane, y, x);
-						GameObjectDefinition gameobjectdefinition = GameObjectDefinition.getDefinition(i_1002_);
-						if (gameobjectdefinition.solid && gameobjectdefinition.actionsBoolean) {
-							currentCollisionMap[plane].unmarkConcealed(x, y);
-						}
-					}
-				}
-				if (i_999_ < 0) {
-					break;
-				}
-				int i_1007_ = plane;
-				if (i_1007_ < 3 && (currentSceneTileFlags[1][x][y] & 0x2) == 2) {
-					i_1007_++;
-				}
-				Region.method470(currentScene, i_995_, y, i_996_, i_1007_, currentCollisionMap[plane],
-						anIntArrayArrayArray1239, x, i_999_, plane, (byte) 93);
-			}
-			break;
-		} while (false);
+	public void method134(byte byte0) {
+		aClass18_1156.createRasterizer();
+		Rasterizer3D.lineOffsets = anIntArray1001;
+		inventoryBackgroundImage.drawImage(0, 0);
+		if (anInt1089 != -1)
+			method142(0, 0, Widget.forId(anInt1089), 0, 8);
+		else if (anIntArray1081[anInt1285] != -1)
+			method142(0, 0, Widget.forId(anIntArray1081[anInt1285]), 0, 8);
+		if (aBoolean1065 && anInt1304 == 1)
+			method128(false);
+		aClass18_1156.drawGraphics(553, 205, super.gameGraphics);
+		aClass18_1158.createRasterizer();
+		Rasterizer3D.lineOffsets = anIntArray1002;
+		if (byte0 == 7)
+			;
 	}
 
-	private final void updatePlayers(int i, Buffer buffer) {
-		try {
-			anInt864 = 0;
-			anInt918 = 0;
-			method117(buffer);
-			method134(buffer);
-			method91(buffer, i);
-			method49(buffer);
-			for (int i_ = 0; i_ < anInt864; i_++) {
-				int playerId = anIntArray865[i_];
-				if (players[playerId].anInt1557 != Game.currentCycle) {
-					players[playerId] = null;
-				}
-			}
-			if (buffer.offset != i) {
-				SignLink.reportError("Error packet size mismatch in getplayer pos:" + buffer.offset + " psize:" + i);
-				throw new RuntimeException("eek");
-			}
-			for (int i_ = 0; i_ < playerCount; i_++) {
-				if (players[anIntArray917[i_]] == null) {
-					SignLink.reportError(username + " null entry in pl list - pos:" + i_ + " size:" + playerCount);
-					throw new RuntimeException("eek");
-				}
-			}
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("70865, " + i + ", " + buffer + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+	public static String method135(int i, int j) {
+		String s = String.valueOf(j);
+		if (i != 0)
+			throw new NullPointerException();
+		for (int k = s.length() - 3; k > 0; k -= 3)
+			s = s.substring(0, k) + "," + s.substring(k);
+
+		if (s.length() > 8)
+			s = "@gre@" + s.substring(0, s.length() - 8) + " million @whi@(" + s + ")";
+		else if (s.length() > 4)
+			s = "@cya@" + s.substring(0, s.length() - 4) + "K @whi@(" + s + ")";
+		return " " + s;
+	}
+
+	public void method136(Actor class50_sub1_sub4_sub3, boolean flag, int i) {
+		method137(class50_sub1_sub4_sub3.unitX, i, class50_sub1_sub4_sub3.unitY, -214);
+		if (!flag)
+			;
+	}
+
+	public void method137(int i, int j, int k, int l) {
+		if (i < 128 || k < 128 || i > 13056 || k > 13056) {
+			anInt932 = -1;
+			anInt933 = -1;
+			return;
+		}
+		int i1 = method110(k, i, (byte) 9, plane) - j;
+		i -= anInt1216;
+		i1 -= anInt1217;
+		k -= anInt1218;
+		int j1 = Model.anIntArray1710[anInt1219];
+		int k1 = Model.anIntArray1711[anInt1219];
+		int l1 = Model.anIntArray1710[anInt1220];
+		int i2 = Model.anIntArray1711[anInt1220];
+		int j2 = k * l1 + i * i2 >> 16;
+		k = k * i2 - i * l1 >> 16;
+		i = j2;
+		j2 = i1 * k1 - k * j1 >> 16;
+		k = i1 * j1 + k * k1 >> 16;
+		while (l >= 0)
+			opcode = -1;
+		i1 = j2;
+		if (k >= 50) {
+			anInt932 = Rasterizer3D.centerX + (i << 9) / k;
+			anInt933 = Rasterizer3D.centerY + (i1 << 9) / k;
+			return;
+		} else {
+			anInt932 = -1;
+			anInt933 = -1;
+			return;
 		}
 	}
 
-	public final void method144(int i, int i_1012_, int i_1013_, int i_1014_, int i_1015_, int i_1016_, int i_1017_) {
-		try {
-			int i_1018_ = 2048 - i_1013_ & 0x7ff;
-			int i_1019_ = 2048 - i_1016_ & 0x7ff;
-			int i_1020_ = 0;
-			int i_1021_ = 0;
-			int i_1022_ = i_1012_;
-			if (i != 0) {
-				startup();
+	public void method138() {
+		System.out.println("============");
+		System.out.println("flame-cycle:" + anInt1101);
+		if (onDemandFetcher != null)
+			System.out.println("Od-cycle:" + onDemandFetcher.anInt1348);
+		System.out.println("loop-cycle:" + pulseCycle);
+		System.out.println("draw-cycle:" + anInt1309);
+		System.out.println("ptype:" + opcode);
+		System.out.println("psize:" + size);
+		if (bufferedConnection != null)
+			bufferedConnection.method229(false);
+		super.dumpRequested = true;
+	}
+
+	public Component getParentComponent() {
+		if (SignLink.mainapp != null)
+			return SignLink.mainapp;
+		if (super.gameFrame != null)
+			return super.gameFrame;
+		else
+			return this;
+	}
+
+	public void drawLoadingText(int i, String s) {
+		anInt1322 = i;
+		aString1027 = s;
+		method64(-188);
+		if (titleArchive == null) {
+			super.drawLoadingText(i, s);
+			return;
+		}
+		aClass18_1200.createRasterizer();
+		char c = '\u0168';
+		char c1 = '\310';
+		byte byte0 = 20;
+		fontBold.drawStringLeft("RuneScape is loading - please wait...", c / 2, c1 / 2 - 26 - byte0, 0xffffff
+		);
+		int j = c1 / 2 - 18 - byte0;
+		Rasterizer.drawUnfilledRectangle(c / 2 - 152, j, 304, 34, 0x8c1111);
+		Rasterizer.drawUnfilledRectangle(c / 2 - 151, j + 1, 302, 32, 0);
+		Rasterizer.drawFilledRectangle(c / 2 - 150, j + 2, i * 3, 30, 0x8c1111);
+		Rasterizer.drawFilledRectangle((c / 2 - 150) + i * 3, j + 2, 300 - i * 3, 30, 0);
+		fontBold.drawStringLeft(s, c / 2, (c1 / 2 + 5) - byte0, 0xffffff);
+		aClass18_1200.drawGraphics(202, 171, super.gameGraphics);
+		if (aBoolean1046) {
+			aBoolean1046 = false;
+			if (!aBoolean1243) {
+				flameLeftBackground.drawGraphics(0, 0, super.gameGraphics);
+				flameRightBackground.drawGraphics(637, 0, super.gameGraphics);
 			}
-			if (i_1018_ != 0) {
-				int i_1023_ = Model.SINE[i_1018_];
-				int i_1024_ = Model.COSINE[i_1018_];
-				int i_1025_ = i_1021_ * i_1024_ - i_1022_ * i_1023_ >> 16;
-				i_1022_ = i_1021_ * i_1023_ + i_1022_ * i_1024_ >> 16;
-				i_1021_ = i_1025_;
-			}
-			if (i_1019_ != 0) {
-				int i_1026_ = Model.SINE[i_1019_];
-				int i_1027_ = Model.COSINE[i_1019_];
-				int i_1028_ = i_1022_ * i_1026_ + i_1020_ * i_1027_ >> 16;
-				i_1022_ = i_1022_ * i_1027_ - i_1020_ * i_1026_ >> 16;
-				i_1020_ = i_1028_;
-			}
-			anInt883 = i_1014_ - i_1020_;
-			anInt884 = i_1015_ - i_1021_;
-			anInt885 = i_1017_ - i_1022_;
-			anInt886 = i_1013_;
-			anInt887 = i_1016_;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("69735, " + i + ", " + i_1012_ + ", " + i_1013_ + ", " + i_1014_ + ", " + i_1015_
-					+ ", " + i_1016_ + ", " + i_1017_ + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+			aClass18_1198.drawGraphics(128, 0, super.gameGraphics);
+			aClass18_1199.drawGraphics(202, 371, super.gameGraphics);
+			aClass18_1203.drawGraphics(0, 265, super.gameGraphics);
+			aClass18_1204.drawGraphics(562, 265, super.gameGraphics);
+			aClass18_1205.drawGraphics(128, 171, super.gameGraphics);
+			aClass18_1206.drawGraphics(562, 171, super.gameGraphics);
 		}
 	}
 
-	public final boolean method145(boolean bool) {
-		try {
-			if (!bool) {
-				groundItemNodes = null;
-			}
-			if (bufferedConnection == null) {
-				return false;
-			}
+	public void prepareTitleBackground() {
+		byte abyte0[] = titleArchive.get("title.dat");
+		ImageRGB class50_sub1_sub1_sub1 = new ImageRGB(abyte0, this);
+		flameLeftBackground.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(0, 0);
+		flameRightBackground.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(0, -637);
+		aClass18_1198.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(0, -128);
+		aClass18_1199.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-371, -202);
+		aClass18_1200.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-171, -202);
+		aClass18_1203.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-265, 0);
+		aClass18_1204.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-265, -562);
+		aClass18_1205.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-171, -128);
+		aClass18_1206.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-171, -562);
+		int ai[] = new int[class50_sub1_sub1_sub1.width1];
+		for (int i = 0; i < class50_sub1_sub1_sub1.height1; i++) {
+			for (int j = 0; j < class50_sub1_sub1_sub1.width1; j++)
+				ai[j] = class50_sub1_sub1_sub1.pixels[(class50_sub1_sub1_sub1.width1 - j - 1)
+						+ class50_sub1_sub1_sub1.width1 * i];
+
+			for (int l = 0; l < class50_sub1_sub1_sub1.width1; l++)
+				class50_sub1_sub1_sub1.pixels[l + class50_sub1_sub1_sub1.width1 * i] = ai[l];
+
+		}
+
+		flameLeftBackground.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(0, 382);
+		flameRightBackground.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(0, -255);
+		aClass18_1198.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(0, 254);
+		aClass18_1199.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-371, 180);
+		aClass18_1200.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-171, 180);
+		aClass18_1203.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-265, 382);
+		aClass18_1204.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-265, -180);
+		aClass18_1205.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-171, 254);
+		aClass18_1206.createRasterizer();
+		class50_sub1_sub1_sub1.drawInverse(-171, -180);
+		class50_sub1_sub1_sub1 = new ImageRGB(titleArchive, "logo", 0);
+		aClass18_1198.createRasterizer();
+		class50_sub1_sub1_sub1.method461(18, 382 - class50_sub1_sub1_sub1.width1 / 2 - 128, -488);
+		class50_sub1_sub1_sub1 = null;
+		abyte0 = null;
+		ai = null;
+		System.gc();
+	}
+
+	public void method140(byte byte0, Class50_Sub2 class50_sub2) {
+		int i = 0;
+		int j = -1;
+		int k = 0;
+		int l = 0;
+		if (byte0 != -61)
+			outBuffer.putByte(175);
+		if (class50_sub2.anInt1392 == 0)
+			i = currentScene.method267(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394);
+		if (class50_sub2.anInt1392 == 1)
+			i = currentScene.method268(class50_sub2.anInt1393, (byte) 4, class50_sub2.anInt1391,
+					class50_sub2.anInt1394);
+		if (class50_sub2.anInt1392 == 2)
+			i = currentScene.method269(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394);
+		if (class50_sub2.anInt1392 == 3)
+			i = currentScene.getFloorDecorationHash(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394);
+		if (i != 0) {
+			int i1 = currentScene.method271(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394, i);
+			j = i >> 14 & 0x7fff;
+			k = i1 & 0x1f;
+			l = i1 >> 6;
+		}
+		class50_sub2.anInt1387 = j;
+		class50_sub2.anInt1389 = k;
+		class50_sub2.anInt1388 = l;
+	}
+
+	public void method141() {
+		aBoolean1243 = false;
+		while (aBoolean1320) {
+			aBoolean1243 = false;
 			try {
-				int available = bufferedConnection.getAvailable();
-				if (available == 0) {
-					return false;
-				}
-				if (opcode == -1) {
-					bufferedConnection.read(inBuffer.payload, 0, 1);
-					opcode = inBuffer.payload[0] & 0xff;
-					if (isaacCipher != null) {
-						opcode = opcode - isaacCipher.nextInt() & 0xff;
-					}
-					packetSize = PacketConstants.PACKET_SIZES[opcode];
-					available--;
-				}
-				if (packetSize == -1) {
-					if (available > 0) {
-						bufferedConnection.read(inBuffer.payload, 0, 1);
-						packetSize = inBuffer.payload[0] & 0xff;
-						available--;
-					} else {
-						return false;
-					}
-				}
-				if (packetSize == -2) {
-					if (available > 1) {
-						bufferedConnection.read(inBuffer.payload, 0, 2);
-						inBuffer.offset = 0;
-						packetSize = inBuffer.getUnsignedLEShort();
-						available -= 2;
-					} else {
-						return false;
-					}
-				}
-				if (available < packetSize) {
-					return false;
-				}
-				inBuffer.offset = 0;
-				bufferedConnection.read(inBuffer.payload, 0, packetSize);
-				anInt1034 = 0;
-				anInt868 = anInt867;
-				anInt867 = anInt866;
-				anInt866 = opcode;
+				Thread.sleep(50L);
+			} catch (Exception _ex) {
+			}
+		}
+		titleboxImage = null;
+		titleboxButtonImage = null;
+		titleFlameEmblem = null;
+		anIntArray1310 = null;
+		anIntArray1311 = null;
+		anIntArray1312 = null;
+		anIntArray1313 = null;
+		anIntArray1176 = null;
+		anIntArray1177 = null;
+		anIntArray1084 = null;
+		anIntArray1085 = null;
+		anImageRGB1226 = null;
+		anImageRGB1227 = null;
+	}
 
-				/* Update players. */
-				if (opcode == 81) {
-					updatePlayers(packetSize, inBuffer);
-					aBoolean1105 = false;
-					opcode = -1;
-					return true;
-				}
-
-				/* Opens welcome screen. */
-				if (opcode == 176) {
-					lastRecoveryChange = inBuffer.getUnsignedByteC();
-					unreadMessages = inBuffer.getUnsignedLEShortA();
-					membershipAdviser = inBuffer.getUnsignedByte();
-					lastAddress = inBuffer.getInt1();
-					lastLogin = inBuffer.getUnsignedLEShort();
-					if (lastAddress != 0 && openWidgetId == -1) {
-						SignLink.dnsLookup(TextUtils.decodeAddress(lastAddress));
-						closeWidgets();
-						int contentType = 650;
-						if (lastRecoveryChange != 201 || membershipAdviser == 1) {
-							contentType = 655;
-						}
-						reportedName = "";
-						reportMutePlayer = false;
-						for (Widget element : Widget.cache) {
-							if (element != null && element.contentType == contentType) {
-								openWidgetId = element.parentId;
-								break;
+	public void method142(int i, int j, Widget class13, int k, int l) {
+		if (class13.anInt236 != 0 || class13.anIntArray258 == null)
+			return;
+		if (class13.aBoolean219 && anInt1302 != class13.id && anInt1280 != class13.id
+				&& anInt1106 != class13.id)
+			return;
+		int i1 = Rasterizer.topX;
+		int j1 = Rasterizer.topY;
+		int k1 = Rasterizer.bottomX;
+		int l1 = Rasterizer.bottomY;
+		Rasterizer.setCoordinates(i, j, i + class13.anInt238, j + class13.anInt241);
+		int i2 = class13.anIntArray258.length;
+		if (l != 8)
+			opcode = -1;
+		for (int j2 = 0; j2 < i2; j2++) {
+			int k2 = class13.anIntArray232[j2] + j;
+			int l2 = (class13.anIntArray276[j2] + i) - k;
+			Widget class13_1 = Widget.forId(class13.anIntArray258[j2]);
+			k2 += class13_1.anInt228;
+			l2 += class13_1.anInt259;
+			if (class13_1.contentType > 0)
+				method103((byte) 2, class13_1);
+			if (class13_1.anInt236 == 0) {
+				if (class13_1.anInt231 > class13_1.anInt285 - class13_1.anInt238)
+					class13_1.anInt231 = class13_1.anInt285 - class13_1.anInt238;
+				if (class13_1.anInt231 < 0)
+					class13_1.anInt231 = 0;
+				method142(l2, k2, class13_1, class13_1.anInt231, 8);
+				if (class13_1.anInt285 > class13_1.anInt238)
+					method56(true, class13_1.anInt231, k2 + class13_1.anInt241, class13_1.anInt238, class13_1.anInt285,
+							l2);
+			} else if (class13_1.anInt236 != 1)
+				if (class13_1.anInt236 == 2) {
+					int i3 = 0;
+					for (int i4 = 0; i4 < class13_1.anInt238; i4++) {
+						for (int j5 = 0; j5 < class13_1.anInt241; j5++) {
+							int i6 = k2 + j5 * (32 + class13_1.anInt263);
+							int l6 = l2 + i4 * (32 + class13_1.anInt244);
+							if (i3 < 20) {
+								i6 += class13_1.anIntArray221[i3];
+								l6 += class13_1.anIntArray213[i3];
 							}
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* TODO: Figure out usage */
-				if (opcode == 64) {
-					playerPositionX = inBuffer.getUnsignedByteC();
-					playerPositionY = inBuffer.getUnsignedByteS();
-					for (int x = playerPositionX; x < playerPositionX + 8; x++) {
-						for (int y = playerPositionY; y < playerPositionY + 8; y++) {
-							if (groundItemNodes[currentSceneId][x][y] != null) {
-								groundItemNodes[currentSceneId][x][y] = null;
-								sortGroundItems(x, y);
-							}
-						}
-					}
-					for (SpawnObjectNode spawnObjectNodeListed = (SpawnObjectNode) spawnObjectNodeList.getBack(); spawnObjectNodeListed != null; spawnObjectNodeListed = (SpawnObjectNode) spawnObjectNodeList
-							.getPrevious()) {
-						if (spawnObjectNodeListed.x >= playerPositionX && spawnObjectNodeListed.x < playerPositionX + 8
-								&& spawnObjectNodeListed.y >= playerPositionY
-								&& spawnObjectNodeListed.y < playerPositionY + 8
-								&& spawnObjectNodeListed.plane == currentSceneId) {
-							spawnObjectNodeListed.anInt1344 = 0;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/*
-				 * Sets interface's model type to 3. (Renders Dialogue
-				 * Model/Player Head)
-				 */
-				if (opcode == 185) {
-					int widgetId = inBuffer.getUnsignedShortA();
-					Widget.cache[widgetId].modelType = 3;
-					if (Game.localPlayer.npcDefinition == null) {
-						Widget.cache[widgetId].modelId = (Game.localPlayer.appearanceColors[0] << 25)
-								+ (Game.localPlayer.appearanceColors[4] << 20) + (Game.localPlayer.appearance[0] << 15)
-								+ (Game.localPlayer.appearance[8] << 10) + (Game.localPlayer.appearance[11] << 5)
-								+ Game.localPlayer.appearance[1];
-					} else {
-						Widget.cache[widgetId].modelId = (int) (0x12345678 + Game.localPlayer.npcDefinition.id);
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Resets the camera. */
-				if (opcode == 107) {
-					aBoolean1185 = false;
-					for (int i_ = 0; i_ < 5; i_++) {
-						aBooleanArray901[i_] = false;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Clear items off a widget. */
-				if (opcode == 72) {
-					int widgetId = inBuffer.getUnsignedShort();
-					Widget widget = Widget.cache[widgetId];
-					for (int itemSlot = 0; itemSlot < widget.items.length; itemSlot++) {
-						widget.items[itemSlot] = -1;
-						widget.items[itemSlot] = 0;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Adds name to the ignore list. */
-				if (opcode == 214) {
-					ignoreListCount = packetSize / 8;
-					for (int i_ = 0; i_ < ignoreListCount; i_++) {
-						ignoreList[i_] = inBuffer.getLong();
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* XXX: Figure out usage. */
-				if (opcode == 166) {
-					aBoolean1185 = true;
-					anInt1123 = inBuffer.getUnsignedByte();
-					anInt1124 = inBuffer.getUnsignedByte();
-					anInt1125 = inBuffer.getUnsignedLEShort();
-					anInt1126 = inBuffer.getUnsignedByte();
-					anInt1127 = inBuffer.getUnsignedByte();
-					if (anInt1127 >= 100) {
-						anInt883 = anInt1123 * 128 + 64;
-						anInt885 = anInt1124 * 128 + 64;
-						anInt884 = method42(currentSceneId, anInt885, true, anInt883) - anInt1125;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets skill information */
-				if (opcode == 134) {
-					redrawTab = true;
-					int id = inBuffer.getUnsignedByte();
-					int experience = inBuffer.getInt2();
-					int level = inBuffer.getUnsignedByte();
-					skillExperience[id] = experience;
-					skillLevel[id] = level;
-					skillMaxLevel[id] = 1;
-					for (int i_ = 0; i_ < 98; i_++) {
-						if (experience >= Game.xpForSkillLevel[i_]) {
-							skillMaxLevel[id] = i_ + 2;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets a sidebar's interface */
-				if (opcode == 71) {
-					int widgetId = inBuffer.getUnsignedLEShort();
-					int tabId = inBuffer.getUnsignedByteA();
-					if (widgetId == 0xFFFF) {
-						widgetId = -1;
-					}
-					tabWidgetIds[tabId] = widgetId;
-					redrawTab = true;
-					drawTabIcons = true;
-					opcode = -1;
-					return true;
-				}
-
-				/* Starts playing a song */
-				if (opcode == 74) {
-					int songId = inBuffer.getUnsignedShort();
-					if (songId == 0xFFFF) {
-						songId = -1;
-					}
-					if (songId != this.songId && musicEnabled && !Game.lowMemory && songFadeCycle == 0) {
-						onDemandRequesterId = songId;
-						midiFade = true;
-						onDemandRequester.request(2, onDemandRequesterId);
-					}
-					this.songId = songId;
-					opcode = -1;
-					return true;
-				}
-
-				/*
-				 * Starts playing a sound effect that goes over music, like the
-				 * level-up sound.
-				 */
-				if (opcode == 121) {
-					int nextSong = inBuffer.getUnsignedShortA();
-					int previousSong = inBuffer.getUnsignedLEShortA();
-					if (musicEnabled && !Game.lowMemory) {
-						onDemandRequesterId = nextSong;
-						midiFade = false;
-						onDemandRequester.request(2, onDemandRequesterId);
-						songFadeCycle = previousSong;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Logs out */
-				if (opcode == 109) {
-					logout();
-					opcode = -1;
-					return false;
-				}
-
-				/* Sets the position of a widget */
-				if (opcode == 70) {
-					int x = inBuffer.getShort();
-					int y = inBuffer.getForceLEShort();
-					int widgetId = inBuffer.getUnsignedShort();
-					Widget widget = Widget.cache[widgetId];
-					widget.x = x;
-					widget.y = y;
-					opcode = -1;
-					return true;
-				}
-
-				/* Loads the map region */
-				if (opcode == 73 || opcode == 241) {
-					int playerRegionX = anInt1094;
-					int playerRegionY = anInt1095;
-					if (opcode == 73) {
-						playerRegionX = inBuffer.getUnsignedLEShortA();
-						playerRegionY = inBuffer.getUnsignedLEShort();
-						aBoolean1184 = false;
-					}
-					if (opcode == 241) {
-						playerRegionY = inBuffer.getUnsignedLEShortA();
-						inBuffer.initBitAccess();
-						for (int plane = 0; plane < 4; plane++) {
-							for (int x = 0; x < 13; x++) {
-								for (int y = 0; y < 13; y++) {
-									int tileExists = inBuffer.getBits(1);
-									if (tileExists == 1) {
-										constructMapTiles[plane][x][y] = inBuffer.getBits(26);
-									} else {
-										constructMapTiles[plane][x][y] = -1;
-									}
-								}
-							}
-						}
-						inBuffer.finishBitAccess();
-						playerRegionX = inBuffer.getUnsignedLEShort();
-						aBoolean1184 = true;
-					}
-					if (anInt1094 == playerRegionX && anInt1095 == playerRegionY && anInt1048 == 2) {
-						opcode = -1;
-						return true;
-					}
-					anInt1094 = playerRegionX;
-					anInt1095 = playerRegionY;
-					regionAbsoluteBaseX = (anInt1094 - 6) * 8;
-					regionAbsoluteBaseY = (anInt1095 - 6) * 8;
-					aBoolean1166 = false;
-					if ((anInt1094 / 8 == 48 || anInt1094 / 8 == 49) && anInt1095 / 8 == 48) {
-						aBoolean1166 = true;
-					}
-					if (anInt1094 / 8 == 48 && anInt1095 / 8 == 148) {
-						aBoolean1166 = true;
-					}
-					anInt1048 = 1;
-					aLong849 = System.currentTimeMillis();
-					currentSceneBuffer.createRasterizer();
-					fontNormal.drawStringLeft("Loading - please wait.", 257, 151, 0);
-					fontNormal.drawStringLeft("Loading - please wait.", 256, 150, 0xFFFFFF);
-					currentSceneBuffer.drawGraphics(4, 4, gameGraphics);
-					if (opcode == 73) {
-						int i_1056_ = 0;
-						for (int i_1057_ = (anInt1094 - 6) / 8; i_1057_ <= (anInt1094 + 6) / 8; i_1057_++) {
-							for (int i_1058_ = (anInt1095 - 6) / 8; i_1058_ <= (anInt1095 + 6) / 8; i_1058_++) {
-								i_1056_++;
-							}
-						}
-						aByteArrayArray1208 = new byte[i_1056_][];
-						aByteArrayArray1272 = new byte[i_1056_][];
-						anIntArray1259 = new int[i_1056_];
-						anIntArray1260 = new int[i_1056_];
-						anIntArray1261 = new int[i_1056_];
-						i_1056_ = 0;
-						for (int i_1059_ = (anInt1094 - 6) / 8; i_1059_ <= (anInt1094 + 6) / 8; i_1059_++) {
-							for (int i_1060_ = (anInt1095 - 6) / 8; i_1060_ <= (anInt1095 + 6) / 8; i_1060_++) {
-								anIntArray1259[i_1056_] = (i_1059_ << 8) + i_1060_;
-								if (aBoolean1166
-										&& (i_1060_ == 49 || i_1060_ == 149 || i_1060_ == 147 || i_1059_ == 50 || i_1059_ == 49
-												&& i_1060_ == 47)) {
-									anIntArray1260[i_1056_] = -1;
-									anIntArray1261[i_1056_] = -1;
-									i_1056_++;
-								} else {
-									int i_1061_ = anIntArray1260[i_1056_] = onDemandRequester
-											.regId(0, i_1060_, i_1059_);
-									if (i_1061_ != -1) {
-										onDemandRequester.request(3, i_1061_);
-									}
-									int i_1062_ = anIntArray1261[i_1056_] = onDemandRequester
-											.regId(1, i_1060_, i_1059_);
-									if (i_1062_ != -1) {
-										onDemandRequester.request(3, i_1062_);
-									}
-									i_1056_++;
-								}
-							}
-						}
-					}
-
-					/* Construct region block (8x8 block) */
-					if (opcode == 241) {
-						int i_1063_ = 0;
-						int[] is = new int[676];
-						for (int i_1064_ = 0; i_1064_ < 4; i_1064_++) {
-							for (int i_1065_ = 0; i_1065_ < 13; i_1065_++) {
-								for (int i_1066_ = 0; i_1066_ < 13; i_1066_++) {
-									int i_1067_ = constructMapTiles[i_1064_][i_1065_][i_1066_];
-									if (i_1067_ != -1) {
-										int i_1068_ = i_1067_ >> 14 & 0x3ff;
-										int i_1069_ = i_1067_ >> 3 & 0x7ff;
-										int i_1070_ = (i_1068_ / 8 << 8) + i_1069_ / 8;
-										for (int i_1071_ = 0; i_1071_ < i_1063_; i_1071_++) {
-											if (is[i_1071_] == i_1070_) {
-												i_1070_ = -1;
-												break;
+							if (class13_1.itemIds[i3] > 0) {
+								int i7 = 0;
+								int j8 = 0;
+								int l10 = class13_1.itemIds[i3] - 1;
+								if (i6 > Rasterizer.topX - 32 && i6 < Rasterizer.bottomX
+										&& l6 > Rasterizer.topY - 32 && l6 < Rasterizer.bottomY
+										|| anInt1113 != 0 && anInt1112 == i3) {
+									int k11 = 0;
+									if (anInt1146 == 1 && anInt1147 == i3 && anInt1148 == class13_1.id)
+										k11 = 0xffffff;
+									ImageRGB class50_sub1_sub1_sub1_2 = ItemDefinition.method221(
+											(byte) -33, k11, class13_1.itemAmounts[i3], l10);
+									if (class50_sub1_sub1_sub1_2 != null) {
+										if (anInt1113 != 0 && anInt1112 == i3 && anInt1111 == class13_1.id) {
+											i7 = super.mouseX - anInt1114;
+											j8 = super.mouseY - anInt1115;
+											if (i7 < 5 && i7 > -5)
+												i7 = 0;
+											if (j8 < 5 && j8 > -5)
+												j8 = 0;
+											if (anInt1269 < 5) {
+												i7 = 0;
+												j8 = 0;
 											}
-										}
-										if (i_1070_ != -1) {
-											is[i_1063_++] = i_1070_;
+											class50_sub1_sub1_sub1_2.method463(0, i6 + i7, l6 + j8, 128);
+											if (l6 + j8 < Rasterizer.topY && class13.anInt231 > 0) {
+												int i12 = (anInt951 * (Rasterizer.topY - l6 - j8)) / 3;
+												if (i12 > anInt951 * 10)
+													i12 = anInt951 * 10;
+												if (i12 > class13.anInt231)
+													i12 = class13.anInt231;
+												class13.anInt231 -= i12;
+												anInt1115 += i12;
+											}
+											if (l6 + j8 + 32 > Rasterizer.bottomY
+													&& class13.anInt231 < class13.anInt285 - class13.anInt238) {
+												int j12 = (anInt951 * ((l6 + j8 + 32) - Rasterizer.bottomY)) / 3;
+												if (j12 > anInt951 * 10)
+													j12 = anInt951 * 10;
+												if (j12 > class13.anInt285 - class13.anInt238 - class13.anInt231)
+													j12 = class13.anInt285 - class13.anInt238 - class13.anInt231;
+												class13.anInt231 += j12;
+												anInt1115 -= j12;
+											}
+										} else if (anInt1332 != 0 && anInt1331 == i3 && anInt1330 == class13_1.id)
+											class50_sub1_sub1_sub1_2.method463(0, i6, l6, 128);
+										else
+											class50_sub1_sub1_sub1_2.method461(l6, i6, -488);
+										if (class50_sub1_sub1_sub1_2.anInt1494 == 33 || class13_1.itemAmounts[i3] != 1) {
+											int k12 = class13_1.itemAmounts[i3];
+											fontSmall.method474(2245, i6 + 1 + i7, 0, l6 + 10 + j8,
+													addMoneySuffix(k12, -243));
+											fontSmall.method474(2245, i6 + i7, 0xffff00,
+													l6 + 9 + j8, addMoneySuffix(k12, -243));
 										}
 									}
 								}
+							} else if (class13_1.aClass50_Sub1_Sub1_Sub1Array265 != null && i3 < 20) {
+								ImageRGB class50_sub1_sub1_sub1_1 = class13_1.aClass50_Sub1_Sub1_Sub1Array265[i3];
+								if (class50_sub1_sub1_sub1_1 != null)
+									class50_sub1_sub1_sub1_1.method461(l6, i6, -488);
 							}
+							i3++;
 						}
-						aByteArrayArray1208 = new byte[i_1063_][];
-						aByteArrayArray1272 = new byte[i_1063_][];
-						anIntArray1259 = new int[i_1063_];
-						anIntArray1260 = new int[i_1063_];
-						anIntArray1261 = new int[i_1063_];
-						for (int i_1072_ = 0; i_1072_ < i_1063_; i_1072_++) {
-							int i_1073_ = anIntArray1259[i_1072_] = is[i_1072_];
-							int i_1074_ = i_1073_ >> 8 & 0xff;
-							int i_1075_ = i_1073_ & 0xff;
-							int i_1076_ = anIntArray1260[i_1072_] = onDemandRequester.regId(0, i_1075_, i_1074_);
-							if (i_1076_ != -1) {
-								onDemandRequester.request(3, i_1076_);
-							}
-							int i_1077_ = anIntArray1261[i_1072_] = onDemandRequester.regId(1, i_1075_, i_1074_);
-							if (i_1077_ != -1) {
-								onDemandRequester.request(3, i_1077_);
-							}
-						}
-					}
-					int i_1078_ = regionAbsoluteBaseX - anInt1061;
-					int i_1079_ = regionAbsoluteBaseY - anInt1062;
-					anInt1061 = regionAbsoluteBaseX;
-					anInt1062 = regionAbsoluteBaseY;
-					for (int i_1080_ = 0; i_1080_ < 16384; i_1080_++) {
-						Npc npc = localNpcs[i_1080_];
-						if (npc != null) {
-							for (int i_1081_ = 0; i_1081_ < 10; i_1081_++) {
-								npc.pathX[i_1081_] -= i_1078_;
-								npc.pathY[i_1081_] -= i_1079_;
-							}
-							npc.xWithBoundary -= i_1078_ * 128;
-							npc.yWithBoundary -= i_1079_ * 128;
-						}
-					}
-					for (int i_1082_ = 0; i_1082_ < MAX_PLAYERS; i_1082_++) {
-						Player player = players[i_1082_];
-						if (player != null) {
-							for (int i_1083_ = 0; i_1083_ < 10; i_1083_++) {
-								player.pathX[i_1083_] -= i_1078_;
-								player.pathY[i_1083_] -= i_1079_;
-							}
-							player.xWithBoundary -= i_1078_ * 128;
-							player.yWithBoundary -= i_1079_ * 128;
-						}
-					}
-					aBoolean1105 = true;
-					int i_1084_ = 0;
-					int i_1085_ = 104;
-					int i_1086_ = 1;
-					if (i_1078_ < 0) {
-						i_1084_ = 103;
-						i_1085_ = -1;
-						i_1086_ = -1;
-					}
-					int i_1087_ = 0;
-					int i_1088_ = 104;
-					int i_1089_ = 1;
-					if (i_1079_ < 0) {
-						i_1087_ = 103;
-						i_1088_ = -1;
-						i_1089_ = -1;
-					}
-					for (int i_1090_ = i_1084_; i_1090_ != i_1085_; i_1090_ += i_1086_) {
-						for (int i_1091_ = i_1087_; i_1091_ != i_1088_; i_1091_ += i_1089_) {
-							int i_1092_ = i_1090_ + i_1078_;
-							int i_1093_ = i_1091_ + i_1079_;
-							for (int i_1094_ = 0; i_1094_ < 4; i_1094_++) {
-								if (i_1092_ >= 0 && i_1093_ >= 0 && i_1092_ < 104 && i_1093_ < 104) {
-									groundItemNodes[i_1094_][i_1090_][i_1091_] = groundItemNodes[i_1094_][i_1092_][i_1093_];
-								} else {
-									groundItemNodes[i_1094_][i_1090_][i_1091_] = null;
-								}
-							}
-						}
-					}
-					for (SpawnObjectNode spawnobjectnode = (SpawnObjectNode) spawnObjectNodeList.getBack(); spawnobjectnode != null; spawnobjectnode = (SpawnObjectNode) spawnObjectNodeList
-							.getPrevious()) {
-						spawnobjectnode.x -= i_1078_;
-						spawnobjectnode.y -= i_1079_;
-						if (spawnobjectnode.x < 0 || spawnobjectnode.y < 0 || spawnobjectnode.x >= 104
-								|| spawnobjectnode.y >= 104) {
-							spawnobjectnode.remove();
-						}
-					}
-					if (destinationX != 0) {
-						destinationX -= i_1078_;
-						destinationY -= i_1079_;
-					}
-					aBoolean1185 = false;
-					opcode = -1;
-					return true;
-				}
 
-				/* Sets the walkable interface. */
-				if (opcode == 208) {
-					int widgetId = inBuffer.getForceLEShort();
-					if (widgetId >= 0) {
-						method60(widgetId);
 					}
-					walkableWidgetId = widgetId;
-					opcode = -1;
-					return true;
-				}
 
-				/* Sets the minimap state */
-				if (opcode == 99) {
-					minimapState = inBuffer.getUnsignedByte();
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets interface's model type to 2. (Draws Actor head model) */
-				if (opcode == 75) {
-					int modelId = inBuffer.getUnsignedShortA();
-					int widgetId = inBuffer.getUnsignedShortA();
-					Widget.cache[widgetId].modelType = 2;
-					Widget.cache[widgetId].modelId = modelId;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the system update time. */
-				if (opcode == 114) {
-					systemUpdateTime = inBuffer.getUnsignedShort() * 30;
-					opcode = -1;
-					return true;
-				}
-
-				/* TODO: Figure out usage. */
-				if (opcode == 60) {
-					playerPositionY = inBuffer.getUnsignedByte();
-					playerPositionX = inBuffer.getUnsignedByteC();
-					while (inBuffer.offset < packetSize) {
-						int i_1098_ = inBuffer.getUnsignedByte();
-						method137(anInt1144, inBuffer, i_1098_);
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Shakes the camera around like an earthquake. */
-				if (opcode == 35) {
-					int type = inBuffer.getUnsignedByte();
-					int jitter = inBuffer.getUnsignedByte();
-					int amplitude = inBuffer.getUnsignedByte();
-					int frequency = inBuffer.getUnsignedByte();
-					/*
-					 * Type 0: Shake horizontally Type 1: Shake inward Type 2:
-					 * Shake vertically Type 3: Shake yaw Type 4: Shake pitch
-					 */
-					aBooleanArray901[type] = true;
-					anIntArray898[type] = jitter;
-					anIntArray1228[type] = amplitude;
-					anIntArray953[type] = frequency;
-					anIntArray1055[type] = 0;
-					opcode = -1;
-					return true;
-				}
-
-				/* Adds a track? */
-				if (opcode == 174) {
-					int trackId = inBuffer.getUnsignedLEShort();
-					int loop = inBuffer.getUnsignedByte();
-					int delay = inBuffer.getUnsignedLEShort();
-					if (aBoolean873 && !Game.lowMemory && trackCount < 50) {
-						trackIds[trackCount] = trackId;
-						trackLoop[trackCount] = loop;
-						trackDelay[trackCount] = delay + SoundTrack.trackDelays[trackId];
-						trackCount++;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Adds an action to players */
-				// TODO: Figure out what unknownVar1 is.
-				if (opcode == 104) {
-					int actionId = inBuffer.getUnsignedByteC();
-					int unknownVar1 = inBuffer.getUnsignedByteA();
-					String action = inBuffer.getString();
-					if (actionId >= 1 && actionId <= 5) {
-						if (action.equalsIgnoreCase("null")) {
-							action = null;
-						}
-						playerActions[actionId - 1] = action;
-						aBooleanArray1153[actionId - 1] = unknownVar1 == 0;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Resets your destination. */
-				if (opcode == 78) {
-					destinationX = 0;
-					opcode = -1;
-					return true;
-				}
-
-				/* Puts a message in the chat box. */
-				if (opcode == 253) {
-					String s = inBuffer.getString();
-					if (s.endsWith(":tradereq:")) {
-						String name = s.substring(0, s.indexOf(":"));
-						long nameLong = TextUtils.nameToLong(name);
-						boolean ignored = false;
-						for (int i_ = 0; i_ < ignoreListCount; i_++) {
-							if (ignoreList[i_] == nameLong) {
-								ignored = true;
-								break;
-							}
-						}
-						if (!ignored && inTutorial == 0) {
-							sendMessage("wishes to trade with you.", 4, name);
-						}
-					} else if (s.endsWith(":duelreq:")) {
-						String name = s.substring(0, s.indexOf(":"));
-						long nameLong = TextUtils.nameToLong(name);
-						boolean ignored = false;
-						for (int i_ = 0; i_ < ignoreListCount; i_++) {
-							if (ignoreList[i_] == nameLong) {
-								ignored = true;
-								break;
-							}
-						}
-						if (!ignored && inTutorial == 0) {
-							sendMessage("wishes to duel with you.", 8, name);
-						}
-					} else if (s.endsWith(":chalreq:")) {
-						String name = s.substring(0, s.indexOf(":"));
-						long nameLong = TextUtils.nameToLong(name);
-						boolean ignored = false;
-						for (int i_ = 0; i_ < ignoreListCount; i_++) {
-							if (ignoreList[i_] == nameLong) {
-								ignored = true;
-								break;
-							}
-						}
-						if (!ignored && inTutorial == 0) {
-							sendMessage("has challenged you.", 8, name);
-						}
+				} else if (class13_1.anInt236 == 3) {
+					boolean flag = false;
+					if (anInt1106 == class13_1.id || anInt1280 == class13_1.id
+							|| anInt1302 == class13_1.id)
+						flag = true;
+					int j3;
+					if (method95(class13_1, -693)) {
+						j3 = class13_1.anInt260;
+						if (flag && class13_1.anInt226 != 0)
+							j3 = class13_1.anInt226;
 					} else {
-						sendMessage(s, 0, "");
+						j3 = class13_1.anInt240;
+						if (flag && class13_1.anInt261 != 0)
+							j3 = class13_1.anInt261;
 					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Resets all animations for the Players and Actors in the area. */
-				if (opcode == 1) {
-					for (int i_ = 0; i_ < players.length; i_++) {
-						if (players[i_] != null) {
-							players[i_].animation = -1;
+					if (class13_1.aByte220 == 0) {
+						if (class13_1.aBoolean239)
+							Rasterizer.drawFilledRectangle(k2, l2, class13_1.anInt241, class13_1.anInt238, j3);
+						else
+							Rasterizer.drawUnfilledRectangle(k2, l2, class13_1.anInt241, class13_1.anInt238, j3);
+					} else if (class13_1.aBoolean239)
+						Rasterizer.drawFilledRectangleAlhpa(k2, l2, class13_1.anInt241, class13_1.anInt238, j3,
+								256 - (class13_1.aByte220 & 0xff));
+					else
+						Rasterizer.drawUnfilledRectangleAlpha(k2, l2, class13_1.anInt241, class13_1.anInt238, j3,
+								256 - (class13_1.aByte220 & 0xff));
+				} else if (class13_1.anInt236 == 4) {
+					TypeFace class50_sub1_sub1_sub2 = class13_1.aClass50_Sub1_Sub1_Sub2_237;
+					String s = class13_1.aString230;
+					boolean flag1 = false;
+					if (anInt1106 == class13_1.id || anInt1280 == class13_1.id
+							|| anInt1302 == class13_1.id)
+						flag1 = true;
+					int j4;
+					if (method95(class13_1, -693)) {
+						j4 = class13_1.anInt260;
+						if (flag1 && class13_1.anInt226 != 0)
+							j4 = class13_1.anInt226;
+						if (class13_1.aString249.length() > 0)
+							s = class13_1.aString249;
+					} else {
+						j4 = class13_1.anInt240;
+						if (flag1 && class13_1.anInt261 != 0)
+							j4 = class13_1.anInt261;
+					}
+					if (class13_1.anInt289 == 6 && aBoolean1239) {
+						s = "Please wait...";
+						j4 = class13_1.anInt240;
+					}
+					if (Rasterizer.width == 479) {
+						if (j4 == 0xffff00)
+							j4 = 255;
+						if (j4 == 49152)
+							j4 = 0xffffff;
+					}
+					for (int j7 = l2 + class50_sub1_sub1_sub2.anInt1506; s.length() > 0; j7 += class50_sub1_sub1_sub2.anInt1506) {
+						if (s.indexOf("%") != -1) {
+							do {
+								int k8 = s.indexOf("%1");
+								if (k8 == -1)
+									break;
+								s = s.substring(0, k8) + method89(method129(3, 0, class13_1), 8) + s.substring(k8 + 2);
+							} while (true);
+							do {
+								int l8 = s.indexOf("%2");
+								if (l8 == -1)
+									break;
+								s = s.substring(0, l8) + method89(method129(3, 1, class13_1), 8) + s.substring(l8 + 2);
+							} while (true);
+							do {
+								int i9 = s.indexOf("%3");
+								if (i9 == -1)
+									break;
+								s = s.substring(0, i9) + method89(method129(3, 2, class13_1), 8) + s.substring(i9 + 2);
+							} while (true);
+							do {
+								int j9 = s.indexOf("%4");
+								if (j9 == -1)
+									break;
+								s = s.substring(0, j9) + method89(method129(3, 3, class13_1), 8) + s.substring(j9 + 2);
+							} while (true);
+							do {
+								int k9 = s.indexOf("%5");
+								if (k9 == -1)
+									break;
+								s = s.substring(0, k9) + method89(method129(3, 4, class13_1), 8) + s.substring(k9 + 2);
+							} while (true);
 						}
-					}
-					for (int i_ = 0; i_ < localNpcs.length; i_++) {
-						if (localNpcs[i_] != null) {
-							localNpcs[i_].animation = -1;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Updates the friends list information. */
-				if (opcode == 50) {
-					long nameLong = inBuffer.getLong();
-					int nodeId = inBuffer.getUnsignedByte();
-					String name = TextUtils.formatName(TextUtils.longToName(nameLong));
-					for (int i_ = 0; i_ < friendsListCount; i_++) {
-						if (nameLong == friendsListLongs[i_]) {
-							if (friendsListWorlds[i_] != nodeId) {
-								friendsListWorlds[i_] = nodeId;
-								redrawTab = true;
-								if (nodeId > 0) {
-									sendMessage(name + " has logged in.", 5, "");
-								}
-								if (nodeId == 0) {
-									sendMessage(name + " has logged out.", 5, "");
-								}
-							}
-							name = null;
-							break;
-						}
-					}
-					if (name != null && friendsListCount < 200) {
-						friendsListLongs[friendsListCount] = nameLong;
-						friendsListNames[friendsListCount] = name;
-						friendsListWorlds[friendsListCount] = nodeId;
-						friendsListCount++;
-						redrawTab = true;
-					}
-					boolean bool_1122_ = false;
-					while (!bool_1122_) {
-						bool_1122_ = true;
-						for (int i_1123_ = 0; i_1123_ < friendsListCount - 1; i_1123_++) {
-							if (friendsListWorlds[i_1123_] != Game.nodeId
-									&& friendsListWorlds[i_1123_ + 1] == Game.nodeId || friendsListWorlds[i_1123_] == 0
-									&& friendsListWorlds[i_1123_ + 1] != 0) {
-								int i_1124_ = friendsListWorlds[i_1123_];
-								friendsListWorlds[i_1123_] = friendsListWorlds[i_1123_ + 1];
-								friendsListWorlds[i_1123_ + 1] = i_1124_;
-								String string_1125_ = friendsListNames[i_1123_];
-								friendsListNames[i_1123_] = friendsListNames[i_1123_ + 1];
-								friendsListNames[i_1123_ + 1] = string_1125_;
-								long l_1126_ = friendsListLongs[i_1123_];
-								friendsListLongs[i_1123_] = friendsListLongs[i_1123_ + 1];
-								friendsListLongs[i_1123_ + 1] = l_1126_;
-								redrawTab = true;
-								bool_1122_ = false;
-							}
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Updates your run energy. */
-				if (opcode == 110) {
-					if (currentTabId == 12) {
-						redrawTab = true;
-					}
-					playerEnergy = inBuffer.getUnsignedByte();
-					opcode = -1;
-					return true;
-				}
-
-				/* Marks an Actor with a hint icon. */
-				if (opcode == 254) {
-					hintIconType = inBuffer.getUnsignedByte();
-					if (hintIconType == 1) {
-						hintIconActorId = inBuffer.getUnsignedLEShort();
-					}
-					if (hintIconType >= 2 && hintIconType <= 6) {
-						if (hintIconType == 2) {
-							anInt962 = 64;
-							anInt963 = 64;
-						}
-						if (hintIconType == 3) {
-							anInt962 = 0;
-							anInt963 = 64;
-						}
-						if (hintIconType == 4) {
-							anInt962 = 128;
-							anInt963 = 64;
-						}
-						if (hintIconType == 5) {
-							anInt962 = 64;
-							anInt963 = 0;
-						}
-						if (hintIconType == 6) {
-							anInt962 = 64;
-							anInt963 = 128;
-						}
-						hintIconType = 2;
-						hintIconX = inBuffer.getUnsignedLEShort();
-						hintIconY = inBuffer.getUnsignedLEShort();
-						hintIconOffset = inBuffer.getUnsignedByte();
-					}
-					if (hintIconType == 10) {
-						hintIconId = inBuffer.getUnsignedLEShort();
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Draws an interface over an inventory interface. */
-				if (opcode == 248) {
-					int widgetId = inBuffer.getUnsignedLEShortA();
-					int inventoryWidgetId = inBuffer.getUnsignedLEShort();
-					if (chatboxWidgetId != -1) {
-						chatboxWidgetId = -1;
-						redrawChatbox = true;
-					}
-					if (inputType != 0) {
-						inputType = 0;
-						redrawChatbox = true;
-					}
-					openWidgetId = widgetId;
-					anInt1214 = inventoryWidgetId;
-					redrawTab = true;
-					drawTabIcons = true;
-					aBoolean1174 = false;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the scroll position of an interface. */
-				if (opcode == 79) {
-					int widgetId = inBuffer.getUnsignedShort();
-					int scrollPosition = inBuffer.getUnsignedLEShortA();
-					Widget widget = Widget.cache[widgetId];
-					if (widget != null && widget.type == 0) {
-						if (scrollPosition < 0) {
-							scrollPosition = 0;
-						}
-						if (scrollPosition > widget.scrollLimit - widget.height) {
-							scrollPosition = widget.scrollLimit - widget.height;
-						}
-						widget.scrollPosition = scrollPosition;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Resets all settings. */
-				if (opcode == 68) {
-					for (int i_ = 0; i_ < widgetSettings.length; i_++) {
-						if (widgetSettings[i_] != defaultSettings[i_]) {
-							widgetSettings[i_] = defaultSettings[i_];
-							handleWidgetSetting(i_);
-							redrawTab = true;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Shows a private message. */
-				if (opcode == 196) {
-					long nameLong = inBuffer.getLong();
-					int i_1132_ = inBuffer.getInt();
-					int senderPlayerRights = inBuffer.getUnsignedByte();
-					boolean bool_1134_ = false;
-					for (int i_1135_ = 0; i_1135_ < 100; i_1135_++) {
-						if (anIntArray1265[i_1135_] == i_1132_) {
-							bool_1134_ = true;
-							break;
-						}
-					}
-					if (senderPlayerRights <= 1) {
-						for (int i_1136_ = 0; i_1136_ < ignoreListCount; i_1136_++) {
-							if (ignoreList[i_1136_] == nameLong) {
-								bool_1134_ = true;
-								break;
-							}
-						}
-					}
-					if (!bool_1134_ && inTutorial == 0) {
-						try {
-							anIntArray1265[anInt1194] = i_1132_;
-							anInt1194 = (anInt1194 + 1) % 100;
-							String string = ChatEncoder.get(packetSize - 13, inBuffer);
-							if (senderPlayerRights != 3) {
-								string = ChatCensor.censorString(string);
-							}
-							if (senderPlayerRights == 2 || senderPlayerRights == 3) {
-								sendMessage(string, 7, "@cr2@" + TextUtils.formatName(TextUtils.longToName(nameLong)));
-							} else if (senderPlayerRights == 1) {
-								sendMessage(string, 7, "@cr1@" + TextUtils.formatName(TextUtils.longToName(nameLong)));
-							} else {
-								sendMessage(string, 3, TextUtils.formatName(TextUtils.longToName(nameLong)));
-							}
-						} catch (Exception exception) {
-							SignLink.reportError("cde1");
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the local player's region position. */
-				if (opcode == 85) {
-					playerPositionY = inBuffer.getUnsignedByteC();
-					playerPositionX = inBuffer.getUnsignedByteC();
-					opcode = -1;
-					return true;
-				}
-
-				/* Flashes a sidebar icon. */
-				if (opcode == 24) {
-					flashingSidebar = inBuffer.getUnsignedByteS();
-					if (flashingSidebar == currentTabId) {
-						if (flashingSidebar == 3) {
-							currentTabId = 1;
+						int l9 = s.indexOf("\\n");
+						String s3;
+						if (l9 != -1) {
+							s3 = s.substring(0, l9);
+							s = s.substring(l9 + 2);
 						} else {
-							currentTabId = 3;
+							s3 = s;
+							s = "";
 						}
-						redrawTab = true;
+						if (class13_1.aBoolean272)
+							class50_sub1_sub1_sub2.method471(class13_1.aBoolean247, anInt1056, j4, j7, k2
+									+ class13_1.anInt241 / 2, s3);
+						else
+							class50_sub1_sub1_sub2.method478(j4, k2, j7, class13_1.aBoolean247, s3, -39629);
 					}
-					opcode = -1;
-					return true;
-				}
 
-				/* Displays an item model within an interface. */
-				if (opcode == 246) {
-					int widgetId = inBuffer.getUnsignedShort();
-					int itemModelZoom = inBuffer.getUnsignedLEShort();
-					int itemId = inBuffer.getUnsignedLEShort();
-					if (itemId == 0xFFFF) {
-						Widget.cache[widgetId].modelType = 0;
-						opcode = -1;
-						return true;
+				} else if (class13_1.anInt236 == 5) {
+					ImageRGB class50_sub1_sub1_sub1;
+					if (method95(class13_1, -693))
+						class50_sub1_sub1_sub1 = class13_1.aClass50_Sub1_Sub1_Sub1_245;
+					else
+						class50_sub1_sub1_sub1 = class13_1.aClass50_Sub1_Sub1_Sub1_212;
+					switch (class13_1.id){
+						case 1164:
+						case 1167:
+						case 1170:
+						case 1174:
+						case 1540:
+						case 1541:
+						case 7455:
+							class50_sub1_sub1_sub1 =  class13_1.aClass50_Sub1_Sub1_Sub1_245;
+							break;
+						default:
+							break;
 					}
-					ItemDefinition itemdefinition = ItemDefinition.getDefinition(itemId);
-					Widget.cache[widgetId].modelType = 4;
-					Widget.cache[widgetId].modelId = itemId;
-					Widget.cache[widgetId].rotationX = itemdefinition.modelRotation1;
-					Widget.cache[widgetId].rotationY = itemdefinition.modelRotation2;
-					Widget.cache[widgetId].zoom = itemdefinition.modelZoom * 100 / itemModelZoom;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets whether an interface is hidden until hovered. */
-				if (opcode == 171) {
-					boolean hiddenUntilHovered = inBuffer.getUnsignedByte() == 1;
-					int widgetId = inBuffer.getUnsignedLEShort();
-					Widget.cache[widgetId].hiddenUntilHovered = hiddenUntilHovered;
-					opcode = -1;
-					return true;
-				}
-
-				/* TODO: Figure out usage. */
-				if (opcode == 142) {
-					int i_1142_ = inBuffer.getUnsignedShort();
-					method60(i_1142_);
-					if (chatboxWidgetId != -1) {
-						chatboxWidgetId = -1;
-						redrawChatbox = true;
+					if (class50_sub1_sub1_sub1 != null)
+						class50_sub1_sub1_sub1.method461(l2, k2, -488);
+				} else if (class13_1.anInt236 == 6) {
+					int k3 = Rasterizer3D.centerX;
+					int k4 = Rasterizer3D.centerY;
+					Rasterizer3D.centerX = k2 + class13_1.anInt241 / 2;
+					Rasterizer3D.centerY = l2 + class13_1.anInt238 / 2;
+					int k5 = Rasterizer3D.SINE[class13_1.anInt252] * class13_1.anInt251 >> 16;
+					int j6 = Rasterizer3D.COSINE[class13_1.anInt252] * class13_1.anInt251 >> 16;
+					boolean flag2 = method95(class13_1, -693);
+					int k7;
+					if (flag2)
+						k7 = class13_1.anInt287;
+					else
+						k7 = class13_1.anInt286;
+					Model class50_sub1_sub4_sub4;
+					if (k7 == -1) {
+						class50_sub1_sub4_sub4 = class13_1.method203(-1, -1, 0, flag2);
+					} else {
+						AnimationSequence class14 = AnimationSequence.animations[k7];
+						class50_sub1_sub4_sub4 = class13_1.method203(class14.frame2Ids[class13_1.anInt235],
+								class14.anIntArray296[class13_1.anInt235], 0, flag2);
 					}
-					if (inputType != 0) {
-						inputType = 0;
-						redrawChatbox = true;
-					}
-					anInt1214 = i_1142_;
-					redrawTab = true;
-					drawTabIcons = true;
-					openWidgetId = -1;
-					aBoolean1174 = false;
-					opcode = -1;
-					return true;
-				}
+					if (class50_sub1_sub4_sub4 != null)
+						class50_sub1_sub4_sub4.method598(0, class13_1.anInt253, 0, class13_1.anInt252, 0, k5, j6);
+					Rasterizer3D.centerX = k3;
+					Rasterizer3D.centerY = k4;
+				} else {
+					if (class13_1.anInt236 == 7) {
+						TypeFace class50_sub1_sub1_sub2_1 = class13_1.aClass50_Sub1_Sub1_Sub2_237;
+						int l4 = 0;
+						for (int l5 = 0; l5 < class13_1.anInt238; l5++) {
+							for (int k6 = 0; k6 < class13_1.anInt241; k6++) {
+								if (class13_1.itemIds[l4] > 0) {
+									ItemDefinition class16 = ItemDefinition.forId(class13_1.itemIds[l4] - 1);
+									String s6 = String.valueOf(class16.name);
+									if (class16.stackable || class13_1.itemAmounts[l4] != 1)
+										s6 = s6 + " x" + method135(0, class13_1.itemAmounts[l4]);
+									int i10 = k2 + k6 * (115 + class13_1.anInt263);
+									int i11 = l2 + l5 * (12 + class13_1.anInt244);
+									if (class13_1.aBoolean272)
+										class50_sub1_sub1_sub2_1.method471(class13_1.aBoolean247, anInt1056,
+												class13_1.anInt240, i11, i10 + class13_1.anInt241 / 2, s6);
+									else
+										class50_sub1_sub1_sub2_1.method478(class13_1.anInt240, i10, i11,
+												class13_1.aBoolean247, s6, -39629);
+								}
+								l4++;
+							}
 
-				/* Sets an interface's disabled text. */
-				if (opcode == 126) {
-					String text = inBuffer.getString();
-					int widgetId = inBuffer.getUnsignedLEShortA();
-					Widget.cache[widgetId].disabledText = text;
-					if (Widget.cache[widgetId].parentId == tabWidgetIds[currentTabId]) {
-						redrawTab = true;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the chat settings. */
-				if (opcode == 206) {
-					publicChatSetting = inBuffer.getUnsignedByte();
-					privateChatSetting = inBuffer.getUnsignedByte();
-					tradeSetting = inBuffer.getUnsignedByte();
-					redrawChatSettings = true;
-					redrawChatbox = true;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the player's carried weight. */
-				if (opcode == 240) {
-					if (currentTabId == 12) {
-						redrawTab = true;
-					}
-					playerWeight = inBuffer.getShort();
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets an interface to draw a model. */
-				if (opcode == 8) {
-					int widgetId = inBuffer.getUnsignedShortA();
-					int interfaceModelId = inBuffer.getUnsignedLEShort();
-					Widget.cache[widgetId].modelType = 1;
-					Widget.cache[widgetId].modelId = interfaceModelId;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets an interface's disabled color. */
-				if (opcode == 122) {
-					int widgetId = inBuffer.getUnsignedShortA();
-					int rgb = inBuffer.getUnsignedShortA();
-					int red = rgb >> 10 & 0x1F;
-					int green = rgb >> 5 & 0x1F;
-					int blue = rgb & 0x1F;
-					Widget.cache[widgetId].disabledColor = (red << 19) + (green << 11) + (blue << 3);
-					opcode = -1;
-					return true;
-				}
-
-				/* TODO: Sets the stack sizes in an inventory. */
-				if (opcode == 53) {
-					redrawTab = true;
-					int widgetId = inBuffer.getUnsignedLEShort();
-					Widget widget = Widget.cache[widgetId];
-					int itemCount = inBuffer.getUnsignedLEShort();
-					for (int i_ = 0; i_ < itemCount; i_++) {
-						int stackSize = inBuffer.getUnsignedByte();
-						if (stackSize == 255) {
-							stackSize = inBuffer.getInt1();
 						}
-						widget.items[i_] = inBuffer.getUnsignedShortA();
-						widget.itemAmounts[i_] = stackSize;
+
 					}
-					for (int i_ = itemCount; i_ < widget.items.length; i_++) {
-						widget.items[i_] = 0;
-						widget.itemAmounts[i_] = 0;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the rotation of a model in an interface. */
-				if (opcode == 230) {
-					int modelZoom = inBuffer.getUnsignedLEShortA();
-					int widgetId = inBuffer.getUnsignedLEShort();
-					int modelRotationX = inBuffer.getUnsignedLEShort();
-					int modelRotationY = inBuffer.getUnsignedShortA();
-					Widget.cache[widgetId].rotationX = modelRotationX;
-					Widget.cache[widgetId].rotationY = modelRotationY;
-					Widget.cache[widgetId].zoom = modelZoom;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the friends list status. */
-				if (opcode == 221) {
-					friendListStatus = inBuffer.getUnsignedByte();
-					redrawTab = true;
-					opcode = -1;
-					return true;
-				}
-
-				/* TODO: Figure out usage. */
-				if (opcode == 177) {
-					aBoolean1185 = true;
-					anInt1020 = inBuffer.getUnsignedByte();
-					anInt1021 = inBuffer.getUnsignedByte();
-					anInt1022 = inBuffer.getUnsignedLEShort();
-					anInt1023 = inBuffer.getUnsignedByte();
-					anInt1024 = inBuffer.getUnsignedByte();
-					if (anInt1024 >= 100) {
-						int i_1160_ = anInt1020 * 128 + 64;
-						int i_1161_ = anInt1021 * 128 + 64;
-						int i_1162_ = method42(currentSceneId, i_1161_, true, i_1160_) - anInt1022;
-						int i_1163_ = i_1160_ - anInt883;
-						int i_1164_ = i_1162_ - anInt884;
-						int i_1165_ = i_1161_ - anInt885;
-						int i_1166_ = (int) Math.sqrt(i_1163_ * i_1163_ + i_1165_ * i_1165_);
-						anInt886 = (int) (Math.atan2(i_1164_, i_1166_) * 325.949) & 0x7ff;
-						anInt887 = (int) (Math.atan2(i_1163_, i_1165_) * -325.949) & 0x7ff;
-						if (anInt886 < 128) {
-							anInt886 = 128;
+					if (class13_1.anInt236 == 8
+							&& (anInt1284 == class13_1.id || anInt1044 == class13_1.id || anInt1129 == class13_1.id)
+							&& anInt893 == 100) {
+						int l3 = 0;
+						int i5 = 0;
+						TypeFace class50_sub1_sub1_sub2_2 = fontNormal;
+						for (String s1 = class13_1.aString230; s1.length() > 0;) {
+							int l7 = s1.indexOf("\\n");
+							String s4;
+							if (l7 != -1) {
+								s4 = s1.substring(0, l7);
+								s1 = s1.substring(l7 + 2);
+							} else {
+								s4 = s1;
+								s1 = "";
+							}
+							int j10 = class50_sub1_sub1_sub2_2.method472((byte) 35, s4);
+							if (j10 > l3)
+								l3 = j10;
+							i5 += class50_sub1_sub1_sub2_2.anInt1506 + 1;
 						}
-						if (anInt886 > 383) {
-							anInt886 = 383;
+
+						l3 += 6;
+						i5 += 7;
+						int i8 = (k2 + class13_1.anInt241) - 5 - l3;
+						int k10 = l2 + class13_1.anInt238 + 5;
+						if (i8 < k2 + 5)
+							i8 = k2 + 5;
+						if (i8 + l3 > j + class13.anInt241)
+							i8 = (j + class13.anInt241) - l3;
+						if (k10 + i5 > i + class13.anInt238)
+							k10 = (i + class13.anInt238) - i5;
+						Rasterizer.drawFilledRectangle(i8, k10, l3, i5, 0xffffa0);
+						Rasterizer.drawUnfilledRectangle(i8, k10, l3, i5, 0);
+						String s2 = class13_1.aString230;
+						for (int j11 = k10 + class50_sub1_sub1_sub2_2.anInt1506 + 2; s2.length() > 0; j11 += class50_sub1_sub1_sub2_2.anInt1506 + 1) {
+							int l11 = s2.indexOf("\\n");
+							String s5;
+							if (l11 != -1) {
+								s5 = s2.substring(0, l11);
+								s2 = s2.substring(l11 + 2);
+							} else {
+								s5 = s2;
+								s2 = "";
+							}
+							class50_sub1_sub1_sub2_2.method478(0, i8 + 3, j11, false, s5, -39629);
 						}
-					}
-					opcode = -1;
-					return true;
-				}
 
-				/* Initialize Player */
-				if (opcode == 249) {
-					anInt1071 = inBuffer.getUnsignedByteA();
-					anInt909 = inBuffer.getUnsignedShortA();
-					opcode = -1;
-					return true;
-				}
-
-				/* Updates Actors */
-				if (opcode == 65) {
-					updateActors(inBuffer, packetSize);
-					opcode = -1;
-					return true;
-				}
-
-				/* Opens the 'Enter Amount' input. */
-				if (opcode == 27) {
-					messagePromptRaised = false;
-					inputType = 1;
-					inputInputMessage = "";
-					redrawChatbox = true;
-					opcode = -1;
-					return true;
-				}
-
-				/* Opens the 'Enter Name' input. */
-				if (opcode == 187) {
-					messagePromptRaised = false;
-					inputType = 2;
-					inputInputMessage = "";
-					redrawChatbox = true;
-					opcode = -1;
-					return true;
-				}
-
-				/* Opens an interface. */
-				if (opcode == 97) {
-					int widgetId = inBuffer.getUnsignedLEShort();
-					method60(widgetId);
-					if (anInt1214 != -1) {
-						anInt1214 = -1;
-						redrawTab = true;
-						drawTabIcons = true;
 					}
-					if (chatboxWidgetId != -1) {
-						chatboxWidgetId = -1;
-						redrawChatbox = true;
-					}
-					if (inputType != 0) {
-						inputType = 0;
-						redrawChatbox = true;
-					}
-					openWidgetId = widgetId;
-					aBoolean1174 = false;
-					opcode = -1;
-					return true;
 				}
+		}
 
-				/* TODO: Figure out usage. */
-				if (opcode == 218) {
-					int i_1168_ = inBuffer.getForceLEShortA();
-					anInt1067 = i_1168_;
-					redrawChatbox = true;
-					opcode = -1;
-					return true;
-				}
+		Rasterizer.setCoordinates(j1, i1, l1, k1);
+	}
 
-				/* Sets a setting's value */
-				if (opcode == 87) {
-					int settingId = inBuffer.getUnsignedShort();
-					int settingValue = inBuffer.getInt2();
-					defaultSettings[settingId] = settingValue;
-					if (widgetSettings[settingId] != settingValue) {
-						widgetSettings[settingId] = settingValue;
-						handleWidgetSetting(settingId);
-						redrawTab = true;
-						if (anInt1067 != -1) {
-							redrawChatbox = true;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets a client setting and changes the default value to this. */
-				if (opcode == 36) {
-					int i_1171_ = inBuffer.getUnsignedShort();
-					int i_1172_ = inBuffer.get();
-					defaultSettings[i_1171_] = i_1172_;
-					if (widgetSettings[i_1171_] != i_1172_) {
-						widgetSettings[i_1171_] = i_1172_;
-						handleWidgetSetting(i_1171_);
-						redrawTab = true;
-						if (anInt1067 != -1) {
-							redrawChatbox = true;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* TODO: Figure out usage. */
-				if (opcode == 61) {
-					anInt1080 = inBuffer.getUnsignedByte();
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets the animation for the model within an interface. */
-				if (opcode == 200) {
-					int widgetId = inBuffer.getUnsignedLEShort();
-					int animationId = inBuffer.getShort();
-					Widget widget = Widget.cache[widgetId];
-					widget.disabledAnimation = animationId;
-					if (animationId == -1) {
-						widget.animationFrame = 0;
-						widget.animationDuration = 0;
-					}
-					opcode = -1;
-					return true;
-				}
-
-				/* Closes all open interfaces. */
-				if (opcode == 219) {
-					if (anInt1214 != -1) {
-						anInt1214 = -1;
-						redrawTab = true;
-						drawTabIcons = true;
-					}
-					if (chatboxWidgetId != -1) {
-						chatboxWidgetId = -1;
-						redrawChatbox = true;
-					}
-					if (inputType != 0) {
-						inputType = 0;
-						redrawChatbox = true;
-					}
-					openWidgetId = -1;
-					aBoolean1174 = false;
-					opcode = -1;
-					return true;
-				}
-
-				/* Sets an interface's inventory array. */
-				if (opcode == 34) {
-					redrawTab = true;
-					int widgetId = inBuffer.getUnsignedLEShort();
-					Widget widget = Widget.cache[widgetId];
-					while (inBuffer.offset < packetSize) {
-						int itemSlot = inBuffer.getSmartB();
-						int itemId = inBuffer.getUnsignedLEShort();
-						int itemAmount = inBuffer.getUnsignedByte();
-						if (itemAmount == 255) {
-							itemAmount = inBuffer.getInt();
-						}
-						if (itemSlot >= 0 && itemSlot < widget.items.length) {
-							widget.items[itemSlot] = itemId;
-							widget.itemAmounts[itemSlot] = itemAmount;
-						}
-					}
-					opcode = -1;
-					return true;
-				}
-				if (opcode == 105 || opcode == 84 || opcode == 147 || opcode == 215 || opcode == 4 || opcode == 117
-						|| opcode == 156 || opcode == 44 || opcode == 160 || opcode == 101 || opcode == 151) {
-					method137(anInt1144, inBuffer, opcode);
-					opcode = -1;
-					return true;
-				}
-				if (opcode == 106) {
-					currentTabId = inBuffer.getUnsignedByteC();
-					redrawTab = true;
-					drawTabIcons = true;
-					opcode = -1;
-					return true;
-				}
-				if (opcode == 164) {
-					int i_1179_ = inBuffer.getUnsignedShort();
-					method60(i_1179_);
-					if (anInt1214 != -1) {
-						anInt1214 = -1;
-						redrawTab = true;
-						drawTabIcons = true;
-					}
-					chatboxWidgetId = i_1179_;
-					redrawChatbox = true;
-					openWidgetId = -1;
-					aBoolean1174 = false;
-					opcode = -1;
-					return true;
-				}
-				SignLink.reportError("T1 - " + opcode + "," + packetSize + " - " + anInt867 + "," + anInt868);
-				logout();
-			} catch (IOException ioexception) {
-				method68(-670);
-			} catch (Exception exception) {
-				String string = "T2 - " + opcode + "," + anInt867 + "," + anInt868 + " - " + packetSize + ","
-						+ (regionAbsoluteBaseX + Game.localPlayer.pathX[0]) + ","
-						+ (regionAbsoluteBaseY + Game.localPlayer.pathY[0]) + " - ";
-				for (int i = 0; i < packetSize && i < 50; i++) {
-					string += inBuffer.payload[i] + ",";
-				}
-				SignLink.reportError(string);
-				logout();
+	public void method143(byte byte0) {
+		if (byte0 != -40)
+			aBoolean1207 = !aBoolean1207;
+		if (lowMemory && anInt1071 == 2 && MapArea.anInt162 != plane) {
+			method125(null, "Loading - please wait.");
+			anInt1071 = 1;
+			aLong1229 = System.currentTimeMillis();
+		}
+		if (anInt1071 == 1) {
+			int i = method144(5);
+			if (i != 0 && System.currentTimeMillis() - aLong1229 > 0x57e40L) {
+				SignLink.reporterror(username + " glcfb " + serverSeed + "," + i + "," + lowMemory + ","
+						+ stores[0] + "," + onDemandFetcher.method333() + "," + plane + ","
+						+ chunkX + "," + chunkY);
+				aLong1229 = System.currentTimeMillis();
 			}
-			return true;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("32862, " + bool + ", " + runtimeexception.toString());
-			throw new RuntimeException();
+		}
+		if (anInt1071 == 2 && plane != anInt1276) {
+			anInt1276 = plane;
+			renderViewport(plane);
 		}
 	}
 
-	public final void method146() {
-		try {
-			anInt1290++;
-			method47(true);
-			method26(true);
-			method47(false);
-			method26(false);
-			method55(-948);
-			method104(true);
-			if (!aBoolean1185) {
-				int i = anInt1209;
-				if (anInt1009 / 256 > i) {
-					i = anInt1009 / 256;
+	public int method144(int i) {
+		for (int j = 0; j < aByteArrayArray838.length; j++) {
+			if (aByteArrayArray838[j] == null && anIntArray857[j] != -1)
+				return -1;
+			if (aByteArrayArray1232[j] == null && anIntArray858[j] != -1)
+				return -2;
+		}
+
+		boolean flag = true;
+		if (i < 5 || i > 5)
+			aBoolean953 = !aBoolean953;
+		for (int k = 0; k < aByteArrayArray838.length; k++) {
+			byte abyte0[] = aByteArrayArray1232[k];
+			if (abyte0 != null) {
+				int l = (coordinates[k] >> 8) * 64 - nextTopLeftTileX;
+				int i1 = (coordinates[k] & 0xff) * 64 - nextTopRightTileY;
+				if (aBoolean1163) {
+					l = 10;
+					i1 = 10;
 				}
-				if (aBooleanArray901[4] && anIntArray1228[4] + 128 > i) {
-					i = anIntArray1228[4] + 128;
-				}
-				int i_1180_ = anInt1210 + anInt921 & 0x7ff;
-				method144(
-						0,
-						600 + i * 3,
-						i,
-						anInt1039,
-						method42(currentSceneId, Game.localPlayer.yWithBoundary, true, Game.localPlayer.xWithBoundary) - 50,
-						i_1180_, anInt1040);
+				flag &= MapArea.method181(l, i1, abyte0, 24515);
 			}
-			int i;
-			if (!aBoolean1185) {
-				i = method120();
+		}
+
+		if (!flag)
+			return -3;
+		if (aBoolean1209) {
+			return -4;
+		} else {
+			anInt1071 = 2;
+			MapArea.anInt162 = plane;
+			method93(175);
+			outBuffer.putOpcode(6);
+			return 0;
+		}
+	}
+
+	public void method145(boolean flag, int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2) {
+		Class50_Sub2 class50_sub2 = null;
+		for (Class50_Sub2 class50_sub2_1 = (Class50_Sub2) aClass6_1261.first(); class50_sub2_1 != null; class50_sub2_1 = (Class50_Sub2) aClass6_1261
+				.next()) {
+			if (class50_sub2_1.anInt1391 != i || class50_sub2_1.anInt1393 != j || class50_sub2_1.anInt1394 != i2
+					|| class50_sub2_1.anInt1392 != l1)
+				continue;
+			class50_sub2 = class50_sub2_1;
+			break;
+		}
+
+		if (class50_sub2 == null) {
+			class50_sub2 = new Class50_Sub2();
+			class50_sub2.anInt1391 = i;
+			class50_sub2.anInt1392 = l1;
+			class50_sub2.anInt1393 = j;
+			class50_sub2.anInt1394 = i2;
+			method140((byte) -61, class50_sub2);
+			aClass6_1261.addLast(class50_sub2);
+		}
+		class50_sub2.anInt1384 = j1;
+		class50_sub2.anInt1386 = i1;
+		class50_sub2.anInt1385 = k;
+		class50_sub2.anInt1395 = k1;
+		class50_sub2.anInt1390 = l;
+		loggedIn &= flag;
+	}
+
+	public void method146(byte byte0) {
+		if (byte0 != 4)
+			return;
+		if (minimapState != 0)
+			return;
+		if (super.clickType == 1) {
+			int i = super.clickX - 25 - 550;
+			int j = super.clickY - 5 - 4;
+			if (i >= 0 && j >= 0 && i < 146 && j < 151) {
+				i -= 73;
+				j -= 75;
+				int k = anInt1252 + anInt916 & 0x7ff;
+				int l = Rasterizer3D.SINE[k];
+				int i1 = Rasterizer3D.COSINE[k];
+				l = l * (anInt1233 + 256) >> 8;
+				i1 = i1 * (anInt1233 + 256) >> 8;
+				int j1 = j * l + i * i1 >> 11;
+				int k1 = j * i1 - i * l >> 11;
+				int l1 = ((Actor) (thisPlayer)).unitX + j1 >> 7;
+				int i2 = ((Actor) (thisPlayer)).unitY - k1 >> 7;
+				boolean flag = walk(true, false, i2, ((Actor) (thisPlayer)).pathY[0], 0, 0, 1, 0, l1,
+						0, 0, ((Actor) (thisPlayer)).pathX[0]);
+				if (flag) {
+					outBuffer.putByte(i);
+					outBuffer.putByte(j);
+					outBuffer.putShort(anInt1252);
+					outBuffer.putByte(57);
+					outBuffer.putByte(anInt916);
+					outBuffer.putByte(anInt1233);
+					outBuffer.putByte(89);
+					outBuffer.putShort(((Actor) (thisPlayer)).unitX);
+					outBuffer.putShort(((Actor) (thisPlayer)).unitY);
+					outBuffer.putByte(anInt1126);
+					outBuffer.putByte(63);
+				}
+			}
+		}
+	}
+
+	public void method147(int i) {
+		if (super.imageProducer != null)
+			return;
+		method141();
+		aClass18_1198 = null;
+		aClass18_1199 = null;
+		aClass18_1200 = null;
+		if (i >= 0)
+			anInt1004 = -4;
+		flameLeftBackground = null;
+		flameRightBackground = null;
+		aClass18_1203 = null;
+		aClass18_1204 = null;
+		aClass18_1205 = null;
+		aClass18_1206 = null;
+		chatboxProducingGraphicsBuffer = null;
+		aClass18_1157 = null;
+		aClass18_1156 = null;
+		aClass18_1158 = null;
+		aClass18_1108 = null;
+		aClass18_1109 = null;
+		aClass18_1110 = null;
+		super.imageProducer = new ProducingGraphicsBuffer(765, 503, getParentComponent());
+		aBoolean1046 = true;
+	}
+
+	public boolean method148(int i, String s) {
+		if (s == null)
+			return false;
+		for (int j = 0; j < friendsCount; j++)
+			if (s.equalsIgnoreCase(friendsListNames[j]))
+				return true;
+
+		if (i != 13292)
+			aBoolean1014 = !aBoolean1014;
+		return s.equalsIgnoreCase(thisPlayer.username);
+	}
+
+	public void method149(int i) {
+		while (i >= 0)
+			opcode = buffer.getUnsignedByte();
+		if (loginScreenState == 0) {
+			int j = super.width / 2 - 80;
+			int i1 = super.height / 2 + 20;
+			i1 += 20;
+			if (super.clickType == 1 && super.clickX >= j - 75 && super.clickX <= j + 75 && super.clickY >= i1 - 20
+					&& super.clickY <= i1 + 20) {
+				loginScreenState = 3;
+				anInt977 = 0;
+			}
+			j = super.width / 2 + 80;
+			if (super.clickType == 1 && super.clickX >= j - 75 && super.clickX <= j + 75 && super.clickY >= i1 - 20
+					&& super.clickY <= i1 + 20) {
+				statusLineOne = "";
+				statusLineTwo = "Enter your username & password.";
+				loginScreenState = 2;
+				anInt977 = 0;
+				return;
+			}
+		} else {
+			if (loginScreenState == 2) {
+				int k = super.height / 2 - 40;
+				k += 30;
+				k += 25;
+				if (super.clickType == 1 && super.clickY >= k - 15 && super.clickY < k)
+					anInt977 = 0;
+				k += 15;
+				if (super.clickType == 1 && super.clickY >= k - 15 && super.clickY < k)
+					anInt977 = 1;
+				k += 15;
+				int j1 = super.width / 2 - 80;
+				int l1 = super.height / 2 + 50;
+				l1 += 20;
+				if (super.clickType == 1 && super.clickX >= j1 - 75 && super.clickX <= j1 + 75
+						&& super.clickY >= l1 - 20 && super.clickY <= l1 + 20) {
+					anInt850 = 0;
+					login(username, password, false);
+					if (loggedIn)
+						return;
+				}
+				j1 = super.width / 2 + 80;
+				if (super.clickType == 1 && super.clickX >= j1 - 75 && super.clickX <= j1 + 75
+						&& super.clickY >= l1 - 20 && super.clickY <= l1 + 20) {
+					loginScreenState = 0;
+					username = "";
+					password = "";
+				}
+				do {
+					int i2 = readCharacter();
+					if (i2 == -1)
+						break;
+					boolean flag = false;
+					for (int j2 = 0; j2 < VALID_CHARACTERS.length(); j2++) {
+						if (i2 != VALID_CHARACTERS.charAt(j2))
+							continue;
+						flag = true;
+						break;
+					}
+
+					if (anInt977 == 0) {
+						if (i2 == 8 && username.length() > 0)
+							username = username.substring(0, username.length() - 1);
+						if (i2 == 9 || i2 == 10 || i2 == 13)
+							anInt977 = 1;
+						if (flag)
+							username += (char) i2;
+						if (username.length() > 12)
+							username = username.substring(0, 12);
+					} else if (anInt977 == 1) {
+						if (i2 == 8 && password.length() > 0)
+							password = password.substring(0, password.length() - 1);
+						if (i2 == 9 || i2 == 10 || i2 == 13)
+							anInt977 = 0;
+						if (flag)
+							password += (char) i2;
+						if (password.length() > 20)
+							password = password.substring(0, 20);
+					}
+				} while (true);
+				return;
+			}
+			if (loginScreenState == 3) {
+				int l = super.width / 2;
+				int k1 = super.height / 2 + 50;
+				k1 += 20;
+				if (super.clickType == 1 && super.clickX >= l - 75 && super.clickX <= l + 75
+						&& super.clickY >= k1 - 20 && super.clickY <= k1 + 20)
+					loginScreenState = 0;
+			}
+		}
+	}
+
+	public void method150(int i, int j, int k, int l, int i1, int j1) {
+		int k1 = currentScene.method267(j, k, i);
+		i1 = 62 / i1;
+		if (k1 != 0) {
+			int l1 = currentScene.method271(j, k, i, k1);
+			int k2 = l1 >> 6 & 3;
+			int i3 = l1 & 0x1f;
+			int k3 = j1;
+			if (k1 > 0)
+				k3 = l;
+			int ai[] = minimapImage.pixels;
+			int k4 = 24624 + k * 4 + (103 - i) * 512 * 4;
+			int i5 = k1 >> 14 & 0x7fff;
+			GameObjectDefinition class47_2 = GameObjectDefinition.getDefinition(i5);
+			if (class47_2.anInt795 != -1) {
+				IndexedImage class50_sub1_sub1_sub3_2 = aClass50_Sub1_Sub1_Sub3Array1153[class47_2.anInt795];
+				if (class50_sub1_sub1_sub3_2 != null) {
+					int i6 = (class47_2.anInt801 * 4 - class50_sub1_sub1_sub3_2.width2) / 2;
+					int j6 = (class47_2.anInt775 * 4 - class50_sub1_sub1_sub3_2.anInt1519) / 2;
+					class50_sub1_sub1_sub3_2.drawImage(48 + (104 - i - class47_2.anInt775) * 4 + j6, 48 + k * 4 + i6
+					);
+				}
 			} else {
-				i = method121(anInt1106);
+				if (i3 == 0 || i3 == 2)
+					if (k2 == 0) {
+						ai[k4] = k3;
+						ai[k4 + 512] = k3;
+						ai[k4 + 1024] = k3;
+						ai[k4 + 1536] = k3;
+					} else if (k2 == 1) {
+						ai[k4] = k3;
+						ai[k4 + 1] = k3;
+						ai[k4 + 2] = k3;
+						ai[k4 + 3] = k3;
+					} else if (k2 == 2) {
+						ai[k4 + 3] = k3;
+						ai[k4 + 3 + 512] = k3;
+						ai[k4 + 3 + 1024] = k3;
+						ai[k4 + 3 + 1536] = k3;
+					} else if (k2 == 3) {
+						ai[k4 + 1536] = k3;
+						ai[k4 + 1536 + 1] = k3;
+						ai[k4 + 1536 + 2] = k3;
+						ai[k4 + 1536 + 3] = k3;
+					}
+				if (i3 == 3)
+					if (k2 == 0)
+						ai[k4] = k3;
+					else if (k2 == 1)
+						ai[k4 + 3] = k3;
+					else if (k2 == 2)
+						ai[k4 + 3 + 1536] = k3;
+					else if (k2 == 3)
+						ai[k4 + 1536] = k3;
+				if (i3 == 2)
+					if (k2 == 3) {
+						ai[k4] = k3;
+						ai[k4 + 512] = k3;
+						ai[k4 + 1024] = k3;
+						ai[k4 + 1536] = k3;
+					} else if (k2 == 0) {
+						ai[k4] = k3;
+						ai[k4 + 1] = k3;
+						ai[k4 + 2] = k3;
+						ai[k4 + 3] = k3;
+					} else if (k2 == 1) {
+						ai[k4 + 3] = k3;
+						ai[k4 + 3 + 512] = k3;
+						ai[k4 + 3 + 1024] = k3;
+						ai[k4 + 3 + 1536] = k3;
+					} else if (k2 == 2) {
+						ai[k4 + 1536] = k3;
+						ai[k4 + 1536 + 1] = k3;
+						ai[k4 + 1536 + 2] = k3;
+						ai[k4 + 1536 + 3] = k3;
+					}
 			}
-			int i_1181_ = anInt883;
-			int i_1182_ = anInt884;
-			int i_1183_ = anInt885;
-			int i_1184_ = anInt886;
-			int i_1185_ = anInt887;
-			for (int i_1186_ = 0; i_1186_ < 5; i_1186_++) {
-				if (aBooleanArray901[i_1186_]) {
-					int i_1187_ = (int) (Math.random() * (anIntArray898[i_1186_] * 2 + 1) - anIntArray898[i_1186_] + Math
-							.sin(anIntArray1055[i_1186_] * (anIntArray953[i_1186_] / 100.0)) * anIntArray1228[i_1186_]);
-					if (i_1186_ == 0) {
-						anInt883 += i_1187_;
-					}
-					if (i_1186_ == 1) {
-						anInt884 += i_1187_;
-					}
-					if (i_1186_ == 2) {
-						anInt885 += i_1187_;
-					}
-					if (i_1186_ == 3) {
-						anInt887 = anInt887 + i_1187_ & 0x7ff;
-					}
-					if (i_1186_ == 4) {
-						anInt886 += i_1187_;
-						if (anInt886 < 128) {
-							anInt886 = 128;
-						}
-						if (anInt886 > 383) {
-							anInt886 = 383;
-						}
-					}
+		}
+		k1 = currentScene.method269(j, k, i);
+		if (k1 != 0) {
+			int i2 = currentScene.method271(j, k, i, k1);
+			int l2 = i2 >> 6 & 3;
+			int j3 = i2 & 0x1f;
+			int l3 = k1 >> 14 & 0x7fff;
+			GameObjectDefinition class47_1 = GameObjectDefinition.getDefinition(l3);
+			if (class47_1.anInt795 != -1) {
+				IndexedImage class50_sub1_sub1_sub3_1 = aClass50_Sub1_Sub1_Sub3Array1153[class47_1.anInt795];
+				if (class50_sub1_sub1_sub3_1 != null) {
+					int j5 = (class47_1.anInt801 * 4 - class50_sub1_sub1_sub3_1.width2) / 2;
+					int k5 = (class47_1.anInt775 * 4 - class50_sub1_sub1_sub3_1.anInt1519) / 2;
+					class50_sub1_sub1_sub3_1.drawImage(48 + (104 - i - class47_1.anInt775) * 4 + k5, 48 + k * 4 + j5
+					);
+				}
+			} else if (j3 == 9) {
+				int l4 = 0xeeeeee;
+				if (k1 > 0)
+					l4 = 0xee0000;
+				int ai1[] = minimapImage.pixels;
+				int l5 = 24624 + k * 4 + (103 - i) * 512 * 4;
+				if (l2 == 0 || l2 == 2) {
+					ai1[l5 + 1536] = l4;
+					ai1[l5 + 1024 + 1] = l4;
+					ai1[l5 + 512 + 2] = l4;
+					ai1[l5 + 3] = l4;
+				} else {
+					ai1[l5] = l4;
+					ai1[l5 + 512 + 1] = l4;
+					ai1[l5 + 1024 + 2] = l4;
+					ai1[l5 + 1536 + 3] = l4;
 				}
 			}
-			int i_1188_ = Rasterizer3D.anInt1501;
-			Model.aBoolean1677 = true;
-			Model.anInt1680 = 0;
-			Model.anInt1678 = mouseEventX - 4;
-			Model.anInt1679 = mouseEventY - 4;
-			Rasterizer.resetPixels();
-			currentScene.method535(anInt883, anInt885, anInt887, anInt884, i, anInt886, false);
-			currentScene.method510((byte) 104);
-			method34();
-			method61();
-			method37(854, i_1188_);
-			method112();
-			currentSceneBuffer.drawGraphics(4, 4, gameGraphics);
-			anInt883 = i_1181_;
-			anInt884 = i_1182_;
-			anInt885 = i_1183_;
-			anInt886 = i_1184_;
-			anInt887 = i_1185_;
-		} catch (RuntimeException runtimeexception) {
-			SignLink.reportError("97263, " + runtimeexception.toString());
-			throw new RuntimeException();
+		}
+		k1 = currentScene.getFloorDecorationHash(j, k, i);
+		if (k1 != 0) {
+			int j2 = k1 >> 14 & 0x7fff;
+			GameObjectDefinition class47 = GameObjectDefinition.getDefinition(j2);
+			if (class47.anInt795 != -1) {
+				IndexedImage class50_sub1_sub1_sub3 = aClass50_Sub1_Sub1_Sub3Array1153[class47.anInt795];
+				if (class50_sub1_sub1_sub3 != null) {
+					int i4 = (class47.anInt801 * 4 - class50_sub1_sub1_sub3.width2) / 2;
+					int j4 = (class47.anInt775 * 4 - class50_sub1_sub1_sub3.anInt1519) / 2;
+					class50_sub1_sub1_sub3.drawImage(48 + (104 - i - class47.anInt775) * 4 + j4, 48 + k * 4 + i4);
+				}
+			}
 		}
 	}
 
-	public final void closeWidgets() {
-		outBuffer.putOpcode(130);
-		if (anInt1214 != -1) {
-			anInt1214 = -1;
-			redrawTab = true;
-			aBoolean1174 = false;
-			drawTabIcons = true;
+	public void method151(int i) {
+		anInt1138++;
+		method119(0, true);
+		method57(751, true);
+		method119(0, false);
+		method57(751, false);
+		method51(false);
+		method76(-992);
+		if (!aBoolean1211) {
+			int j = anInt1251;
+			if (anInt1289 / 256 > j)
+				j = anInt1289 / 256;
+			if (aBooleanArray927[4] && anIntArray852[4] + 128 > j)
+				j = anIntArray852[4] + 128;
+			int l = anInt1252 + anInt1255 & 0x7ff;
+			method94(method110(((Actor) (thisPlayer)).unitY, ((Actor) (thisPlayer)).unitX, (byte) 9,
+					plane) - 50, anInt1262, j, 600 + j * 3, l, anInt1263, (byte) -103);
 		}
-		if (chatboxWidgetId != -1) {
-			chatboxWidgetId = -1;
-			redrawChatbox = true;
-			aBoolean1174 = false;
+		int k;
+		if (!aBoolean1211)
+			k = method117((byte) 1);
+		else
+			k = method118(-276);
+		int i1 = anInt1216;
+		int j1 = anInt1217;
+		int k1 = anInt1218;
+		int l1 = anInt1219;
+		int i2 = anInt1220;
+		if (i != 2)
+			anInt1004 = incomingRandom.nextInt();
+		for (int j2 = 0; j2 < 5; j2++)
+			if (aBooleanArray927[j2]) {
+				int k2 = (int) ((Math.random() * (double) (anIntArray1105[j2] * 2 + 1) - (double) anIntArray1105[j2]) + Math
+						.sin((double) anIntArray1145[j2] * ((double) anIntArray991[j2] / 100D))
+						* (double) anIntArray852[j2]);
+				if (j2 == 0)
+					anInt1216 += k2;
+				if (j2 == 1)
+					anInt1217 += k2;
+				if (j2 == 2)
+					anInt1218 += k2;
+				if (j2 == 3)
+					anInt1220 = anInt1220 + k2 & 0x7ff;
+				if (j2 == 4) {
+					anInt1219 += k2;
+					if (anInt1219 < 128)
+						anInt1219 = 128;
+					if (anInt1219 > 383)
+						anInt1219 = 383;
+				}
+			}
+
+		int l2 = Rasterizer3D.anInt1547;
+		Model.aBoolean1705 = true;
+		Model.anInt1708 = 0;
+		Model.anInt1706 = super.mouseX - 4;
+		Model.anInt1707 = super.mouseY - 4;
+		Rasterizer.resetPixels();
+		currentScene.method280(anInt1216, k, 0, anInt1217, anInt1218, anInt1220, anInt1219);
+		currentScene.method255(anInt897);
+		method121(false);
+		method127(true);
+		method65(l2);
+		method109(30729);
+		aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
+		anInt1216 = i1;
+		anInt1217 = j1;
+		anInt1218 = k1;
+		anInt1219 = l1;
+		anInt1220 = i2;
+	}
+
+	public void method152() {
+		for (int index = 0; index < currentSound; index++) {
+			//if (soundDelay[index] <= 0) {
+			boolean flag1 = false;
+			try {
+					Buffer stream = Sound.forId(soundType[index], sound[index]);
+					new SoundPlayer((InputStream) new ByteArrayInputStream(stream.buffer, 0, stream.offset), soundVolume[index], soundDelay[index]);
+					if (System.currentTimeMillis() + (long) (stream.offset / 22) > aLong1172
+							+ (long) (anInt1257 / 22)) {
+						anInt1257 = stream.offset;
+						aLong1172 = System.currentTimeMillis();
+						if (method116(stream.offset, stream.buffer)) {
+							anInt1272 = sound[index];
+							anInt935 = soundType[index];
+						} else {
+							flag1 = true;
+						}
+
+				}
+			} catch (Exception exception) {
+				if (SignLink.reporterror) {
+					outBuffer.putOpcode(80);
+					outBuffer.putShort(sound[index] & 0x7fff);
+				} else {
+					outBuffer.putOpcode(80);
+					outBuffer.putShort(-1);
+				}
+			}
+			if (!flag1 || soundDelay[index] == -5) {
+				currentSound--;
+				for (int j = index; j < currentSound; j++) {
+					sound[j] = sound[j + 1];
+					soundType[j] = soundType[j + 1];
+					soundDelay[j] = soundDelay[j + 1];
+					soundVolume[j] = soundVolume[j + 1];
+				}
+
+				index--;
+			} else {
+				soundDelay[index] = -5;
+			}
+			/*} else {
+				soundDelay[index]--;
+			}*/
 		}
+		if (previousSong > 0) {
+			previousSong -= 20;
+			if (previousSong < 0)
+				previousSong = 0;
+			if (previousSong == 0 && musicEnabled && !lowMemory) {
+				nextSong = currentSong;
+				songChanging = true;
+				onDemandFetcher.request(2, nextSong);
+			}
+		}
+	}
+
+	public Game() {
+		archiveHashes = new int[9];
+		reportedName = "";
+		soundVolume = new int[50];
+		anIntArray843 = new int[SkillConstants.SKILL_COUNT];
+		anIntArray852 = new int[5];
+		anInt854 = 2;
+		aString861 = "";
+		aStringArray863 = new String[100];
+		anIntArray864 = new int[100];
+		messagePromptRaised = false;
+		constructedMapPalette = new int[4][13][13];
+		anIntArrayArray885 = new int[104][104];
+		anIntArrayArray886 = new int[104][104];
+		aBoolean892 = false;
+		anInt894 = -992;
+		cursorCross = new ImageRGB[8];
+		anInt897 = 559;
+		aByte898 = 6;
+		aBoolean900 = false;
+		aByte901 = -123;
+		anInt917 = 2;
+		aBoolean918 = true;
+		aBoolean919 = true;
+		anIntArray920 = new int[151];
+		anInt921 = 8;
+		aBooleanArray927 = new boolean[5];
+		anInt928 = -188;
+		tempBuffer = Buffer.allocate(1);
+		anInt931 = 0x23201b;
+		anInt932 = -1;
+		anInt933 = -1;
+		anInt935 = -1;
+		aByte936 = -113;
+		chatboxInputMessage = "";
+		anInt938 = -214;
+		anInt940 = 50;
+		anIntArray941 = new int[anInt940];
+		anIntArray942 = new int[anInt940];
+		anIntArray943 = new int[anInt940];
+		anIntArray944 = new int[anInt940];
+		anIntArray945 = new int[anInt940];
+		anIntArray946 = new int[anInt940];
+		anIntArray947 = new int[anInt940];
+		aStringArray948 = new String[anInt940];
+		inputInputMessage = "";
+		aBoolean950 = false;
+		aBoolean953 = false;
+		aClass50_Sub1_Sub1_Sub1Array954 = new ImageRGB[32];
+		aByte956 = 1;
+		statusLineOne = "";
+		statusLineTwo = "";
+		aBoolean959 = true;
+		anInt960 = -1;
+		thisPlayerServerId = -1;
+		outBuffer = Buffer.allocate(1);
+		anInt968 = 2048;
+		thisPlayerId = 2047;
+		players = new Player[anInt968];
+		localPlayers = new int[anInt968];
+		updatedPlayers = new int[anInt968];
+		cachedAppearances = new Buffer[anInt968];
+		tabIcon = new IndexedImage[13];
+		anIntArray979 = new int[500];
+		anIntArray980 = new int[500];
+		anIntArray981 = new int[500];
+		anIntArray982 = new int[500];
+		anInt988 = -1;
+		anIntArray991 = new int[5];
+		anIntArray1005 = new int[2000];
+		anInt1010 = 2;
+		aBoolean1014 = false;
+		aBoolean1016 = false;
+		anIntArray1019 = new int[151];
+		chatMessage = "";
+		aBoolean1028 = false;
+		anIntArray1029 = new int[SkillConstants.SKILL_COUNT];
+		worldMapHintIcons = new ImageRGB[100];
+		aBoolean1033 = false;
+		aBoolean1038 = true;
+		widgetSettings = new int[2000];
+		aBoolean1046 = false;
+		anInt1051 = 69;
+		anInt1053 = -1;
+		anIntArray1054 = new int[SkillConstants.SKILL_COUNT];
+		anInt1055 = 2;
+		anInt1056 = 3;
+		aBoolean1065 = false;
+		aByte1066 = 1;
+		aBoolean1067 = false;
+		aStringArray1069 = new String[5];
+		aBooleanArray1070 = new boolean[5];
+		anInt1072 = 20411;
+		ignores = new long[100];
+		minimapHintX = new int[1000];
+		minimapHintY = new int[1000];
+		aClass50_Sub1_Sub1_Sub1Array1079 = new ImageRGB[32];
+		anInt1080 = 0x4d4233;
+		aCRC32_1088 = new CRC32();
+		anInt1089 = -1;
+		sound = new int[50];
+		username = "";
+		password = "";
+		aBoolean1097 = false;
+		reportMutePlayer = false;
+		characterEditColors = new int[5];
+		chatboxInput = "";
+		anIntArray1105 = new int[5];
+		anInt1107 = 78;
+		anInt1119 = -30658;
+		anIntArray1123 = new int[4000];
+		anIntArray1124 = new int[4000];
+		aBoolean1127 = false;
+		friends = new long[200];
+		aClass50_Sub1_Sub2_1131 = new Buffer(new byte[5000]);
+		npcs = new Npc[16384];
+		anIntArray1134 = new int[16384];
+		anInt1135 = 0x766654;
+		aBoolean1136 = false;
+		loggedIn = false;
+		anInt1140 = -110;
+		moderatorIcon = new IndexedImage[2];
+		aByte1143 = -80;
+		characterEditChangeGenger = true;
+		anIntArray1145 = new int[5];
+		aClass50_Sub1_Sub1_Sub3Array1153 = new IndexedImage[100];
+		anInt1154 = -916;
+		aBoolean1155 = false;
+		aByte1161 = 97;
+		aBoolean1163 = false;
+		anIntArray1166 = new int[256];
 		openWidgetId = -1;
+		anInt1175 = -89;
+		anInt1178 = 300;
+		anIntArray1180 = new int[33];
+		aBoolean1181 = false;
+		aClass50_Sub1_Sub1_Sub1Array1182 = new ImageRGB[20];
+		aStringArray1184 = new String[500];
+		buffer = Buffer.allocate(1);
+		cost = new int[104][104];
+		anInt1191 = -1;
+		aBoolean1209 = false;
+		aClass6_1210 = new LinkedList();
+		aBoolean1211 = false;
+		aBoolean1212 = false;
+		anInt1213 = -1;
+		stores = new FileStore[5];
+		anInt1231 = -1;
+		anInt1234 = 1;
+		anInt1236 = 326;
+		aBoolean1239 = false;
+		redrawChatbox = false;
+		aBoolean1243 = false;
+		aByteArray1245 = new byte[16384];
+		aClass13_1249 = new Widget();
+		anInt1251 = 128;
+		anInt1256 = 1;
+		anIntArray1258 = new int[100];
+		soundDelay = new int[50];
+		currentCollisionMap = new ClippingPlane[4];
+		aClass6_1261 = new LinkedList();
+		aBoolean1265 = false;
+		musicEnabled = true;
+		anIntArray1267 = new int[200];
+		songChanging = true;
+		anInt1272 = -1;
+		aBoolean1274 = true;
+		aBoolean1275 = true;
+		anInt1276 = -1;
+		aBoolean1277 = false;
+		minimapHint = new ImageRGB[1000];
+		anInt1279 = -1;
+		anInt1281 = -939;
+		aClass6_1282 = new LinkedList();
+		aBoolean1283 = false;
+		anInt1285 = 3;
+		anIntArray1286 = new int[33];
+		anInt1287 = 0x332d25;
+		aClass50_Sub1_Sub1_Sub1Array1288 = new ImageRGB[32];
+		removePlayers = new int[1000];
+		anIntArray1296 = new int[100];
+		aStringArray1297 = new String[100];
+		aStringArray1298 = new String[100];
+		aBoolean1301 = true;
+		aBoolean1314 = false;
+		aByte1317 = -58;
+		anInt1318 = 416;
+		aBoolean1320 = false;
+		soundType = new int[50];
+		groundItems = new LinkedList[4][104][104];
+		characterEditIdentityKits = new int[7];
+		currentSong = -1;
+		anInt1328 = 409;
 	}
-
-	@Override
-	public void redraw() {
-		redraw = true;
-	}
+	private final int[] soundVolume;
+	public int archiveHashes[];
+	public byte aByteArrayArray838[][];
+	public String reportedName;
+	public static BigInteger JAGEX_MODULUS = new BigInteger("134274162658188108615156332044035005844687673635364168287967309371368600352735850707904372087965706135488766873753055979993694937346767733501595003118797865215535454379298838514992271106623672031229174529529772262226032929964300070165660245170815718250717145999345865439513464685329517252098926061626802096023");
+	public static int anInt841;
+	public int anIntArray842[] = { 0xffff00, 0xff0000, 65280, 65535, 0xff00ff, 0xffffff };
+	public int anIntArray843[];
+	public int anInt844;
+	public int anInt845;
+	public int anInt846;
+	public int anInt847;
+	public int anInt848;
+	public String friendsListNames[] = new String[200];
+	public int anInt850;
+	public int anInt851;
+	public int anIntArray852[];
+	public int anInt853;
+	public int anInt854;
+	public int ignoresCount;
+	public int coordinates[];
+	public int anIntArray857[];
+	public int anIntArray858[];
+	public int friendsCount;
+	public int friendListStatus;
+	public String aString861;
+	public int anInt862;
+	public String aStringArray863[];
+	public int anIntArray864[];
+	public int anInt865;
+	public boolean messagePromptRaised;
+	public int playerRights;
+	public static boolean fps;
+	public int size;
+	public int opcode;
+	public int anInt871;
+	public int anInt872;
+	public int anInt873;
+	public int anInt874;
+	public int anInt875;
+	public int anInt876;
+	public int anInt877;
+	public int anInt878;
+	public int constructedMapPalette[][][];
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_880;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_881;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_882;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_883;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_884;
+	public int anIntArrayArray885[][];
+	public int anIntArrayArray886[][];
+	public int anInt887;
+	public Archive titleArchive;
+	public int chunkX;
+	public int chunkY;
+	public int anIntArrayArrayArray891[][][];
+	public boolean aBoolean892;
+	public int anInt893;
+	public int anInt894;
+	public static int anInt895;
+	public ImageRGB cursorCross[];
+	public int anInt897;
+	public byte aByte898;
+	public IsaacRandom incomingRandom;
+	public boolean aBoolean900;
+	public byte aByte901;
+	public long aLong902;
+	public int anInt903;
+	public int anInt904;
+	public int anInt905;
+	public ProducingGraphicsBuffer aClass18_906;
+	public ProducingGraphicsBuffer aClass18_907;
+	public ProducingGraphicsBuffer aClass18_908;
+	public ProducingGraphicsBuffer aClass18_909;
+	public ProducingGraphicsBuffer aClass18_910;
+	public ProducingGraphicsBuffer aClass18_911;
+	public ProducingGraphicsBuffer aClass18_912;
+	public ProducingGraphicsBuffer aClass18_913;
+	public ProducingGraphicsBuffer aClass18_914;
+	public int anInt915;
+	public int anInt916;
+	public int anInt917;
+	public boolean aBoolean918;
+	public boolean aBoolean919;
+	public int anIntArray920[];
+	public int anInt921;
+	public int anInt922;
+	public static int world = 10;
+	public static int portOffset;
+	public static boolean memberServer = true;
+	public static boolean lowMemory;
+	public boolean aBooleanArray927[];
+	public int anInt928;
+	public Buffer tempBuffer;
+	public long serverSeed;
+	public int anInt931;
+	public int anInt932;
+	public int anInt933;
+	public boolean aBoolean934;
+	public int anInt935;
+	public byte aByte936;
+	public String chatboxInputMessage;
+	public int anInt938;
+	public int anInt939;
+	public int anInt940;
+	public int anIntArray941[];
+	public int anIntArray942[];
+	public int anIntArray943[];
+	public int anIntArray944[];
+	public int anIntArray945[];
+	public int anIntArray946[];
+	public int anIntArray947[];
+	public String aStringArray948[];
+	public String inputInputMessage;
+	public boolean aBoolean950;
+	public int anInt951;
+	public static int xpForSkillLevel[];
+	public boolean aBoolean953;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array954[];
+	public int anInt955;
+	public byte aByte956;
+	public String statusLineOne;
+	public String statusLineTwo;
+	public boolean aBoolean959;
+	public int anInt960;
+	public int thisPlayerServerId;
+	public static boolean accountFlagged;
+	public static boolean aBoolean963 = true;
+	public Buffer outBuffer;
+	public IndexedImage anIndexedImage1052;
+	public IndexedImage anIndexedImage1053;
+	public IndexedImage anIndexedImage1054;
+	public int anInt968;
+	public int thisPlayerId;
+	public Player players[];
+	public int localPlayerCount;
+	public int localPlayers[];
+	public int updatedPlayerCount;
+	public int updatedPlayers[];
+	public Buffer cachedAppearances[];
+	public IndexedImage tabIcon[];
+	public int anInt977;
+	public static int anInt978;
+	public int anIntArray979[];
+	public int anIntArray980[];
+	public int anIntArray981[];
+	public int anIntArray982[];
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_983;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_984;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_985;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_986;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_987;
+	public int anInt988;
+	public int placementX;
+	public int placementY;
+	public int anIntArray991[];
+	public int anInt992;
+	public int anInt993;
+	public int anInt994;
+	public int anInt995;
+	public int anInt996;
+	public int anInt997;
+	public int anInt998;
+	public static boolean aBoolean999;
+	public int chatboxLineOffsets[];
+	public int anIntArray1001[];
+	public int anIntArray1002[];
+	public int anIntArray1003[];
+	public int anInt1004;
+	public int anIntArray1005[];
+	public int anInt1006;
+	public static String VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
+	public static final int playerColours[][] = {
+			{ 6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193 },
+			{ 8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239 },
+			{ 25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003 },
+			{ 4626, 11146, 6439, 12, 4758, 10270 }, { 4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574 } };
+	public int anInt1009;
+	public int anInt1010;
+	public int anInt1011;
+	public int anInt1012;
+	public static int anInt1013;
+	public boolean aBoolean1014;
+	public int anInt1015;
+	public boolean aBoolean1016;
+	public ImageRGB anImageRGB1226;
+	public ImageRGB anImageRGB1227;
+	public int anIntArray1019[];
+	public int anInt1020;
+	public int anInt1021;
+	public int anInt1022;
+	public int anInt1023;
+	public JagSocket bufferedConnection;
+	public String chatMessage;
+	public String aString1027;
+	public boolean aBoolean1028;
+	public int anIntArray1029[];
+	public int anInt1030;
+	public ImageRGB worldMapHintIcons[];
+	public final int anIntArray1032[] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3 };
+	public boolean aBoolean1033;
+	public int anInt1034;
+	public int currentSound;
+	public ImageRGB mapFlagMarker;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1037;
+	public boolean aBoolean1038;
+	public int widgetSettings[];
+	public int nextTopLeftTileX;
+	public int nextTopRightTileY;
+	public int topLeftTileX;
+	public int topLeftTileY;
+	public int anInt1044;
+	public int anInt1045;
+	public boolean aBoolean1046;
+	public int anInt1047;
+	public int anInt1048;
+	public static int anInt1049;
+	public int minimapState;
+	public int anInt1051;
+	public static int anInt1052;
+	public int anInt1053;
+	public int anIntArray1054[];
+	public int anInt1055;
+	public int anInt1056;
+	public int anInt1057;
+	public String aString1058;
+	public TypeFace fontSmall;
+	public TypeFace fontNormal;
+	public TypeFace fontBold;
+	public TypeFace fontFancy;
+	public int anInt1063;
+	public int anInt1064;
+	public boolean aBoolean1065;
+	public byte aByte1066;
+	public boolean aBoolean1067;
+	public int playerMembers;
+	public String aStringArray1069[];
+	public boolean aBooleanArray1070[];
+	public int anInt1071;
+	public int anInt1072;
+	public long ignores[];
+	public boolean aBoolean1074;
+	public int anInt1075;
+	public int minimapHintCount;
+	public int minimapHintX[];
+	public int minimapHintY[];
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1079[];
+	public int anInt1080;
+	public int anIntArray1081[] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+	public static int anInt1082;
+	public int anInt1083;
+	public int anIntArray1084[];
+	public int anIntArray1085[];
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1086;
+	public int anInt1087;
+	public CRC32 aCRC32_1088;
+	public int anInt1089;
+	public int sound[];
+	public int plane;
+	public String username;
+	public String password;
+	public int anInt1094;
+	public IndexedImage scrollbarUp;
+	public IndexedImage scrollbarDown;
+	public boolean aBoolean1097;
+	public boolean reportMutePlayer;
+	public int characterEditColors[];
+	public static int anInt1100;
+	public int anInt1101;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1102;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1103;
+	public String chatboxInput;
+	public int anIntArray1105[];
+	public int anInt1106;
+	public int anInt1107;
+	public ProducingGraphicsBuffer aClass18_1108;
+	public ProducingGraphicsBuffer aClass18_1109;
+	public ProducingGraphicsBuffer aClass18_1110;
+	public int anInt1111;
+	public int anInt1112;
+	public int anInt1113;
+	public int anInt1114;
+	public int anInt1115;
+	public ImageRGB minimapCompass;
+	public IndexedImage titleFlameEmblem[];
+	public int anInt1118;
+	public int anInt1119;
+	public int destinationX;
+	public int anInt1121;
+	public ImageRGB minimapImage;
+	public int anIntArray1123[];
+	public int anIntArray1124[];
+	public byte currentSceneTileFlags[][][];
+	public int anInt1126;
+	public boolean aBoolean1127;
+	public int previousSong;
+	public int anInt1129;
+	public long friends[];
+	public Buffer aClass50_Sub1_Sub2_1131;
+	public Npc npcs[];
+	public int anInt1133;
+	public int anIntArray1134[];
+	public int anInt1135;
+	public boolean aBoolean1136;
+	public boolean loggedIn;
+	public int anInt1138;
+	public static int anInt1139;
+	public int anInt1140;
+	public long aLong1141;
+	public IndexedImage moderatorIcon[];
+	public byte aByte1143;
+	public boolean characterEditChangeGenger;
+	public int anIntArray1145[];
+	public int anInt1146;
+	public int anInt1147;
+	public int anInt1148;
+	public int anInt1149;
+	public String aString1150;
+	public int anInt1151;
+	public int anInt1152;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3Array1153[];
+	public int anInt1154;
+	public boolean aBoolean1155;
+	public ProducingGraphicsBuffer aClass18_1156;
+	public ProducingGraphicsBuffer aClass18_1157;
+	public ProducingGraphicsBuffer aClass18_1158;
+	public ProducingGraphicsBuffer chatboxProducingGraphicsBuffer;
+	public static int anInt1160;
+	public byte aByte1161;
+	public static int anInt1162;
+	public boolean aBoolean1163;
+	public SceneGraph currentScene;
+	public static int anInt1165;
+	public int anIntArray1166[];
+	public static Player thisPlayer;
+	public static int anInt1168;
+	public int openWidgetId;
+	public int anInt1170;
+	public int anInt1171;
+	public int anInt1172;
+	public int anInt1173;
+	public String aString1174;
+	public int anInt1175;
+	public int anIntArray1176[];
+	public int anIntArray1177[];
+	public int anInt1178;
+	public int anInt1257;
+	public int anIntArray1180[];
+	public boolean aBoolean1181;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1182[];
+	public int anInt1183;
+	public String aStringArray1184[];
+	public IndexedImage inventoryBackgroundImage;
+	public IndexedImage minimapBackgroundImage;
+	public IndexedImage chatboxBackgroundImage;
+	public Buffer buffer;
+	public int cost[][];
+	public static boolean aBoolean1190 = true;
+	public int anInt1191;
+	public ImageRGB mapdotItem;
+	public ImageRGB mapdotActor;
+	public ImageRGB mapdotPlayer;
+	public ImageRGB mapdotFriend;
+	public ImageRGB mapdotTeammate;
+	public int anInt1197;
+	public ProducingGraphicsBuffer aClass18_1198;
+	public ProducingGraphicsBuffer aClass18_1199;
+	public ProducingGraphicsBuffer aClass18_1200;
+	public ProducingGraphicsBuffer flameLeftBackground;
+	public ProducingGraphicsBuffer flameRightBackground;
+	public ProducingGraphicsBuffer aClass18_1203;
+	public ProducingGraphicsBuffer aClass18_1204;
+	public ProducingGraphicsBuffer aClass18_1205;
+	public ProducingGraphicsBuffer aClass18_1206;
+	public static boolean aBoolean1207;
+	public int anInt1208;
+	public boolean aBoolean1209;
+	public LinkedList aClass6_1210;
+	public boolean aBoolean1211;
+	public boolean aBoolean1212;
+	public int anInt1213;
+	public static int BITFIELD_MAX_VALUE[];
+	public int anInt1215;
+	public int anInt1216;
+	public int anInt1217;
+	public int anInt1218;
+	public int anInt1219;
+	public int anInt1220;
+	public int friendsListAction;
+	public int anInt1222;
+	public int anInt1223;
+	public Socket aSocket1224;
+	public int loginScreenState;
+	public int anInt1226;
+	public int anInt1227;
+	public FileStore stores[];
+	public long aLong1229;
+	public static int anInt1230;
+	public int anInt1231;
+	public byte aByteArrayArray1232[][];
+	public int anInt1233;
+	public int anInt1234;
+	public static int anInt1235;
+	public int anInt1236;
+	public static int anInt1237;
+	public int anInt1238;
+	public boolean aBoolean1239;
+	public boolean redrawChatbox;
+	public int lastAddress;
+	public static boolean aBoolean1242 = true;
+	public volatile boolean aBoolean1243;
+	public int inputType;
+	public byte aByteArray1245[];
+	public int anInt1246;
+	public ImageRGB minimapEdge;
+	public MouseCapturer mouseCapturer;
+	public Widget aClass13_1249;
+	public long aLong1172;
+	public int anInt1251;
+	public int anInt1252;
+	public int anInt1253;
+	public int anInt1254;
+	public int anInt1255;
+	public int anInt1256;
+	public int anIntArray1258[];
+	public int soundDelay[];
+	public ClippingPlane currentCollisionMap[];
+	public LinkedList aClass6_1261;
+	public int anInt1262;
+	public int anInt1263;
+	public int anInt1264;
+	public boolean aBoolean1265;
+	public boolean musicEnabled;
+	public int anIntArray1267[];
+	public static final int anIntArray1268[] = { 9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654,
+			5027, 1457, 16565, 34991, 25486 };
+	public int anInt1269;
+	public int nextSong;
+	public boolean songChanging;
+	public int anInt1272;
+	public int anInt1273;
+	public boolean aBoolean1274;
+	public boolean aBoolean1275;
+	public int anInt1276;
+	public boolean aBoolean1277;
+	public ImageRGB minimapHint[];
+	public int anInt1279;
+	public int anInt1280;
+	public int anInt1281;
+	public LinkedList aClass6_1282;
+	public boolean aBoolean1283;
+	public int anInt1284;
+	public int anInt1285;
+	public int anIntArray1286[];
+	public int anInt1287;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1288[];
+	public int anInt1289;
+	public int anIntArray1290[] = { 17, 24, 34, 40 };
+	public OnDemandFetcher onDemandFetcher;
+	public IndexedImage titleboxImage;
+	public IndexedImage titleboxButtonImage;
+	public int removePlayerCount;
+	public int removePlayers[];
+	public int anIntArray1296[];
+	public String aStringArray1297[];
+	public String aStringArray1298[];
+	public int anInt1299;
+	public int anInt1300;
+	public boolean aBoolean1301;
+	public int anInt1302;
+	public int anInt1303;
+	public int anInt1304;
+	public int anInt1305;
+	public int anInt1306;
+	public int anInt1307;
+	public int anInt1308;
+	public static int anInt1309;
+	public int anIntArray1310[];
+	public int anIntArray1311[];
+	public int anIntArray1312[];
+	public int anIntArray1313[];
+	public volatile boolean aBoolean1314;
+	public int anInt1315;
+	public static BigInteger JAGEX_PUBLIC_KEY = new BigInteger("65537");
+	public byte aByte1317;
+	public int anInt1318;
+	public int anInt1319;
+	public volatile boolean aBoolean1320;
+	public int soundType[];
+	public int anInt1322;
+	public LinkedList groundItems[][][];
+	public int anInt1324;
+	public static int pulseCycle;
+	public int characterEditIdentityKits[];
+	public int currentSong;
+	public int anInt1328;
+	public int anInt1329;
+	public int anInt1330;
+	public int anInt1331;
+	public int anInt1332;
+	public static int anInt1333;
 
 	static {
+		xpForSkillLevel = new int[99];
 		int i = 0;
 		for (int level = 0; level < 99; level++) {
 			int realLevel = level + 1;
-			int expDiff = (int) (realLevel + 300.0 * Math.pow(2.0, realLevel / 7.0));
+			int expDiff = (int) ((double) realLevel + 300D * Math.pow(2D, (double) realLevel / 7D));
 			i += expDiff;
-			Game.xpForSkillLevel[level] = i / 4;
+			xpForSkillLevel[level] = i / 4;
 		}
-		Game.RSA_EXPONENT = new BigInteger(
-				"58778699976184461502525193738213253649000149147835990136706041084440742975821");
-		Game.VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\u00a3$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
-		anIntArray1229 = new int[] { 9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654, 5027, 1457,
-				16565, 34991, 25486 };
-		Game.BITFIELD_MAX_VALUE = new int[32];
+
+		BITFIELD_MAX_VALUE = new int[32];
 		i = 2;
-		for (int index = 0; index < 32; index++) {
-			Game.BITFIELD_MAX_VALUE[index] = i - 1;
+		for (int k = 0; k < 32; k++) {
+			BITFIELD_MAX_VALUE[k] = i - 1;
 			i += i;
 		}
+
 	}
 }

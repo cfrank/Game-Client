@@ -1,20 +1,21 @@
-package com.jagex.runescape;
+package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
 
 import java.awt.Frame;
 import java.awt.Graphics;
 
 @SuppressWarnings("serial")
 public class GameFrame extends Frame {
-
 	private final GameShell gameStub;
 
 	public GameFrame(GameShell gameStub, int width, int height) {
 		this.gameStub = gameStub;
-		this.setTitle("Jagex");
-		this.setResizable(false);
-		this.setVisible(true);
-		this.toFront();
-		this.setSize(width + 8, height + 28);
+		setTitle("Jagex");
+		setResizable(false);
+		setSize(width + 8, height + 28);
+		setVisible(true);
+		toFront();
 	}
 
 	@Override
@@ -25,12 +26,13 @@ public class GameFrame extends Frame {
 	}
 
 	@Override
-	public final void update(Graphics graphics) {
+	public void update(Graphics graphics) {
 		gameStub.update(graphics);
 	}
 
 	@Override
-	public final void paint(Graphics graphics) {
+	public void paint(Graphics graphics) {
 		gameStub.paint(graphics);
 	}
+
 }

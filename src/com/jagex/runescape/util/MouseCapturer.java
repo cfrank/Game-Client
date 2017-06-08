@@ -3,32 +3,32 @@ package com.jagex.runescape.util;
 import com.jagex.runescape.Game;
 
 public class MouseCapturer implements Runnable {
-
-	public Game client;
-	public Object objectLock = new Object();
-	public int[] coordsY = new int[500];
+	public Game _client;
 	public boolean capturing = true;
-	public int[] coordsX = new int[500];
+	public int coordsY[] = new int[500];
+	public Object objectLock = new Object();
+	public Game client;
 	public int coord;
+	public int coordsX[] = new int[500];
 
-	@Override
+
 	public void run() {
 		while (capturing) {
 			synchronized (objectLock) {
 				if (coord < 500) {
-					coordsX[coord] = client.mouseEventX;
-					coordsY[coord] = client.mouseEventY;
+					coordsX[coord] = client.mouseX;
+					coordsY[coord] = client.mouseY;
 					coord++;
 				}
 			}
 			try {
 				Thread.sleep(50L);
-			} catch (Exception exception) {
+			} catch (Exception _ex) {
 			}
 		}
 	}
-
-	public MouseCapturer(Game client) {
-		this.client = client;
+	public MouseCapturer(Game _client) {
+		client = _client;
 	}
+
 }

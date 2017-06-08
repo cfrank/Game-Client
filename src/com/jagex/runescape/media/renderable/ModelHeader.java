@@ -2,7 +2,7 @@ package com.jagex.runescape.media.renderable;
 
 public class ModelHeader {
 
-	public byte[] modelData;
+	public byte modelData[];
 	public int vertexCount;
 	public int triangleCount;
 	public int texturedTriangleCount;

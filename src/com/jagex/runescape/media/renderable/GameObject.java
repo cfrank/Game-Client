@@ -1,85 +1,24 @@
 package com.jagex.runescape.media.renderable;
 
-import com.jagex.runescape.cache.def.GameObjectDefinition;
-import com.jagex.runescape.Game;
-import com.jagex.runescape.cache.cfg.VarBit;
-import com.jagex.runescape.cache.media.AnimationSequence;
+import com.jagex.runescape.*;
 
 public class GameObject extends Renderable {
-
-	private int animationFrame;
-	protected int[] childrenIds;
-	protected int varbitId;
-	protected int configId;
-	private final int vertexHeight;
-	private final int vertexHeightRight;
-	private final int vertexHeightTopRight;
-	private final int vertexHeightTop;
-	private AnimationSequence animationSequence;
-	private int animationCycleDelay;
+	public int vertexHeight;
+	public int vertexHeightRight;
+	public int vertexHeightTopRight;
+	public int vertexHeightTop;
+	public int id;
+	public int clickType;
+	public int face;
 	public static Game client;
-	private final int id;
-	private final int clickType;
-	private final int face;
+	public AnimationSequence animationSequence;
+	public int varbitId;
+	public int configId;
+	public int[] childrenIds;
+	public int animationCycleDelay;
+	public int animationFrame;
 
-	@Override
-	public final Model getRotatedModel() {
-		int animation = -1;
-		if (animationSequence != null) {
-			int step = Game.currentCycle - animationCycleDelay;
-			if (step > 100 && animationSequence.frameStep > 0) {
-				step = 100;
-			}
-			while (step > animationSequence.getFrameLength(animationFrame)) {
-				step -= animationSequence.getFrameLength(animationFrame);
-				animationFrame++;
-				if (animationFrame >= animationSequence.frameCount) {
-					animationFrame -= animationSequence.frameStep;
-					if (animationFrame < 0 || animationFrame >= animationSequence.frameCount) {
-						animationSequence = null;
-						break;
-					}
-				}
-			}
-			animationCycleDelay = Game.currentCycle - step;
-			if (animationSequence != null) {
-				animation = animationSequence.frame2Ids[animationFrame];
-			}
-		}
-		GameObjectDefinition gameObjectDefinition;
-		if (childrenIds != null) {
-			gameObjectDefinition = getChildDefinition();
-		} else {
-			gameObjectDefinition = GameObjectDefinition.getDefinition(id);
-		}
-		if (gameObjectDefinition == null) {
-			return null;
-		}
-		Model model = gameObjectDefinition.getGameObjectModel(clickType, face, vertexHeight, vertexHeightRight,
-				vertexHeightTopRight, vertexHeightTop, animation);
-		return model;
-	}
-
-	public final GameObjectDefinition getChildDefinition() {
-		int child = -1;
-		if (varbitId != -1) {
-			VarBit varbit = VarBit.cache[varbitId];
-			int configId = varbit.configId;
-			int leastSignificantBit = varbit.leastSignificantBit;
-			int mostSignificantBit = varbit.mostSignificantBit;
-			int bit = Game.BITFIELD_MAX_VALUE[mostSignificantBit - leastSignificantBit];
-			child = GameObject.client.widgetSettings[configId] >> leastSignificantBit & bit;
-		} else if (configId != -1) {
-			child = GameObject.client.widgetSettings[configId];
-		}
-		if (child < 0 || child >= childrenIds.length || childrenIds[child] == -1) {
-			return null;
-		}
-		return GameObjectDefinition.getDefinition(childrenIds[child]);
-	}
-
-	public GameObject(int id, int face, int clickType, int vertexHeightRight, int vertexHeightTopRight,
-			int vertexHeight, int vertexHeightTop, int animationId, boolean bool) {
+	public GameObject(int id, int face, int clickType, int vertexHeightRight, int vertexHeightTopRight, int vertexHeight, int vertexHeightTop, int animationId, boolean flag) {
 		this.id = id;
 		this.clickType = clickType;
 		this.face = face;
@@ -88,17 +27,74 @@ public class GameObject extends Renderable {
 		this.vertexHeightTopRight = vertexHeightTopRight;
 		this.vertexHeightTop = vertexHeightTop;
 		if (animationId != -1) {
-			animationSequence = AnimationSequence.cache[animationId];
+			animationSequence = AnimationSequence.animations[animationId];
 			animationFrame = 0;
-			animationCycleDelay = Game.currentCycle;
-			if (bool && animationSequence.frameStep != -1) {
+			animationCycleDelay = client.pulseCycle - 1;
+			if (flag && animationSequence.frameStep != -1) {
 				animationFrame = (int) (Math.random() * animationSequence.frameCount);
 				animationCycleDelay -= (int) (Math.random() * animationSequence.getFrameLength(animationFrame));
 			}
 		}
-		GameObjectDefinition gameObjectDefinition = GameObjectDefinition.getDefinition(id);
+		GameObjectDefinition gameObjectDefinition = GameObjectDefinition.getDefinition(this.id);
 		varbitId = gameObjectDefinition.varbitId;
 		configId = gameObjectDefinition.configId;
 		childrenIds = gameObjectDefinition.childrenIds;
 	}
+
+	public GameObjectDefinition getChildDefinition() {
+		int child = -1;
+		if (varbitId != -1) {
+			Varbit varbit = Varbit.cache[varbitId];
+			int configId = varbit.varpId;
+			int leastSignificantBit = varbit.leastSignificantBit;
+			int mostSignificantBit = varbit.mostSignificantBit;
+			int bit = client.BITFIELD_MAX_VALUE[mostSignificantBit - leastSignificantBit];
+			child = client.widgetSettings[configId] >> leastSignificantBit & bit;
+		} else if (configId != -1)
+			child = client.widgetSettings[configId];
+		if (child < 0 || child >= childrenIds.length || childrenIds[child] == -1)
+			return null;
+		else
+			return GameObjectDefinition.getDefinition(childrenIds[child]);
+	}
+
+
+
+	@Override
+	public Model getRotatedModel() {
+		int animation = -1;
+		if (animationSequence != null) {
+			int step = client.pulseCycle - animationCycleDelay;
+			if (step > 100 && animationSequence.frameStep > 0)
+				step = 100;
+			while (step > animationSequence.getFrameLength(animationFrame)) {
+				step -= animationSequence.getFrameLength(animationFrame);
+				animationFrame++;
+				if (animationFrame < animationSequence.frameCount)
+					continue;
+				animationFrame -= animationSequence.frameStep;
+				if (animationFrame >= 0 && animationFrame < animationSequence.frameCount)
+					continue;
+				animationSequence = null;
+				break;
+			}
+			animationCycleDelay = client.pulseCycle - step;
+			if (animationSequence != null)
+				animation = animationSequence.frame2Ids[animationFrame];
+		}
+		GameObjectDefinition gameObjectDefinition;
+		if (childrenIds != null)
+			gameObjectDefinition = getChildDefinition();
+		else
+			gameObjectDefinition = GameObjectDefinition.getDefinition(id);
+		if (gameObjectDefinition == null) {
+			return null;
+		} else {
+			Model model = gameObjectDefinition.getGameObjectModel(clickType, face, vertexHeight,
+					vertexHeightRight, vertexHeightTopRight, vertexHeightTop, animation);
+			return model;
+		}
+	}
+
+
 }

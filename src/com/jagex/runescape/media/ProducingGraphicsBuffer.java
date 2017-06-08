@@ -1,4 +1,6 @@
-package com.jagex.runescape.media;
+package com.jagex.runescape.media;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
 
 import java.awt.Component;
 import java.awt.Graphics;
@@ -11,18 +13,18 @@ import java.awt.image.ImageProducer;
 
 public class ProducingGraphicsBuffer implements ImageProducer, ImageObserver {
 
-	public int[] pixels;
+	public int pixels[];
 	public int width;
 	public int height;
-	protected ColorModel colorModel;
-	protected ImageConsumer imageConsumer;
+	public ColorModel colorModel;
+	public ImageConsumer imageConsumer;
 	public Image image;
 
 	public ProducingGraphicsBuffer(int width, int height, Component component) {
 		this.width = width;
 		this.height = height;
 		pixels = new int[width * height];
-		colorModel = new DirectColorModel(32, 16711680, 65280, 255);
+		colorModel = new DirectColorModel(32, 0xff0000, 65280, 255);
 		image = component.createImage(this);
 		drawPixels();
 		component.prepareImage(image, this);
@@ -42,7 +44,6 @@ public class ProducingGraphicsBuffer implements ImageProducer, ImageObserver {
 		graphics.drawImage(image, x, y, this);
 	}
 
-	@Override
 	public synchronized void addConsumer(ImageConsumer imageConsumer) {
 		this.imageConsumer = imageConsumer;
 		imageConsumer.setDimensions(width, height);
@@ -51,40 +52,36 @@ public class ProducingGraphicsBuffer implements ImageProducer, ImageObserver {
 		imageConsumer.setHints(14);
 	}
 
-	@Override
 	public synchronized boolean isConsumer(ImageConsumer imageConsumer) {
-		if (this.imageConsumer == imageConsumer) {
-			return true;
-		}
-		return false;
+		return this.imageConsumer == imageConsumer;
 	}
 
-	@Override
 	public synchronized void removeConsumer(ImageConsumer imageConsumer) {
-		if (this.imageConsumer == imageConsumer) {
-			imageConsumer = null;
-		}
+		if (this.imageConsumer == imageConsumer)
+			this.imageConsumer = null;
 	}
 
-	@Override
 	public void startProduction(ImageConsumer imageConsumer) {
 		addConsumer(imageConsumer);
 	}
 
-	@Override
 	public void requestTopDownLeftRightResend(ImageConsumer imageConsumer) {
 		System.out.println("TDLR");
 	}
 
 	public synchronized void drawPixels() {
-		if (imageConsumer != null) {
+		if (imageConsumer == null) {
+			return;
+		} else {
 			imageConsumer.setPixels(0, 0, width, height, colorModel, pixels, 0, width);
 			imageConsumer.imageComplete(2);
+			return;
 		}
 	}
 
-	@Override
-	public boolean imageUpdate(Image image, int infoflags, int x, int y, int width, int height) {
+	public boolean imageUpdate(Image image, int i, int j, int k, int l, int i1) {
 		return true;
 	}
+
+
 }

@@ -2,15 +2,21 @@ package com.jagex.runescape.collection;
 
 public class CacheableNode extends Node {
 
-	public CacheableNode previousNode;
-	protected CacheableNode nextNode;
-
-	public void clear() {
-		if (nextNode != null) {
-			nextNode.previousNode = previousNode;
-			previousNode.nextNode = nextNode;
-			previousNode = null;
-			nextNode = null;
+	public void unlinkFromQueue() {
+		if (prev == null) {
+			return;
+		} else {
+			prev.next = next;
+			next.prev = prev;
+			next = null;
+			prev = null;
+			return;
 		}
 	}
+
+	public CacheableNode() {
+	}
+
+	public CacheableNode next;
+	public CacheableNode prev;
 }

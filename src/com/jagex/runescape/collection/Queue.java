@@ -1,59 +1,63 @@
-package com.jagex.runescape.collection;
+package com.jagex.runescape.collection;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
+// Jad home page: http://www.kpdus.com/jad.html
+// Decompiler options: packimports(3) 
+
+import com.jagex.runescape.collection.CacheableNode;
 
 public class Queue {
-
 	public CacheableNode head = new CacheableNode();
-	private CacheableNode current;
-
+	public CacheableNode current;
 	public Queue() {
-		head.previousNode = head;
-		head.nextNode = head;
+		head.next = head;
+		head.prev = head;
 	}
 
-	public void insertHead(CacheableNode cacheableNode) {
-		if (cacheableNode.nextNode != null) {
-			cacheableNode.clear();
-		}
-		cacheableNode.nextNode = head.nextNode;
-		cacheableNode.previousNode = head;
-		cacheableNode.nextNode.previousNode = cacheableNode;
-		cacheableNode.previousNode.nextNode = cacheableNode;
+	public void push(CacheableNode node) {
+		if (node.prev != null)
+			node.unlinkFromQueue();
+		node.prev = head.prev;
+		node.next = head;
+		node.prev.next = node;
+		node.next.prev = node;
 	}
 
-	public CacheableNode popTail() {
-		CacheableNode cacheableNode = head.previousNode;
-		if (cacheableNode == head) {
+	public CacheableNode pop() {
+		CacheableNode node = head.next;
+		if (node == head) {
 			return null;
+		} else {
+			node.unlinkFromQueue();
+			return node;
 		}
-		cacheableNode.clear();
-		return cacheableNode;
 	}
 
-	public CacheableNode reverseGetFirst() {
-		CacheableNode cacheableNode = head.previousNode;
-		if (cacheableNode == head) {
+	public CacheableNode first() {
+		CacheableNode node = head.next;
+		if (node == head) {
+			current = null;
+			return null;
+		} else {
+			current = node.next;
+			return node;
+		}
+	}
+
+	public CacheableNode next() {
+		CacheableNode node = current;
+		if (node == head) {
 			current = null;
 			return null;
 		}
-		current = cacheableNode.previousNode;
-		return cacheableNode;
+		current = node.next;
+		return node;
 	}
 
-	public CacheableNode reverseGetNext() {
-		CacheableNode cacheableNode = current;
-		if (cacheableNode == head) {
-			current = null;
-			return null;
-		}
-		current = cacheableNode.previousNode;
-		return cacheableNode;
+	public int size() {
+		int size = 0;
+		for (CacheableNode node = head.next; node != head; node = node.next)
+			size++;
+		return size;
 	}
 
-	public int getNodeCount() {
-		int nodeCount = 0;
-		for (CacheableNode cacheablenode = head.previousNode; cacheablenode != head; cacheablenode = cacheablenode.previousNode) {
-			nodeCount++;
-		}
-		return nodeCount;
-	}
+
 }

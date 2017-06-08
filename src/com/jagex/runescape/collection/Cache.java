@@ -2,14 +2,15 @@ package com.jagex.runescape.collection;
 
 public class Cache {
 
-	private final CacheableNode emptyCachableNode = new CacheableNode();
-	private final int size;
-	private int remaining;
-	private final HashTable hashTable;
-	private final Queue queue = new Queue();
+	public int misses;
+	public int hits;
+	public int capacity;
+	public int remaining;
+	public HashTable hashTable;
+	public Queue queue = new Queue();
 
 	public Cache(int size) {
-		this.size = size;
+		this.capacity = size;
 		this.remaining = size;
 		this.hashTable = new HashTable(1024);
 	}
@@ -17,37 +18,36 @@ public class Cache {
 	public CacheableNode get(long id) {
 		CacheableNode cacheablenode = (CacheableNode) hashTable.get(id);
 		if (cacheablenode != null) {
-			queue.insertHead(cacheablenode);
+			queue.push(cacheablenode);
 		}
 		return cacheablenode;
 	}
 
 	public void put(CacheableNode cacheableNode, long id) {
 		if (remaining == 0) {
-			CacheableNode cacheableNodeTail = queue.popTail();
-			cacheableNodeTail.remove();
-			cacheableNodeTail.clear();
-			if (cacheableNodeTail == emptyCachableNode) {
-				cacheableNodeTail = queue.popTail();
-				cacheableNodeTail.remove();
-				cacheableNodeTail.clear();
-			}
+			CacheableNode oldestNode = queue.pop();
+			oldestNode.remove();
+			oldestNode.unlinkFromQueue();
 		} else {
 			remaining--;
 		}
-		hashTable.remove(cacheableNode, id);
-		queue.insertHead(cacheableNode);
+		hashTable.put(cacheableNode, id);
+		queue.push(cacheableNode);
 	}
 
 	public void removeAll() {
-		while (true) {
-			CacheableNode cacheablenode = queue.popTail();
-			if (cacheablenode == null) {
-				break;
+		do {
+			CacheableNode node = queue.pop();
+			if (node != null) {
+				node.remove();
+				node.unlinkFromQueue();
+			} else {
+				remaining = capacity;
+				return;
 			}
-			cacheablenode.remove();
-			cacheablenode.clear();
-		}
-		remaining = size;
+		} while (true);
 	}
+
+
+
 }
