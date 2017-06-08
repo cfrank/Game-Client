@@ -21,6 +21,7 @@ import com.jagex.runescape.cache.cfg.Varbit;
 import com.jagex.runescape.cache.cfg.Varp;
 import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.cache.def.FloorDefinition;
+import com.jagex.runescape.cache.def.GameObjectDefinition;
 import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.cache.media.IdentityKit;
 import com.jagex.runescape.collection.Node;
@@ -452,6 +453,13 @@ public class Game extends GameShell {
 		}
 	}
 
+	void mouseWheelDragged(int i, int j) {
+		if (!mouseWheelDown)
+			return;
+		this.anInt1186 += i * 3;
+		this.anInt1187 += (j << 1);
+	}
+
 	public void method22(int i) {
 		i = 61 / i;
 		try {
@@ -466,19 +474,19 @@ public class Game extends GameShell {
 			if (anInt1263 != k)
 				anInt1263 += (k - anInt1263) / 16;
 			if (super.keyStatus[1] == 1)
-				anInt1253 += (-24 - anInt1253) / 2;
+				anInt1186 += (-24 - anInt1186) / 2;
 			else if (super.keyStatus[2] == 1)
-				anInt1253 += (24 - anInt1253) / 2;
+				anInt1186 += (24 - anInt1186) / 2;
 			else
-				anInt1253 /= 2;
+				anInt1186 /= 2;
 			if (super.keyStatus[3] == 1)
-				anInt1254 += (12 - anInt1254) / 2;
+				anInt1187 += (12 - anInt1187) / 2;
 			else if (super.keyStatus[4] == 1)
-				anInt1254 += (-12 - anInt1254) / 2;
+				anInt1187 += (-12 - anInt1187) / 2;
 			else
-				anInt1254 /= 2;
-			anInt1252 = anInt1252 + anInt1253 / 2 & 0x7ff;
-			anInt1251 += anInt1254 / 2;
+				anInt1187 /= 2;
+			anInt1252 = anInt1252 + anInt1186 / 2 & 0x7ff;
+			anInt1251 += anInt1187 / 2;
 			if (anInt1251 < 128)
 				anInt1251 = 128;
 			if (anInt1251 > 383)
@@ -3022,7 +3030,7 @@ public class Game extends GameShell {
 			if (j1 == 2 && currentScene.method271(plane, l, i1, k) >= 0) {
 				GameObjectDefinition class47 = GameObjectDefinition.getDefinition(k1);
 				if (class47.childrenIds != null)
-					class47 = class47.method424(0);
+					class47 = class47.getChildDefinition();
 				if (class47 == null)
 					continue;
 				if (anInt1146 == 1) {
@@ -6822,10 +6830,10 @@ public class Game extends GameShell {
 				if (i4 == l || i4 == k1 || k5 == j2 || k5 == i3) {
 					int k7 = onDemandFetcher.method344(0, i4, k5, 0);
 					if (k7 != -1)
-						onDemandFetcher.method337(k7, 3, aByte936);
+						onDemandFetcher.passiveRequest(k7, 3);
 					int k8 = onDemandFetcher.method344(0, i4, k5, 1);
 					if (k8 != -1)
-						onDemandFetcher.method337(k8, 3, aByte936);
+						onDemandFetcher.passiveRequest(k8, 3);
 				}
 
 		}
@@ -11628,8 +11636,8 @@ public class Game extends GameShell {
 	public long aLong1172;
 	public int anInt1251;
 	public int anInt1252;
-	public int anInt1253;
-	public int anInt1254;
+	public int anInt1186;
+	public int anInt1187;
 	public int anInt1255;
 	public int anInt1256;
 	public int anIntArray1258[];

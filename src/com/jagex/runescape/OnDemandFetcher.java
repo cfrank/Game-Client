@@ -450,7 +450,7 @@ public class OnDemandFetcher extends Requester implements Runnable {
 			aBoolean1352 = !aBoolean1352;
 	}
 
-	public void method337(int i, int j, byte byte0) {
+	public void passiveRequest(int i, int j) {
 		if (_client.stores[0] == null)
 			return;
 		if (anIntArrayArray1377[j][i] == 0)
@@ -460,8 +460,6 @@ public class OnDemandFetcher extends Requester implements Runnable {
 		if (anInt1341 == 0)
 			return;
 		FileNode class50_sub1_sub3 = new FileNode();
-		if (byte0 != -113)
-			anInt1367 = 244;
 		class50_sub1_sub3.type = j;
 		class50_sub1_sub3.id = i;
 		class50_sub1_sub3.immediate = false;

@@ -3,6 +3,7 @@ package com.jagex.runescape;/* Class8 - Decompiled by JODE
  */
 
 import com.jagex.runescape.cache.def.FloorDefinition;
+import com.jagex.runescape.cache.def.GameObjectDefinition;
 import com.jagex.runescape.media.Rasterizer3D;
 import com.jagex.runescape.media.renderable.GameObject;
 import com.jagex.runescape.media.renderable.Model;
@@ -650,7 +651,7 @@ public class MapArea {
 					break;
 				i_159_ += i_160_;
 				GameObjectDefinition class47 = GameObjectDefinition.getDefinition(i_159_);
-				class47.method425(class32_sub1, -747);
+				class47.passiveRequestModels(class32_sub1);
 				for (;;) {
 					int i_161_ = class50_sub1_sub2.getSmart();
 					if (i_161_ == 0)
@@ -1191,7 +1192,7 @@ public class MapArea {
 					if (i_269_ > 0 && i_270_ > 0 && i_269_ < 103 && i_270_ < 103) {
 						GameObjectDefinition class47 = GameObjectDefinition.getDefinition(i_260_);
 						if (i_268_ != 22 || !lowMemory || class47.aBoolean759 || class47.aBoolean765) {
-							bool &= class47.method428(-321);
+							bool &= class47.isModelCached();
 							bool_263_ = true;
 						}
 					}

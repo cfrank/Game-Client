@@ -54,6 +54,10 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 	private int inputBuffer[] = new int[128];
 	private int readIndex;
 	private int writeIndex;
+	public boolean mouseWheelDown;
+	public int mouseWheelX;
+	public int mouseWheelY;
+
 
 	public final void initializeApplication(int _width, int _height) {
 		width = _width;
@@ -223,6 +227,12 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		eventClickX = mouseX;
 		eventClickY = mouseY;
 		lastClick = System.currentTimeMillis();
+		if (mouseevent.getButton() == 2) {
+			mouseWheelDown = true;
+			mouseWheelX = mouseX;
+			mouseWheelY = mouseY;
+			return;
+		}
 		if (mouseevent.isMetaDown()) {
 			eventMouseButtonPressed = 2;
 			mouseButtonPressed = 2;
@@ -235,6 +245,7 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 	public void mouseReleased(MouseEvent mouseevent) {
 		idleTime = 0;
 		mouseButtonPressed = 0;
+		mouseWheelDown = false;
 	}
 
 	public void mouseClicked(MouseEvent mouseevent) {
@@ -256,11 +267,21 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 			mouseX -= 4;
 			mouseY -= 22;
 		}
+		if (mouseWheelDown) {
+			mouseY = mouseWheelX - mouseevent.getX();
+			int k = mouseWheelY - mouseevent.getY();
+			mouseWheelDragged(mouseY, -k);
+			mouseWheelX = mouseevent.getX();
+			mouseWheelY = mouseevent.getY();
+			return;
+		}
 		idleTime = 0;
 		this.mouseX = mouseX;
 		this.mouseY = mouseY;
 	}
+	void mouseWheelDragged(int param1, int param2) {
 
+	}
 	public void mouseMoved(MouseEvent mouseevent) {
 		int mouseX = mouseevent.getX();
 		int mouseY = mouseevent.getY();

@@ -2,6 +2,7 @@ package com.jagex.runescape.media.renderable;
 
 import com.jagex.runescape.*;
 import com.jagex.runescape.cache.cfg.Varbit;
+import com.jagex.runescape.cache.def.GameObjectDefinition;
 import com.jagex.runescape.cache.media.AnimationSequence;
 
 public class GameObject extends Renderable {
