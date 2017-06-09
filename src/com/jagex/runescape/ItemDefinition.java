@@ -34,7 +34,7 @@ public class ItemDefinition {
 
 		cachePos = (cachePos + 1) % 10;
 		ItemDefinition def = cache[cachePos];
-		buf.offset = indices[id];
+		buf.currentPosition = indices[id];
 		def.id = id;
 		def.reset();
 		def.init(buf);

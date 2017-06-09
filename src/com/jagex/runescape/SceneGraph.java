@@ -933,7 +933,7 @@ public class SceneGraph {
 		aBoolean482 = true;
 		anInt483 = j;
 		anInt484 = k;
-		anInt485 = -1;
+		clickedTileX = -1;
 		if (i != 0) {
 			return;
 		} else {
@@ -1589,7 +1589,7 @@ public class SceneGraph {
 					|| k5 > Rasterizer.virtualBottomX)
 				Rasterizer3D.aBoolean1528 = true;
 			if (aBoolean482 && method285(anInt483, anInt484, j6, l6, l5, i6, k6, k5)) {
-				anInt485 = j1;
+				clickedTileX = j1;
 				anInt486 = k1;
 			}
 			if (class3.anInt99 == -1) {
@@ -1615,7 +1615,7 @@ public class SceneGraph {
 					|| k6 > Rasterizer.virtualBottomX)
 				Rasterizer3D.aBoolean1528 = true;
 			if (aBoolean482 && method285(anInt483, anInt484, j5, l5, l6, i5, k5, k6)) {
-				anInt485 = j1;
+				clickedTileX = j1;
 				anInt486 = k1;
 			}
 			if (class3.anInt99 == -1) {
@@ -1680,7 +1680,7 @@ public class SceneGraph {
 						|| k4 > Rasterizer.virtualBottomX)
 					Rasterizer3D.aBoolean1528 = true;
 				if (aBoolean482 && method285(anInt483, anInt484, l4, i5, j5, i4, j4, k4)) {
-					anInt485 = i1;
+					clickedTileX = i1;
 					anInt486 = l;
 				}
 				if (class20.anIntArray412 == null || class20.anIntArray412[j2] == -1) {
@@ -2117,7 +2117,7 @@ public class SceneGraph {
 	public static boolean aBoolean482;
 	public static int anInt483;
 	public static int anInt484;
-	public static int anInt485 = -1;
+	public static int clickedTileX = -1;
 	public static int anInt486 = -1;
 	public static int anInt487;
 	public static int anIntArray488[];

@@ -39,7 +39,7 @@ public class Sound {
 		for (int track = 0; track < 10; track++) {
 			int present = buf.getUnsignedByte();
 			if (present != 0) {
-				buf.offset--;
+				buf.currentPosition--;
 				tracks[track] = new SoundTrack();
 				tracks[track].init(aByte664, buf);
 			}
@@ -81,7 +81,7 @@ public class Sound {
 
 	public Buffer toWaveform(int j) {
 		int length = method370(j);
-		buf.offset = 0;
+		buf.currentPosition = 0;
 		buf.putInt(0x52494646);    // "RIFF"
 		buf.putLEInt(36 + length); // chunk length
 		buf.putInt(0x57415645);    // "WAVE" (format)
@@ -95,7 +95,7 @@ public class Sound {
 		buf.putLEShort(8);      // bits per sample
 		buf.putInt(0x64617461); // "DATA" (subchunk id)
 		buf.putLEInt(length);   // length
-		buf.offset += length;
+		buf.currentPosition += length;
 		return buf;
 	}
 

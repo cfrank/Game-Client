@@ -206,7 +206,7 @@ public class SoundTrack {
 		aClass29_184.method308(aByte181, buf);
 		int i = buf.getUnsignedByte();
 		if (i != 0) {
-			buf.offset--;
+			buf.currentPosition--;
 			aClass29_185 = new Class29();
 			aClass29_185.method308(aByte181, buf);
 			aClass29_186 = new Class29();
@@ -217,7 +217,7 @@ public class SoundTrack {
 			for (int j = 1; j > 0; j++);
 		}
 		if (i != 0) {
-			buf.offset--;
+			buf.currentPosition--;
 			aClass29_187 = new Class29();
 			aClass29_187.method308(aByte181, buf);
 			aClass29_188 = new Class29();
@@ -225,7 +225,7 @@ public class SoundTrack {
 		}
 		i = buf.getUnsignedByte();
 		if (i != 0) {
-			buf.offset--;
+			buf.currentPosition--;
 			aClass29_189 = new Class29();
 			aClass29_189.method308(aByte181, buf);
 			aClass29_190 = new Class29();

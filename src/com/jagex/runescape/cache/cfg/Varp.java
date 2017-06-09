@@ -39,7 +39,7 @@ public class Varp {
 			cache[index].loadDefinition(index, buffer);
 		}
 
-		if (buffer.offset != buffer.buffer.length)
+		if (buffer.currentPosition != buffer.buffer.length)
 			System.out.println("varptype load mismatch");
 	}
 

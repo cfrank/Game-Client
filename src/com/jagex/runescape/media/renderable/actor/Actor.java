@@ -7,8 +7,8 @@ import com.jagex.runescape.media.renderable.Renderable;
 
 public abstract class Actor extends Renderable {
 	public String forcedChat;
-	public int anInt1582 = 100;
-	public int anInt1583;
+	public int textCycle = 100;
+	public int textColour;
 	public int anInt1584;
 	public int pulseCycle;
 	public int[] pathX = new int[10];
@@ -18,7 +18,7 @@ public abstract class Actor extends Renderable {
 	public int anInt1590;
 	public boolean[] runningQueue = new boolean[10];
 	public boolean aBoolean1592 = false;
-	public int anInt1593;
+	public int textEffect;
 	public int modelHeight = 200;
 	public int endCycle = -1000;
 	public int anInt1596;

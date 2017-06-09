@@ -23,12 +23,12 @@ public class TypeFace extends Rasterizer {
 		strikethrough = false;
 		Buffer buf = new Buffer(archive.getFile(name + ".dat"));
 		Buffer indexBuf = new Buffer(archive.getFile("index.dat"));
-		indexBuf.offset = buf.getUnsignedLEShort() + 4;
+		indexBuf.currentPosition = buf.getUnsignedLEShort() + 4;
 		while (i >= 0)
 			aBoolean1496 = !aBoolean1496;
 		int k = indexBuf.getUnsignedByte();
 		if (k > 0)
-			indexBuf.offset += 3 * (k - 1);
+			indexBuf.currentPosition += 3 * (k - 1);
 		for (int l = 0; l < 256; l++) {
 			anIntArray1503[l] = indexBuf.getUnsignedByte();
 			anIntArray1504[l] = indexBuf.getUnsignedByte();

@@ -37,10 +37,10 @@ public class Widget {
 		return interfaces[id];
 	}
 
-	public void swapItems(int slot1, int slot2) {
-		int temp = itemIds[slot2];
-		itemIds[slot2] = itemIds[slot1];
-		itemIds[slot1] = temp;
+	public void swapItems(int slot2, int slot1) {
+		int temp = inventoryItemId[slot2];
+		inventoryItemId[slot2] = inventoryItemId[slot1];
+		inventoryItemId[slot1] = temp;
 		temp = itemAmounts[slot2];
 		itemAmounts[slot2] = itemAmounts[slot1];
 		itemAmounts[slot1] = temp;
@@ -133,12 +133,12 @@ public class Widget {
 			inter.aBoolean233 = buf.getUnsignedByte() == 1;
 		}
 		if (inter.anInt236 == 2) {
-			inter.itemIds = new int[inter.anInt241 * inter.anInt238];
+			inter.inventoryItemId = new int[inter.anInt241 * inter.anInt238];
 			inter.itemAmounts = new int[inter.anInt241 * inter.anInt238];
 			inter.aBoolean274 = buf.getUnsignedByte() == 1;
 			inter.aBoolean229 = buf.getUnsignedByte() == 1;
 			inter.aBoolean288 = buf.getUnsignedByte() == 1;
-			inter.aBoolean217 = buf.getUnsignedByte() == 1;
+			inter.replaceItems = buf.getUnsignedByte() == 1;
 			inter.anInt263 = buf.getUnsignedByte();
 			inter.anInt244 = buf.getUnsignedByte();
 			inter.anIntArray221 = new int[20];
@@ -226,7 +226,7 @@ public class Widget {
 			inter.anInt253 = buf.getUnsignedLEShort();
 		}
 		if (inter.anInt236 == 7) {
-			inter.itemIds = new int[inter.anInt241 * inter.anInt238];
+			inter.inventoryItemId = new int[inter.anInt241 * inter.anInt238];
 			inter.itemAmounts = new int[inter.anInt241 * inter.anInt238];
 			inter.aBoolean272 = buf.getUnsignedByte() == 1;
 			int k2 = buf.getUnsignedByte();
@@ -277,16 +277,16 @@ public class Widget {
 		int count = buf.getUnsignedLEShort();
 		interfaces = new Widget[count];
 		data = new byte[count][];
-		while (buf.offset < buf.buffer.length) {
+		while (buf.currentPosition < buf.buffer.length) {
 			int l = buf.getUnsignedLEShort();
 			if (l == 65535) {
 				j = buf.getUnsignedLEShort();
 				l = buf.getUnsignedLEShort();
 			}
-			int i1 = buf.offset;
+			int i1 = buf.currentPosition;
 			Widget inter = parse(j, buf, l);
-			byte temp[] = data[inter.id] = new byte[(buf.offset - i1) + 2];
-			for (int j1 = i1; j1 < buf.offset; j1++)
+			byte temp[] = data[inter.id] = new byte[(buf.currentPosition - i1) + 2];
+			for (int j1 = i1; j1 < buf.currentPosition; j1++)
 				temp[(j1 - i1) + 2] = buf.buffer[j1];
 
 			temp[0] = (byte) (j >> 8);
@@ -363,7 +363,7 @@ public class Widget {
 	public static Archive aClass2_214;
 	public int id;
 	public static Widget interfaces[];
-	public boolean aBoolean217;
+	public boolean replaceItems;
 	public int anInt218;
 	public boolean aBoolean219;
 	public byte aByte220;
@@ -415,7 +415,7 @@ public class Widget {
 	public int anInt266;
 	public int anInt267;
 	public String tooltip;
-	public int itemIds[];
+	public int inventoryItemId[];
 	public int anInt270;
 	public boolean aBoolean271;
 	public boolean aBoolean272;

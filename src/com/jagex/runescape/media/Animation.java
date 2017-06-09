@@ -26,26 +26,26 @@ public class Animation {
 
 	public static void method236(byte[] bs) {
 		Buffer buffer = new Buffer(bs);
-		buffer.offset = bs.length - 8;
+		buffer.currentPosition = bs.length - 8;
 		int i = buffer.getUnsignedLEShort();
 		int j = buffer.getUnsignedLEShort();
 		int k = buffer.getUnsignedLEShort();
 		int l = buffer.getUnsignedLEShort();
 		int i1 = 0;
 		Buffer buffer_5_ = new Buffer(bs);
-		buffer_5_.offset = i1;
+		buffer_5_.currentPosition = i1;
 		i1 += i + 2;
 		Buffer class50_sub1_sub2_2 = new Buffer(bs);
-		class50_sub1_sub2_2.offset = i1;
+		class50_sub1_sub2_2.currentPosition = i1;
 		i1 += j;
 		Buffer class50_sub1_sub2_3 = new Buffer(bs);
-		class50_sub1_sub2_3.offset = i1;
+		class50_sub1_sub2_3.currentPosition = i1;
 		i1 += k;
 		Buffer class50_sub1_sub2_4 = new Buffer(bs);
-		class50_sub1_sub2_4.offset = i1;
+		class50_sub1_sub2_4.currentPosition = i1;
 		i1 += l;
 		Buffer buffer_9_ = new Buffer(bs);
-		buffer_9_.offset = i1;
+		buffer_9_.currentPosition = i1;
 		Skins skins = new Skins(buffer_9_);
 		int animationAmount = buffer_5_.getUnsignedLEShort();
 		int ai[] = new int[500];

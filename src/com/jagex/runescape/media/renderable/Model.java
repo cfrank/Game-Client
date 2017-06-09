@@ -131,7 +131,7 @@ public class Model extends Renderable {
             return;
         }
         Buffer buffer = new Buffer(modelData);
-        buffer.offset = modelData.length - 18;
+        buffer.currentPosition = modelData.length - 18;
         ModelHeader modelHeader = modelHeaders[modelId] = new ModelHeader();
         modelHeader.modelData = modelData;
         modelHeader.vertexCount = buffer.getUnsignedLEShort();
@@ -251,15 +251,15 @@ public class Model extends Renderable {
             triangleSkinValues = new int[triangleCount];
         triangleColorValues = new int[triangleCount];
         Buffer vertexDirectionOffsetBuffer = new Buffer(modelHeader.modelData);
-        vertexDirectionOffsetBuffer.offset = modelHeader.vertexDirectionOffset;
+        vertexDirectionOffsetBuffer.currentPosition = modelHeader.vertexDirectionOffset;
         Buffer xDataOffsetBuffer = new Buffer(modelHeader.modelData);
-        xDataOffsetBuffer.offset = modelHeader.xDataOffset;
+        xDataOffsetBuffer.currentPosition = modelHeader.xDataOffset;
         Buffer yDataOffsetBuffer = new Buffer(modelHeader.modelData);
-        yDataOffsetBuffer.offset = modelHeader.yDataOffset;
+        yDataOffsetBuffer.currentPosition = modelHeader.yDataOffset;
         Buffer zDataOffsetBuffer = new Buffer(modelHeader.modelData);
-        zDataOffsetBuffer.offset = modelHeader.zDataOffset;
+        zDataOffsetBuffer.currentPosition = modelHeader.zDataOffset;
         Buffer vertexSkinOffsetBuffer = new Buffer(modelHeader.modelData);
-        vertexSkinOffsetBuffer.offset = modelHeader.vertexSkinOffset;
+        vertexSkinOffsetBuffer.currentPosition = modelHeader.vertexSkinOffset;
         int baseOffsetX = 0;
         int baseOffsetY = 0;
         int baseOffsetz = 0;
@@ -284,11 +284,11 @@ public class Model extends Renderable {
                 vertexSkins[vertex] = vertexSkinOffsetBuffer.getUnsignedByte();
         }
 
-        vertexDirectionOffsetBuffer.offset = modelHeader.colorDataOffset;
-        xDataOffsetBuffer.offset = modelHeader.texturePointerOffset;
-        yDataOffsetBuffer.offset = modelHeader.trianglePriorityOffset;
-        zDataOffsetBuffer.offset = modelHeader.triangleAlphaOffset;
-        vertexSkinOffsetBuffer.offset = modelHeader.triangleSkinOffset;
+        vertexDirectionOffsetBuffer.currentPosition = modelHeader.colorDataOffset;
+        xDataOffsetBuffer.currentPosition = modelHeader.texturePointerOffset;
+        yDataOffsetBuffer.currentPosition = modelHeader.trianglePriorityOffset;
+        zDataOffsetBuffer.currentPosition = modelHeader.triangleAlphaOffset;
+        vertexSkinOffsetBuffer.currentPosition = modelHeader.triangleSkinOffset;
         for (int l1 = 0; l1 < triangleCount; l1++) {
             triangleColorValues[l1] = vertexDirectionOffsetBuffer.getUnsignedLEShort();
             if (texturePoints != null)
@@ -301,8 +301,8 @@ public class Model extends Renderable {
                 triangleSkinValues[l1] = vertexSkinOffsetBuffer.getUnsignedByte();
         }
 
-        vertexDirectionOffsetBuffer.offset = modelHeader.triangleDataOffset;
-        xDataOffsetBuffer.offset = modelHeader.triangleTypeOffset;
+        vertexDirectionOffsetBuffer.currentPosition = modelHeader.triangleDataOffset;
+        xDataOffsetBuffer.currentPosition = modelHeader.triangleTypeOffset;
         int trianglePointOffsetX = 0;
         int trianglePointOffsetY = 0;
         int trianglePointOffsetZ = 0;
@@ -348,7 +348,7 @@ public class Model extends Renderable {
             }
         }
 
-        vertexDirectionOffsetBuffer.offset = modelHeader.uvMapTriangleOffset;
+        vertexDirectionOffsetBuffer.currentPosition = modelHeader.uvMapTriangleOffset;
         for (int triangle = 0; triangle < texturedTriangleCount; triangle++) {
             texturedTrianglePointsX[triangle] = vertexDirectionOffsetBuffer.getUnsignedLEShort();
             texturedTrianglePointsY[triangle] = vertexDirectionOffsetBuffer.getUnsignedLEShort();

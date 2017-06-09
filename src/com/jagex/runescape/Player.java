@@ -266,7 +266,7 @@ public class Player extends Actor {
 	}
 
 	public void updateAppearance(Buffer buf, int i) {
-		buf.offset = 0;
+		buf.currentPosition = 0;
 		gender = buf.getUnsignedByte();
 		anInt1756 = buf.getSignedByte();
 		anInt1748 = buf.getSignedByte();

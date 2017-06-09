@@ -80,7 +80,7 @@ public class ImageRGB extends Rasterizer {
 		anInt1488 = 3600;
 		Buffer class50_sub1_sub2 = new Buffer(class2.getFile(s + ".dat"));
 		Buffer class50_sub1_sub2_1 = new Buffer(class2.getFile("index.dat"));
-		class50_sub1_sub2_1.offset = class50_sub1_sub2.getUnsignedLEShort();
+		class50_sub1_sub2_1.currentPosition = class50_sub1_sub2.getUnsignedLEShort();
 		anInt1494 = class50_sub1_sub2_1.getUnsignedLEShort();
 		anInt1495 = class50_sub1_sub2_1.getUnsignedLEShort();
 		int j = class50_sub1_sub2_1.getUnsignedByte();
@@ -92,9 +92,9 @@ public class ImageRGB extends Rasterizer {
 		}
 
 		for (int l = 0; l < i; l++) {
-			class50_sub1_sub2_1.offset += 2;
-			class50_sub1_sub2.offset += class50_sub1_sub2_1.getUnsignedLEShort() * class50_sub1_sub2_1.getUnsignedLEShort();
-			class50_sub1_sub2_1.offset++;
+			class50_sub1_sub2_1.currentPosition += 2;
+			class50_sub1_sub2.currentPosition += class50_sub1_sub2_1.getUnsignedLEShort() * class50_sub1_sub2_1.getUnsignedLEShort();
+			class50_sub1_sub2_1.currentPosition++;
 		}
 
 		anInt1492 = class50_sub1_sub2_1.getUnsignedByte();

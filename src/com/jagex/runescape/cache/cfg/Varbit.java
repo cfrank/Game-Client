@@ -27,7 +27,7 @@ public class Varbit {
 				Varp.cache[cache[index].configId].aBoolean716 = true;
 		}
 
-		if (buffer.offset != buffer.buffer.length)
+		if (buffer.currentPosition != buffer.buffer.length)
 			System.out.println("varbit load mismatch");
 	}
 

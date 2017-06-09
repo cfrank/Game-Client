@@ -71,7 +71,7 @@ public class GameObjectDefinition {
 
         cacheIndex = (cacheIndex + 1) % 20;
         GameObjectDefinition definition = cache[cacheIndex];
-        buffer.offset = bufferOffsets[id];
+        buffer.currentPosition = bufferOffsets[id];
         definition.id = id;
         definition.setDefaultValues();
         definition.load(buffer);
@@ -289,7 +289,7 @@ public class GameObjectDefinition {
                             }
 
                         } else {
-                            buf.offset += k * 3;
+                            buf.currentPosition += k * 3;
                         }
                 } else if (attribute == 2)
                     name = buf.getString();
@@ -305,7 +305,7 @@ public class GameObjectDefinition {
                                 modelIds[l1] = buf.getUnsignedLEShort();
 
                         } else {
-                            buf.offset += l * 2;
+                            buf.currentPosition += l * 2;
                         }
                 } else if (attribute == 14)
                     anInt801 = buf.getUnsignedByte();

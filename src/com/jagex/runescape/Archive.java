@@ -29,7 +29,7 @@ public class Archive {
 		extractedSizes = new int[entries];
 		sizes = new int[entries];
 		offsets = new int[entries];
-		int offset = buf.offset + entries * 10;
+		int offset = buf.currentPosition + entries * 10;
 		for (int pos = 0; pos < entries; pos++) {
 			hashes[pos] = buf.getInt();
 			extractedSizes[pos] = buf.get24BitInt();

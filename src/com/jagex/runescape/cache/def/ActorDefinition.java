@@ -56,7 +56,7 @@ public class ActorDefinition {
 		}
 		ActorDefinition.bufferIndex = (ActorDefinition.bufferIndex + 1) % 20;
 		ActorDefinition definition = ActorDefinition.cache[ActorDefinition.bufferIndex] = new ActorDefinition();
-		ActorDefinition.buffer.offset = ActorDefinition.bufferOffsets[id];
+		ActorDefinition.buffer.currentPosition = ActorDefinition.bufferOffsets[id];
 		definition.id = id;
 		definition.loadDefinition(ActorDefinition.buffer);
 		return definition;
