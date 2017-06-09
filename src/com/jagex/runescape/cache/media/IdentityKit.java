@@ -1,7 +1,7 @@
 package com.jagex.runescape.cache.media;
 
 import com.jagex.runescape.Archive;
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.media.renderable.Model;
 
 public class IdentityKit {

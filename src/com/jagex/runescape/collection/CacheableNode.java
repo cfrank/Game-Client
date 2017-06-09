@@ -2,7 +2,7 @@ package com.jagex.runescape.collection;
 
 public class CacheableNode extends Node {
 
-	public void unlinkFromQueue() {
+	public void clear() {
 		if (prev == null) {
 			return;
 		} else {

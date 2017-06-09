@@ -1,11 +1,6 @@
-package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+package com.jagex.runescape.scene;
 
-public class CullingCluster {
-
-	public CullingCluster() {
-	}
+public class SceneCluster {
 
 	public int anInt675;
 	public int anInt676;

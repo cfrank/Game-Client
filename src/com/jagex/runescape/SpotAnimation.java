@@ -5,6 +5,7 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.renderable.Model;
+import com.jagex.runescape.net.Buffer;
 
 public class SpotAnimation {
 

@@ -1,7 +1,7 @@
 package com.jagex.runescape.cache.def;
 
 import com.jagex.runescape.Archive;
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 
 public class FloorDefinition {
 
@@ -40,30 +40,38 @@ public class FloorDefinition {
 			int attributeId = buffer.getUnsignedByte();
 			if (attributeId == 0)
 				return;
-			if (attributeId == 1) {
-				rgbColor = buffer.get24BitInt();
-				shiftRGBColors(rgbColor);
-			} else if (attributeId == 2)
-				textureId = buffer.getUnsignedByte();
-			else if (attributeId == 3)
-				aBoolean318 = true;
-			else if (attributeId == 5)
-				occlude = false;
-			else if (attributeId == 6)
-				name = buffer.getString();
-			else if (attributeId == 7) {
-				int oldHue2 = hue2;
-				int oldSaturation = saturation;
-				int oldLightness = lightness;
-				int oldHue = hue;
-				shiftRGBColors(buffer.get24BitInt());
-				hue2 = oldHue2;
-				saturation = oldSaturation;
-				lightness = oldLightness;
-				hue = oldHue;
-				hueDivisor = oldHue;
-			} else {
-				System.out.println("Error unrecognised config code: " + attributeId);
+			switch (attributeId) {
+				case 1:
+					rgbColor = buffer.get24BitInt();
+					shiftRGBColors(rgbColor);
+					break;
+				case 2:
+					textureId = buffer.getUnsignedByte();
+					break;
+				case 3:
+					aBoolean318 = true;
+					break;
+				case 5:
+					occlude = false;
+					break;
+				case 6:
+					name = buffer.getString();
+					break;
+				case 7:
+					int oldHue2 = hue2;
+					int oldSaturation = saturation;
+					int oldLightness = lightness;
+					int oldHue = hue;
+					shiftRGBColors(buffer.get24BitInt());
+					hue2 = oldHue2;
+					saturation = oldSaturation;
+					lightness = oldLightness;
+					hue = oldHue;
+					hueDivisor = oldHue;
+					break;
+				default:
+					System.out.println("Error unrecognised config code: " + attributeId);
+					break;
 			}
 		}
 	}

@@ -1,7 +1,7 @@
 package com.jagex.runescape.cache.cfg;
 
 import com.jagex.runescape.Archive;
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 
 public class Varp {
 

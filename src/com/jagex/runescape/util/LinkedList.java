@@ -12,7 +12,7 @@ public class LinkedList {
 		head.previous = head;
 	}
 
-	public void addLast(Node node) {
+	public void insertBack(Node node) {
 		if (node.previous != null)
 			node.remove();
 		node.previous = head.previous;
@@ -83,7 +83,7 @@ public class LinkedList {
 		}
 	}
 
-	public void clear() {
+	public void getNodeCount() {
 		if (head.next == head)
 			return;
 		do {

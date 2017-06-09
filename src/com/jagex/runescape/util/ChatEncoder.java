@@ -1,6 +1,6 @@
 package com.jagex.runescape.util;
 
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 
 public class ChatEncoder {
 

@@ -49,7 +49,7 @@ public class Npc extends Actor {
 					animationModel.scaleT(spotanimation.resizeZ, spotanimation.resizeXY, 9, spotanimation.resizeXY);
 				animationModel.applyLighting(64 + spotanimation.modelLightFalloff, 850 + spotanimation.modelLightAmbient, -30, -50, -30, true);
 				Model[] models = { model, animationModel };
-				model = new Model(2, true, 0, models);
+				model = new Model(2, 0, models);
 			}
 		}
 		if (npcDefinition.boundaryDimension == 1)

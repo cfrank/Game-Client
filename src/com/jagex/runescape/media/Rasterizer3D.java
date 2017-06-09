@@ -31,7 +31,7 @@ public class Rasterizer3D extends Rasterizer {
 	public static int anIntArrayArray1545[][] = new int[50][];
 	public static int anIntArray1546[] = new int[50];
 	public static int anInt1547;
-	public static int anIntArray1548[] = new int[0x10000];
+	public static int getRgbLookupTableId[] = new int[0x10000];
 	public static int anIntArrayArray1549[][] = new int[50][];
 
 
@@ -47,7 +47,7 @@ public class Rasterizer3D extends Rasterizer {
 		anIntArrayArray1544 = null;
 		anIntArrayArray1545 = null;
 		anIntArray1546 = null;
-		anIntArray1548 = null;
+		getRgbLookupTableId = null;
 		anIntArrayArray1549 = null;
 	}
 
@@ -106,7 +106,7 @@ public class Rasterizer3D extends Rasterizer {
 
 	}
 
-	public static int method498(int i, int j) {
+	public static int getAverageRgbColorForTexture(int i, int j) {
 		if (anIntArray1542[i] != 0)
 			return anIntArray1542[i];
 		int k = 0;
@@ -260,7 +260,7 @@ public class Rasterizer3D extends Rasterizer {
 				j2 = method502(j2, d);
 				if (j2 == 0)
 					j2 = 1;
-				anIntArray1548[i++] = j2;
+				getRgbLookupTableId[i++] = j2;
 			}
 
 		}
@@ -710,7 +710,7 @@ public class Rasterizer3D extends Rasterizer {
 			}
 			if (anInt1531 == 0) {
 				while (--k >= 0) {
-					j = anIntArray1548[j1 >> 8];
+					j = getRgbLookupTableId[j1 >> 8];
 					j1 += l1;
 					ai[i++] = j;
 					ai[i++] = j;
@@ -719,7 +719,7 @@ public class Rasterizer3D extends Rasterizer {
 				}
 				k = i1 - l & 3;
 				if (k > 0) {
-					j = anIntArray1548[j1 >> 8];
+					j = getRgbLookupTableId[j1 >> 8];
 					do
 						ai[i++] = j;
 					while (--k > 0);
@@ -729,7 +729,7 @@ public class Rasterizer3D extends Rasterizer {
 				int j2 = anInt1531;
 				int l2 = 256 - anInt1531;
 				while (--k >= 0) {
-					j = anIntArray1548[j1 >> 8];
+					j = getRgbLookupTableId[j1 >> 8];
 					j1 += l1;
 					j = ((j & 0xff00ff) * l2 >> 8 & 0xff00ff) + ((j & 0xff00) * l2 >> 8 & 0xff00);
 					ai[i++] = j + ((ai[i] & 0xff00ff) * j2 >> 8 & 0xff00ff) + ((ai[i] & 0xff00) * j2 >> 8 & 0xff00);
@@ -739,7 +739,7 @@ public class Rasterizer3D extends Rasterizer {
 				}
 				k = i1 - l & 3;
 				if (k > 0) {
-					j = anIntArray1548[j1 >> 8];
+					j = getRgbLookupTableId[j1 >> 8];
 					j = ((j & 0xff00ff) * l2 >> 8 & 0xff00ff) + ((j & 0xff00) * l2 >> 8 & 0xff00);
 					do
 						ai[i++] = j + ((ai[i] & 0xff00ff) * j2 >> 8 & 0xff00ff) + ((ai[i] & 0xff00) * j2 >> 8 & 0xff00);
@@ -765,7 +765,7 @@ public class Rasterizer3D extends Rasterizer {
 		k = i1 - l;
 		if (anInt1531 == 0) {
 			do {
-				ai[i++] = anIntArray1548[j1 >> 8];
+				ai[i++] = getRgbLookupTableId[j1 >> 8];
 				j1 += i2;
 			} while (--k > 0);
 			return;
@@ -773,7 +773,7 @@ public class Rasterizer3D extends Rasterizer {
 		int k2 = anInt1531;
 		int i3 = 256 - anInt1531;
 		do {
-			j = anIntArray1548[j1 >> 8];
+			j = getRgbLookupTableId[j1 >> 8];
 			j1 += i2;
 			j = ((j & 0xff00ff) * i3 >> 8 & 0xff00ff) + ((j & 0xff00) * i3 >> 8 & 0xff00);
 			ai[i++] = j + ((ai[i] & 0xff00ff) * k2 >> 8 & 0xff00ff) + ((ai[i] & 0xff00) * k2 >> 8 & 0xff00);

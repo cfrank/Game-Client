@@ -2,8 +2,8 @@ package com.jagex.runescape.media.renderable;// Decompiled by Jad v1.5.8f. Copyr
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import com.jagex.runescape.Buffer;
-import com.jagex.runescape.Requester;
+import com.jagex.runescape.net.Buffer;
+import com.jagex.runescape.net.requester.Requester;
 import com.jagex.runescape.media.*;
 
 public class Model extends Renderable {
@@ -464,7 +464,7 @@ public class Model extends Renderable {
 
     }
 
-    public Model(int i, boolean flag, int j, Model aclass50_sub1_sub4_sub4[]) {
+    public Model(int i, int j, Model[] models) {
         aBoolean1638 = false;
         aBoolean1639 = true;
         anInt1640 = -252;
@@ -478,7 +478,7 @@ public class Model extends Renderable {
         texturedTriangleCount = 0;
         anInt1663 = -1;
         for (int k = 0; k < i; k++) {
-            Model class50_sub1_sub4_sub4 = aclass50_sub1_sub4_sub4[k];
+            Model class50_sub1_sub4_sub4 = models[k];
             if (class50_sub1_sub4_sub4 != null) {
                 vertexCount += class50_sub1_sub4_sub4.vertexCount;
                 triangleCount += class50_sub1_sub4_sub4.triangleCount;
@@ -524,7 +524,7 @@ public class Model extends Renderable {
         texturedTriangleCount = 0;
         int l = 0;
         for (int i1 = 0; i1 < i; i1++) {
-            Model class50_sub1_sub4_sub4_1 = aclass50_sub1_sub4_sub4[i1];
+            Model class50_sub1_sub4_sub4_1 = models[i1];
             if (class50_sub1_sub4_sub4_1 != null) {
                 int j1 = vertexCount;
                 for (int k1 = 0; k1 < class50_sub1_sub4_sub4_1.vertexCount; k1++) {
@@ -1902,7 +1902,7 @@ public class Model extends Renderable {
     static {
         anIntArray1710 = Rasterizer3D.SINE;
         anIntArray1711 = Rasterizer3D.COSINE;
-        anIntArray1712 = Rasterizer3D.anIntArray1548;
+        anIntArray1712 = Rasterizer3D.getRgbLookupTableId;
         anIntArray1713 = Rasterizer3D.anIntArray1535;
     }
 }

@@ -1,9 +1,9 @@
 package com.jagex.runescape.cache.def;
 
 import com.jagex.runescape.Archive;
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.Game;
-import com.jagex.runescape.OnDemandFetcher;
+import com.jagex.runescape.net.requester.OnDemandRequester;
 import com.jagex.runescape.cache.cfg.Varbit;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;
@@ -12,23 +12,23 @@ import com.jagex.runescape.media.renderable.Model;
 public class GameObjectDefinition {
 
     public static int bufferOffsets[];
-    public boolean aBoolean759;
+    public boolean actionsBoolean;
     public int modelSizeY;
     public int translateX;
     public static Cache animatedModelCache = new Cache(40);
     public int modelIds[];
     public int anInt764;
-    public boolean aBoolean765;
+    public boolean unknown;
     public int translateZ;
     public static Buffer buffer;
     public int anInt768 = -992;
-    public boolean aBoolean769;
+    public boolean adjustToTerrain;
     public static Game client;
     public static Model models[] = new Model[4];
     public static boolean lowMemory;
     public int id = -1;
     public boolean aBoolean774 = true;
-    public int anInt775;
+    public int sizeY;
     public String name = "null";
     public static int cacheIndex;
     public int varbitId;
@@ -53,16 +53,16 @@ public class GameObjectDefinition {
     public boolean aBoolean797;
     public boolean unknown3;
     public int modifiedModelColors[];
-    public int anInt801;
-    public int anInt802;
-    public int anInt803;
+    public int sizeX;
+    public int unknown4;
+    public int animationId;
     public boolean nonFlatShading;
     public int childrenIds[];
     public int icon;
-    public boolean aBoolean807;
+    public boolean unknown2;
     public static int definitionCount;
-    public boolean aBoolean809;
-    public boolean aBoolean810;
+    public boolean walkable;
+    public boolean solid;
 
     public static GameObjectDefinition getDefinition(int id) {
         for (int index = 0; index < 20; index++)
@@ -102,23 +102,23 @@ public class GameObjectDefinition {
         description = null;
         modifiedModelColors = null;
         anIntArray792 = null;
-        anInt801 = 1;
-        anInt775 = 1;
-        aBoolean810 = true;
-        aBoolean809 = true;
-        aBoolean759 = false;
-        aBoolean769 = false;
+        sizeX = 1;
+        sizeY = 1;
+        solid = true;
+        walkable = true;
+        actionsBoolean = false;
+        adjustToTerrain = false;
         nonFlatShading = false;
         aBoolean797 = false;
-        anInt803 = -1;
-        anInt802 = 16;
+        animationId = -1;
+        unknown4 = 16;
         modelLightFalloff = 0;
         modelLightAmbient = 0;
         options = null;
         icon = -1;
         anInt795 = -1;
         unknown3 = false;
-        aBoolean807 = true;
+        unknown2 = true;
         modelSizeX = 128;
         modelSizeY = 128;
         modelSizeZ = 128;
@@ -126,7 +126,7 @@ public class GameObjectDefinition {
         translateX = 0;
         translateY = 0;
         translateZ = 0;
-        aBoolean765 = false;
+        unknown = false;
         aBoolean791 = false;
         anInt794 = -1;
         varbitId = -1;
@@ -134,10 +134,10 @@ public class GameObjectDefinition {
         childrenIds = null;
     }
 
-    public void passiveRequestModels(OnDemandFetcher onDemandFetcher) {
+    public void passiveRequestModels(OnDemandRequester onDemandRequester) {
         if (modelIds != null) {
             for (int modelId : modelIds) {
-                onDemandFetcher.passiveRequest(modelId & 0xffff, 0);
+                onDemandRequester.passiveRequest(modelId & 0xffff, 0);
             }
         }
     }
@@ -271,115 +271,151 @@ public class GameObjectDefinition {
     public void load(Buffer buf) {
         int i = -1;
         label0:
-        do {
+        while (true) {
             int attribute;
             do {
                 attribute = buf.getUnsignedByte();
                 if (attribute == 0)
                     break label0;
-                if (attribute == 1) {
-                    int k = buf.getUnsignedByte();
-                    if (k > 0)
-                        if (modelIds == null || lowMemory) {
-                            modelTypes = new int[k];
-                            modelIds = new int[k];
-                            for (int k1 = 0; k1 < k; k1++) {
-                                modelIds[k1] = buf.getUnsignedLEShort();
-                                modelTypes[k1] = buf.getUnsignedByte();
+                switch (attribute) {
+                    case 1:
+                        int k = buf.getUnsignedByte();
+                        if (k > 0)
+                            if (modelIds == null || lowMemory) {
+                                modelTypes = new int[k];
+                                modelIds = new int[k];
+                                for (int k1 = 0; k1 < k; k1++) {
+                                    modelIds[k1] = buf.getUnsignedLEShort();
+                                    modelTypes[k1] = buf.getUnsignedByte();
+                                }
+
+                            } else {
+                                buf.currentPosition += k * 3;
+                            }
+                        break;
+                    case 2:
+                        name = buf.getString();
+                        break;
+                    case 3:
+                        description = buf.getStringBytes();
+                        break;
+                    case 5:
+                        int l = buf.getUnsignedByte();
+                        if (l > 0)
+                            if (modelIds == null || lowMemory) {
+                                modelTypes = null;
+                                modelIds = new int[l];
+                                for (int l1 = 0; l1 < l; l1++)
+                                    modelIds[l1] = buf.getUnsignedLEShort();
+
+                            } else {
+                                buf.currentPosition += l * 2;
+                            }
+                        break;
+                    case 14:
+                        sizeX = buf.getUnsignedByte();
+                        break;
+                    case 15:
+                        sizeY = buf.getUnsignedByte();
+                        break;
+                    case 17:
+                        solid = false;
+                        break;
+                    case 18:
+                        walkable = false;
+                        break;
+                    case 19:
+                        i = buf.getUnsignedByte();
+                        if (i == 1)
+                            actionsBoolean = true;
+                        break;
+                    case 21:
+                        adjustToTerrain = true;
+                        break;
+                    case 22:
+                        nonFlatShading = true;
+                        break;
+                    case 23:
+                        aBoolean797 = true;
+                        break;
+                    case 24:
+                        animationId = buf.getUnsignedLEShort();
+                        if (animationId == 65535)
+                            animationId = -1;
+                        break;
+                    case 28:
+                        unknown4 = buf.getUnsignedByte();
+                        break;
+                    case 29:
+                        modelLightFalloff = buf.getSignedByte();
+                        break;
+                    case 39:
+                        modelLightAmbient = buf.getSignedByte();
+                        break;
+                }
+                if (attribute < 30 || attribute >= 39) {
+                    switch (attribute) {
+                        case 40:
+                            int i1 = buf.getUnsignedByte();
+                            modifiedModelColors = new int[i1];
+                            anIntArray792 = new int[i1];
+                            for (int i2 = 0; i2 < i1; i2++) {
+                                modifiedModelColors[i2] = buf.getUnsignedLEShort();
+                                anIntArray792[i2] = buf.getUnsignedLEShort();
                             }
 
-                        } else {
-                            buf.currentPosition += k * 3;
-                        }
-                } else if (attribute == 2)
-                    name = buf.getString();
-                else if (attribute == 3)
-                    description = buf.getStringBytes();
-                else if (attribute == 5) {
-                    int l = buf.getUnsignedByte();
-                    if (l > 0)
-                        if (modelIds == null || lowMemory) {
-                            modelTypes = null;
-                            modelIds = new int[l];
-                            for (int l1 = 0; l1 < l; l1++)
-                                modelIds[l1] = buf.getUnsignedLEShort();
-
-                        } else {
-                            buf.currentPosition += l * 2;
-                        }
-                } else if (attribute == 14)
-                    anInt801 = buf.getUnsignedByte();
-                else if (attribute == 15)
-                    anInt775 = buf.getUnsignedByte();
-                else if (attribute == 17)
-                    aBoolean810 = false;
-                else if (attribute == 18)
-                    aBoolean809 = false;
-                else if (attribute == 19) {
-                    i = buf.getUnsignedByte();
-                    if (i == 1)
-                        aBoolean759 = true;
-                } else if (attribute == 21)
-                    aBoolean769 = true;
-                else if (attribute == 22)
-                    nonFlatShading = true;
-                else if (attribute == 23)
-                    aBoolean797 = true;
-                else if (attribute == 24) {
-                    anInt803 = buf.getUnsignedLEShort();
-                    if (anInt803 == 65535)
-                        anInt803 = -1;
-                } else if (attribute == 28)
-                    anInt802 = buf.getUnsignedByte();
-                else if (attribute == 29)
-                    modelLightFalloff = buf.getSignedByte();
-                else if (attribute == 39)
-                    modelLightAmbient = buf.getSignedByte();
-                else if (attribute >= 30 && attribute < 39) {
+                            break;
+                        case 60:
+                            icon = buf.getUnsignedLEShort();
+                            break;
+                        case 62:
+                            unknown3 = true;
+                            break;
+                        case 64:
+                            unknown2 = false;
+                            break;
+                        case 65:
+                            modelSizeX = buf.getUnsignedLEShort();
+                            break;
+                        case 66:
+                            modelSizeY = buf.getUnsignedLEShort();
+                            break;
+                        case 67:
+                            modelSizeZ = buf.getUnsignedLEShort();
+                            break;
+                        case 68:
+                            anInt795 = buf.getUnsignedLEShort();
+                            break;
+                        case 69:
+                            anInt764 = buf.getUnsignedByte();
+                            break;
+                        case 70:
+                            translateX = buf.getSignedShort();
+                            break;
+                        case 71:
+                            translateY = buf.getSignedShort();
+                            break;
+                        case 72:
+                            translateZ = buf.getSignedShort();
+                            break;
+                        case 73:
+                            unknown = true;
+                            break;
+                        case 74:
+                            aBoolean791 = true;
+                            break;
+                        default:
+                            if (attribute != 75)
+                                continue;
+                            anInt794 = buf.getUnsignedByte();
+                            break;
+                    }
+                } else {
                     if (options == null)
                         options = new String[5];
                     options[attribute - 30] = buf.getString();
                     if (options[attribute - 30].equalsIgnoreCase("hidden"))
                         options[attribute - 30] = null;
-                } else if (attribute == 40) {
-                    int i1 = buf.getUnsignedByte();
-                    modifiedModelColors = new int[i1];
-                    anIntArray792 = new int[i1];
-                    for (int i2 = 0; i2 < i1; i2++) {
-                        modifiedModelColors[i2] = buf.getUnsignedLEShort();
-                        anIntArray792[i2] = buf.getUnsignedLEShort();
-                    }
-
-                } else if (attribute == 60)
-                    icon = buf.getUnsignedLEShort();
-                else if (attribute == 62)
-                    unknown3 = true;
-                else if (attribute == 64)
-                    aBoolean807 = false;
-                else if (attribute == 65)
-                    modelSizeX = buf.getUnsignedLEShort();
-                else if (attribute == 66)
-                    modelSizeY = buf.getUnsignedLEShort();
-                else if (attribute == 67)
-                    modelSizeZ = buf.getUnsignedLEShort();
-                else if (attribute == 68)
-                    anInt795 = buf.getUnsignedLEShort();
-                else if (attribute == 69)
-                    anInt764 = buf.getUnsignedByte();
-                else if (attribute == 70)
-                    translateX = buf.getSignedShort();
-                else if (attribute == 71)
-                    translateY = buf.getSignedShort();
-                else if (attribute == 72)
-                    translateZ = buf.getSignedShort();
-                else if (attribute == 73)
-                    aBoolean765 = true;
-                else if (attribute == 74) {
-                    aBoolean791 = true;
-                } else {
-                    if (attribute != 75)
-                        continue;
-                    anInt794 = buf.getUnsignedByte();
                 }
                 continue label0;
             } while (attribute != 77);
@@ -397,29 +433,29 @@ public class GameObjectDefinition {
                     childrenIds[j2] = -1;
             }
 
-        } while (true);
+        }
         if (i == -1) {
-            aBoolean759 = false;
+            actionsBoolean = false;
             if (modelIds != null && (modelTypes == null || modelTypes[0] == 10))
-                aBoolean759 = true;
+                actionsBoolean = true;
             if (options != null)
-                aBoolean759 = true;
+                actionsBoolean = true;
         }
         if (aBoolean791) {
-            aBoolean810 = false;
-            aBoolean809 = false;
+            solid = false;
+            walkable = false;
         }
         if (anInt794 == -1)
-            anInt794 = aBoolean810 ? 1 : 0;
+            anInt794 = solid ? 1 : 0;
     }
 
     public Model getGameObjectModel(int type, int face, int vertexHeight, int vertexHeightRight, int vertexHeightTopRight, int vertexHeightTop, int animationId) {
         Model model = getGameObjectAnimatedModel(type, animationId, face);
         if (model == null)
             return null;
-        if (aBoolean769 || nonFlatShading)
-            model = new Model(aBoolean769, nonFlatShading, 0, model);
-        if (aBoolean769) {
+        if (adjustToTerrain || nonFlatShading)
+            model = new Model(adjustToTerrain, nonFlatShading, 0, model);
+        if (adjustToTerrain) {
             int l1 = (vertexHeight + vertexHeightRight + vertexHeightTopRight + vertexHeightTop) / 4;
             for (int i2 = 0; i2 < model.vertexCount; i2++) {
                 int j2 = model.verticesX[i2];

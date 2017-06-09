@@ -27,7 +27,7 @@ public class Cache {
 		if (remaining == 0) {
 			CacheableNode oldestNode = queue.pop();
 			oldestNode.remove();
-			oldestNode.unlinkFromQueue();
+			oldestNode.clear();
 		} else {
 			remaining--;
 		}
@@ -40,7 +40,7 @@ public class Cache {
 			CacheableNode node = queue.pop();
 			if (node != null) {
 				node.remove();
-				node.unlinkFromQueue();
+				node.clear();
 			} else {
 				remaining = capacity;
 				return;

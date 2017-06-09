@@ -1,11 +1,9 @@
-package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+package com.jagex.runescape.scene.tile;
 
-public class Class20 {
+public class ComplexTile {
 
-	public Class20(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3,
-			int j3, int k3, int l3, int i4, int j4, int k4, int l4) {
+	public ComplexTile(int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2, int j2, int k2, int l2, int i3,
+					   int j3, int k3, int l3, int i4, int j4, int k4, int l4) {
 		aBoolean413 = true;
 		if (l != j3 || l != k || l != i)
 			aBoolean413 = false;
@@ -200,8 +198,6 @@ public class Class20 {
 			i9 = i;
 		if (i > l9)
 			l9 = i;
-		i9 /= 14;
-		l9 /= 14;
 	}
 
 	public int anInt402;
@@ -225,9 +221,6 @@ public class Class20 {
 	public static int anIntArray420[] = new int[6];
 	public static int anIntArray421[] = new int[6];
 	public static int anIntArray422[] = new int[6];
-	public static int anIntArray423[] = { 1, 0 };
-	public static int anIntArray424[] = { 2, 1 };
-	public static int anIntArray425[] = { 3, 3 };
 	public static final int anIntArrayArray426[][] = { { 1, 3, 5, 7 }, { 1, 3, 5, 7 }, { 1, 3, 5, 7 },
 			{ 1, 3, 5, 7, 6 }, { 1, 3, 5, 7, 6 }, { 1, 3, 5, 7, 6 }, { 1, 3, 5, 7, 6 }, { 1, 3, 5, 7, 2, 6 },
 			{ 1, 3, 5, 7, 2, 8 }, { 1, 3, 5, 7, 2, 8 }, { 1, 3, 5, 7, 11, 12 }, { 1, 3, 5, 7, 11, 12 },

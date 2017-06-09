@@ -1,6 +1,4 @@
-package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+package com.jagex.runescape;
 
 public class Class4 {
 
@@ -15,9 +13,7 @@ public class Class4 {
 		aBoolean112 = false;
 	}
 
-	public static byte aByte102 = 6;
 	public static Class4 aClass4Array103[];
-	public static int anInt104 = -1;
 	public int anInt105;
 	public boolean aBoolean106;
 	public boolean aBoolean107;

@@ -7,6 +7,7 @@ import com.jagex.runescape.media.Rasterizer;
 import com.jagex.runescape.media.Rasterizer3D;
 import com.jagex.runescape.media.renderable.Model;
 import com.jagex.runescape.media.renderable.Renderable;
+import com.jagex.runescape.net.Buffer;
 
 public class ItemDefinition {
 

@@ -1,6 +1,4 @@
-package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+package com.jagex.runescape.net;
 
 import com.jagex.runescape.collection.CacheableNode;
 import com.jagex.runescape.util.LinkedList;
@@ -9,70 +7,58 @@ import java.math.BigInteger;
 
 public class Buffer extends CacheableNode {
 
-	public static Buffer allocate(int type) {
+
+	public byte buffer[];
+	public int currentPosition;
+	public int bitPosition;
+	public static int CRC32_TABLE[] = new int[256];
+	public static final int BIT_MASKS[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383,
+			32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff,
+			0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1 };
+	public ISAACCipher random;
+	public static int smallBufferCount;
+	public static int mediumBufferCount;
+	public static int largeBufferCount;
+	public static LinkedList smallBuffers = new LinkedList();
+	public static LinkedList mediumBuffers = new LinkedList();
+	public static LinkedList largeBuffers = new LinkedList();
+
+
+	public static Buffer allocate(int sizeMode) {
 		synchronized (mediumBuffers) {
-			Buffer buf = null;
-			if (type == 0 && smallBufferCount > 0) {
+			Buffer buffer = null;
+			if (sizeMode == 0 && smallBufferCount > 0) {
 				smallBufferCount--;
-				buf = (Buffer) smallBuffers.removeFirst();
-			} else if (type == 1 && mediumBufferCount > 0) {
+				buffer = (Buffer) smallBuffers.removeFirst();
+			} else if (sizeMode == 1 && mediumBufferCount > 0) {
 				mediumBufferCount--;
-				buf = (Buffer) mediumBuffers.removeFirst();
-			} else if (type == 2 && largeBufferCount > 0) {
+				buffer = (Buffer) mediumBuffers.removeFirst();
+			} else if (sizeMode == 2 && largeBufferCount > 0) {
 				largeBufferCount--;
-				buf = (Buffer) largeBuffers.removeFirst();
+				buffer = (Buffer) largeBuffers.removeFirst();
 			}
-			if (buf != null) {
-				buf.currentPosition = 0;
-				return buf;
+			if (buffer != null) {
+				buffer.currentPosition = 0;
+				return buffer;
 			}
 		}
-		Buffer vector = new Buffer();
-		vector.currentPosition = 0;
-		if (type == 0)
-			vector.buffer = new byte[100];
-		else if (type == 1)
-			vector.buffer = new byte[5000];
+		Buffer buffer = new Buffer();
+		buffer.currentPosition = 0;
+		if (sizeMode == 0)
+			buffer.buffer = new byte[100];
+		else if (sizeMode == 1)
+			buffer.buffer = new byte[5000];
 		else
-			vector.buffer = new byte[30000];
-		return vector;
+			buffer.buffer = new byte[30000];
+		return buffer;
 	}
 
 	public Buffer() {
-		// aBoolean1435 = false;
-		// anInt1436 = 8;
-		// aBoolean1437 = false;
-		// aBoolean1438 = true;
-		// aByte1439 = 5;
-		// anInt1440 = -29290;
-		// aBoolean1441 = false;
-		// anInt1442 = 217;
-		// anInt1443 = 236;
-		// aBoolean1444 = false;
-		// aByte1447 = 17;
-		// aByte1448 = 89;
-		// aByte1449 = -16;
-		// aBoolean1450 = false;
 	}
 
-	public Buffer(byte abyte0[]) {
-		// aBoolean1435 = false;
-		// anInt1436 = 8;
-		// aBoolean1437 = false;
-		// aBoolean1438 = true;
-		// aByte1439 = 5;
-		// anInt1440 = -29290;
-		// aBoolean1441 = false;
-		// anInt1442 = 217;
-		// anInt1443 = 236;
-		// aBoolean1444 = false;
-		// aByte1447 = 17;
-		// aByte1448 = 89;
-		// aByte1449 = -16;
-		// aBoolean1450 = false;
-		// anInt1452 = 1;
-		buffer = abyte0;
-		currentPosition = 0;
+	public Buffer(byte buffer[]) {
+		this.buffer = buffer;
+		this.currentPosition = 0;
 	}
 
 	public void putOpcode(int opcode) {
@@ -373,52 +359,12 @@ public class Buffer extends CacheableNode {
 			bytes[pos] = (byte) (buffer[currentPosition++] - 128);
 	}
 
-	// public boolean aBoolean1435;
-	// public int anInt1436;
-	// public boolean aBoolean1437;
-	// public boolean aBoolean1438;
-	// public byte aByte1439;
-	// public int anInt1440;
-	// public boolean aBoolean1441;
-	// public int anInt1442;
-	// public int anInt1443;
-	// public boolean aBoolean1444;
-	// public int anInt1445;
-	// public int anInt1446;
-	// public byte aByte1447;
-	// public byte aByte1448;
-	// public byte aByte1449;
-	// public boolean aBoolean1450;
-	// public static boolean aBoolean1451 = true;
-	// public int anInt1452;
-	public byte buffer[];
-	public int currentPosition;
-	public int bitPosition;
-	public static int CRC32_TABLE[];
-	public static final int BIT_MASKS[] = { 0, 1, 3, 7, 15, 31, 63, 127, 255, 511, 1023, 2047, 4095, 8191, 16383,
-			32767, 65535, 0x1ffff, 0x3ffff, 0x7ffff, 0xfffff, 0x1fffff, 0x3fffff, 0x7fffff, 0xffffff, 0x1ffffff,
-			0x3ffffff, 0x7ffffff, 0xfffffff, 0x1fffffff, 0x3fffffff, 0x7fffffff, -1 };
-	public IsaacRandom random;
-	public static int smallBufferCount;
-	public static int mediumBufferCount;
-	public static int largeBufferCount;
-	public static LinkedList smallBuffers = new LinkedList();
-	public static LinkedList mediumBuffers = new LinkedList();
-	public static LinkedList largeBuffers = new LinkedList();
-	// public static char aCharArray1465[] = {
-	// 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J',
-	// 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T',
-	// 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd',
-	// 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
-	// 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x',
-	// 'y', 'z', '0', '1', '2', '3', '4', '5', '6', '7',
-	// '8', '9', '+', '/'
-	// };
-	// public static boolean aBoolean1466;
+
+
 
 	static {
-		CRC32_TABLE = new int[256];
-		for (int pos = 0; pos < 256; pos++) {
+		int pos = 0;
+		while (pos < 256) {
 			int value = pos;
 			for (int pass = 0; pass < 8; pass++)
 				if ((value & 1) == 1)
@@ -426,6 +372,7 @@ public class Buffer extends CacheableNode {
 				else
 					value >>>= 1;
 			CRC32_TABLE[pos] = value;
+			pos++;
 		}
 
 	}

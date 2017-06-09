@@ -10,6 +10,7 @@ import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
 import com.jagex.runescape.media.renderable.Renderable;
 import com.jagex.runescape.media.renderable.actor.Actor;
+import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.util.TextUtils;
 
 public class Player extends Actor {
@@ -226,7 +227,7 @@ public class Player extends Actor {
 					class50_sub1_sub4_sub4_3.scaleT(class27.resizeZ, class27.resizeXY, 9, class27.resizeXY);
 				class50_sub1_sub4_sub4_3.applyLighting(64 + class27.modelLightFalloff, 850 + class27.modelLightAmbient, -30, -50, -30, true);
 				Model aclass50_sub1_sub4_sub4_1[] = { class50_sub1_sub4_sub4, class50_sub1_sub4_sub4_3 };
-				class50_sub1_sub4_sub4 = new Model(2, true, 0, aclass50_sub1_sub4_sub4_1);
+				class50_sub1_sub4_sub4 = new Model(2, 0, aclass50_sub1_sub4_sub4_1);
 			}
 		}
 		if (aClass50_Sub1_Sub4_Sub4_1746 != null) {
@@ -246,7 +247,7 @@ public class Player extends Actor {
 				} else if (super.anInt1584 == 1536)
 					class50_sub1_sub4_sub4_1.rotate90Degrees();
 				Model aclass50_sub1_sub4_sub4[] = { class50_sub1_sub4_sub4, class50_sub1_sub4_sub4_1 };
-				class50_sub1_sub4_sub4 = new Model(2, true, 0, aclass50_sub1_sub4_sub4);
+				class50_sub1_sub4_sub4 = new Model(2, 0, aclass50_sub1_sub4_sub4);
 				if (super.anInt1584 == 512)
 					class50_sub1_sub4_sub4_1.rotate90Degrees();
 				else if (super.anInt1584 == 1024) {

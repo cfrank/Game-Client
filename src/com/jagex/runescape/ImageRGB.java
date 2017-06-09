@@ -3,6 +3,7 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Decompiler options: packimports(3) 
 
 import com.jagex.runescape.media.Rasterizer;
+import com.jagex.runescape.net.Buffer;
 
 import java.awt.Component;
 import java.awt.Image;

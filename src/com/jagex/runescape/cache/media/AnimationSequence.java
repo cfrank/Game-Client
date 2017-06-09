@@ -1,7 +1,7 @@
 package com.jagex.runescape.cache.media;
 
 import com.jagex.runescape.Archive;
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.media.Animation;
 
 public class AnimationSequence {
@@ -53,48 +53,63 @@ public class AnimationSequence {
 			int attributeId = buf.getUnsignedByte();
 			if (attributeId == 0)
 				break;
-			if (attributeId == 1) {
-				frameCount = buf.getUnsignedByte();
-				frame2Ids = new int[frameCount];
-				frame1Ids = new int[frameCount];
-				frameLenghts = new int[frameCount];
-				for (int frame = 0; frame < frameCount; frame++) {
-					frame2Ids[frame] = buf.getUnsignedLEShort();
-					frame1Ids[frame] = buf.getUnsignedLEShort();
-					if (frame1Ids[frame] == 65535)
-						frame1Ids[frame] = -1;
-					frameLenghts[frame] = buf.getUnsignedLEShort();
-				}
+			switch (attributeId) {
+				case 1:
+					frameCount = buf.getUnsignedByte();
+					frame2Ids = new int[frameCount];
+					frame1Ids = new int[frameCount];
+					frameLenghts = new int[frameCount];
+					for (int frame = 0; frame < frameCount; frame++) {
+						frame2Ids[frame] = buf.getUnsignedLEShort();
+						frame1Ids[frame] = buf.getUnsignedLEShort();
+						if (frame1Ids[frame] == 65535)
+							frame1Ids[frame] = -1;
+						frameLenghts[frame] = buf.getUnsignedLEShort();
+					}
 
-			} else if (attributeId == 2)
-				frameStep = buf.getUnsignedLEShort();
-			else if (attributeId == 3) {
-				int flowCount = buf.getUnsignedByte();
-				flowControl = new int[flowCount + 1];
-				for (int flow = 0; flow < flowCount; flow++)
-					flowControl[flow] = buf.getUnsignedByte();
+					break;
+				case 2:
+					frameStep = buf.getUnsignedLEShort();
+					break;
+				case 3:
+					int flowCount = buf.getUnsignedByte();
+					flowControl = new int[flowCount + 1];
+					for (int flow = 0; flow < flowCount; flow++)
+						flowControl[flow] = buf.getUnsignedByte();
 
-				flowControl[flowCount] = 0x98967f;
-			} else if (attributeId == 4)
-				aBoolean300 = true;
-			else if (attributeId == 5)
-				anInt301 = buf.getUnsignedByte();
-			else if (attributeId == 6)
-				anInt302 = buf.getUnsignedLEShort();
-			else if (attributeId == 7)
-				anInt303 = buf.getUnsignedLEShort();
-			else if (attributeId == 8)
-				anInt304 = buf.getUnsignedByte();
-			else if (attributeId == 9)
-				anInt305 = buf.getUnsignedByte();
-			else if (attributeId == 10)
-				priority = buf.getUnsignedByte();
-			else if (attributeId == 11)
-				anInt307 = buf.getUnsignedByte();
-			else if (attributeId == 12)
-				anInt308 = buf.getInt();
-			else
-				System.out.println("Error unrecognised seq config code: " + attributeId);
+					flowControl[flowCount] = 0x98967f;
+					break;
+				case 4:
+					aBoolean300 = true;
+					break;
+				case 5:
+					anInt301 = buf.getUnsignedByte();
+					break;
+				case 6:
+					anInt302 = buf.getUnsignedLEShort();
+					break;
+				case 7:
+					anInt303 = buf.getUnsignedLEShort();
+					break;
+				case 8:
+					anInt304 = buf.getUnsignedByte();
+					break;
+				case 9:
+					anInt305 = buf.getUnsignedByte();
+					break;
+				case 10:
+					priority = buf.getUnsignedByte();
+					break;
+				case 11:
+					anInt307 = buf.getUnsignedByte();
+					break;
+				case 12:
+					anInt308 = buf.getInt();
+					break;
+				default:
+					System.out.println("Error unrecognised seq config code: " + attributeId);
+					break;
+			}
 		}
 		if (frameCount == 0) {
 			frameCount = 1;

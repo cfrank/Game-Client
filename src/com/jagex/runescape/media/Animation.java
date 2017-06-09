@@ -2,7 +2,7 @@ package com.jagex.runescape.media;// Decompiled by Jad v1.5.8f. Copyright 2001 P
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 
 public class Animation {
 	public static int anInt428 = 217;

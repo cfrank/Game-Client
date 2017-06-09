@@ -2,8 +2,6 @@ package com.jagex.runescape.collection;// Decompiled by Jad v1.5.8f. Copyright 2
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import com.jagex.runescape.collection.CacheableNode;
-
 public class Queue {
 	public CacheableNode head = new CacheableNode();
 	public CacheableNode current;
@@ -14,7 +12,7 @@ public class Queue {
 
 	public void push(CacheableNode node) {
 		if (node.prev != null)
-			node.unlinkFromQueue();
+			node.clear();
 		node.prev = head.prev;
 		node.next = head;
 		node.prev.next = node;
@@ -26,7 +24,7 @@ public class Queue {
 		if (node == head) {
 			return null;
 		} else {
-			node.unlinkFromQueue();
+			node.clear();
 			return node;
 		}
 	}

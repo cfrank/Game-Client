@@ -1,6 +1,4 @@
-package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel Kouznetsov.
-// Jad home page: http://www.kpdus.com/jad.html
-// Decompiler options: packimports(3) 
+package com.jagex.runescape;
 
 import java.applet.AppletContext;
 import java.awt.Color;
@@ -32,6 +30,19 @@ import com.jagex.runescape.media.Rasterizer3D;
 import com.jagex.runescape.media.renderable.*;
 import com.jagex.runescape.media.renderable.actor.Actor;
 import com.jagex.runescape.media.renderable.actor.Npc;
+import com.jagex.runescape.net.Buffer;
+import com.jagex.runescape.net.BufferedConnection;
+import com.jagex.runescape.net.ISAACCipher;
+import com.jagex.runescape.net.requester.OnDemandNode;
+import com.jagex.runescape.net.requester.OnDemandRequester;
+import com.jagex.runescape.scene.Region;
+import com.jagex.runescape.scene.Scene;
+import com.jagex.runescape.scene.SceneSpawnRequest;
+import com.jagex.runescape.scene.SpawnObjectNode;
+import com.jagex.runescape.scene.tile.FloorDecoration;
+import com.jagex.runescape.scene.tile.Wall;
+import com.jagex.runescape.scene.tile.WallDecoration;
+import com.jagex.runescape.scene.util.CollisionMap;
 import com.jagex.runescape.util.*;
 
 @SuppressWarnings("serial")
@@ -191,13 +202,13 @@ public class Game extends GameShell {
 	public void method18(byte byte0) {
 		if (byte0 != 3)
 			return;
-		for (Class50_Sub2 class50_sub2 = (Class50_Sub2) aClass6_1261.first(); class50_sub2 != null; class50_sub2 = (Class50_Sub2) aClass6_1261
+		for (SpawnObjectNode spawnObjectNode = (SpawnObjectNode) aClass6_1261.first(); spawnObjectNode != null; spawnObjectNode = (SpawnObjectNode) aClass6_1261
 				.next())
-			if (class50_sub2.anInt1390 == -1) {
-				class50_sub2.anInt1395 = 0;
-				method140((byte) -61, class50_sub2);
+			if (spawnObjectNode.anInt1390 == -1) {
+				spawnObjectNode.anInt1395 = 0;
+				method140((byte) -61, spawnObjectNode);
 			} else {
-				class50_sub2.remove();
+				spawnObjectNode.remove();
 			}
 
 	}
@@ -331,9 +342,9 @@ public class Game extends GameShell {
 		aClass6_1282 = null;
 		aClass6_1210 = null;
 		aClass50_Sub1_Sub1_Sub1_1086 = null;
-		if (onDemandFetcher != null)
-			onDemandFetcher.method339();
-		onDemandFetcher = null;
+		if (onDemandRequester != null)
+			onDemandRequester.stop();
+		onDemandRequester = null;
 		anIntArray979 = null;
 		anIntArray980 = null;
 		anIntArray981 = null;
@@ -356,7 +367,7 @@ public class Game extends GameShell {
 		super.imageProducer = null;
 		Player.modelCache = null;
 		Rasterizer3D.reset();
-		SceneGraph.method240(false);
+		Scene.method240();
 		Model.reset();
 		Animation.reset();
 		System.gc();
@@ -628,10 +639,10 @@ public class Game extends GameShell {
 	}
 
 	public static void switchToHighMem() {
-		SceneGraph.lowMemory = false;
+		Scene.lowMemory = false;
 		Rasterizer3D.lowMemory = false;
 		lowMemory = false;
-		MapArea.lowMemory = false;
+		Region.lowMemory = false;
 		GameObjectDefinition.lowMemory = false;
 	}
 
@@ -838,12 +849,12 @@ public class Game extends GameShell {
 				super.clickType = 0;
 			}
 		}
-		if (SceneGraph.clickedTileX != -1) {
-			int dstX = SceneGraph.clickedTileX;
-			int dstY = SceneGraph.anInt486;
+		if (Scene.clickedTileX != -1) {
+			int dstX = Scene.clickedTileX;
+			int dstY = Scene.anInt486;
 			boolean flag = walk(true, false, dstY, ((Actor) (thisPlayer)).pathY[0], 0, 0, 0, 0, dstX, 0, 0,
 					((Actor) (thisPlayer)).pathX[0]);
-			SceneGraph.clickedTileX = -1;
+			Scene.clickedTileX = -1;
 			if (flag) {
 				anInt1020 = super.clickX;
 				anInt1021 = super.clickY;
@@ -935,7 +946,7 @@ public class Game extends GameShell {
 			outBuffer.putOpcode(40);
 		try {
 			if (bufferedConnection != null && outBuffer.currentPosition > 0) {
-				bufferedConnection.putBytes(0, outBuffer.currentPosition, 0, outBuffer.buffer);
+				bufferedConnection.write(outBuffer.currentPosition, 0, outBuffer.buffer);
 				outBuffer.currentPosition = 0;
 				anInt872 = 0;
 				return;
@@ -1151,8 +1162,8 @@ public class Game extends GameShell {
 						if (chatboxInput.equals("::lag"))
 							method138();
 						if (chatboxInput.equals("::prefetchmusic")) {
-							for (int i_417_ = 0; i_417_ < onDemandFetcher.fileCount(2); i_417_++)
-								onDemandFetcher.setPriority((byte) 1, 2, i_417_);
+							for (int i_417_ = 0; i_417_ < onDemandRequester.fileCount(2); i_417_++)
+								onDemandRequester.setPriority((byte) 1, 2, i_417_);
 
 						}
 						if (chatboxInput.equals("::fpson"))
@@ -1305,11 +1316,11 @@ public class Game extends GameShell {
 		if (bufferedConnection == null)
 			return false;
 		try {
-			int available = bufferedConnection.available();
+			int available = bufferedConnection.getAvailable();
 			if (available == 0)
 				return false;
 			if (opcode == -1) {
-				bufferedConnection.getBytes(buffer.buffer, 0, 1);
+				bufferedConnection.read(buffer.buffer, 0, 1);
 				opcode = buffer.buffer[0] & 0xff;
 				if (incomingRandom != null)
 					opcode = opcode - incomingRandom.nextInt() & 0xff;
@@ -1318,7 +1329,7 @@ public class Game extends GameShell {
 			}
 			if (packetSize == -1)
 				if (available > 0) {
-					bufferedConnection.getBytes(buffer.buffer, 0, 1);
+					bufferedConnection.read(buffer.buffer, 0, 1);
 					packetSize = buffer.buffer[0] & 0xff;
 					available--;
 				} else {
@@ -1326,7 +1337,7 @@ public class Game extends GameShell {
 				}
 			if (packetSize == -2)
 				if (available > 1) {
-					bufferedConnection.getBytes(buffer.buffer, 0, 2);
+					bufferedConnection.read(buffer.buffer, 0, 2);
 					buffer.currentPosition = 0;
 					packetSize = buffer.getUnsignedLEShort();
 					available -= 2;
@@ -1336,7 +1347,7 @@ public class Game extends GameShell {
 			if (available < packetSize)
 				return false;
 			buffer.currentPosition = 0;
-			bufferedConnection.getBytes(buffer.buffer, 0, packetSize);
+			bufferedConnection.read(buffer.buffer, 0, packetSize);
 			timeoutCounter = 0;
 			thirdLastOpcode = secondLastOpcode;
 			secondLastOpcode = lastOpcode;
@@ -1467,7 +1478,7 @@ public class Game extends GameShell {
 				if (songID != currentSong && musicEnabled && !lowMemory && previousSong == 0) {
 					nextSong = songID;
 					songChanging = true;
-					onDemandFetcher.request(2, nextSong);
+					onDemandRequester.request(2, nextSong);
 				}
 				currentSong = songID;
 				opcode = -1;
@@ -1479,7 +1490,7 @@ public class Game extends GameShell {
 				if (musicEnabled && !lowMemory) {
 					nextSong = fileId;
 					songChanging = false;
-					onDemandFetcher.request(2, nextSong); // request something from cache!?!
+					onDemandRequester.request(2, nextSong); // request something from cache!?!
 					previousSong = j12;
 				}
 				opcode = -1;
@@ -1889,12 +1900,12 @@ public class Game extends GameShell {
 
 				}
 
-				for (Class50_Sub2 class50_sub2 = (Class50_Sub2) aClass6_1261.first(); class50_sub2 != null; class50_sub2 = (Class50_Sub2) aClass6_1261
+				for (SpawnObjectNode spawnObjectNode = (SpawnObjectNode) aClass6_1261.first(); spawnObjectNode != null; spawnObjectNode = (SpawnObjectNode) aClass6_1261
 						.next())
-					if (class50_sub2.anInt1393 >= placementX && class50_sub2.anInt1393 < placementX + 8
-							&& class50_sub2.anInt1394 >= placementY && class50_sub2.anInt1394 < placementY + 8
-							&& class50_sub2.anInt1391 == plane)
-						class50_sub2.anInt1390 = 0;
+					if (spawnObjectNode.anInt1393 >= placementX && spawnObjectNode.anInt1393 < placementX + 8
+							&& spawnObjectNode.anInt1394 >= placementY && spawnObjectNode.anInt1394 < placementY + 8
+							&& spawnObjectNode.anInt1391 == plane)
+						spawnObjectNode.anInt1390 = 0;
 
 				opcode = -1;
 				return true;
@@ -2137,12 +2148,12 @@ public class Game extends GameShell {
 								anIntArray858[count] = -1;
 								count++;
 							} else {
-								int l30 = anIntArray857[count] = onDemandFetcher.method344(0, fileX, fileY, 0);
+								int l30 = anIntArray857[count] = onDemandRequester.regId(0, fileX, fileY, 0);
 								if (l30 != -1)
-									onDemandFetcher.request(3, l30);
-								int i32 = anIntArray858[count] = onDemandFetcher.method344(0, fileX, fileY, 1);
+									onDemandRequester.request(3, l30);
+								int i32 = anIntArray858[count] = onDemandRequester.regId(0, fileX, fileY, 1);
 								if (i32 != -1)
-									onDemandFetcher.request(3, i32);
+									onDemandRequester.request(3, i32);
 								count++;
 							}
 						}
@@ -2186,12 +2197,12 @@ public class Game extends GameShell {
 						int j31 = coordinates[pos] = fileIndices[pos];
 						int fileX = j31 >> 8 & 0xff;
 						int fileY = j31 & 0xff;
-						int i34 = anIntArray857[pos] = onDemandFetcher.method344(0, fileX, fileY, 0);
+						int i34 = anIntArray857[pos] = onDemandRequester.regId(0, fileX, fileY, 0);
 						if (i34 != -1)
-							onDemandFetcher.request(3, i34);
-						int k34 = anIntArray858[pos] = onDemandFetcher.method344(0, fileX, fileY, 1);
+							onDemandRequester.request(3, i34);
+						int k34 = anIntArray858[pos] = onDemandRequester.regId(0, fileX, fileY, 1);
 						if (k34 != -1)
-							onDemandFetcher.request(3, k34);
+							onDemandRequester.request(3, k34);
 					}
 
 				}
@@ -2256,13 +2267,13 @@ public class Game extends GameShell {
 
 				}
 
-				for (Class50_Sub2 class50_sub2_1 = (Class50_Sub2) aClass6_1261.first(); class50_sub2_1 != null; class50_sub2_1 = (Class50_Sub2) aClass6_1261
+				for (SpawnObjectNode spawnObjectNode_1 = (SpawnObjectNode) aClass6_1261.first(); spawnObjectNode_1 != null; spawnObjectNode_1 = (SpawnObjectNode) aClass6_1261
 						.next()) {
-					class50_sub2_1.anInt1393 -= deltaX;
-					class50_sub2_1.anInt1394 -= deltaY;
-					if (class50_sub2_1.anInt1393 < 0 || class50_sub2_1.anInt1394 < 0 || class50_sub2_1.anInt1393 >= 104
-							|| class50_sub2_1.anInt1394 >= 104)
-						class50_sub2_1.remove();
+					spawnObjectNode_1.anInt1393 -= deltaX;
+					spawnObjectNode_1.anInt1394 -= deltaY;
+					if (spawnObjectNode_1.anInt1393 < 0 || spawnObjectNode_1.anInt1394 < 0 || spawnObjectNode_1.anInt1393 >= 104
+							|| spawnObjectNode_1.anInt1394 >= 104)
+						spawnObjectNode_1.remove();
 				}
 
 				if (destinationX != 0) {
@@ -2560,16 +2571,16 @@ public class Game extends GameShell {
 				break;
 			}
 			if (j1 != 0) {
-				if ((j1 < 5 || j1 == 10) && currentCollisionMap[plane].method420(dstX, 0, dstY, j1 - 1, curX, curY, i2)) {
+				if ((j1 < 5 || j1 == 10) && currentCollisionMap[plane].reachedWall(curX, curY, dstX, dstY, j1 - 1, i2)) {
 					flag2 = true;
 					break;
 				}
-				if (j1 < 10 && currentCollisionMap[plane].method421(-37, curY, dstX, curX, i2, j1 - 1, dstY)) {
+				if (j1 < 10 && currentCollisionMap[plane].reachedWallDecoration(curX, curY, dstX, dstY, j1 - 1, i2)) {
 					flag2 = true;
 					break;
 				}
 			}
-			if (k != 0 && l != 0 && currentCollisionMap[plane].method422(k, curX, true, dstX, l1, l, dstY, curY)) {
+			if (k != 0 && l != 0 && currentCollisionMap[plane].reachedFacingObject(curX, curY, dstX, dstY, k, l, l1)) {
 				flag2 = true;
 				break;
 			}
@@ -2737,38 +2748,38 @@ public class Game extends GameShell {
 		if (i != 16220)
 			anInt1328 = 458;
 		if (loadingStage == 2) {
-			for (Class50_Sub2 class50_sub2 = (Class50_Sub2) aClass6_1261.first(); class50_sub2 != null; class50_sub2 = (Class50_Sub2) aClass6_1261
+			for (SpawnObjectNode spawnObjectNode = (SpawnObjectNode) aClass6_1261.first(); spawnObjectNode != null; spawnObjectNode = (SpawnObjectNode) aClass6_1261
 					.next()) {
-				if (class50_sub2.anInt1390 > 0)
-					class50_sub2.anInt1390--;
-				if (class50_sub2.anInt1390 == 0) {
-					if (class50_sub2.anInt1387 < 0
-							|| MapArea.method170(class50_sub2.anInt1389, aByte1143, class50_sub2.anInt1387)) {
-						method45(class50_sub2.anInt1388, class50_sub2.anInt1393, class50_sub2.anInt1387,
-								class50_sub2.anInt1394, class50_sub2.anInt1391, class50_sub2.anInt1389, (byte) 1,
-								class50_sub2.anInt1392);
-						class50_sub2.remove();
+				if (spawnObjectNode.anInt1390 > 0)
+					spawnObjectNode.anInt1390--;
+				if (spawnObjectNode.anInt1390 == 0) {
+					if (spawnObjectNode.anInt1387 < 0
+							|| Region.method170(spawnObjectNode.anInt1389, aByte1143, spawnObjectNode.anInt1387)) {
+						method45(spawnObjectNode.anInt1388, spawnObjectNode.anInt1393, spawnObjectNode.anInt1387,
+								spawnObjectNode.anInt1394, spawnObjectNode.anInt1391, spawnObjectNode.anInt1389, (byte) 1,
+								spawnObjectNode.anInt1392);
+						spawnObjectNode.remove();
 					}
 				} else {
-					if (class50_sub2.anInt1395 > 0)
-						class50_sub2.anInt1395--;
-					if (class50_sub2.anInt1395 == 0
-							&& class50_sub2.anInt1393 >= 1
-							&& class50_sub2.anInt1394 >= 1
-							&& class50_sub2.anInt1393 <= 102
-							&& class50_sub2.anInt1394 <= 102
-							&& (class50_sub2.anInt1384 < 0 || MapArea.method170(class50_sub2.anInt1386, aByte1143,
-									class50_sub2.anInt1384))) {
-						method45(class50_sub2.anInt1385, class50_sub2.anInt1393, class50_sub2.anInt1384,
-								class50_sub2.anInt1394, class50_sub2.anInt1391, class50_sub2.anInt1386, (byte) 1,
-								class50_sub2.anInt1392);
-						class50_sub2.anInt1395 = -1;
-						if (class50_sub2.anInt1384 == class50_sub2.anInt1387 && class50_sub2.anInt1387 == -1)
-							class50_sub2.remove();
-						else if (class50_sub2.anInt1384 == class50_sub2.anInt1387
-								&& class50_sub2.anInt1385 == class50_sub2.anInt1388
-								&& class50_sub2.anInt1386 == class50_sub2.anInt1389)
-							class50_sub2.remove();
+					if (spawnObjectNode.anInt1395 > 0)
+						spawnObjectNode.anInt1395--;
+					if (spawnObjectNode.anInt1395 == 0
+							&& spawnObjectNode.anInt1393 >= 1
+							&& spawnObjectNode.anInt1394 >= 1
+							&& spawnObjectNode.anInt1393 <= 102
+							&& spawnObjectNode.anInt1394 <= 102
+							&& (spawnObjectNode.anInt1384 < 0 || Region.method170(spawnObjectNode.anInt1386, aByte1143,
+									spawnObjectNode.anInt1384))) {
+						method45(spawnObjectNode.anInt1385, spawnObjectNode.anInt1393, spawnObjectNode.anInt1384,
+								spawnObjectNode.anInt1394, spawnObjectNode.anInt1391, spawnObjectNode.anInt1386, (byte) 1,
+								spawnObjectNode.anInt1392);
+						spawnObjectNode.anInt1395 = -1;
+						if (spawnObjectNode.anInt1384 == spawnObjectNode.anInt1387 && spawnObjectNode.anInt1387 == -1)
+							spawnObjectNode.remove();
+						else if (spawnObjectNode.anInt1384 == spawnObjectNode.anInt1387
+								&& spawnObjectNode.anInt1385 == spawnObjectNode.anInt1388
+								&& spawnObjectNode.anInt1386 == spawnObjectNode.anInt1389)
+							spawnObjectNode.remove();
 					}
 				}
 			}
@@ -3218,33 +3229,33 @@ public class Game extends GameShell {
 				if (k1 == 0) {
 					currentScene.method258(l, i1, j, true);
 					GameObjectDefinition class47 = GameObjectDefinition.getDefinition(i2);
-					if (class47.aBoolean810)
-						currentCollisionMap[i1].method416(k2, j, 0, l, j2, class47.aBoolean809);
+					if (class47.solid)
+						currentCollisionMap[i1].unmarkWall(k2, j, l, j2, class47.walkable);
 				}
 				if (k1 == 1)
 					currentScene.method259(false, j, l, i1);
 				if (k1 == 2) {
 					currentScene.method260(l, i1, -779, j);
 					GameObjectDefinition class47_1 = GameObjectDefinition.getDefinition(i2);
-					if (j + class47_1.anInt801 > 103 || l + class47_1.anInt801 > 103 || j + class47_1.anInt775 > 103
-							|| l + class47_1.anInt775 > 103)
+					if (j + class47_1.sizeX > 103 || l + class47_1.sizeX > 103 || j + class47_1.sizeY > 103
+							|| l + class47_1.sizeY > 103)
 						return;
-					if (class47_1.aBoolean810)
-						currentCollisionMap[i1].method417(anInt1055, l, j, k2, class47_1.anInt775, class47_1.aBoolean809,
-								class47_1.anInt801);
+					if (class47_1.solid)
+						currentCollisionMap[i1].unmarkSolidOccupant(anInt1055, l, j, k2, class47_1.sizeY, class47_1.walkable,
+								class47_1.sizeX);
 				}
 				if (k1 == 3) {
 					currentScene.method261(j, l, true, i1);
 					GameObjectDefinition class47_2 = GameObjectDefinition.getDefinition(i2);
-					if (class47_2.aBoolean810 && class47_2.aBoolean759)
-						currentCollisionMap[i1].method419(j, (byte) -122, l);
+					if (class47_2.solid && class47_2.actionsBoolean)
+						currentCollisionMap[i1].unmarkConcealed(j, l);
 				}
 			}
 			if (k >= 0) {
 				int i3 = i1;
 				if (i3 < 3 && (currentSceneTileFlags[1][j][l] & 2) == 2)
 					i3++;
-				MapArea.method165(k, i3, j1, l, currentCollisionMap[i1], i, j, 0, i1, currentScene,
+				Region.method165(k, i3, j1, l, currentCollisionMap[i1], i, j, 0, i1, currentScene,
 						anIntArrayArrayArray891);
 			}
 		}
@@ -3701,7 +3712,7 @@ public class Game extends GameShell {
 		method125("Please wait - attempting to reestablish", "Connection lost");
 		minimapState = 0;
 		destinationX = 0;
-		JagSocket class17 = bufferedConnection;
+		BufferedConnection class17 = bufferedConnection;
 		loggedIn = false;
 		anInt850 = 0;
 		login(username, password, true);
@@ -4216,17 +4227,17 @@ public class Game extends GameShell {
 			Archive soundArchive = method61(14076, archiveHashes[8], "sounds", 55, 8, "sound effects");
 			currentSceneTileFlags = new byte[4][104][104];
 			anIntArrayArrayArray891 = new int[4][105][105];
-			currentScene = new SceneGraph(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
+			currentScene = new Scene(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
 			for (int j = 0; j < 4; j++)
-				currentCollisionMap[j] = new ClippingPlane(104, 0, 104);
+				currentCollisionMap[j] = new CollisionMap(104, 104);
 
 			minimapImage = new ImageRGB(512, 512);
 			Archive versionListArchive = method61(14076, archiveHashes[5], "versionlist", 60, 5, "update list");
 			drawLoadingText(60, "Connecting to update server");
-			onDemandFetcher = new OnDemandFetcher();
-			onDemandFetcher.init(versionListArchive, this);
-			Animation.method235(onDemandFetcher.method343(553));
-			Model.init(onDemandFetcher.fileCount(0), onDemandFetcher);
+			onDemandRequester = new OnDemandRequester();
+			onDemandRequester.init(versionListArchive, this);
+			Animation.method235(onDemandRequester.animCount());
+			Model.init(onDemandRequester.fileCount(0), onDemandRequester);
 			if (!lowMemory) {
 				nextSong = 0;
 				try
@@ -4235,26 +4246,26 @@ public class Game extends GameShell {
 				}
 				catch(Exception _ex) { }
 				songChanging = true;
-				onDemandFetcher.request(2, nextSong);
-				while (onDemandFetcher.method333() > 0) {
+				onDemandRequester.request(2, nextSong);
+				while (onDemandRequester.method333() > 0) {
 					method77(false);
 					try {
 						Thread.sleep(100L);
 					} catch (Exception _ex) {
 					}
-					if (onDemandFetcher.anInt1379 > 3) {
+					if (onDemandRequester.requestFails > 3) {
 						method19("ondemand");
 						return;
 					}
 				}
 			}
 			drawLoadingText(65, "Requesting animations");
-			int fileRequestCount = onDemandFetcher.fileCount(1);
+			int fileRequestCount = onDemandRequester.fileCount(1);
 			for (int l = 0; l < fileRequestCount; l++)
-				onDemandFetcher.request(1, l);
+				onDemandRequester.request(1, l);
 
-			while (onDemandFetcher.method333() > 0) {
-				int i1 = fileRequestCount - onDemandFetcher.method333();
+			while (onDemandRequester.method333() > 0) {
+				int i1 = fileRequestCount - onDemandRequester.method333();
 				if (i1 > 0)
 					drawLoadingText(65, "Loading animations - " + (i1 * 100) / fileRequestCount + "%");
 				method77(false);
@@ -4262,22 +4273,22 @@ public class Game extends GameShell {
 					Thread.sleep(100L);
 				} catch (Exception _ex) {
 				}
-				if (onDemandFetcher.anInt1379 > 3) {
+				if (onDemandRequester.requestFails > 3) {
 					method19("ondemand");
 					return;
 				}
 			}
 			drawLoadingText(70, "Requesting models");
-			fileRequestCount = onDemandFetcher.fileCount(0);
+			fileRequestCount = onDemandRequester.fileCount(0);
 			for (int j1 = 0; j1 < fileRequestCount; j1++) {
-				int k1 = onDemandFetcher.method325(j1, -493);
+				int k1 = onDemandRequester.modelId(j1);
 				if ((k1 & 1) != 0)
-					onDemandFetcher.request(0, j1);
+					onDemandRequester.request(0, j1);
 			}
 
-			fileRequestCount = onDemandFetcher.method333();
-			while (onDemandFetcher.method333() > 0) {
-				int l1 = fileRequestCount - onDemandFetcher.method333();
+			fileRequestCount = onDemandRequester.method333();
+			while (onDemandRequester.method333() > 0) {
+				int l1 = fileRequestCount - onDemandRequester.method333();
 				if (l1 > 0)
 					drawLoadingText(70, "Loading models - " + (l1 * 100) / fileRequestCount + "%");
 				method77(false);
@@ -4288,21 +4299,21 @@ public class Game extends GameShell {
 			}
 			if (stores[0] != null) {
 				drawLoadingText(75, "Requesting maps");
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 48, 0)); // these are the maps around tutorial island
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 48, 1));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 48, 0));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 48, 1));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 49, 48, 0));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 49, 48, 1));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 47, 0));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 47, 47, 1));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 47, 0));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 47, 1));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 148, 0));
-				onDemandFetcher.request(3, onDemandFetcher.method344(0, 48, 148, 1));
-				fileRequestCount = onDemandFetcher.method333();
-				while (onDemandFetcher.method333() > 0) {
-					int i2 = fileRequestCount - onDemandFetcher.method333();
+				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 48, 0)); // these are the maps around tutorial island
+				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 48, 1));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 48, 0));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 48, 1));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 49, 48, 0));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 49, 48, 1));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 47, 0));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 47, 1));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 47, 0));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 47, 1));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 148, 0));
+				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 148, 1));
+				fileRequestCount = onDemandRequester.method333();
+				while (onDemandRequester.method333() > 0) {
+					int i2 = fileRequestCount - onDemandRequester.method333();
 					if (i2 > 0)
 						drawLoadingText(75, "Loading maps - " + (i2 * 100) / fileRequestCount + "%");
 					method77(false);
@@ -4312,9 +4323,9 @@ public class Game extends GameShell {
 					}
 				}
 			}
-			fileRequestCount = onDemandFetcher.fileCount(0);
+			fileRequestCount = onDemandRequester.fileCount(0);
 			for (int j2 = 0; j2 < fileRequestCount; j2++) {
-				int k2 = onDemandFetcher.method325(j2, -493);
+				int k2 = onDemandRequester.modelId(j2);
 				byte byte0 = 0;
 				if ((k2 & 8) != 0)
 					byte0 = 10;
@@ -4333,22 +4344,22 @@ public class Game extends GameShell {
 				if ((k2 & 1) != 0)
 					byte0 = 3;
 				if (byte0 != 0)
-					onDemandFetcher.setPriority(byte0, 0, j2);
+					onDemandRequester.setPriority(byte0, 0, j2);
 			}
 
-			onDemandFetcher.method332(memberServer, (byte) 109);
+			onDemandRequester.preloadRegions(memberServer);
 			if (!lowMemory) {
-				fileRequestCount = onDemandFetcher.fileCount(2);
+				fileRequestCount = onDemandRequester.fileCount(2);
 				for (int id = 1; id < fileRequestCount; id++)
-					if (onDemandFetcher.midiIdEqualsOne(id))
-						onDemandFetcher.setPriority((byte) 1, 2, id);
+					if (onDemandRequester.midiIdEqualsOne(id))
+						onDemandRequester.setPriority((byte) 1, 2, id);
 
 			}
-			fileRequestCount = onDemandFetcher.fileCount(0);
+			fileRequestCount = onDemandRequester.fileCount(0);
 			for (int i3 = 0; i3 < fileRequestCount; i3++) {
-				int j3 = onDemandFetcher.method325(i3, -493);
-				if (j3 == 0 && onDemandFetcher.anInt1350 < 200)
-					onDemandFetcher.setPriority((byte) 1, 0, i3);
+				int j3 = onDemandRequester.modelId(i3);
+				if (j3 == 0 && onDemandRequester.anInt1350 < 200)
+					onDemandRequester.setPriority((byte) 1, 0, i3);
 			}
 
 			drawLoadingText(80, "Unpacking media");
@@ -4536,7 +4547,7 @@ public class Game extends GameShell {
 				ai[l8] = k9 * l9 >> 16;
 			}
 
-			SceneGraph.method277(500, 800, 512, 334, ai);
+			Scene.method277(500, 800, 512, 334, ai);
 			ChatCensor.load(chatArchive);
 			mouseCapturer = new MouseCapturer(this);
 			startRunnable(mouseCapturer, 10);
@@ -5442,42 +5453,42 @@ public class Game extends GameShell {
 		if (flag)
 			opcode = -1;
 		do {
-			FileNode class50_sub1_sub3;
+			OnDemandNode class50_sub1_sub3;
 			do {
-				class50_sub1_sub3 = onDemandFetcher.method330();
+				class50_sub1_sub3 = onDemandRequester.next();
 				if (class50_sub1_sub3 == null)
 					return;
 				if (class50_sub1_sub3.type == 0) {
-					Model.loadModelHeader(class50_sub1_sub3.buf, class50_sub1_sub3.id);
-					if ((onDemandFetcher.method325(class50_sub1_sub3.id, -493) & 0x62) != 0) {
+					Model.loadModelHeader(class50_sub1_sub3.buffer, class50_sub1_sub3.id);
+					if ((onDemandRequester.modelId(class50_sub1_sub3.id) & 0x62) != 0) {
 						aBoolean1181 = true;
 						if (anInt988 != -1 || anInt1191 != -1)
 							redrawChatbox = true;
 					}
 				}
-				if (class50_sub1_sub3.type == 1 && class50_sub1_sub3.buf != null)
-					Animation.method236(class50_sub1_sub3.buf);
-				if (class50_sub1_sub3.type == 2 && class50_sub1_sub3.id == nextSong && class50_sub1_sub3.buf != null)
-					method24(songChanging, class50_sub1_sub3.buf, 659);
+				if (class50_sub1_sub3.type == 1 && class50_sub1_sub3.buffer != null)
+					Animation.method236(class50_sub1_sub3.buffer);
+				if (class50_sub1_sub3.type == 2 && class50_sub1_sub3.id == nextSong && class50_sub1_sub3.buffer != null)
+					method24(songChanging, class50_sub1_sub3.buffer, 659);
 				if (class50_sub1_sub3.type == 3 && loadingStage == 1) {
 					for (int i = 0; i < aByteArrayArray838.length; i++) {
 						if (anIntArray857[i] == class50_sub1_sub3.id) {
-							aByteArrayArray838[i] = class50_sub1_sub3.buf;
-							if (class50_sub1_sub3.buf == null)
+							aByteArrayArray838[i] = class50_sub1_sub3.buffer;
+							if (class50_sub1_sub3.buffer == null)
 								anIntArray857[i] = -1;
 							break;
 						}
 						if (anIntArray858[i] != class50_sub1_sub3.id)
 							continue;
-						aByteArrayArray1232[i] = class50_sub1_sub3.buf;
-						if (class50_sub1_sub3.buf == null)
+						aByteArrayArray1232[i] = class50_sub1_sub3.buffer;
+						if (class50_sub1_sub3.buffer == null)
 							anIntArray858[i] = -1;
 						break;
 					}
 
 				}
-			} while (class50_sub1_sub3.type != 93 || !onDemandFetcher.method334(class50_sub1_sub3.id, false));
-			MapArea.method169(onDemandFetcher, new Buffer(class50_sub1_sub3.buf), (byte) -3);
+			} while (class50_sub1_sub3.type != 93 || !onDemandRequester.method334(class50_sub1_sub3.id, false));
+			Region.passiveRequestGameObjectModels(onDemandRequester, new Buffer(class50_sub1_sub3.buffer));
 		} while (true);
 	}
 
@@ -5491,20 +5502,20 @@ public class Game extends GameShell {
 				statusLineTwo = "Connecting to server...";
 				method131((byte) -50, true);
 			}
-			bufferedConnection = new JagSocket((byte) 2, openSocket(43594 + portOffset), this);
+			bufferedConnection = new BufferedConnection(this, openSocket(43594 + portOffset));
 			long base37name = TextUtils.nameToLong(username);
 			int hash = (int) (base37name >> 16 & 31L);
 			outBuffer.currentPosition = 0;
 			outBuffer.putByte(14);
 			outBuffer.putByte(hash);
-			bufferedConnection.putBytes(0, 2, 0, outBuffer.buffer);
+			bufferedConnection.write(2, 0, outBuffer.buffer);
 			for (int j = 0; j < 8; j++)
-				bufferedConnection.getByte();
+				bufferedConnection.read();
 
-			int returnCode = bufferedConnection.getByte();
+			int returnCode = bufferedConnection.read();
 			int i1 = returnCode;
 			if (returnCode == 0) {
-				bufferedConnection.getBytes(buffer.buffer, 0, 8);
+				bufferedConnection.read(buffer.buffer, 0, 8);
 				buffer.currentPosition = 0;
 				serverSeed = buffer.getLong();
 				int seed[] = new int[4];
@@ -5535,13 +5546,13 @@ public class Game extends GameShell {
 					tempBuffer.putInt(archiveHashes[i]);
 
 				tempBuffer.putBytes(outBuffer.buffer, 0, outBuffer.currentPosition);
-				outBuffer.random = new IsaacRandom(seed);
+				outBuffer.random = new ISAACCipher(seed);
 				for (int i = 0; i < 4; i++)
 					seed[i] += 50;
 
-				incomingRandom = new IsaacRandom(seed);
-				bufferedConnection.putBytes(0, tempBuffer.currentPosition, 0, tempBuffer.buffer);
-				returnCode = bufferedConnection.getByte();
+				incomingRandom = new ISAACCipher(seed);
+				bufferedConnection.write(tempBuffer.currentPosition, 0, tempBuffer.buffer);
+				returnCode = bufferedConnection.read();
 			}
 			if (returnCode == 1) {
 				try {
@@ -5552,8 +5563,8 @@ public class Game extends GameShell {
 				return;
 			}
 			if (returnCode == 2) {
-				playerRights = bufferedConnection.getByte();
-				accountFlagged = bufferedConnection.getByte() == 1;
+				playerRights = bufferedConnection.read();
+				accountFlagged = bufferedConnection.read() == 1;
 				aLong902 = 0L;
 				duplicateClickCount = 0;
 				mouseCapturer.coord = 0;
@@ -5602,8 +5613,8 @@ public class Game extends GameShell {
 					npcs[k2] = null;
 
 				thisPlayer = players[thisPlayerId] = new Player();
-				aClass6_1282.clear();
-				aClass6_1210.clear();
+				aClass6_1282.getNodeCount();
+				aClass6_1210.getNodeCount();
 				for (int l2 = 0; l2 < 4; l2++) {
 					for (int i3 = 0; i3 < 104; i3++) {
 						for (int k3 = 0; k3 < 104; k3++)
@@ -5753,7 +5764,7 @@ public class Game extends GameShell {
 				return;
 			}
 			if (returnCode == 21) {
-				int k1 = bufferedConnection.getByte();
+				int k1 = bufferedConnection.read();
 				for (k1 += 3; k1 >= 0; k1--) {
 					statusLineOne = "You have only just left another world";
 					statusLineTwo = "Your profile will be transferred in: " + k1;
@@ -5836,11 +5847,11 @@ public class Game extends GameShell {
 			int i2;
 			int j2;
 			if (l1 == 0 || l1 == 2) {
-				i2 = class47.anInt801;
-				j2 = class47.anInt775;
+				i2 = class47.sizeX;
+				j2 = class47.sizeY;
 			} else {
-				i2 = class47.anInt775;
-				j2 = class47.anInt801;
+				i2 = class47.sizeY;
+				j2 = class47.sizeX;
 			}
 			int k2 = class47.anInt764;
 			if (l1 != 0)
@@ -6259,7 +6270,7 @@ public class Game extends GameShell {
 				s = "EOF problem";
 				archiveHashes[8] = 0;
 			} catch (IOException _ex) {
-				s = "bufferedConnection problem";
+				s = "Connection problem";
 				archiveHashes[8] = 0;
 			} catch (Exception _ex) {
 				s = "logic problem";
@@ -6644,14 +6655,14 @@ public class Game extends GameShell {
 	public void method93(int i) {
 		try {
 			anInt1276 = -1;
-			aClass6_1210.clear();
-			aClass6_1282.clear();
+			aClass6_1210.getNodeCount();
+			aClass6_1282.getNodeCount();
 			Rasterizer3D.method495((byte) 71);
 			resetModelCaches();
-			currentScene.method241((byte) 7);
+			currentScene.method241();
 			System.gc();
 			for (int plane = 0; plane < 4; plane++)
-				currentCollisionMap[plane].clear();
+				currentCollisionMap[plane].reset();
 
 			for (int i1 = 0; i1 < 4; i1++) {
 				for (int l1 = 0; l1 < 104; l1++) {
@@ -6662,7 +6673,7 @@ public class Game extends GameShell {
 
 			}
 
-			MapArea class8 = new MapArea(anIntArrayArrayArray891, 14290, currentSceneTileFlags, 104, 104);
+			Region class8 = new Region(currentSceneTileFlags, 104, 104, anIntArrayArrayArray891);
 			int l2 = aByteArrayArray838.length;
 			outBuffer.putOpcode(40);
 			if (!aBoolean1163) {
@@ -6680,7 +6691,7 @@ public class Game extends GameShell {
 					int l7 = (coordinates[k4] & 0xff) * 64 - nextTopRightTileY;
 					byte abyte2[] = aByteArrayArray838[k4];
 					if (abyte2 == null && chunkY < 800)
-						class8.method180(i6, l7, 64, -810, 64);
+						class8.initiateVertexHeights(i6, 64, l7, 64);
 				}
 
 				outBuffer.putOpcode(40);
@@ -6728,7 +6739,7 @@ public class Game extends GameShell {
 					for (int l6 = 0; l6 < 13; l6++) {
 						int i8 = constructedMapPalette[0][i5][l6];
 						if (i8 == -1)
-							class8.method180(i5 * 8, l6 * 8, 8, -810, 8);
+							class8.initiateVertexHeights(i5 * 8, 8, l6 * 8, 8);
 					}
 
 				}
@@ -6762,21 +6773,21 @@ public class Game extends GameShell {
 
 			}
 			outBuffer.putOpcode(40);
-			class8.method167(currentCollisionMap, anInt1318, currentScene);
+			class8.createRegionScene(currentCollisionMap, currentScene);
 			if (aClass18_1158 != null) {
 				aClass18_1158.createRasterizer();
 				Rasterizer3D.lineOffsets = anIntArray1002;
 			}
 			outBuffer.putOpcode(40);
-			int l3 = MapArea.anInt150;
+			int l3 = Region.lowestPlane;
 			if (l3 > plane)
 				l3 = plane;
 			if (l3 < plane - 1)
 				l3 = plane - 1;
 			if (lowMemory)
-				currentScene.method242(MapArea.anInt150, true);
+				currentScene.method242(Region.lowestPlane);
 			else
-				currentScene.method242(0, true);
+				currentScene.method242(0);
 			for (int j5 = 0; j5 < 104; j5++) {
 				for (int j7 = 0; j7 < 104; j7++)
 					method26(j5, j7);
@@ -6792,9 +6803,9 @@ public class Game extends GameShell {
 			outBuffer.putInt(0x3f008edd);
 		}
 		if (lowMemory && SignLink.cache_dat != null) {
-			int k = onDemandFetcher.fileCount(0);
+			int k = onDemandRequester.fileCount(0);
 			for (int j1 = 0; j1 < k; j1++) {
-				int i2 = onDemandFetcher.method325(j1, -493);
+				int i2 = onDemandRequester.modelId(j1);
 				if ((i2 & 0x79) == 0)
 					Model.resetModel(j1);
 			}
@@ -6802,7 +6813,7 @@ public class Game extends GameShell {
 		}
 		System.gc();
 		Rasterizer3D.method496(20);
-		onDemandFetcher.method336((byte) -125);
+		onDemandRequester.immediateRequestCount();
 		int l = (chunkX - 6) / 8 - 1;
 		int k1 = (chunkX + 6) / 8 + 1;
 		int j2 = (chunkY - 6) / 8 - 1;
@@ -6817,12 +6828,12 @@ public class Game extends GameShell {
 		for (int i4 = l; i4 <= k1; i4++) {
 			for (int k5 = j2; k5 <= i3; k5++)
 				if (i4 == l || i4 == k1 || k5 == j2 || k5 == i3) {
-					int k7 = onDemandFetcher.method344(0, i4, k5, 0);
+					int k7 = onDemandRequester.regId(0, i4, k5, 0);
 					if (k7 != -1)
-						onDemandFetcher.passiveRequest(k7, 3);
-					int k8 = onDemandFetcher.method344(0, i4, k5, 1);
+						onDemandRequester.passiveRequest(k7, 3);
+					int k8 = onDemandRequester.regId(0, i4, k5, 1);
 					if (k8 != -1)
-						onDemandFetcher.passiveRequest(k8, 3);
+						onDemandRequester.passiveRequest(k8, 3);
 				}
 
 		}
@@ -7053,10 +7064,10 @@ public class Game extends GameShell {
 	}
 
 	public static void switchToLowMem() {
-		SceneGraph.lowMemory = true;
+		Scene.lowMemory = true;
 		Rasterizer3D.lowMemory = true;
 		lowMemory = true;
-		MapArea.lowMemory = true;
+		Region.lowMemory = true;
 		GameObjectDefinition.lowMemory = true;
 	}
 
@@ -7423,7 +7434,7 @@ public class Game extends GameShell {
 				if (musicEnabled) {
 					nextSong = currentSong;
 					songChanging = true;
-					onDemandFetcher.request(2, nextSong);
+					onDemandRequester.request(2, nextSong);
 				} else {
 					stopMidi();
 				}
@@ -9232,9 +9243,9 @@ public class Game extends GameShell {
 		username = "";
 		password = "";
 		resetModelCaches();
-		currentScene.method241((byte) 7);
+		currentScene.method241();
 		for (int plane = 0; plane < 4; plane++)
-			currentCollisionMap[plane].clear();
+			currentCollisionMap[plane].reset();
 
 		System.gc();
 
@@ -9497,7 +9508,7 @@ public class Game extends GameShell {
 		}
 		if (loginScreenState == 0) {
 			int j = c1 / 2 + 80;
-			fontSmall.method471(true, anInt1056, 0x75a9a9, j, c / 2, onDemandFetcher.aString1347);
+			fontSmall.method471(true, anInt1056, 0x75a9a9, j, c / 2, onDemandRequester.message);
 			j = c1 / 2 - 20;
 			fontBold.method471(true, anInt1056, 0xffff00, j, c / 2, "Welcome to RuneScape");
 			j += 30;
@@ -9609,7 +9620,7 @@ public class Game extends GameShell {
 		if (currentSong != id) {
 			nextSong = id;
 			songChanging = true;
-			onDemandFetcher.request(2, nextSong);
+			onDemandRequester.request(2, nextSong);
 			currentSong = id;
 		}
 	}
@@ -9669,11 +9680,11 @@ public class Game extends GameShell {
 					player.anInt1764 = l21 + pulseCycle;
 					player.anInt1765 = l19 + pulseCycle;
 					player.aClass50_Sub1_Sub4_Sub4_1746 = class50_sub1_sub4_sub4;
-					int i23 = class47.anInt801;
-					int j23 = class47.anInt775;
+					int i23 = class47.sizeX;
+					int j23 = class47.sizeY;
 					if (rotation == 1 || rotation == 3) {
-						i23 = class47.anInt775;
-						j23 = class47.anInt801;
+						i23 = class47.sizeY;
+						j23 = class47.sizeX;
 					}
 					player.anInt1743 = x * 128 + i23 * 64;
 					player.anInt1745 = y * 128 + j23 * 64;
@@ -9709,7 +9720,7 @@ public class Game extends GameShell {
 				item.amount = amount;
 				if (groundItems[plane][x][y] == null)
 					groundItems[plane][x][y] = new LinkedList();
-				groundItems[plane][x][y].addLast(item);
+				groundItems[plane][x][y].insertBack(item);
 				method26(x, y);
 			}
 			return;
@@ -9729,38 +9740,38 @@ public class Game extends GameShell {
 				int i20 = anIntArrayArrayArray891[plane][x + 1][y + 1];
 				int l20 = anIntArrayArrayArray891[plane][x][y + 1];
 				if (i12 == 0) {
-					Class44 class44 = currentScene.method263(plane, 17734, x, y);
-					if (class44 != null) {
-						int k21 = class44.anInt726 >> 14 & 0x7fff;
+					Wall wall = currentScene.method263(plane, 17734, x, y);
+					if (wall != null) {
+						int k21 = wall.hash >> 14 & 0x7fff;
 						if (k6 == 2) {
-							class44.aClass50_Sub1_Sub4_724 = new GameObject(k21, 4 + j9, 2, j19, i20, l18, l20, i1,
+							wall.aRenderable769 = new GameObject(k21, 4 + j9, 2, j19, i20, l18, l20, i1,
 									false);
-							class44.aClass50_Sub1_Sub4_725 = new GameObject(k21, j9 + 1 & 3, 2, j19, i20, l18, l20, i1,
+							wall.aRenderable770 = new GameObject(k21, j9 + 1 & 3, 2, j19, i20, l18, l20, i1,
 									false);
 						} else {
-							class44.aClass50_Sub1_Sub4_724 = new GameObject(k21, j9, k6, j19, i20, l18, l20, i1,
+							wall.aRenderable769 = new GameObject(k21, j9, k6, j19, i20, l18, l20, i1,
 									false);
 						}
 					}
 				}
 				if (i12 == 1) {
-					Class35 class35 = currentScene.method264(plane, y, x, false);
-					if (class35 != null)
-						class35.aClass50_Sub1_Sub4_608 = new GameObject(class35.anInt609 >> 14 & 0x7fff, 0, 4, j19, i20, l18, l20, i1,
+					WallDecoration wallDecoration = currentScene.method264(plane, y, x, false);
+					if (wallDecoration != null)
+						wallDecoration.renderable = new GameObject(wallDecoration.hash >> 14 & 0x7fff, 0, 4, j19, i20, l18, l20, i1,
 								false);
 				}
 				if (i12 == 2) {
-					Class5 class5 = currentScene.method265(x, (byte) 32, y, plane);
+					SceneSpawnRequest sceneSpawnRequest = currentScene.method265(x, (byte) 32, y, plane);
 					if (k6 == 11)
 						k6 = 10;
-					if (class5 != null)
-						class5.aClass50_Sub1_Sub4_117 = new GameObject(class5.anInt125 >> 14 & 0x7fff, j9, k6, j19, i20, l18, l20, i1,
+					if (sceneSpawnRequest != null)
+						sceneSpawnRequest.aRenderable601 = new GameObject(sceneSpawnRequest.anInt125 >> 14 & 0x7fff, j9, k6, j19, i20, l18, l20, i1,
 								false);
 				}
 				if (i12 == 3) {
-					Class28 class28 = currentScene.method266(plane, y, 0, x);
-					if (class28 != null)
-						class28.aClass50_Sub1_Sub4_570 = new GameObject(class28.anInt571 >> 14 & 0x7fff, j9, 22, j19, i20, l18, l20, i1,
+					FloorDecoration floorDecoration = currentScene.method266(plane, y, 0, x);
+					if (floorDecoration != null)
+						floorDecoration.renderable = new GameObject(floorDecoration.hash >> 14 & 0x7fff, j9, 22, j19, i20, l18, l20, i1,
 								false);
 				}
 			}
@@ -9778,7 +9789,7 @@ public class Game extends GameShell {
 				item.amount = amount;
 				if (groundItems[plane][x][y] == null)
 					groundItems[plane][x][y] = new LinkedList();
-				groundItems[plane][x][y].addLast(item);
+				groundItems[plane][x][y].insertBack(item);
 				method26(x, y);
 			}
 			return;
@@ -9829,7 +9840,7 @@ public class Game extends GameShell {
 						k16, j20 + pulseCycle, i21, l14, method110(y, x, (byte) 9, plane) - i18, x, k19 + pulseCycle);
 				class50_sub1_sub4_sub2.trackTarget(i10, l12, method110(l12, i10, (byte) 9, plane) - i19, k19
 						+ pulseCycle);
-				aClass6_1282.addLast(class50_sub1_sub4_sub2);
+				aClass6_1282.insertBack(class50_sub1_sub4_sub2);
 			}
 			return;
 		}
@@ -9863,7 +9874,7 @@ public class Game extends GameShell {
 				i5 = i5 * 128 + 64;
 				l7 = l7 * 128 + 64;
 				GameAnimableObject gameAnimableObject = new GameAnimableObject(plane, pulseCycle, j15, k10, method110(l7, i5, (byte) 9, plane) - j13, l7, i5);
-				aClass6_1210.addLast(gameAnimableObject);
+				aClass6_1210.insertBack(gameAnimableObject);
 			}
 			return;
 		}
@@ -9988,14 +9999,14 @@ public class Game extends GameShell {
 	public void method138() {
 		System.out.println("============");
 		System.out.println("flame-cycle:" + anInt1101);
-		if (onDemandFetcher != null)
-			System.out.println("Od-cycle:" + onDemandFetcher.anInt1348);
+		if (onDemandRequester != null)
+			System.out.println("Od-cycle:" + onDemandRequester.cycle);
 		System.out.println("loop-cycle:" + pulseCycle);
 		System.out.println("draw-cycle:" + anInt1309);
 		System.out.println("ptype:" + opcode);
 		System.out.println("psize:" + packetSize);
 		if (bufferedConnection != null)
-			bufferedConnection.method229(false);
+			bufferedConnection.printDebug();
 		super.dumpRequested = true;
 	}
 
@@ -10103,31 +10114,31 @@ public class Game extends GameShell {
 		System.gc();
 	}
 
-	public void method140(byte byte0, Class50_Sub2 class50_sub2) {
+	public void method140(byte byte0, SpawnObjectNode spawnObjectNode) {
 		int i = 0;
 		int j = -1;
 		int k = 0;
 		int l = 0;
 		if (byte0 != -61)
 			outBuffer.putByte(175);
-		if (class50_sub2.anInt1392 == 0)
-			i = currentScene.method267(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394);
-		if (class50_sub2.anInt1392 == 1)
-			i = currentScene.method268(class50_sub2.anInt1393, (byte) 4, class50_sub2.anInt1391,
-					class50_sub2.anInt1394);
-		if (class50_sub2.anInt1392 == 2)
-			i = currentScene.method269(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394);
-		if (class50_sub2.anInt1392 == 3)
-			i = currentScene.getFloorDecorationHash(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394);
+		if (spawnObjectNode.anInt1392 == 0)
+			i = currentScene.method267(spawnObjectNode.anInt1391, spawnObjectNode.anInt1393, spawnObjectNode.anInt1394);
+		if (spawnObjectNode.anInt1392 == 1)
+			i = currentScene.method268(spawnObjectNode.anInt1393, (byte) 4, spawnObjectNode.anInt1391,
+					spawnObjectNode.anInt1394);
+		if (spawnObjectNode.anInt1392 == 2)
+			i = currentScene.method269(spawnObjectNode.anInt1391, spawnObjectNode.anInt1393, spawnObjectNode.anInt1394);
+		if (spawnObjectNode.anInt1392 == 3)
+			i = currentScene.getFloorDecorationHash(spawnObjectNode.anInt1391, spawnObjectNode.anInt1393, spawnObjectNode.anInt1394);
 		if (i != 0) {
-			int i1 = currentScene.method271(class50_sub2.anInt1391, class50_sub2.anInt1393, class50_sub2.anInt1394, i);
+			int i1 = currentScene.method271(spawnObjectNode.anInt1391, spawnObjectNode.anInt1393, spawnObjectNode.anInt1394, i);
 			j = i >> 14 & 0x7fff;
 			k = i1 & 0x1f;
 			l = i1 >> 6;
 		}
-		class50_sub2.anInt1387 = j;
-		class50_sub2.anInt1389 = k;
-		class50_sub2.anInt1388 = l;
+		spawnObjectNode.anInt1387 = j;
+		spawnObjectNode.anInt1389 = k;
+		spawnObjectNode.anInt1388 = l;
 	}
 
 	public void method141() {
@@ -10497,7 +10508,7 @@ public class Game extends GameShell {
 	public void method143(byte byte0) {
 		if (byte0 != -40)
 			aBoolean1207 = !aBoolean1207;
-		if (lowMemory && loadingStage == 2 && MapArea.anInt162 != plane) {
+		if (lowMemory && loadingStage == 2 && Region.onBuildTimePlane != plane) {
 			method125(null, "Loading - please wait.");
 			loadingStage = 1;
 			aLong1229 = System.currentTimeMillis();
@@ -10506,7 +10517,7 @@ public class Game extends GameShell {
 			int i = method144(5);
 			if (i != 0 && System.currentTimeMillis() - aLong1229 > 0x57e40L) {
 				SignLink.reporterror(username + " glcfb " + serverSeed + "," + i + "," + lowMemory + ","
-						+ stores[0] + "," + onDemandFetcher.method333() + "," + plane + ","
+						+ stores[0] + "," + onDemandRequester.method333() + "," + plane + ","
 						+ chunkX + "," + chunkY);
 				aLong1229 = System.currentTimeMillis();
 			}
@@ -10537,7 +10548,7 @@ public class Game extends GameShell {
 					l = 10;
 					i1 = 10;
 				}
-				flag &= MapArea.method181(l, i1, abyte0, 24515);
+				flag &= Region.method181(l, i1, abyte0, 24515);
 			}
 		}
 
@@ -10547,7 +10558,7 @@ public class Game extends GameShell {
 			return -4;
 		} else {
 			loadingStage = 2;
-			MapArea.anInt162 = plane;
+			Region.onBuildTimePlane = plane;
 			method93(175);
 			outBuffer.putOpcode(6);
 			return 0;
@@ -10555,30 +10566,30 @@ public class Game extends GameShell {
 	}
 
 	public void method145(boolean flag, int i, int j, int k, int l, int i1, int j1, int k1, int l1, int i2) {
-		Class50_Sub2 class50_sub2 = null;
-		for (Class50_Sub2 class50_sub2_1 = (Class50_Sub2) aClass6_1261.first(); class50_sub2_1 != null; class50_sub2_1 = (Class50_Sub2) aClass6_1261
+		SpawnObjectNode spawnObjectNode = null;
+		for (SpawnObjectNode spawnObjectNode_1 = (SpawnObjectNode) aClass6_1261.first(); spawnObjectNode_1 != null; spawnObjectNode_1 = (SpawnObjectNode) aClass6_1261
 				.next()) {
-			if (class50_sub2_1.anInt1391 != i || class50_sub2_1.anInt1393 != j || class50_sub2_1.anInt1394 != i2
-					|| class50_sub2_1.anInt1392 != l1)
+			if (spawnObjectNode_1.anInt1391 != i || spawnObjectNode_1.anInt1393 != j || spawnObjectNode_1.anInt1394 != i2
+					|| spawnObjectNode_1.anInt1392 != l1)
 				continue;
-			class50_sub2 = class50_sub2_1;
+			spawnObjectNode = spawnObjectNode_1;
 			break;
 		}
 
-		if (class50_sub2 == null) {
-			class50_sub2 = new Class50_Sub2();
-			class50_sub2.anInt1391 = i;
-			class50_sub2.anInt1392 = l1;
-			class50_sub2.anInt1393 = j;
-			class50_sub2.anInt1394 = i2;
-			method140((byte) -61, class50_sub2);
-			aClass6_1261.addLast(class50_sub2);
+		if (spawnObjectNode == null) {
+			spawnObjectNode = new SpawnObjectNode();
+			spawnObjectNode.anInt1391 = i;
+			spawnObjectNode.anInt1392 = l1;
+			spawnObjectNode.anInt1393 = j;
+			spawnObjectNode.anInt1394 = i2;
+			method140((byte) -61, spawnObjectNode);
+			aClass6_1261.insertBack(spawnObjectNode);
 		}
-		class50_sub2.anInt1384 = j1;
-		class50_sub2.anInt1386 = i1;
-		class50_sub2.anInt1385 = k;
-		class50_sub2.anInt1395 = k1;
-		class50_sub2.anInt1390 = l;
+		spawnObjectNode.anInt1384 = j1;
+		spawnObjectNode.anInt1386 = i1;
+		spawnObjectNode.anInt1385 = k;
+		spawnObjectNode.anInt1395 = k1;
+		spawnObjectNode.anInt1390 = l;
 		loggedIn &= flag;
 	}
 
@@ -10770,9 +10781,9 @@ public class Game extends GameShell {
 			if (class47_2.anInt795 != -1) {
 				IndexedImage class50_sub1_sub1_sub3_2 = aClass50_Sub1_Sub1_Sub3Array1153[class47_2.anInt795];
 				if (class50_sub1_sub1_sub3_2 != null) {
-					int i6 = (class47_2.anInt801 * 4 - class50_sub1_sub1_sub3_2.width2) / 2;
-					int j6 = (class47_2.anInt775 * 4 - class50_sub1_sub1_sub3_2.anInt1519) / 2;
-					class50_sub1_sub1_sub3_2.drawImage(48 + (104 - i - class47_2.anInt775) * 4 + j6, 48 + k * 4 + i6
+					int i6 = (class47_2.sizeX * 4 - class50_sub1_sub1_sub3_2.width2) / 2;
+					int j6 = (class47_2.sizeY * 4 - class50_sub1_sub1_sub3_2.anInt1519) / 2;
+					class50_sub1_sub1_sub3_2.drawImage(48 + (104 - i - class47_2.sizeY) * 4 + j6, 48 + k * 4 + i6
 					);
 				}
 			} else {
@@ -10841,9 +10852,9 @@ public class Game extends GameShell {
 			if (class47_1.anInt795 != -1) {
 				IndexedImage class50_sub1_sub1_sub3_1 = aClass50_Sub1_Sub1_Sub3Array1153[class47_1.anInt795];
 				if (class50_sub1_sub1_sub3_1 != null) {
-					int j5 = (class47_1.anInt801 * 4 - class50_sub1_sub1_sub3_1.width2) / 2;
-					int k5 = (class47_1.anInt775 * 4 - class50_sub1_sub1_sub3_1.anInt1519) / 2;
-					class50_sub1_sub1_sub3_1.drawImage(48 + (104 - i - class47_1.anInt775) * 4 + k5, 48 + k * 4 + j5
+					int j5 = (class47_1.sizeX * 4 - class50_sub1_sub1_sub3_1.width2) / 2;
+					int k5 = (class47_1.sizeY * 4 - class50_sub1_sub1_sub3_1.anInt1519) / 2;
+					class50_sub1_sub1_sub3_1.drawImage(48 + (104 - i - class47_1.sizeY) * 4 + k5, 48 + k * 4 + j5
 					);
 				}
 			} else if (j3 == 9) {
@@ -10872,9 +10883,9 @@ public class Game extends GameShell {
 			if (class47.anInt795 != -1) {
 				IndexedImage class50_sub1_sub1_sub3 = aClass50_Sub1_Sub1_Sub3Array1153[class47.anInt795];
 				if (class50_sub1_sub1_sub3 != null) {
-					int i4 = (class47.anInt801 * 4 - class50_sub1_sub1_sub3.width2) / 2;
-					int j4 = (class47.anInt775 * 4 - class50_sub1_sub1_sub3.anInt1519) / 2;
-					class50_sub1_sub1_sub3.drawImage(48 + (104 - i - class47.anInt775) * 4 + j4, 48 + k * 4 + i4);
+					int i4 = (class47.sizeX * 4 - class50_sub1_sub1_sub3.width2) / 2;
+					int j4 = (class47.sizeY * 4 - class50_sub1_sub1_sub3.anInt1519) / 2;
+					class50_sub1_sub1_sub3.drawImage(48 + (104 - i - class47.sizeY) * 4 + j4, 48 + k * 4 + i4);
 				}
 			}
 		}
@@ -10939,7 +10950,7 @@ public class Game extends GameShell {
 		Model.anInt1707 = super.mouseY - 4;
 		Rasterizer.resetPixels();
 		currentScene.method280(anInt1216, k, 0, anInt1217, anInt1218, anInt1220, anInt1219);
-		currentScene.method255(anInt897);
+		currentScene.method255();
 		method121(false);
 		method127(true);
 		method65(l2);
@@ -11004,7 +11015,7 @@ public class Game extends GameShell {
 			if (previousSong == 0 && musicEnabled && !lowMemory) {
 				nextSong = currentSong;
 				songChanging = true;
-				onDemandFetcher.request(2, nextSong);
+				onDemandRequester.request(2, nextSong);
 			}
 		}
 	}
@@ -11168,7 +11179,7 @@ public class Game extends GameShell {
 		anInt1256 = 1;
 		anIntArray1258 = new int[100];
 		soundDelay = new int[50];
-		currentCollisionMap = new ClippingPlane[4];
+		currentCollisionMap = new CollisionMap[4];
 		aClass6_1261 = new LinkedList();
 		aBoolean1265 = false;
 		musicEnabled = true;
@@ -11266,7 +11277,7 @@ public class Game extends GameShell {
 	public ImageRGB cursorCross[];
 	public int anInt897;
 	public byte aByte898;
-	public IsaacRandom incomingRandom;
+	public ISAACCipher incomingRandom;
 	public boolean aBoolean900;
 	public byte aByte901;
 	public long aLong902;
@@ -11395,7 +11406,7 @@ public class Game extends GameShell {
 	public int anInt1021;
 	public int crossIndex;
 	public int crossType;
-	public JagSocket bufferedConnection;
+	public BufferedConnection bufferedConnection;
 	public String chatMessage;
 	public String aString1027;
 	public boolean aBoolean1028;
@@ -11534,7 +11545,7 @@ public class Game extends GameShell {
 	public byte aByte1161;
 	public static int anInt1162;
 	public boolean aBoolean1163;
-	public SceneGraph currentScene;
+	public Scene currentScene;
 	public static int anInt1165;
 	public int anIntArray1166[];
 	public static Player thisPlayer;
@@ -11629,7 +11640,7 @@ public class Game extends GameShell {
 	public int anInt1256;
 	public int anIntArray1258[];
 	public int soundDelay[];
-	public ClippingPlane currentCollisionMap[];
+	public CollisionMap currentCollisionMap[];
 	public LinkedList aClass6_1261;
 	public int anInt1262;
 	public int anInt1263;
@@ -11661,7 +11672,7 @@ public class Game extends GameShell {
 	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1288[];
 	public int anInt1289;
 	public int anIntArray1290[] = { 17, 24, 34, 40 };
-	public OnDemandFetcher onDemandFetcher;
+	public OnDemandRequester onDemandRequester;
 	public IndexedImage titleboxImage;
 	public IndexedImage titleboxButtonImage;
 	public int removePlayerCount;

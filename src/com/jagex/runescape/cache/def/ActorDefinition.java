@@ -1,7 +1,7 @@
 package com.jagex.runescape.cache.def;
 
 import com.jagex.runescape.Archive;
-import com.jagex.runescape.Buffer;
+import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.Game;
 import com.jagex.runescape.cache.cfg.Varbit;
 import com.jagex.runescape.collection.Cache;
@@ -66,91 +66,120 @@ public class ActorDefinition {
 	public void loadDefinition(Buffer buffer) {
 		while (true) {
 			int attributeId = buffer.getUnsignedByte();
-			if (attributeId == 0)
-				return;
-			if (attributeId == 1) {
-				int modelCount = buffer.getUnsignedByte();
-				modelIds = new int[modelCount];
-				for (int model = 0; model < modelCount; model++)
-					modelIds[model] = buffer.getUnsignedLEShort();
+			switch (attributeId) {
+				case 0:
+					return;
+				case 1:
+					int modelCount = buffer.getUnsignedByte();
+					modelIds = new int[modelCount];
+					for (int model = 0; model < modelCount; model++)
+						modelIds[model] = buffer.getUnsignedLEShort();
+					break;
+				case 2:
+					name = buffer.getString();
+					break;
+				case 3:
+					description = buffer.getStringBytes();
+					break;
+				case 12:
+					boundaryDimension = buffer.getSignedByte();
+					break;
+				case 13:
+					standAnimationId = buffer.getUnsignedLEShort();
+					break;
+				case 14:
+					walkAnimationId = buffer.getUnsignedLEShort();
+					break;
+				case 17:
+					walkAnimationId = buffer.getUnsignedLEShort();
+					turnAroundAnimationId = buffer.getUnsignedLEShort();
+					turnRightAnimationId = buffer.getUnsignedLEShort();
+					turnLeftAnimationId = buffer.getUnsignedLEShort();
+					break;
+				case 30:
+				case 31:
+				case 32:
+				case 34:
+				case 35:
+				case 36:
+				case 37:
+				case 38:
+				case 39:
+					if (actions == null)
+						actions = new String[5];
+					actions[attributeId - 30] = buffer.getString();
+					if (actions[attributeId - 30].equalsIgnoreCase("hidden"))
+						actions[attributeId - 30] = null;
+					break;
+				case 40:
+					int modelColorCount = buffer.getUnsignedByte();
+					modifiedModelColors = new int[modelColorCount];
+					originalModelColors = new int[modelColorCount];
+					for (int color = 0; color < modelColorCount; color++) {
+						modifiedModelColors[color] = buffer.getUnsignedLEShort();
+						originalModelColors[color] = buffer.getUnsignedLEShort();
+					}
+					break;
+				case 60:
+					int additionalModelCount = buffer.getUnsignedByte();
+					headModelIndexes = new int[additionalModelCount];
+					for (int model = 0; model < additionalModelCount; model++)
+						headModelIndexes[model] = buffer.getUnsignedLEShort();
+				case 90:
+				case 91:
+				case 92:
+					buffer.getUnsignedLEShort();
+					break;
+				case 93:
+					minimapVisible = false;
+					break;
+				case 95:
+					combatLevel = buffer.getUnsignedLEShort();
+					break;
+				case 97:
+					sizeXZ = buffer.getUnsignedLEShort();
+					break;
+				case 98:
+					sizeY = buffer.getUnsignedLEShort();
+					break;
+				case 99:
+					visible = true;
+					break;
+				case 100:
+					brightness = buffer.getSignedByte();
+					break;
+				case 101:
+					contrast = buffer.getSignedByte() * 5;
+					break;
+				case 102:
+					headIcon = buffer.getUnsignedLEShort();
+					break;
+				case 103:
+					degreesToTurn = buffer.getUnsignedLEShort();
+					break;
+				case 106:
+					varBitId = buffer.getUnsignedLEShort();
+					if (varBitId == 65535)
+						varBitId = -1;
+					settingId = buffer.getUnsignedLEShort();
+					if (settingId == 65535)
+						settingId = -1;
+					int childrenCount = buffer.getUnsignedByte();
+					childrenIds = new int[childrenCount + 1];
+					for (int child = 0; child <= childrenCount; child++) {
+						childrenIds[child] = buffer.getUnsignedLEShort();
+						if (childrenIds[child] == 65535)
+							childrenIds[child] = -1;
+					}
+					break;
 
-			} else if (attributeId == 2)
-				name = buffer.getString();
-			else if (attributeId == 3)
-				description = buffer.getStringBytes();
-			else if (attributeId == 12)
-				boundaryDimension = buffer.getSignedByte();
-			else if (attributeId == 13)
-				standAnimationId = buffer.getUnsignedLEShort();
-			else if (attributeId == 14)
-				walkAnimationId = buffer.getUnsignedLEShort();
-			else if (attributeId == 17) {
-				walkAnimationId = buffer.getUnsignedLEShort();
-				turnAroundAnimationId = buffer.getUnsignedLEShort();
-				turnRightAnimationId = buffer.getUnsignedLEShort();
-				turnLeftAnimationId = buffer.getUnsignedLEShort();
-			} else if (attributeId >= 30 && attributeId < 40) {
-				if (actions == null)
-					actions = new String[5];
-				actions[attributeId - 30] = buffer.getString();
-				if (actions[attributeId - 30].equalsIgnoreCase("hidden"))
-					actions[attributeId - 30] = null;
-			} else if (attributeId == 40) {
-				int modelColorCount = buffer.getUnsignedByte();
-				modifiedModelColors = new int[modelColorCount];
-				originalModelColors = new int[modelColorCount];
-				for (int color = 0; color < modelColorCount; color++) {
-					modifiedModelColors[color] = buffer.getUnsignedLEShort();
-					originalModelColors[color] = buffer.getUnsignedLEShort();
-				}
 
-			} else if (attributeId == 60) {
-				int additionalModelCount = buffer.getUnsignedByte();
-				headModelIndexes = new int[additionalModelCount];
-				for (int model = 0; model < additionalModelCount; model++)
-					headModelIndexes[model] = buffer.getUnsignedLEShort();
+				case 107:
+					clickable = false;
+					break;
 
-			} else if (attributeId == 90)
-				buffer.getUnsignedLEShort(); // dummy
-			else if (attributeId == 91)
-				buffer.getUnsignedLEShort(); // dummy
-			else if (attributeId == 92)
-				buffer.getUnsignedLEShort(); // dummy
-			else if (attributeId == 93)
-				minimapVisible = false;
-			else if (attributeId == 95)
-				combatLevel = buffer.getUnsignedLEShort();
-			else if (attributeId == 97)
-				sizeXZ = buffer.getUnsignedLEShort();
-			else if (attributeId == 98)
-				sizeY = buffer.getUnsignedLEShort();
-			else if (attributeId == 99)
-				visible = true;
-			else if (attributeId == 100)
-				brightness = buffer.getSignedByte();
-			else if (attributeId == 101)
-				contrast = buffer.getSignedByte() * 5;
-			else if (attributeId == 102)
-				headIcon = buffer.getUnsignedLEShort();
-			else if (attributeId == 103)
-				degreesToTurn = buffer.getUnsignedLEShort();
-			else if (attributeId == 106) {
-				varBitId = buffer.getUnsignedLEShort();
-				if (varBitId == 65535)
-					varBitId = -1;
-				settingId = buffer.getUnsignedLEShort();
-				if (settingId == 65535)
-					settingId = -1;
-				int childrenCount = buffer.getUnsignedByte();
-				childrenIds = new int[childrenCount + 1];
-				for (int child = 0; child <= childrenCount; child++) {
-					childrenIds[child] = buffer.getUnsignedLEShort();
-					if (childrenIds[child] == 65535)
-						childrenIds[child] = -1;
-				}
 
-			} else if (attributeId == 107)
-				clickable = false;
+			}
 		}
 	}
 
