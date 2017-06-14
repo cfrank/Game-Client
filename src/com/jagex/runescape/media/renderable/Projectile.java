@@ -2,7 +2,7 @@ package com.jagex.runescape.media.renderable;// Decompiled by Jad v1.5.8f. Copyr
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
-import com.jagex.runescape.SpotAnimation;
+import com.jagex.runescape.cache.media.SpotAnimation;
 import com.jagex.runescape.media.Animation;
 
 public class Projectile extends Renderable {

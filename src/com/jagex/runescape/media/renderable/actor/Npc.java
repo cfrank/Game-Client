@@ -4,7 +4,7 @@ package com.jagex.runescape.media.renderable.actor;// Decompiled by Jad v1.5.8f.
 
 import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.cache.media.AnimationSequence;
-import com.jagex.runescape.SpotAnimation;
+import com.jagex.runescape.cache.media.SpotAnimation;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
 

@@ -1,6 +1,6 @@
 package com.jagex.runescape.media.renderable;
 
-import com.jagex.runescape.SpotAnimation;
+import com.jagex.runescape.cache.media.SpotAnimation;
 import com.jagex.runescape.media.Animation;
 
 public class GameAnimableObject extends Renderable {

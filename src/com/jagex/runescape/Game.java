@@ -24,6 +24,7 @@ import com.jagex.runescape.cache.def.FloorDefinition;
 import com.jagex.runescape.cache.def.GameObjectDefinition;
 import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.cache.media.IdentityKit;
+import com.jagex.runescape.cache.media.SpotAnimation;
 import com.jagex.runescape.collection.Node;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.ProducingGraphicsBuffer;
@@ -363,10 +364,9 @@ public class Game extends GameShell {
 		Widget.method202(false);
 		FloorDefinition.cache = null;
 		IdentityKit.cache = null;
-		Class4.aClass4Array103 = null; //not used
 		AnimationSequence.cache = null;
 		SpotAnimation.cache = null;
-		SpotAnimation.models = null;
+		SpotAnimation.modelCache = null;
 		Varp.cache = null;
 		super.imageProducer = null;
 		Player.modelCache = null;
@@ -3373,7 +3373,7 @@ public class Game extends GameShell {
 		ItemDefinition.modelCache.removeAll();
 		ItemDefinition.rgbImageCache.removeAll();
 		Player.modelCache.removeAll();
-		SpotAnimation.models.removeAll();
+		SpotAnimation.modelCache.removeAll();
 	}
 
 
