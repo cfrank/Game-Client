@@ -76,7 +76,7 @@ public class Projectile extends Renderable {
 			return null;
 		int frameId = -1;
 		if (animation.sequences != null)
-			frameId = animation.sequences.frame2Ids[animationFrame];
+			frameId = animation.sequences.getPrimaryFrame[animationFrame];
 		Model projectileModel = new Model(true,
 				model, Animation.exists(frameId));
 		if (frameId != -1) {

@@ -295,7 +295,7 @@ public class ActorDefinition {
 			childIdModel.applyLighting(64 + brightness, 850 + contrast, -30, -50, -30, true);
 			modelCache.put(childIdModel, id);
 		}
-		Model childModel = Model.aModel1614;
+		Model childModel = Model.EMPTY_MODEL;
 		childModel.replaceWithModel(childIdModel, Animation.exists(frameId2) & Animation.exists(frameId)
 		);
 		if (frameId2 != -1 && frameId != -1)

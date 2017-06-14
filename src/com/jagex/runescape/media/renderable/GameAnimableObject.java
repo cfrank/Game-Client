@@ -45,7 +45,7 @@ public class GameAnimableObject extends Renderable {
 		Model model = animation.getModel();
 		if (model == null)
 			return null;
-		int frame = animation.sequences.frame2Ids[eclapsedFrames];
+		int frame = animation.sequences.getPrimaryFrame[eclapsedFrames];
 		Model animatedModel = new Model(true,
 				model, Animation.exists(frame));
 		if (!transformCompleted) {

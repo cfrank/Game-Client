@@ -9,12 +9,12 @@ public abstract class Actor extends Renderable {
 	public String forcedChat;
 	public int textCycle = 100;
 	public int textColour;
-	public int anInt1584;
+	public int nextStepOrientation;
 	public int pulseCycle;
 	public int[] pathX = new int[10];
 	public int[] pathY = new int[10];
-	public int anInt1588 = -1;
-	public int anInt1589;
+	public int movementAnimation = -1;
+	public int displayedMovementFrames;
 	public int anInt1590;
 	public boolean[] runningQueue = new boolean[10];
 	public boolean aBoolean1592 = false;
@@ -35,32 +35,32 @@ public abstract class Actor extends Renderable {
 	public int anInt1607;
 	public int anInt1608;
 	public int anInt1609 = -1;
-	public int unitX;
-	public int unitY;
+	public int xWithBoundary;
+	public int yWithBoundary;
 	public int anInt1612;
 	public int anInt1613;
-	public int spotAnimationId = -1;
-	public int currentAnimationFrame;
+	public int graphic = -1;
+	public int currentAnimation;
 	public int anInt1616;
 	public int anInt1617;
-	public int anInt1618;
-	public int anInt1619 = -1;
-	public int anInt1620 = -1;
-	public int anInt1621 = -1;
-	public int anInt1622 = -1;
+	public int spotAnimationDelay;
+	public int walkAnimationId = -1;
+	public int turnAroundAnimationId = -1;
+	public int turnRightAnimationId = -1;
+	public int turnLeftAnimationId = -1;
 	public int anInt1623;
-	public int animation = -1;
-	public int anInt1625;
+	public int emoteAnimation = -1;
+	public int displayedEmoteFrames;
 	public int anInt1626;
 	public int animationDelay;
 	public int anInt1628;
-	public int anInt1629 = -1;
+	public int runAnimationId = -1;
 	public int[] hitDamages = new int[4];
 	public int[] hitTypes = new int[4];
 	public int[] hitCycles = new int[4];
 	public int pathLength;
 	public int standAnimationId = -1;
-	public int anInt1635 = -1;
+	public int standTurnAnimationId = -1;
 
 	public void resetPath() {
 		pathLength = 0;
@@ -98,8 +98,8 @@ public abstract class Actor extends Renderable {
 			x++;
 			y--;
 		}
-		if (animation != -1 && AnimationSequence.cache[animation].priority == 1)
-			animation = -1;
+		if (emoteAnimation != -1 && AnimationSequence.animations[emoteAnimation].priority == 1)
+			emoteAnimation = -1;
 		if (pathLength < 9)
 			pathLength++;
 		for (int pos = pathLength; pos > 0; pos--) {
@@ -125,8 +125,8 @@ public abstract class Actor extends Renderable {
 	}
 
 	public void setPosition(int x, int y, boolean discard) {
-		if (animation != -1 && AnimationSequence.cache[animation].priority == 1)
-			animation = -1;
+		if (emoteAnimation != -1 && AnimationSequence.animations[emoteAnimation].priority == 1)
+			emoteAnimation = -1;
 		if (!discard) {
 			int k = x - pathX[0];
 			int i1 = y - pathY[0];
@@ -150,7 +150,7 @@ public abstract class Actor extends Renderable {
 		anInt1623 = 0;
 		pathX[0] = x;
 		pathY[0] = y;
-		unitX = pathX[0] * 128 + boundaryDimension * 64;
-		unitY = pathY[0] * 128 + boundaryDimension * 64;
+		xWithBoundary = pathX[0] * 128 + boundaryDimension * 64;
+		yWithBoundary = pathY[0] * 128 + boundaryDimension * 64;
 	}
 }

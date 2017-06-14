@@ -17,7 +17,7 @@ public class Model extends Renderable {
     ;
     public boolean aBoolean1641 = false;
     public static int anInt1642;
-    public static Model aModel1614 = new Model();
+    public static Model EMPTY_MODEL = new Model();
     public static int anIntArray1644[] = new int[2000];
     public static int anIntArray1645[] = new int[2000];
     public static int anIntArray1646[] = new int[2000];
@@ -709,7 +709,7 @@ public class Model extends Renderable {
         texturedTrianglePointsX = class50_sub1_sub4_sub4.texturedTrianglePointsX;
         texturedTrianglePointsY = class50_sub1_sub4_sub4.texturedTrianglePointsY;
         texturedTrianglePointsZ = class50_sub1_sub4_sub4.texturedTrianglePointsZ;
-        super.height = ((Renderable) (class50_sub1_sub4_sub4)).height;
+        super.modelHeight = ((Renderable) (class50_sub1_sub4_sub4)).modelHeight;
         maxY = class50_sub1_sub4_sub4.maxY;
         shadowIntensity = class50_sub1_sub4_sub4.shadowIntensity;
         anInt1674 = class50_sub1_sub4_sub4.anInt1674;
@@ -794,15 +794,15 @@ public class Model extends Renderable {
     }
 
     public void calculateDiagonals() {
-        super.height = 0;
+        super.modelHeight = 0;
         shadowIntensity = 0;
         maxY = 0;
         for (int vertex = 0; vertex < vertexCount; vertex++) {
             int vertexX = verticesX[vertex];
             int vertexY = verticesY[vertex];
             int vertexZ = verticesZ[vertex];
-            if (-vertexY > super.height)
-                super.height = -vertexY;
+            if (-vertexY > super.modelHeight)
+                super.modelHeight = -vertexY;
             if (vertexY > maxY)
                 maxY = vertexY;
             int j1 = vertexX * vertexX + vertexZ * vertexZ;
@@ -811,27 +811,27 @@ public class Model extends Renderable {
         }
 
         shadowIntensity = (int) (Math.sqrt(shadowIntensity) + 0.98999999999999999D);
-        anInt1674 = (int) (Math.sqrt(shadowIntensity * shadowIntensity + super.height * super.height) + 0.98999999999999999D);
+        anInt1674 = (int) (Math.sqrt(shadowIntensity * shadowIntensity + super.modelHeight * super.modelHeight) + 0.98999999999999999D);
         anInt1673 = anInt1674 + (int) (Math.sqrt(shadowIntensity * shadowIntensity + maxY * maxY) + 0.98999999999999999D);
     }
 
     public void normalise() {
-        super.height = 0;
+        super.modelHeight = 0;
         maxY = 0;
         for (int j = 0; j < vertexCount; j++) {
             int k = verticesY[j];
-            if (-k > super.height)
-                super.height = -k;
+            if (-k > super.modelHeight)
+                super.modelHeight = -k;
             if (k > maxY)
                 maxY = k;
         }
 
-        anInt1674 = (int) (Math.sqrt(shadowIntensity * shadowIntensity + super.height * super.height) + 0.98999999999999999D);
+        anInt1674 = (int) (Math.sqrt(shadowIntensity * shadowIntensity + super.modelHeight * super.modelHeight) + 0.98999999999999999D);
         anInt1673 = anInt1674 + (int) (Math.sqrt(shadowIntensity * shadowIntensity + maxY * maxY) + 0.98999999999999999D);
     }
 
     public void method583(int i) {
-        super.height = 0;
+        super.modelHeight = 0;
         shadowIntensity = 0;
         maxY = 0;
         int j = 32767;
@@ -850,8 +850,8 @@ public class Model extends Renderable {
                 i1 = i2;
             if (i2 > l)
                 l = i2;
-            if (-l1 > super.height)
-                super.height = -l1;
+            if (-l1 > super.modelHeight)
+                super.modelHeight = -l1;
             if (l1 > maxY)
                 maxY = l1;
             int j2 = k1 * k1 + i2 * i2;
@@ -860,7 +860,7 @@ public class Model extends Renderable {
         }
 
         shadowIntensity = (int) Math.sqrt(shadowIntensity);
-        anInt1674 = (int) Math.sqrt(shadowIntensity * shadowIntensity + super.height * super.height);
+        anInt1674 = (int) Math.sqrt(shadowIntensity * shadowIntensity + super.modelHeight * super.modelHeight);
         anInt1673 = anInt1674 + (int) Math.sqrt(shadowIntensity * shadowIntensity + maxY * maxY);
         anInt1669 = (j << 16) + (k & 0xffff);
         if (i <= 0)
@@ -1416,11 +1416,11 @@ public class Model extends Renderable {
         int k4 = i4 + j4 << 9;
         if (k4 / i3 <= -Rasterizer.centerY)
             return;
-        int l4 = j4 + (super.height * k >> 16);
+        int l4 = j4 + (super.modelHeight * k >> 16);
         int i5 = i4 - l4 << 9;
         if (i5 / i3 >= Rasterizer.centerY)
             return;
-        int j5 = l2 + (super.height * j >> 16);
+        int j5 = l2 + (super.modelHeight * j >> 16);
         boolean flag = false;
         if (k2 - j5 <= 50)
             flag = true;

@@ -10,7 +10,100 @@ import com.jagex.runescape.net.Buffer;
 
 public class ItemDefinition {
 
-	public boolean method211(int i) {
+	public int anInt326;
+	public int modelOffsetX;
+	public byte description[];
+	public String name;
+	public byte aByte330;
+	public int anInt331;
+	public int team;
+	public int notedInfoId;
+	public int anInt334;
+	public static int count;
+	public static ItemDefinition cache[];
+	public static Cache modelCache = new Cache(50);
+	public String groundActions[];
+	public int anInt339;
+	public int modelOffsetY;
+	public int destColors[];
+	public static int indices[];
+	public int notedGraphicsId;
+	public static boolean memberServer = true;
+	public int value;
+	public static Cache rgbImageCache = new Cache(100);
+	public String inventoryActions[];
+	public static boolean aBoolean350 = true;
+	public static int cachePos;
+	public int anInt353;
+	public int anInt354;
+	public int anInt355;
+	public int modelRotationY;
+	public int anInt357;
+	public int anInt358;
+	public int modelRotationX;
+	public int modelId;
+	public int anInt361;
+	public int anInt362;
+	public int id = -1;
+	public int srcColors[];
+	public int stackIds[];
+	public int anInt366;
+	public int anInt367;
+	public int anInt368;
+	public int modelScale;
+	public int anInt370;
+	public boolean stackable;
+	public int anInt372;
+	public static Buffer buffer;
+	public int anInt375;
+	public int stackAmounts[];
+	public boolean members;
+	public byte aByte378;
+
+
+	public void reset() {
+		modelId = 0;
+		name = null;
+		description = null;
+		srcColors = null;
+		destColors = null;
+		modelScale = 2000;
+		modelRotationX = 0;
+		modelRotationY = 0;
+		anInt339 = 0;
+		modelOffsetX = 0;
+		modelOffsetY = 0;
+		anInt372 = -1;
+		stackable = false;
+		value = 1;
+		members = false;
+		groundActions = null;
+		inventoryActions = null;
+		anInt353 = -1;
+		anInt331 = -1;
+		aByte378 = 0;
+		anInt326 = -1;
+		anInt355 = -1;
+		aByte330 = 0;
+		anInt370 = -1;
+		anInt367 = -1;
+		anInt334 = -1;
+		anInt361 = -1;
+		anInt375 = -1;
+		anInt362 = -1;
+		stackIds = null;
+		stackAmounts = null;
+		notedInfoId = -1;
+		notedGraphicsId = -1;
+		anInt366 = 128;
+		anInt357 = 128;
+		anInt368 = 128;
+		anInt354 = 0;
+		anInt358 = 0;
+		team = 0;
+	}
+
+	public boolean isDialogueCached(int i) {
 		int k = anInt334;
 		int l = anInt361;
 		if (i == 1) {
@@ -34,10 +127,10 @@ public class ItemDefinition {
 
 		cachePos = (cachePos + 1) % 10;
 		ItemDefinition def = cache[cachePos];
-		buf.currentPosition = indices[id];
+		buffer.currentPosition = indices[id];
 		def.id = id;
 		def.reset();
-		def.init(buf);
+		def.init(buffer);
 		if (def.notedGraphicsId != -1)
 			def.toNote();
 		if (!memberServer && def.members) {
@@ -89,7 +182,7 @@ public class ItemDefinition {
 	}
 
 	public static void load(Archive archive) {
-		buf = new Buffer(archive.getFile("obj.dat"));
+		buffer = new Buffer(archive.getFile("obj.dat"));
 		Buffer objectIndexVector = new Buffer(archive.getFile("obj.idx"));
 		count = objectIndexVector.getUnsignedLEShort();
 		indices = new int[count];
@@ -128,7 +221,7 @@ public class ItemDefinition {
 		stackable = true;
 	}
 
-	public boolean method216(int i, int j) {
+	public boolean equipmentReady(int i, int j) {
 		while (i >= 0)
 			aBoolean350 = !aBoolean350;
 		int k = anInt353;
@@ -381,7 +474,7 @@ public class ItemDefinition {
 		int k3 = Rasterizer3D.SINE[class16.modelRotationX] * j3 >> 16;
 		int l3 = Rasterizer3D.COSINE[class16.modelRotationX] * j3 >> 16;
 		class50_sub1_sub4_sub4.method598(0, class16.modelRotationY, class16.anInt339, class16.modelRotationX, class16.modelOffsetX, k3
-				+ ((Renderable) (class50_sub1_sub4_sub4)).height / 2 + class16.modelOffsetY, l3
+				+ ((Renderable) (class50_sub1_sub4_sub4)).modelHeight / 2 + class16.modelOffsetY, l3
 				+ class16.modelOffsetY);
 		for (int l4 = 31; l4 >= 0; l4--) {
 			for (int i4 = 31; i4 >= 0; i4--)
@@ -458,107 +551,8 @@ public class ItemDefinition {
 		rgbImageCache = null;
 		indices = null;
 		cache = null;
-		buf = null;
+		buffer = null;
 	}
 
-	public void reset() {
-		modelId = 0;
-		name = null;
-		description = null;
-		srcColors = null;
-		destColors = null;
-		modelScale = 2000;
-		modelRotationX = 0;
-		modelRotationY = 0;
-		anInt339 = 0;
-		modelOffsetX = 0;
-		modelOffsetY = 0;
-		anInt372 = -1;
-		stackable = false;
-		value = 1;
-		members = false;
-		groundActions = null;
-		inventoryActions = null;
-		anInt353 = -1;
-		anInt331 = -1;
-		aByte378 = 0;
-		anInt326 = -1;
-		anInt355 = -1;
-		aByte330 = 0;
-		anInt370 = -1;
-		anInt367 = -1;
-		anInt334 = -1;
-		anInt361 = -1;
-		anInt375 = -1;
-		anInt362 = -1;
-		stackIds = null;
-		stackAmounts = null;
-		notedInfoId = -1;
-		notedGraphicsId = -1;
-		anInt366 = 128;
-		anInt357 = 128;
-		anInt368 = 128;
-		anInt354 = 0;
-		anInt358 = 0;
-		team = 0;
-	}
-
-	public ItemDefinition() {
-		anInt351 = -68;
-		id = -1;
-	}
-
-	public int anInt326;
-	public int modelOffsetX;
-	public byte description[];
-	public String name;
-	public byte aByte330;
-	public int anInt331;
-	public int team;
-	public int notedInfoId;
-	public int anInt334;
-	public static int count;
-	public static ItemDefinition cache[];
-	public static Cache modelCache = new Cache(50);
-	public String groundActions[];
-	public int anInt339;
-	public int modelOffsetY;
-	public int destColors[];
-	public static int indices[];
-	public int notedGraphicsId;
-	public static boolean memberServer = true;
-	public int value;
-	public static Cache rgbImageCache = new Cache(100);
-	public static byte aByte347 = 6;
-	public String inventoryActions[];
-	public static boolean aBoolean350 = true;
-	public int anInt351;
-	public static int cachePos;
-	public int anInt353;
-	public int anInt354;
-	public int anInt355;
-	public int modelRotationY;
-	public int anInt357;
-	public int anInt358;
-	public int modelRotationX;
-	public int modelId;
-	public int anInt361;
-	public int anInt362;
-	public int id;
-	public int srcColors[];
-	public int stackIds[];
-	public int anInt366;
-	public int anInt367;
-	public int anInt368;
-	public int modelScale;
-	public int anInt370;
-	public boolean stackable;
-	public int anInt372;
-	public static Buffer buf;
-	public boolean aBoolean374;
-	public int anInt375;
-	public int stackAmounts[];
-	public boolean members;
-	public byte aByte378;
 
 }

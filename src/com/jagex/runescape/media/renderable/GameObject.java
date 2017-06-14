@@ -30,7 +30,7 @@ public class GameObject extends Renderable {
 		this.vertexHeightTopRight = vertexHeightTopRight;
 		this.vertexHeightTop = vertexHeightTop;
 		if (animationId != -1) {
-			animationSequence = AnimationSequence.cache[animationId];
+			animationSequence = AnimationSequence.animations[animationId];
 			animationFrame = 0;
 			animationCycleDelay = client.pulseCycle - 1;
 			if (flag && animationSequence.frameStep != -1) {
@@ -83,7 +83,7 @@ public class GameObject extends Renderable {
 			}
 			animationCycleDelay = client.pulseCycle - step;
 			if (animationSequence != null)
-				animation = animationSequence.frame2Ids[animationFrame];
+				animation = animationSequence.getPrimaryFrame[animationFrame];
 		}
 		GameObjectDefinition gameObjectDefinition;
 		if (childrenIds != null)

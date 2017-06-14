@@ -251,7 +251,7 @@ public class GameObjectDefinition {
             animtedModel.translate(translateX, translateZ, translateY);
         animtedModel.applyLighting(64 + modelLightFalloff, 768 + modelLightAmbient * 5, -50, -10, -50, !nonFlatShading);
         if (anInt794 == 1)
-            animtedModel.anInt1675 = animtedModel.height;
+            animtedModel.anInt1675 = animtedModel.modelHeight;
         animatedModelCache.put(animtedModel, hash);
         return animtedModel;
     }

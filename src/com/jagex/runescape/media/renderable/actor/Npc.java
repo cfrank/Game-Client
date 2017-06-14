@@ -12,16 +12,16 @@ public class Npc extends Actor {
 	public ActorDefinition npcDefinition;
 
 	public Model getChildModel() {
-		if (super.animation >= 0 && super.animationDelay == 0) {
-			int frameId = AnimationSequence.cache[super.animation].frame2Ids[super.anInt1625];
+		if (super.emoteAnimation >= 0 && super.animationDelay == 0) {
+			int frameId = AnimationSequence.animations[super.emoteAnimation].getPrimaryFrame[super.displayedEmoteFrames];
 			int frameId2 = -1;
-			if (super.anInt1588 >= 0 && super.anInt1588 != super.standAnimationId)
-				frameId2 = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
-			return npcDefinition.getChildModel(frameId, frameId2, AnimationSequence.cache[super.animation].flowControl);
+			if (super.movementAnimation >= 0 && super.movementAnimation != super.standAnimationId)
+				frameId2 = AnimationSequence.animations[super.movementAnimation].getPrimaryFrame[super.displayedMovementFrames];
+			return npcDefinition.getChildModel(frameId, frameId2, AnimationSequence.animations[super.emoteAnimation].flowControl);
 		}
 		int j = -1;
-		if (super.anInt1588 >= 0)
-			j = AnimationSequence.cache[super.anInt1588].frame2Ids[super.anInt1589];
+		if (super.movementAnimation >= 0)
+			j = AnimationSequence.animations[super.movementAnimation].getPrimaryFrame[super.displayedMovementFrames];
 		return npcDefinition.getChildModel(j, -1, null);
 	}
 
@@ -32,15 +32,15 @@ public class Npc extends Actor {
 		Model model = getChildModel();
 		if (model == null)
 			return null;
-		super.modelHeight = model.height;
-		if (super.spotAnimationId != -1 && super.currentAnimationFrame != -1) {
-			SpotAnimation spotanimation = SpotAnimation.cache[super.spotAnimationId];
+		super.modelHeight = model.modelHeight;
+		if (super.graphic != -1 && super.currentAnimation != -1) {
+			SpotAnimation spotanimation = SpotAnimation.cache[super.graphic];
 			Model model_4_ = spotanimation.getModel();
 			if (model_4_ != null) {
-				int animationId = spotanimation.sequences.frame2Ids[super.currentAnimationFrame];
+				int animationId = spotanimation.sequences.getPrimaryFrame[super.currentAnimation];
 				Model animationModel = new Model(true,
 						model_4_, Animation.exists(animationId));
-				animationModel.translate(0, 0, -super.anInt1618);
+				animationModel.translate(0, 0, -super.spotAnimationDelay);
 				animationModel.createBones();
 				animationModel.applyTransform(animationId);
 				animationModel.triangleSkin = null;

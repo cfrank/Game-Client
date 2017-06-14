@@ -7,17 +7,17 @@ import com.jagex.runescape.media.Animation;
 public class AnimationSequence {
 
 	public static int count;
-	public static AnimationSequence cache[];
+	public static AnimationSequence animations[];
 	public int frameCount;
-	public int frame2Ids[];
+	public int getPrimaryFrame[];
 	public int frame1Ids[];
 	public int frameLenghts[];
 	public int frameStep = -1;
 	public int flowControl[];
 	public boolean aBoolean300 = false;
 	public int anInt301 = 5;
-	public int anInt302 = -1;
-	public int anInt303 = -1;
+	public int getPlayerShieldDelta = -1;
+	public int getPlayerWeaponDelta = -1;
 	public int anInt304 = 99;
 	public int anInt305 = -1;
 	public int priority = -1;
@@ -27,19 +27,19 @@ public class AnimationSequence {
 	public static void load(Archive archive) {
 		Buffer buffer = new Buffer(archive.getFile("seq.dat"));
 		AnimationSequence.count = buffer.getUnsignedLEShort();
-		if (AnimationSequence.cache == null)
-			AnimationSequence.cache = new AnimationSequence[AnimationSequence.count];
+		if (AnimationSequence.animations == null)
+			AnimationSequence.animations = new AnimationSequence[AnimationSequence.count];
 		for (int animation = 0; animation < count; animation++) {
-			if (AnimationSequence.cache[animation] == null)
-				AnimationSequence.cache[animation] = new AnimationSequence();
-			AnimationSequence.cache[animation].loadDefinition(buffer);
+			if (AnimationSequence.animations[animation] == null)
+				AnimationSequence.animations[animation] = new AnimationSequence();
+			AnimationSequence.animations[animation].loadDefinition(buffer);
 		}
 	}
 
 	public int getFrameLength(int animationId) {
 		int frameLength = frameLenghts[animationId];
 		if (frameLength == 0) {
-			Animation animation = Animation.getAnimation(frame2Ids[animationId]);
+			Animation animation = Animation.getAnimation(getPrimaryFrame[animationId]);
 			if (animation != null)
 				frameLength = frameLenghts[animationId] = animation.anInt431;
 		}
@@ -56,11 +56,11 @@ public class AnimationSequence {
 			switch (attributeId) {
 				case 1:
 					frameCount = buf.getUnsignedByte();
-					frame2Ids = new int[frameCount];
+					getPrimaryFrame = new int[frameCount];
 					frame1Ids = new int[frameCount];
 					frameLenghts = new int[frameCount];
 					for (int frame = 0; frame < frameCount; frame++) {
-						frame2Ids[frame] = buf.getUnsignedLEShort();
+						getPrimaryFrame[frame] = buf.getUnsignedLEShort();
 						frame1Ids[frame] = buf.getUnsignedLEShort();
 						if (frame1Ids[frame] == 65535)
 							frame1Ids[frame] = -1;
@@ -86,10 +86,10 @@ public class AnimationSequence {
 					anInt301 = buf.getUnsignedByte();
 					break;
 				case 6:
-					anInt302 = buf.getUnsignedLEShort();
+					getPlayerShieldDelta = buf.getUnsignedLEShort();
 					break;
 				case 7:
-					anInt303 = buf.getUnsignedLEShort();
+					getPlayerWeaponDelta = buf.getUnsignedLEShort();
 					break;
 				case 8:
 					anInt304 = buf.getUnsignedByte();
@@ -113,8 +113,8 @@ public class AnimationSequence {
 		}
 		if (frameCount == 0) {
 			frameCount = 1;
-			frame2Ids = new int[1];
-			frame2Ids[0] = -1;
+			getPrimaryFrame = new int[1];
+			getPrimaryFrame[0] = -1;
 			frame1Ids = new int[1];
 			frame1Ids[0] = -1;
 			frameLenghts = new int[1];

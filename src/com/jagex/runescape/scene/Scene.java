@@ -1245,7 +1245,7 @@ public class Scene {
 								wall_3.x - anInt470, wall_3.plane - anInt471, wall_3.y
 										- anInt472, wall_3.hash);
 				}
-				if (wallDecoration_1 != null && !method289(l, i, j, wallDecoration_1.renderable.height))
+				if (wallDecoration_1 != null && !method289(l, i, j, wallDecoration_1.renderable.modelHeight))
 					if ((wallDecoration_1.faceUnknown & j2) != 0)
 						wallDecoration_1.renderable.renderAtPoint(wallDecoration_1.face, anInt473, anInt474, anInt475,
 								anInt476, wallDecoration_1.y - anInt470, wallDecoration_1.plane - anInt471,
@@ -1415,7 +1415,7 @@ public class Scene {
 						SceneSpawnRequest sceneSpawnRequest_3 = aSceneSpawnRequestArray477[l3];
 						sceneSpawnRequest_3.anInt124 = anInt463;
 						if (!method290(l, sceneSpawnRequest_3.x, sceneSpawnRequest_3.anInt120, sceneSpawnRequest_3.y, sceneSpawnRequest_3.anInt122,
-								sceneSpawnRequest_3.aRenderable601.height))
+								sceneSpawnRequest_3.aRenderable601.modelHeight))
 							sceneSpawnRequest_3.aRenderable601.renderAtPoint(sceneSpawnRequest_3.anInt118, anInt473, anInt474, anInt475,
 									anInt476, sceneSpawnRequest_3.anInt115 - anInt470, sceneSpawnRequest_3.anInt114 - anInt471,
 									sceneSpawnRequest_3.anInt116 - anInt472, sceneSpawnRequest_3.anInt125);
@@ -1477,7 +1477,7 @@ public class Scene {
 			}
 			if (class50_sub3_1.anInt1418 != 0) {
 				WallDecoration wallDecoration = class50_sub3_1.wallDecoration;
-				if (wallDecoration != null && !method289(l, i, j, wallDecoration.renderable.height))
+				if (wallDecoration != null && !method289(l, i, j, wallDecoration.renderable.modelHeight))
 					if ((wallDecoration.faceUnknown & class50_sub3_1.anInt1418) != 0)
 						wallDecoration.renderable.renderAtPoint(wallDecoration.face, anInt473, anInt474, anInt475,
 								anInt476, wallDecoration.y - anInt470, wallDecoration.plane - anInt471, wallDecoration.x

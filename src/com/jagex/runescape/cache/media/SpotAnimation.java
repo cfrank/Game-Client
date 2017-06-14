@@ -45,8 +45,8 @@ public class SpotAnimation {
 				modelId = buffer.getUnsignedLEShort();
 			else if (attributeId == 2) {
 				animationId = buffer.getUnsignedLEShort();
-				if (AnimationSequence.cache != null)
-					sequences = AnimationSequence.cache[animationId];
+				if (AnimationSequence.animations != null)
+					sequences = AnimationSequence.animations[animationId];
 			} else if (attributeId == 4)
 				resizeXY = buffer.getUnsignedLEShort();
 			else if (attributeId == 5)
