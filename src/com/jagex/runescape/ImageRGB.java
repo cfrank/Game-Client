@@ -26,8 +26,8 @@ public class ImageRGB extends Rasterizer {
 		aBoolean1487 = true;
 		anInt1488 = 3600;
 		pixels = new int[i * j];
-		width1 = anInt1494 = i;
-		height1 = anInt1495 = j;
+		width1 = getResizeWidth = i;
+		height1 = getResizeHeight = j;
 		anInt1492 = anInt1493 = 0;
 	}
 
@@ -51,8 +51,8 @@ public class ImageRGB extends Rasterizer {
 			mediatracker.waitForAll();
 			width1 = image.getWidth(component);
 			height1 = image.getHeight(component);
-			anInt1494 = width1;
-			anInt1495 = height1;
+			getResizeWidth = width1;
+			getResizeHeight = height1;
 			anInt1492 = 0;
 			anInt1493 = 0;
 			pixels = new int[width1 * height1];
@@ -81,8 +81,8 @@ public class ImageRGB extends Rasterizer {
 		Buffer class50_sub1_sub2 = new Buffer(class2.getFile(s + ".dat"));
 		Buffer class50_sub1_sub2_1 = new Buffer(class2.getFile("index.dat"));
 		class50_sub1_sub2_1.currentPosition = class50_sub1_sub2.getUnsignedLEShort();
-		anInt1494 = class50_sub1_sub2_1.getUnsignedLEShort();
-		anInt1495 = class50_sub1_sub2_1.getUnsignedLEShort();
+		getResizeWidth = class50_sub1_sub2_1.getUnsignedLEShort();
+		getResizeHeight = class50_sub1_sub2_1.getUnsignedLEShort();
 		int j = class50_sub1_sub2_1.getUnsignedByte();
 		int ai[] = new int[j];
 		for (int k = 0; k < j - 1; k++) {
@@ -155,16 +155,16 @@ public class ImageRGB extends Rasterizer {
 	}
 
 	public void trim() {
-		int ai[] = new int[anInt1494 * anInt1495];
+		int ai[] = new int[getResizeWidth * getResizeHeight];
 		for (int j = 0; j < height1; j++) {
 			for (int k = 0; k < width1; k++)
-				ai[(j + anInt1493) * anInt1494 + (k + anInt1492)] = pixels[j * width1 + k];
+				ai[(j + anInt1493) * getResizeWidth + (k + anInt1492)] = pixels[j * width1 + k];
 
 		}
 
 		pixels = ai;
-		width1 = anInt1494;
-		height1 = anInt1495;
+		width1 = getResizeWidth;
+		height1 = getResizeHeight;
 		anInt1492 = 0;
 		anInt1493 = 0;
 	}
@@ -229,10 +229,8 @@ public class ImageRGB extends Rasterizer {
 
 	}
 
-	public void method461(int i, int j, int k) {
+	public void drawSprite(int i, int j) {
 		j += anInt1492;
-		if (k >= 0)
-			return;
 		i += anInt1493;
 		int l = j + i * Rasterizer.width;
 		int i1 = 0;
@@ -554,6 +552,6 @@ public class ImageRGB extends Rasterizer {
 	public int height1;
 	public int anInt1492;
 	public int anInt1493;
-	public int anInt1494;
-	public int anInt1495;
+	public int getResizeWidth;
+	public int getResizeHeight;
 }

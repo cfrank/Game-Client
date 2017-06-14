@@ -206,7 +206,7 @@ public class Model extends Renderable {
         }
     }
 
-    public static boolean isCached(int id) {
+    public static boolean loaded(int id) {
         if (Model.modelHeaders == null)
             return false;
         ModelHeader modelHeader = Model.modelHeaders[id];
@@ -1341,7 +1341,7 @@ public class Model extends Renderable {
         return (i & 0xff80) + j;
     }
 
-    public void method598(int i, int j, int k, int l, int i1, int j1, int k1) {
+    public void render(int i, int j, int k, int l, int i1, int j1, int k1) {
         int l1 = Rasterizer3D.centerX;
         int i2 = Rasterizer3D.centerY;
         int j2 = anIntArray1710[i];

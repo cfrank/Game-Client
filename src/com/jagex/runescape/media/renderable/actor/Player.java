@@ -1,7 +1,7 @@
 package com.jagex.runescape.media.renderable.actor;
 
 import com.jagex.runescape.Game;
-import com.jagex.runescape.ItemDefinition;
+import com.jagex.runescape.cache.def.ItemDefinition;
 import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.cache.media.IdentityKit;
@@ -9,7 +9,6 @@ import com.jagex.runescape.cache.media.SpotAnimation;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
-import com.jagex.runescape.media.renderable.actor.Actor;
 import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.util.TextUtils;
 
@@ -53,7 +52,7 @@ public class Player extends Actor {
 			int appearanceId = appearance[index];
 			if (appearanceId >= 256 && appearanceId < 512 && !IdentityKit.cache[appearanceId - 256].isHeadModelCached())
 				cached = true;
-			if (appearanceId >= 512 && !ItemDefinition.forId(appearanceId - 512).isDialogueCached(gender))
+			if (appearanceId >= 512 && !ItemDefinition.lookup(appearanceId - 512).headPieceReady(gender))
 				cached = true;
 		}
 
@@ -69,7 +68,7 @@ public class Player extends Actor {
 					headModels[headModelsOffset++] = subModel;
 			}
 			if (appearanceId >= 512) {
-				Model subModel = ItemDefinition.forId(appearanceId - 512).getGenderModel(gender);
+				Model subModel = ItemDefinition.lookup(appearanceId - 512).asHeadPiece(gender);
 				if (subModel != null)
 					headModels[headModelsOffset++] = subModel;
 			}
@@ -128,7 +127,7 @@ public class Player extends Actor {
 					appearanceModel = shieldModel;
 				if (appearanceModel >= 256 && appearanceModel < 512 && !IdentityKit.cache[appearanceModel - 256].isBodyModelCached())
 					invalid = true;
-				if (appearanceModel >= 512 && !ItemDefinition.forId(appearanceModel - 512).equipmentReady(-861, gender))
+				if (appearanceModel >= 512 && !ItemDefinition.lookup(appearanceModel - 512).equipmentReady(gender))
 					invalid = true;
 			}
 
@@ -155,8 +154,8 @@ public class Player extends Actor {
 						models[count++] = bodyModel;
 				}
 				if (part >= 512) {
-					Model equipment = ItemDefinition.forId(part - 512).method213(
-							(byte) -98, gender);
+					Model equipment = ItemDefinition.lookup(part - 512).asEquipment(
+							gender);
 					if (equipment != null)
 						models[count++] = equipment;
 				}
@@ -281,7 +280,7 @@ public class Player extends Actor {
 				break;
 			}
 			if (appearance[index] >= 512 && appearance[index] - 512 < ItemDefinition.count) {
-				int itemTeam = ItemDefinition.forId(appearance[index] - 512).team;
+				int itemTeam = ItemDefinition.lookup(appearance[index] - 512).team;
 				if (itemTeam != 0)
 					teamId = itemTeam;
 			}

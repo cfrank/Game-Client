@@ -22,6 +22,7 @@ import com.jagex.runescape.cache.cfg.Varp;
 import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.cache.def.FloorDefinition;
 import com.jagex.runescape.cache.def.GameObjectDefinition;
+import com.jagex.runescape.cache.def.ItemDefinition;
 import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.cache.media.IdentityKit;
 import com.jagex.runescape.cache.media.SpotAnimation;
@@ -78,8 +79,8 @@ public class Game extends GameShell {
 		if (i != 2)
 			aBoolean959 = !aBoolean959;
 		label0: for (int l = 0; l < ItemDefinition.count; l++) {
-			ItemDefinition class16 = ItemDefinition.forId(l);
-			if (class16.notedGraphicsId != -1 || class16.name == null)
+			ItemDefinition class16 = ItemDefinition.lookup(l);
+			if (class16.notedTemplateId != -1 || class16.name == null)
 				continue;
 			String s3 = class16.name.toLowerCase();
 			for (int i1 = 0; i1 < j; i1++)
@@ -361,7 +362,7 @@ public class Game extends GameShell {
 		method141();
 		GameObjectDefinition.method433(false);
 		ActorDefinition.reset();
-		ItemDefinition.method222(false);
+		ItemDefinition.dispose();
 		Widget.method202(false);
 		FloorDefinition.cache = null;
 		IdentityKit.cache = null;
@@ -615,7 +616,7 @@ public class Game extends GameShell {
 		Object obj = null;
 		for (Item class50_sub1_sub4_sub1 = (Item) class6.first(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (Item) class6
 				.next()) {
-			ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.itemId);
+			ItemDefinition class16 = ItemDefinition.lookup(class50_sub1_sub4_sub1.itemId);
 			int l = class16.value;
 			if (class16.stackable)
 				l *= class50_sub1_sub4_sub1.itemCount + 1;
@@ -2316,7 +2317,7 @@ public class Game extends GameShell {
 					opcode = -1;
 					return true;
 				} else {
-					ItemDefinition class16 = ItemDefinition.forId(itemId);
+					ItemDefinition class16 = ItemDefinition.lookup(itemId);
 					Widget.forId(interfaceId).anInt283 = 4;
 					Widget.forId(interfaceId).anInt284 = itemId;
 					Widget.forId(interfaceId).anInt252 = class16.modelRotationX;
@@ -3143,7 +3144,7 @@ public class Game extends GameShell {
 				if (class6 != null) {
 					for (Item class50_sub1_sub4_sub1 = (Item) class6.last(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (Item) class6
 							.previous()) {
-						ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.itemId);
+						ItemDefinition class16 = ItemDefinition.lookup(class50_sub1_sub4_sub1.itemId);
 						if (anInt1146 == 1) {
 							aStringArray1184[menuActionRow] = "Use " + aString1150 + " with @lre@" + class16.name;
 							anIntArray981[menuActionRow] = 100;
@@ -4684,7 +4685,7 @@ public class Game extends GameShell {
 								mouseInvInterfaceIndex = l2;
 								lastActiveInvInterface = class13_1.id;
 								if (class13_1.inventoryItemId[l2] > 0) {
-									ItemDefinition class16 = ItemDefinition.forId(class13_1.inventoryItemId[l2] - 1);
+									ItemDefinition class16 = ItemDefinition.lookup(class13_1.inventoryItemId[l2] - 1);
 									if (anInt1146 == 1 && class13_1.aBoolean229) {
 										if (class13_1.id != anInt1148 || l2 != anInt1147) {
 											aStringArray1184[menuActionRow] = "Use " + aString1150 + " with @lre@"
@@ -7575,9 +7576,9 @@ public class Game extends GameShell {
 			anInt1056 = incomingRandom.nextInt();
 		method75(0);
 		if (crossType == 1)
-			cursorCross[crossIndex / 100].method461(anInt1021 - 8 - 4, anInt1020 - 8 - 4, -488);
+			cursorCross[crossIndex / 100].drawSprite(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
 		if (crossType == 2)
-			cursorCross[4 + crossIndex / 100].method461(anInt1021 - 8 - 4, anInt1020 - 8 - 4, -488);
+			cursorCross[4 + crossIndex / 100].drawSprite(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
 		if (anInt1279 != -1) {
 			method88(tickDelta, anInt1279, (byte) 5);
 			method142(0, 0, Widget.forId(anInt1279), 0, 8);
@@ -7593,7 +7594,7 @@ public class Game extends GameShell {
 		} else if (anInt1304 == 0)
 			method128(false);
 		if (anInt1319 == 1)
-			aClass50_Sub1_Sub1_Sub1_1086.method461(296, 472, -488);
+			aClass50_Sub1_Sub1_Sub1_1086.drawSprite(296, 472);
 		if (fps) {
 			char c = '\u01FB';
 			int k = 20;
@@ -8635,7 +8636,7 @@ public class Game extends GameShell {
 				atInventoryInterfaceType = 3;
 		}
 		if (menuActionId == 1094) {
-			ItemDefinition class16 = ItemDefinition.forId(id);
+			ItemDefinition class16 = ItemDefinition.lookup(id);
 			Widget class13_4 = Widget.forId(interfaceId);
 			String s5;
 			if (class13_4 != null && class13_4.itemAmounts[slot] >= 0x186a0)
@@ -8892,13 +8893,13 @@ public class Game extends GameShell {
 			anInt1147 = slot;
 			anInt1148 = interfaceId;
 			anInt1149 = id;
-			aString1150 = String.valueOf(ItemDefinition.forId(id).name);
+			aString1150 = String.valueOf(ItemDefinition.lookup(id).name);
 			anInt1171 = 0;
 			aBoolean1181 = true;
 			return;
 		}
 		if (menuActionId == 1564) {
-			ItemDefinition class16_1 = ItemDefinition.forId(id);
+			ItemDefinition class16_1 = ItemDefinition.lookup(id);
 			String s6;
 			if (class16_1.description != null)
 				s6 = new String(class16_1.description);
@@ -8952,13 +8953,13 @@ public class Game extends GameShell {
 					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
 					if (anInt932 > -1) {
 						if (class50_sub1_sub4_sub3_sub2.anInt1756 != -1) {
-							aClass50_Sub1_Sub1_Sub1Array1288[class50_sub1_sub4_sub3_sub2.anInt1756].method461(anInt933
-									- k, anInt932 - 12, -488);
+							aClass50_Sub1_Sub1_Sub1Array1288[class50_sub1_sub4_sub3_sub2.anInt1756].drawSprite(anInt933
+									- k, anInt932 - 12);
 							k += 25;
 						}
 						if (class50_sub1_sub4_sub3_sub2.anInt1748 != -1) {
-							aClass50_Sub1_Sub1_Sub1Array1079[class50_sub1_sub4_sub3_sub2.anInt1748].method461(anInt933
-									- k, anInt932 - 12, -488);
+							aClass50_Sub1_Sub1_Sub1Array1079[class50_sub1_sub4_sub3_sub2.anInt1748].drawSprite(anInt933
+									- k, anInt932 - 12);
 							k += 25;
 						}
 					}
@@ -8966,20 +8967,20 @@ public class Game extends GameShell {
 				if (i >= 0 && anInt1197 == 10 && anInt1151 == localPlayers[i]) {
 					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
 					if (anInt932 > -1)
-						aClass50_Sub1_Sub1_Sub1Array954[1].method461(anInt933 - k, anInt932 - 12, -488);
+						aClass50_Sub1_Sub1_Sub1Array954[1].drawSprite(anInt933 - k, anInt932 - 12);
 				}
 			} else {
 				ActorDefinition class37_1 = ((Npc) obj).npcDefinition;
 				if (class37_1.headIcon >= 0 && class37_1.headIcon < aClass50_Sub1_Sub1_Sub1Array1079.length) {
 					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
 					if (anInt932 > -1)
-						aClass50_Sub1_Sub1_Sub1Array1079[class37_1.headIcon].method461(anInt933 - 30, anInt932 - 12,
-								-488);
+						aClass50_Sub1_Sub1_Sub1Array1079[class37_1.headIcon].drawSprite(anInt933 - 30, anInt932 - 12
+						);
 				}
 				if (anInt1197 == 1 && anInt1226 == anIntArray1134[i - localPlayerCount] && pulseCycle % 20 < 10) {
 					method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight + 15);
 					if (anInt932 > -1)
-						aClass50_Sub1_Sub1_Sub1Array954[0].method461(anInt933 - 28, anInt932 - 12, -488);
+						aClass50_Sub1_Sub1_Sub1Array954[0].drawSprite(anInt933 - 28, anInt932 - 12);
 				}
 			}
 			if (((Actor) (obj)).forcedChat != null
@@ -9030,8 +9031,8 @@ public class Game extends GameShell {
 							anInt932 += 15;
 							anInt933 -= 10;
 						}
-						aClass50_Sub1_Sub1_Sub1Array1182[((Actor) (obj)).hitTypes[i1]].method461(
-								anInt933 - 12, anInt932 - 12, -488);
+						aClass50_Sub1_Sub1_Sub1Array1182[((Actor) (obj)).hitTypes[i1]].drawSprite(
+								anInt933 - 12, anInt932 - 12);
 						fontSmall.drawStringLeft(String
 								.valueOf(((Actor) (obj)).hitDamages[i1]), anInt932, anInt933 + 4, 0);
 						fontSmall.drawStringLeft(String
@@ -9316,7 +9317,7 @@ public class Game extends GameShell {
 			return;
 		method137((anInt844 - nextTopLeftTileX << 7) + anInt847, anInt846 * 2, (anInt845 - nextTopRightTileY << 7) + anInt848, -214);
 		if (anInt932 > -1 && pulseCycle % 20 < 10)
-			aClass50_Sub1_Sub1_Sub1Array954[0].method461(anInt933 - 28, anInt932 - 12, -488);
+			aClass50_Sub1_Sub1_Sub1Array954[0].drawSprite(anInt933 - 28, anInt932 - 12);
 	}
 
 	public void repaintGame() {
@@ -9393,7 +9394,7 @@ public class Game extends GameShell {
 				if (j1 == 4) {
 					Widget class13_1 = Widget.forId(ai[l++]);
 					int k2 = ai[l++];
-					if (k2 >= 0 && k2 < ItemDefinition.count && (!ItemDefinition.forId(k2).members || memberServer)) {
+					if (k2 >= 0 && k2 < ItemDefinition.count && (!ItemDefinition.lookup(k2).members || memberServer)) {
 						for (int j3 = 0; j3 < class13_1.inventoryItemId.length; j3++)
 							if (class13_1.inventoryItemId[j3] == k2 + 1)
 								k1 += class13_1.itemAmounts[j3];
@@ -9417,7 +9418,7 @@ public class Game extends GameShell {
 				if (j1 == 10) {
 					Widget class13_2 = Widget.forId(ai[l++]);
 					int l2 = ai[l++] + 1;
-					if (l2 >= 0 && l2 < ItemDefinition.count && (!ItemDefinition.forId(l2).members || memberServer)) {
+					if (l2 >= 0 && l2 < ItemDefinition.count && (!ItemDefinition.lookup(l2).members || memberServer)) {
 						for (int k3 = 0; k3 < class13_2.inventoryItemId.length; k3++) {
 							if (class13_2.inventoryItemId[k3] != l2)
 								continue;
@@ -9492,12 +9493,12 @@ public class Game extends GameShell {
 		int k1 = i * i1 + j * j1 >> 16;
 		int l1 = i * j1 - j * i1 >> 16;
 		if (l > 2500) {
-			class50_sub1_sub1_sub1.method467(minimapBackgroundImage, 83 - l1 - class50_sub1_sub1_sub1.anInt1495
-					/ 2 - 4, -49993, ((94 + k1) - class50_sub1_sub1_sub1.anInt1494 / 2) + 4);
+			class50_sub1_sub1_sub1.method467(minimapBackgroundImage, 83 - l1 - class50_sub1_sub1_sub1.getResizeHeight
+					/ 2 - 4, -49993, ((94 + k1) - class50_sub1_sub1_sub1.getResizeWidth / 2) + 4);
 			return;
 		} else {
-			class50_sub1_sub1_sub1.method461(83 - l1 - class50_sub1_sub1_sub1.anInt1495 / 2 - 4,
-					((94 + k1) - class50_sub1_sub1_sub1.anInt1494 / 2) + 4, -488);
+			class50_sub1_sub1_sub1.drawSprite(83 - l1 - class50_sub1_sub1_sub1.getResizeHeight / 2 - 4,
+					((94 + k1) - class50_sub1_sub1_sub1.getResizeWidth / 2) + 4);
 			return;
 		}
 	}
@@ -10112,7 +10113,7 @@ public class Game extends GameShell {
 		class50_sub1_sub1_sub1.drawInverse(-171, -180);
 		class50_sub1_sub1_sub1 = new ImageRGB(titleArchive, "logo", 0);
 		aClass18_1198.createRasterizer();
-		class50_sub1_sub1_sub1.method461(18, 382 - class50_sub1_sub1_sub1.width1 / 2 - 128, -488);
+		class50_sub1_sub1_sub1.drawSprite(18, 382 - class50_sub1_sub1_sub1.width1 / 2 - 128);
 		class50_sub1_sub1_sub1 = null;
 		abyte0 = null;
 		ai = null;
@@ -10222,8 +10223,8 @@ public class Game extends GameShell {
 									int k11 = 0;
 									if (anInt1146 == 1 && anInt1147 == i3 && anInt1148 == class13_1.id)
 										k11 = 0xffffff;
-									ImageRGB class50_sub1_sub1_sub1_2 = ItemDefinition.method221(
-											(byte) -33, k11, class13_1.itemAmounts[i3], l10);
+									ImageRGB class50_sub1_sub1_sub1_2 = ItemDefinition.sprite(
+											l10, class13_1.itemAmounts[i3], k11);
 									if (class50_sub1_sub1_sub1_2 != null) {
 										if (activeInterfaceType != 0 && anInt1112 == i3 && anInt1111 == class13_1.id) {
 											i7 = super.mouseX - anInt1114;
@@ -10259,8 +10260,8 @@ public class Game extends GameShell {
 										} else if (atInventoryInterfaceType != 0 && anInt1331 == i3 && anInt1330 == class13_1.id)
 											class50_sub1_sub1_sub1_2.method463(0, i6, l6, 128);
 										else
-											class50_sub1_sub1_sub1_2.method461(l6, i6, -488);
-										if (class50_sub1_sub1_sub1_2.anInt1494 == 33 || class13_1.itemAmounts[i3] != 1) {
+											class50_sub1_sub1_sub1_2.drawSprite(l6, i6);
+										if (class50_sub1_sub1_sub1_2.getResizeWidth == 33 || class13_1.itemAmounts[i3] != 1) {
 											int k12 = class13_1.itemAmounts[i3];
 											fontSmall.method474(2245, i6 + 1 + i7, 0, l6 + 10 + j8,
 													addMoneySuffix(k12, -243));
@@ -10272,7 +10273,7 @@ public class Game extends GameShell {
 							} else if (class13_1.aClass50_Sub1_Sub1_Sub1Array265 != null && i3 < 20) {
 								ImageRGB class50_sub1_sub1_sub1_1 = class13_1.aClass50_Sub1_Sub1_Sub1Array265[i3];
 								if (class50_sub1_sub1_sub1_1 != null)
-									class50_sub1_sub1_sub1_1.method461(l6, i6, -488);
+									class50_sub1_sub1_sub1_1.drawSprite(l6, i6);
 							}
 							i3++;
 						}
@@ -10403,7 +10404,7 @@ public class Game extends GameShell {
 							break;
 					}
 					if (class50_sub1_sub1_sub1 != null)
-						class50_sub1_sub1_sub1.method461(l2, k2, -488);
+						class50_sub1_sub1_sub1.drawSprite(l2, k2);
 				} else if (class13_1.anInt236 == 6) {
 					int k3 = Rasterizer3D.centerX;
 					int k4 = Rasterizer3D.centerY;
@@ -10426,7 +10427,7 @@ public class Game extends GameShell {
 								class14.frame1Ids[class13_1.anInt235], 0, flag2);
 					}
 					if (class50_sub1_sub4_sub4 != null)
-						class50_sub1_sub4_sub4.method598(0, class13_1.anInt253, 0, class13_1.anInt252, 0, k5, j6);
+						class50_sub1_sub4_sub4.render(0, class13_1.anInt253, 0, class13_1.anInt252, 0, k5, j6);
 					Rasterizer3D.centerX = k3;
 					Rasterizer3D.centerY = k4;
 				} else {
@@ -10436,7 +10437,7 @@ public class Game extends GameShell {
 						for (int l5 = 0; l5 < class13_1.anInt238; l5++) {
 							for (int k6 = 0; k6 < class13_1.anInt241; k6++) {
 								if (class13_1.inventoryItemId[l4] > 0) {
-									ItemDefinition class16 = ItemDefinition.forId(class13_1.inventoryItemId[l4] - 1);
+									ItemDefinition class16 = ItemDefinition.lookup(class13_1.inventoryItemId[l4] - 1);
 									String s6 = String.valueOf(class16.name);
 									if (class16.stackable || class13_1.itemAmounts[l4] != 1)
 										s6 = s6 + " x" + method135(0, class13_1.itemAmounts[l4]);

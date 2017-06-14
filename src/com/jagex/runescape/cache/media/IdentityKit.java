@@ -58,7 +58,7 @@ public class IdentityKit {
 
 		boolean isCached = true;
 		for (int i = 0; i < modelId.length; i++)
-			if (!Model.isCached(modelId[i]))
+			if (!Model.loaded(modelId[i]))
 				isCached = false;
 
 		return isCached;
@@ -90,7 +90,7 @@ public class IdentityKit {
 	public boolean isHeadModelCached() {
 		boolean cached = true;
 		for (int model = 0; model < 5; model++)
-			if (headModelIds[model] != -1 && !Model.isCached(headModelIds[model]))
+			if (headModelIds[model] != -1 && !Model.loaded(headModelIds[model]))
 				cached = false;
 
 		return cached;

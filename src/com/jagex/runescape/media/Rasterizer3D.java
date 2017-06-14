@@ -13,7 +13,7 @@ public class Rasterizer3D extends Rasterizer {
 	public static boolean lowMemory = true;
 	public static boolean aBoolean1528;
 	public static boolean aBoolean1529;
-	public static boolean aBoolean1530 = true;
+	public static boolean approximateAlphaBlending = true;
 	public static int anInt1531;
 	public static int centerX;
 	public static int centerY;
@@ -680,7 +680,7 @@ public class Rasterizer3D extends Rasterizer {
 	}
 
 	public static void method504(int ai[], int i, int j, int k, int l, int i1, int j1, int k1) {
-		if (aBoolean1530) {
+		if (approximateAlphaBlending) {
 			int l1;
 			if (aBoolean1528) {
 				if (i1 - l > 3)

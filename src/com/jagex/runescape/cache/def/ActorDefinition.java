@@ -202,7 +202,7 @@ public class ActorDefinition {
 			return null;
 		boolean cached = false;
 		for (int headModel = 0; headModel < headModelIndexes.length; headModel++)
-			if (!Model.isCached(headModelIndexes[headModel]))
+			if (!Model.loaded(headModelIndexes[headModel]))
 				cached = true;
 
 		if (cached)
@@ -272,7 +272,7 @@ public class ActorDefinition {
 		if (childIdModel == null) {
 			boolean cached = false;
 			for (int modelId : modelIds)
-				if (Model.isCached(modelId))
+				if (Model.loaded(modelId))
 					cached = true;
 
 			if (!cached)

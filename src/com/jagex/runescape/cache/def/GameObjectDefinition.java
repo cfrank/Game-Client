@@ -261,7 +261,7 @@ public class GameObjectDefinition {
             return true;
         boolean cached = true;
         for (int modelId : modelIds) {
-            cached &= Model.isCached(modelId & 0xffff);
+            cached &= Model.loaded(modelId & 0xffff);
         }
         return cached;
     }
@@ -481,13 +481,13 @@ public class GameObjectDefinition {
                 return true;
             boolean flag = true;
             for (int l = 0; l < modelIds.length; l++)
-                flag &= Model.isCached(modelIds[l] & 0xffff);
+                flag &= Model.loaded(modelIds[l] & 0xffff);
 
             return flag;
         }
         for (int k = 0; k < modelTypes.length; k++)
             if (modelTypes[k] == j)
-                return Model.isCached(modelIds[k] & 0xffff);
+                return Model.loaded(modelIds[k] & 0xffff);
 
         return true;
     }

@@ -2,6 +2,7 @@ package com.jagex.runescape;
 
 import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.cache.def.ActorDefinition;
+import com.jagex.runescape.cache.def.ItemDefinition;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.renderable.Model;
@@ -49,9 +50,9 @@ public class Widget {
 	public Model method197(int type, int id) {
 		ItemDefinition item = null;
 		if (type == 4) {
-			item = ItemDefinition.forId(id);
-			anInt280 += item.anInt354;
-			anInt243 += item.anInt358;
+			item = ItemDefinition.lookup(id);
+			anInt280 += item.ambience;
+			anInt243 += item.diffusion;
 		}
 		Model model = (Model) lruModelTable.get((type << 16) + id);
 		if (model != null)
@@ -63,7 +64,7 @@ public class Widget {
 		if (type == 3)
 			model = Game.thisPlayer.getHeadModel();
 		if (type == 4)
-			model = item.getUncachedModel(50);
+			model = item.asStack(50);
 		if (type == 5)
 			model = null;
 		if (model != null)

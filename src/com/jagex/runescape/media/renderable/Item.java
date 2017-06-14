@@ -1,8 +1,6 @@
 package com.jagex.runescape.media.renderable;
 
-import com.jagex.runescape.ItemDefinition;
-import com.jagex.runescape.media.renderable.Model;
-import com.jagex.runescape.media.renderable.Renderable;
+import com.jagex.runescape.cache.def.ItemDefinition;
 
 public class Item extends Renderable {
 	public int itemId;
@@ -10,8 +8,8 @@ public class Item extends Renderable {
 
 	@Override
 	public Model getRotatedModel() {
-		ItemDefinition itemDefinition = ItemDefinition.forId(itemId);
-		return itemDefinition.getModel(itemCount);
+		ItemDefinition itemDefinition = ItemDefinition.lookup(itemId);
+		return itemDefinition.asGroundStack(itemCount);
 	}
 
 }
