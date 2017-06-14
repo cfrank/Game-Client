@@ -8,7 +8,7 @@ import java.net.Socket;
 import java.util.zip.CRC32;
 import java.util.zip.GZIPInputStream;
 
-import com.jagex.runescape.Archive;
+import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.Game;
 import com.jagex.runescape.collection.Queue;
 import com.jagex.runescape.net.Buffer;

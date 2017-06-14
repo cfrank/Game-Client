@@ -1,6 +1,6 @@
 package com.jagex.runescape.cache.def;
 
-import com.jagex.runescape.Archive;
+import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.net.Buffer;
 
 public class FloorDefinition {

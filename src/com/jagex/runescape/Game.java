@@ -14,6 +14,8 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
 
+import com.jagex.runescape.cache.Archive;
+import com.jagex.runescape.cache.Index;
 import com.jagex.runescape.cache.cfg.ChatCensor;
 import com.jagex.runescape.cache.cfg.Varbit;
 import com.jagex.runescape.cache.cfg.Varp;
@@ -43,6 +45,8 @@ import com.jagex.runescape.scene.tile.FloorDecoration;
 import com.jagex.runescape.scene.tile.Wall;
 import com.jagex.runescape.scene.tile.WallDecoration;
 import com.jagex.runescape.scene.util.CollisionMap;
+import com.jagex.runescape.sound.SoundPlayer;
+import com.jagex.runescape.sound.SoundTrack;
 import com.jagex.runescape.util.*;
 
 @SuppressWarnings("serial")
@@ -359,7 +363,7 @@ public class Game extends GameShell {
 		Widget.method202(false);
 		FloorDefinition.cache = null;
 		IdentityKit.cache = null;
-		Class4.aClass4Array103 = null;
+		Class4.aClass4Array103 = null; //not used
 		AnimationSequence.cache = null;
 		SpotAnimation.cache = null;
 		SpotAnimation.models = null;
@@ -608,12 +612,12 @@ public class Game extends GameShell {
 		}
 		int k = 0xfa0a1f01;
 		Object obj = null;
-		for (GroundItem class50_sub1_sub4_sub1 = (GroundItem) class6.first(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (GroundItem) class6
+		for (Item class50_sub1_sub4_sub1 = (Item) class6.first(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (Item) class6
 				.next()) {
-			ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.id);
+			ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.itemId);
 			int l = class16.value;
 			if (class16.stackable)
-				l *= class50_sub1_sub4_sub1.amount + 1;
+				l *= class50_sub1_sub4_sub1.itemCount + 1;
 			if (l > k) {
 				k = l;
 				obj = class50_sub1_sub4_sub1;
@@ -623,12 +627,12 @@ public class Game extends GameShell {
 		class6.addFirst(((Node) (obj)));
 		Object obj1 = null;
 		Object obj2 = null;
-		for (GroundItem class50_sub1_sub4_sub1_1 = (GroundItem) class6.first(); class50_sub1_sub4_sub1_1 != null; class50_sub1_sub4_sub1_1 = (GroundItem) class6
+		for (Item class50_sub1_sub4_sub1_1 = (Item) class6.first(); class50_sub1_sub4_sub1_1 != null; class50_sub1_sub4_sub1_1 = (Item) class6
 				.next()) {
-			if (class50_sub1_sub4_sub1_1.id != ((GroundItem) (obj)).id && obj1 == null)
+			if (class50_sub1_sub4_sub1_1.itemId != ((Item) (obj)).itemId && obj1 == null)
 				obj1 = class50_sub1_sub4_sub1_1;
-			if (class50_sub1_sub4_sub1_1.id != ((GroundItem) (obj)).id
-					&& class50_sub1_sub4_sub1_1.id != ((GroundItem) (obj1)).id
+			if (class50_sub1_sub4_sub1_1.itemId != ((Item) (obj)).itemId
+					&& class50_sub1_sub4_sub1_1.itemId != ((Item) (obj1)).itemId
 					&& obj2 == null)
 				obj2 = class50_sub1_sub4_sub1_1;
 		}
@@ -1395,7 +1399,7 @@ public class Game extends GameShell {
 				} else if (aBoolean1301 && !lowMemory && currentSound < 50) {
 					sound[currentSound] = k1;
 					soundType[currentSound] = k11;
-					soundDelay[currentSound] = i17 + Sound.anIntArray669[k1];
+					soundDelay[currentSound] = i17 + SoundTrack.trackDelays[k1];
 					currentSound++;
 				}
 				opcode = -1;
@@ -3136,13 +3140,13 @@ public class Game extends GameShell {
 			if (j1 == 3) {
 				LinkedList class6 = groundItems[plane][l][i1];
 				if (class6 != null) {
-					for (GroundItem class50_sub1_sub4_sub1 = (GroundItem) class6.last(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (GroundItem) class6
+					for (Item class50_sub1_sub4_sub1 = (Item) class6.last(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (Item) class6
 							.previous()) {
-						ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.id);
+						ItemDefinition class16 = ItemDefinition.forId(class50_sub1_sub4_sub1.itemId);
 						if (anInt1146 == 1) {
 							aStringArray1184[menuActionRow] = "Use " + aString1150 + " with @lre@" + class16.name;
 							anIntArray981[menuActionRow] = 100;
-							anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.id;
+							anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.itemId;
 							anIntArray979[menuActionRow] = l;
 							anIntArray980[menuActionRow] = i1;
 							menuActionRow++;
@@ -3150,7 +3154,7 @@ public class Game extends GameShell {
 							if ((anInt1173 & 1) == 1) {
 								aStringArray1184[menuActionRow] = aString1174 + " @lre@" + class16.name;
 								anIntArray981[menuActionRow] = 199;
-								anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.id;
+								anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.itemId;
 								anIntArray979[menuActionRow] = l;
 								anIntArray980[menuActionRow] = i1;
 								menuActionRow++;
@@ -3169,14 +3173,14 @@ public class Game extends GameShell {
 										anIntArray981[menuActionRow] = 930;
 									if (i3 == 4)
 										anIntArray981[menuActionRow] = 270;
-									anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.id;
+									anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.itemId;
 									anIntArray979[menuActionRow] = l;
 									anIntArray980[menuActionRow] = i1;
 									menuActionRow++;
 								} else if (i3 == 2) {
 									aStringArray1184[menuActionRow] = "Take @lre@" + class16.name;
 									anIntArray981[menuActionRow] = 684;
-									anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.id;
+									anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.itemId;
 									anIntArray979[menuActionRow] = l;
 									anIntArray980[menuActionRow] = i1;
 									menuActionRow++;
@@ -3184,7 +3188,7 @@ public class Game extends GameShell {
 
 							aStringArray1184[menuActionRow] = "Examine @lre@" + class16.name;
 							anIntArray981[menuActionRow] = 1564;
-							anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.id;
+							anIntArray982[menuActionRow] = class50_sub1_sub4_sub1.itemId;
 							anIntArray979[menuActionRow] = l;
 							anIntArray980[menuActionRow] = i1;
 							menuActionRow++;
@@ -4208,7 +4212,7 @@ public class Game extends GameShell {
 		drawLoadingText(20, "Starting up");
 		if (SignLink.cache_dat != null) {
 			for (int type = 0; type < 5; type++)
-				stores[type] = new FileStore(type + 1, 0x927c0, SignLink.cache_dat, SignLink.cache_idx[type]);
+				stores[type] = new Index(type + 1, 0x927c0, SignLink.cache_dat, SignLink.cache_idx[type]);
 		}
 		try {
 			connectWebServer();
@@ -4485,7 +4489,7 @@ public class Game extends GameShell {
 				drawLoadingText(90, "Unpacking sounds");
 				byte bs[] = soundArchive.getFile("sounds.dat");
 				Buffer buffer = new Buffer(bs);
-				Sound.load(buffer);
+				SoundTrack.load(buffer);
 			}
 			drawLoadingText(95, "Unpacking interfaces");
 			TypeFace[] typefaces = {fontSmall,
@@ -9641,7 +9645,7 @@ public class Game extends GameShell {
 	public void playSound(int id, int type, int delay, int volume) {
 		sound[currentSound] = id;
 		soundType[currentSound] = type;
-		soundDelay[currentSound] = delay + Sound.anIntArray669[id];
+		soundDelay[currentSound] = delay + SoundTrack.trackDelays[id];
 		soundVolume[currentSound] = volume;
 		currentSound++;
 	}
@@ -9715,9 +9719,9 @@ public class Game extends GameShell {
 			int id = buf.method550();
 			int playerId = buf.method550();
 			if (x >= 0 && y >= 0 && x < 104 && y < 104 && playerId != thisPlayerServerId) {
-				GroundItem item = new GroundItem();
-				item.id = id;
-				item.amount = amount;
+				Item item = new Item();
+				item.itemId = id;
+				item.itemCount = amount;
 				if (groundItems[plane][x][y] == null)
 					groundItems[plane][x][y] = new LinkedList();
 				groundItems[plane][x][y].insertBack(item);
@@ -9784,9 +9788,9 @@ public class Game extends GameShell {
 			int y = placementY + (offset & 7);
 			int amount = buf.method550();
 			if (x >= 0 && y >= 0 && x < 104 && y < 104) {
-				GroundItem item = new GroundItem();
-				item.id = id;
-				item.amount = amount;
+				Item item = new Item();
+				item.itemId = id;
+				item.itemCount = amount;
 				if (groundItems[plane][x][y] == null)
 					groundItems[plane][x][y] = new LinkedList();
 				groundItems[plane][x][y].insertBack(item);
@@ -9804,10 +9808,10 @@ public class Game extends GameShell {
 			if (x >= 0 && y >= 0 && x < 104 && y < 104) {
 				LinkedList list = groundItems[plane][x][y];
 				if (list != null) {
-					for (GroundItem item = (GroundItem) list.first(); item != null; item = (GroundItem) list.next()) {
-						if (item.id != (id & 0x7fff) || item.amount != amount)
+					for (Item item = (Item) list.first(); item != null; item = (Item) list.next()) {
+						if (item.itemId != (id & 0x7fff) || item.itemCount != amount)
 							continue;
-						item.amount = newAmount;
+						item.itemCount = newAmount;
 						break;
 					}
 
@@ -9859,7 +9863,7 @@ public class Game extends GameShell {
 					&& currentSound < 50) {
 				sound[currentSound] = soundId;
 				soundType[currentSound] = type;
-				soundDelay[currentSound] = Sound.anIntArray669[soundId];
+				soundDelay[currentSound] = SoundTrack.trackDelays[soundId];
 				currentSound++;
 			}
 		}
@@ -9899,8 +9903,8 @@ public class Game extends GameShell {
 			if (x >= 0 && y >= 0 && x < 104 && y < 104) {
 				LinkedList list = groundItems[plane][x][y];
 				if (list != null) {
-					for (GroundItem item = (GroundItem) list.first(); item != null; item = (GroundItem) list.next()) {
-						if (item.id != (id & 0x7fff))
+					for (Item item = (Item) list.first(); item != null; item = (Item) list.next()) {
+						if (item.itemId != (id & 0x7fff))
 							continue;
 						item.remove();
 						break;
@@ -10968,7 +10972,7 @@ public class Game extends GameShell {
 			//if (soundDelay[index] <= 0) {
 			boolean flag1 = false;
 			try {
-					Buffer stream = Sound.forId(soundType[index], sound[index]);
+					Buffer stream = SoundTrack.data(sound[index], soundType[index]);
 					new SoundPlayer((InputStream) new ByteArrayInputStream(stream.buffer, 0, stream.currentPosition), soundVolume[index], soundDelay[index]);
 					if (System.currentTimeMillis() + (long) (stream.currentPosition / 22) > aLong1172
 							+ (long) (anInt1257 / 22)) {
@@ -11166,7 +11170,7 @@ public class Game extends GameShell {
 		oriented = false;
 		aBoolean1212 = false;
 		anInt1213 = -1;
-		stores = new FileStore[5];
+		stores = new Index[5];
 		reportAbuseInterfaceID = -1;
 		anInt1234 = 1;
 		anInt1236 = 326;
@@ -11218,7 +11222,9 @@ public class Game extends GameShell {
 	public int archiveHashes[];
 	public byte aByteArrayArray838[][];
 	public String reportedName;
-	public static BigInteger JAGEX_MODULUS = new BigInteger("134274162658188108615156332044035005844687673635364168287967309371368600352735850707904372087965706135488766873753055979993694937346767733501595003118797865215535454379298838514992271106623672031229174529529772262226032929964300070165660245170815718250717145999345865439513464685329517252098926061626802096023");
+	public static BigInteger JAGEX_MODULUS = new BigInteger("" +
+			"122160430267449798360978854041191852368220518230394092579319523064196043297582796633947085783119585744206711526658432067003468760585446552721871622840788528486712970246999980397054139494332878352882978447726827719186528904097434708997584641726572284342202641622966960383866799686443535696434839673638141409593" +
+			"");
 	public static int anInt841;
 	public int anIntArray842[] = { 0xffff00, 0xff0000, 65280, 65535, 0xff00ff, 0xffffff };
 	public int anIntArray843[];
@@ -11609,7 +11615,7 @@ public class Game extends GameShell {
 	public int loginScreenState;
 	public int anInt1226;
 	public int tradeMode;
-	public FileStore stores[];
+	public Index stores[];
 	public long aLong1229;
 	public static int anInt1230;
 	public int reportAbuseInterfaceID;

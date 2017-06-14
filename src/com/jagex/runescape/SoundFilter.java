@@ -3,8 +3,9 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Decompiler options: packimports(3) 
 
 import com.jagex.runescape.net.Buffer;
+import com.jagex.runescape.sound.SoundTrackEnvelope;
 
-public class Class36 {
+public class SoundFilter {
 
 	public float method352(int i, int j, float f, int k) {
 		float f1 = anIntArrayArrayArray615[i][0][k] + f
@@ -30,7 +31,7 @@ public class Class36 {
 		return method353(f1, -335);
 	}
 
-	public int method355(int i, boolean flag, float f) {
+	public int compute(int i, boolean flag, float f) {
 		if (!flag) {
 			for (int j = 1; j > 0; j++);
 		}
@@ -38,14 +39,14 @@ public class Class36 {
 			float f1 = anIntArray616[0] + (anIntArray616[1] - anIntArray616[0]) * f;
 			f1 *= 0.003051758F;
 			aFloat619 = (float) Math.pow(0.10000000000000001D, f1 / 20F);
-			anInt620 = (int) (aFloat619 * 65536F);
+			invUnity = (int) (aFloat619 * 65536F);
 		}
-		if (anIntArray613[i] == 0)
+		if (numPairs[i] == 0)
 			return 0;
 		float f2 = method352(i, 849, f, 0);
 		aFloatArrayArray617[i][0] = -2F * f2 * (float) Math.cos(method354(0, 0, i, f));
 		aFloatArrayArray617[i][1] = f2 * f2;
-		for (int k = 1; k < anIntArray613[i]; k++) {
+		for (int k = 1; k < numPairs[i]; k++) {
 			float f3 = method352(i, 849, f, k);
 			float f4 = -2F * f3 * (float) Math.cos(method354(k, 0, i, f));
 			float f5 = f3 * f3;
@@ -60,29 +61,29 @@ public class Class36 {
 		}
 
 		if (i == 0) {
-			for (int l = 0; l < anIntArray613[0] * 2; l++)
+			for (int l = 0; l < numPairs[0] * 2; l++)
 				aFloatArrayArray617[0][l] *= aFloat619;
 
 		}
-		for (int i1 = 0; i1 < anIntArray613[i] * 2; i1++)
-			anIntArrayArray618[i][i1] = (int) (aFloatArrayArray617[i][i1] * 65536F);
+		for (int i1 = 0; i1 < numPairs[i] * 2; i1++)
+			coefficient[i][i1] = (int) (aFloatArrayArray617[i][i1] * 65536F);
 
-		return anIntArray613[i] * 2;
+		return numPairs[i] * 2;
 	}
 
-	public void method356(int i, Class29 class29, Buffer class50_sub1_sub2) {
+	public void decode(int i, SoundTrackEnvelope soundTrackEnvelope, Buffer class50_sub1_sub2) {
 		int j = class50_sub1_sub2.getUnsignedByte();
-		anIntArray613[0] = j >> 4;
+		numPairs[0] = j >> 4;
 		while (i >= 0) {
 			for (int k = 1; k > 0; k++);
 		}
-		anIntArray613[1] = j & 0xf;
+		numPairs[1] = j & 0xf;
 		if (j != 0) {
 			anIntArray616[0] = class50_sub1_sub2.getUnsignedLEShort();
 			anIntArray616[1] = class50_sub1_sub2.getUnsignedLEShort();
 			int l = class50_sub1_sub2.getUnsignedByte();
 			for (int i1 = 0; i1 < 2; i1++) {
-				for (int j1 = 0; j1 < anIntArray613[i1]; j1++) {
+				for (int j1 = 0; j1 < numPairs[i1]; j1++) {
 					anIntArrayArrayArray614[i1][0][j1] = class50_sub1_sub2.getUnsignedLEShort();
 					anIntArrayArrayArray615[i1][0][j1] = class50_sub1_sub2.getUnsignedLEShort();
 				}
@@ -90,7 +91,7 @@ public class Class36 {
 			}
 
 			for (int k1 = 0; k1 < 2; k1++) {
-				for (int l1 = 0; l1 < anIntArray613[k1]; l1++)
+				for (int l1 = 0; l1 < numPairs[k1]; l1++)
 					if ((l & 1 << k1 * 4 << l1) != 0) {
 						anIntArrayArrayArray614[k1][1][l1] = class50_sub1_sub2.getUnsignedLEShort();
 						anIntArrayArrayArray615[k1][1][l1] = class50_sub1_sub2.getUnsignedLEShort();
@@ -102,7 +103,7 @@ public class Class36 {
 			}
 
 			if (l != 0 || anIntArray616[1] != anIntArray616[0])
-				class29.method309(class50_sub1_sub2, 0);
+				soundTrackEnvelope.decodeShape(class50_sub1_sub2);
 			return;
 		} else {
 			anIntArray616[0] = anIntArray616[1] = 0;
@@ -110,9 +111,9 @@ public class Class36 {
 		}
 	}
 
-	public Class36() {
+	public SoundFilter() {
 		aBoolean612 = true;
-		anIntArray613 = new int[2];
+		numPairs = new int[2];
 		anIntArrayArrayArray614 = new int[2][2][4];
 		anIntArrayArrayArray615 = new int[2][2][4];
 		anIntArray616 = new int[2];
@@ -120,13 +121,13 @@ public class Class36 {
 
 	public int anInt611;
 	public boolean aBoolean612;
-	public int anIntArray613[];
+	public int numPairs[];
 	public int anIntArrayArrayArray614[][][];
 	public int anIntArrayArrayArray615[][][];
 	public int anIntArray616[];
 	public static float aFloatArrayArray617[][] = new float[2][8];
-	public static int anIntArrayArray618[][] = new int[2][8];
+	public static int coefficient[][] = new int[2][8];
 	public static float aFloat619;
-	public static int anInt620;
+	public static int invUnity;
 
 }

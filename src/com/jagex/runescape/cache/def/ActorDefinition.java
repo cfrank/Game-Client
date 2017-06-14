@@ -1,6 +1,6 @@
 package com.jagex.runescape.cache.def;
 
-import com.jagex.runescape.Archive;
+import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.net.Buffer;
 import com.jagex.runescape.Game;
 import com.jagex.runescape.cache.cfg.Varbit;

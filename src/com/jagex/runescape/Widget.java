@@ -1,5 +1,6 @@
 package com.jagex.runescape;
 
+import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Animation;

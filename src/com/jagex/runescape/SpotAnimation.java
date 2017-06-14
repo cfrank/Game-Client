@@ -2,6 +2,7 @@ package com.jagex.runescape;// Decompiled by Jad v1.5.8f. Copyright 2001 Pavel K
 // Jad home page: http://www.kpdus.com/jad.html
 // Decompiler options: packimports(3) 
 
+import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.cache.media.AnimationSequence;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.renderable.Model;
