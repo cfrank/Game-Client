@@ -1,6 +1,5 @@
 package com.jagex.runescape.sound;
 
-import com.jagex.runescape.SoundFilter;
 import com.jagex.runescape.net.Buffer;
 
 public class SoundTrackInstrument {
@@ -140,8 +139,8 @@ public class SoundTrackInstrument {
 		if (filter.numPairs[0] > 0 || filter.numPairs[1] > 0) {
 			filterEnvelope.reset();
 			int t = filterEnvelope.step(nS + 1);
-			int M = filter.compute(0, true, t / 65536F);
-			int N = filter.compute(1, true, t / 65536F);
+			int M = filter.compute(0, t / 65536F);
+			int N = filter.compute(1, t / 65536F);
 			if (nS >= M + N) {
 				int n = 0;
 				int delay = N;
@@ -181,8 +180,8 @@ public class SoundTrackInstrument {
 
 					if (n >= nS - M)
 						break;
-					M = filter.compute(0, true, t / 65536F);
-					N = filter.compute(1, true, t / 65536F);
+					M = filter.compute(0, t / 65536F);
+					N = filter.compute(1, t / 65536F);
 					delay += offset;
 				} while (true);
 				for (; n < nS; n++) {
@@ -271,6 +270,6 @@ public class SoundTrackInstrument {
 		pauseMillis = buffer.getUnsignedLEShort();
 		filter = new SoundFilter();
 		filterEnvelope = new SoundTrackEnvelope();
-		filter.decode(-954, filterEnvelope, buffer);
+		filter.decode(filterEnvelope, buffer);
 	}
 }
