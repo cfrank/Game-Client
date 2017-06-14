@@ -1,6 +1,6 @@
 package com.jagex.runescape.cache.def;
 
-import com.jagex.runescape.ImageRGB;
+import com.jagex.runescape.cache.media.ImageRGB;
 import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.collection.Cache;
 import com.jagex.runescape.media.Rasterizer;
@@ -426,8 +426,8 @@ public class ItemDefinition {
 	public static ImageRGB sprite(int id, int stackSize, int backColour) {
 		if (backColour == 0) {
 			ImageRGB sprite = (ImageRGB) rgbImageCache.get(id);
-			if (sprite != null && sprite.getResizeHeight != stackSize
-					&& sprite.getResizeHeight != -1) {
+			if (sprite != null && sprite.maxHeight != stackSize
+					&& sprite.maxHeight != -1) {
 				sprite.remove();
 				sprite = null;
 			}
@@ -520,13 +520,13 @@ public class ItemDefinition {
 
 		}
 		if (definition.notedTemplateId != -1) {
-			int resizeWidth = notedSprite.getResizeWidth;
-			int resizeHeight = notedSprite.getResizeHeight;
-			notedSprite.getResizeWidth = 32;
-			notedSprite.getResizeHeight = 32;
-			notedSprite.drawSprite(0, 0);
-			notedSprite.getResizeWidth = resizeWidth;
-			notedSprite.getResizeHeight = resizeHeight;
+			int resizeWidth = notedSprite.maxWidth;
+			int resizeHeight = notedSprite.maxHeight;
+			notedSprite.maxWidth = 32;
+			notedSprite.maxHeight = 32;
+			notedSprite.drawImage(0, 0);
+			notedSprite.maxWidth = resizeWidth;
+			notedSprite.maxHeight = resizeHeight;
 		}
 		if (backColour == 0)
 			rgbImageCache.put(rendered, id);
@@ -537,10 +537,10 @@ public class ItemDefinition {
 		Rasterizer3D.lineOffsets = lineOffsets;
 		Rasterizer3D.approximateAlphaBlending = true;
 		if (definition.stackable)
-			rendered.getResizeWidth = 33;
+			rendered.maxWidth = 33;
 		else
-			rendered.getResizeWidth = 32;
-		rendered.getResizeHeight = stackSize;
+			rendered.maxWidth = 32;
+		rendered.maxHeight = stackSize;
 		return rendered;
 	}
 
