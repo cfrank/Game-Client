@@ -1,6 +1,5 @@
 package com.jagex.runescape.cache.media;
 
-import com.jagex.runescape.IndexedImage;
 import com.jagex.runescape.cache.Archive;
 import com.jagex.runescape.media.Rasterizer;
 import com.jagex.runescape.net.Buffer;

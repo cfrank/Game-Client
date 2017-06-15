@@ -3,7 +3,7 @@ package com.jagex.runescape.media;// Decompiled by Jad v1.5.8f. Copyright 2001 P
 // Decompiler options: packimports(3) 
 
 import com.jagex.runescape.cache.Archive;
-import com.jagex.runescape.IndexedImage;
+import com.jagex.runescape.cache.media.IndexedImage;
 
 public class Rasterizer3D extends Rasterizer {
 
@@ -96,10 +96,10 @@ public class Rasterizer3D extends Rasterizer {
 		for (int k = 0; k < 50; k++)
 			try {
 				aClass50_Sub1_Sub1_Sub3Array1540[k] = new IndexedImage(class2, String.valueOf(k), 0);
-				if (lowMemory && aClass50_Sub1_Sub1_Sub3Array1540[k].anInt1522 == 128)
-					aClass50_Sub1_Sub1_Sub3Array1540[k].method485(0);
+				if (lowMemory && aClass50_Sub1_Sub1_Sub3Array1540[k].maxWidth == 128)
+					aClass50_Sub1_Sub1_Sub3Array1540[k].resizeToHalfMax();
 				else
-					aClass50_Sub1_Sub1_Sub3Array1540[k].method486(true);
+					aClass50_Sub1_Sub1_Sub3Array1540[k].resizeToMax();
 				anInt1539++;
 			} catch (Exception _ex) {
 			}

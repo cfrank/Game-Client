@@ -23,10 +23,7 @@ import com.jagex.runescape.cache.def.ActorDefinition;
 import com.jagex.runescape.cache.def.FloorDefinition;
 import com.jagex.runescape.cache.def.GameObjectDefinition;
 import com.jagex.runescape.cache.def.ItemDefinition;
-import com.jagex.runescape.cache.media.AnimationSequence;
-import com.jagex.runescape.cache.media.IdentityKit;
-import com.jagex.runescape.cache.media.ImageRGB;
-import com.jagex.runescape.cache.media.SpotAnimation;
+import com.jagex.runescape.cache.media.*;
 import com.jagex.runescape.collection.Node;
 import com.jagex.runescape.media.Animation;
 import com.jagex.runescape.media.ProducingGraphicsBuffer;
@@ -3653,8 +3650,8 @@ public class Game extends GameShell {
 	}
 
 	public void method56(boolean flag, int i, int j, int k, int l, int i1) {
-		scrollbarUp.drawImage(i1, j);
-		scrollbarDown.drawImage((i1 + k) - 16, j);
+		scrollbarUp.drawImage(j, i1);
+		scrollbarDown.drawImage(j, (i1 + k) - 16);
 		Rasterizer.drawFilledRectangle(j, i1 + 16, 16, k - 32, anInt931);
 		int j1 = ((k - 32) * k) / l;
 		if (j1 < 8)
@@ -4470,7 +4467,7 @@ public class Game extends GameShell {
 				if (worldMapHintIcons[l6] != null)
 					worldMapHintIcons[l6].adjustRGB(l5 + k6, i6 + k6, j6 + k6);
 				if (aClass50_Sub1_Sub1_Sub3Array1153[l6] != null)
-					aClass50_Sub1_Sub1_Sub3Array1153[l6].method489(j6 + k6, i6 + k6, l5 + k6, -235);
+					aClass50_Sub1_Sub1_Sub3Array1153[l6].mixPalette(l5 + k6, i6 + k6, j6 + k6);
 			}
 
 			drawLoadingText(83, "Unpacking textures");
@@ -4574,7 +4571,7 @@ public class Game extends GameShell {
 				int l = anIntArray1290[k];
 				if (Rasterizer3D.anIntArray1546[l] >= i) {
 					IndexedImage class50_sub1_sub1_sub3 = Rasterizer3D.aClass50_Sub1_Sub1_Sub3Array1540[l];
-					int i1 = class50_sub1_sub1_sub3.width * class50_sub1_sub1_sub3.anInt1519 - 1;
+					int i1 = class50_sub1_sub1_sub3.width * class50_sub1_sub1_sub3.height - 1;
 					int j1 = class50_sub1_sub1_sub3.width * tickDelta * 2;
 					byte abyte0[] = class50_sub1_sub1_sub3.pixels;
 					byte abyte1[] = aByteArray1245;
@@ -5259,34 +5256,34 @@ public class Game extends GameShell {
 			if (anInt1089 == -1) {
 				if (anIntArray1081[anInt1285] != -1) {
 					if (anInt1285 == 0)
-						aClass50_Sub1_Sub1_Sub3_880.drawImage(10, 22);
+						aClass50_Sub1_Sub1_Sub3_880.drawImage(22, 10);
 					if (anInt1285 == 1)
-						aClass50_Sub1_Sub1_Sub3_881.drawImage(8, 54);
+						aClass50_Sub1_Sub1_Sub3_881.drawImage(54, 8);
 					if (anInt1285 == 2)
-						aClass50_Sub1_Sub1_Sub3_881.drawImage(8, 82);
+						aClass50_Sub1_Sub1_Sub3_881.drawImage(82, 8);
 					if (anInt1285 == 3)
-						aClass50_Sub1_Sub1_Sub3_882.drawImage(8, 110);
+						aClass50_Sub1_Sub1_Sub3_882.drawImage(110, 8);
 					if (anInt1285 == 4)
-						aClass50_Sub1_Sub1_Sub3_884.drawImage(8, 153);
+						aClass50_Sub1_Sub1_Sub3_884.drawImage(153, 8);
 					if (anInt1285 == 5)
-						aClass50_Sub1_Sub1_Sub3_884.drawImage(8, 181);
+						aClass50_Sub1_Sub1_Sub3_884.drawImage(181, 8);
 					if (anInt1285 == 6)
-						aClass50_Sub1_Sub1_Sub3_883.drawImage(9, 209);
+						aClass50_Sub1_Sub1_Sub3_883.drawImage(209, 9);
 				}
 				if (anIntArray1081[0] != -1 && (anInt1213 != 0 || pulseCycle % 20 < 10))
-					tabIcon[0].drawImage(13, 29);
+					tabIcon[0].drawImage(29, 13);
 				if (anIntArray1081[1] != -1 && (anInt1213 != 1 || pulseCycle % 20 < 10))
-					tabIcon[1].drawImage(11, 53);
+					tabIcon[1].drawImage(53, 11);
 				if (anIntArray1081[2] != -1 && (anInt1213 != 2 || pulseCycle % 20 < 10))
-					tabIcon[2].drawImage(11, 82);
+					tabIcon[2].drawImage(82, 11);
 				if (anIntArray1081[3] != -1 && (anInt1213 != 3 || pulseCycle % 20 < 10))
-					tabIcon[3].drawImage(12, 115);
+					tabIcon[3].drawImage(115, 12);
 				if (anIntArray1081[4] != -1 && (anInt1213 != 4 || pulseCycle % 20 < 10))
-					tabIcon[4].drawImage(13, 153);
+					tabIcon[4].drawImage(153, 13);
 				if (anIntArray1081[5] != -1 && (anInt1213 != 5 || pulseCycle % 20 < 10))
-					tabIcon[5].drawImage(11, 180);
+					tabIcon[5].drawImage(180, 11);
 				if (anIntArray1081[6] != -1 && (anInt1213 != 6 || pulseCycle % 20 < 10))
-					tabIcon[6].drawImage(13, 208);
+					tabIcon[6].drawImage(208, 13);
 			}
 			aClass18_1110.drawGraphics(516, 160, super.gameGraphics);
 			aClass18_1109.createRasterizer();
@@ -5294,32 +5291,32 @@ public class Game extends GameShell {
 			if (anInt1089 == -1) {
 				if (anIntArray1081[anInt1285] != -1) {
 					if (anInt1285 == 7)
-						aClass50_Sub1_Sub1_Sub3_983.drawImage(0, 42);
+						aClass50_Sub1_Sub1_Sub3_983.drawImage(42, 0);
 					if (anInt1285 == 8)
-						aClass50_Sub1_Sub1_Sub3_984.drawImage(0, 74);
+						aClass50_Sub1_Sub1_Sub3_984.drawImage(74, 0);
 					if (anInt1285 == 9)
-						aClass50_Sub1_Sub1_Sub3_984.drawImage(0, 102);
+						aClass50_Sub1_Sub1_Sub3_984.drawImage(102, 0);
 					if (anInt1285 == 10)
-						aClass50_Sub1_Sub1_Sub3_985.drawImage(1, 130);
+						aClass50_Sub1_Sub1_Sub3_985.drawImage(130, 1);
 					if (anInt1285 == 11)
-						aClass50_Sub1_Sub1_Sub3_987.drawImage(0, 173);
+						aClass50_Sub1_Sub1_Sub3_987.drawImage(173, 0);
 					if (anInt1285 == 12)
-						aClass50_Sub1_Sub1_Sub3_987.drawImage(0, 201);
+						aClass50_Sub1_Sub1_Sub3_987.drawImage(201, 0);
 					if (anInt1285 == 13)
-						aClass50_Sub1_Sub1_Sub3_986.drawImage(0, 229);
+						aClass50_Sub1_Sub1_Sub3_986.drawImage(229, 0);
 				}
 				if (anIntArray1081[8] != -1 && (anInt1213 != 8 || pulseCycle % 20 < 10))
-					tabIcon[7].drawImage(2, 74);
+					tabIcon[7].drawImage(74, 2);
 				if (anIntArray1081[9] != -1 && (anInt1213 != 9 || pulseCycle % 20 < 10))
-					tabIcon[8].drawImage(3, 102);
+					tabIcon[8].drawImage(102, 3);
 				if (anIntArray1081[10] != -1 && (anInt1213 != 10 || pulseCycle % 20 < 10))
-					tabIcon[9].drawImage(4, 137);
+					tabIcon[9].drawImage(137, 4);
 				if (anIntArray1081[11] != -1 && (anInt1213 != 11 || pulseCycle % 20 < 10))
-					tabIcon[10].drawImage(2, 174);
+					tabIcon[10].drawImage(174, 2);
 				if (anIntArray1081[12] != -1 && (anInt1213 != 12 || pulseCycle % 20 < 10))
-					tabIcon[11].drawImage(2, 201);
+					tabIcon[11].drawImage(201, 2);
 				if (anIntArray1081[13] != -1 && (anInt1213 != 13 || pulseCycle % 20 < 10))
-					tabIcon[12].drawImage(2, 226);
+					tabIcon[12].drawImage(226, 2);
 			}
 			aClass18_1109.drawGraphics(496, 466, super.gameGraphics);
 			aClass18_1158.createRasterizer();
@@ -5391,11 +5388,11 @@ public class Game extends GameShell {
 					class50_sub1_sub1_sub2.method474(2245, l1, 65535, i1 - 1, "From");
 					l1 += class50_sub1_sub1_sub2.method472((byte) 35, "From ");
 					if (byte0 == 1) {
-						moderatorIcon[0].drawImage(i1 - 12, l1);
+						moderatorIcon[0].drawImage(l1, i1 - 12);
 						l1 += 14;
 					}
 					if (byte0 == 2) {
-						moderatorIcon[1].drawImage(i1 - 12, l1);
+						moderatorIcon[1].drawImage(l1, i1 - 12);
 						l1 += 14;
 					}
 					class50_sub1_sub1_sub2.method474(2245, l1, 0, i1, s + ": " + aStringArray1298[k]);
@@ -6055,11 +6052,11 @@ public class Game extends GameShell {
 
 		if (class50_sub1_sub1_sub3 != null) {
 			int l1 = 0;
-			for (int j2 = 0; j2 < class50_sub1_sub1_sub3.anInt1519; j2++) {
+			for (int j2 = 0; j2 < class50_sub1_sub1_sub3.height; j2++) {
 				for (int l2 = 0; l2 < class50_sub1_sub1_sub3.width; l2++)
 					if (class50_sub1_sub1_sub3.pixels[l1++] != 0) {
-						int i3 = l2 + 16 + class50_sub1_sub1_sub3.anInt1520;
-						int j3 = j2 + 16 + class50_sub1_sub1_sub3.anInt1521;
+						int i3 = l2 + 16 + class50_sub1_sub1_sub3.xDrawOffset;
+						int j3 = j2 + 16 + class50_sub1_sub1_sub3.yDrawOffset;
 						int k3 = i3 + (j3 << 7);
 						anIntArray1176[k3] = 0;
 					}
@@ -6139,11 +6136,11 @@ public class Game extends GameShell {
 						if (k1 > 0 && k1 < 110) {
 							int l1 = 4;
 							if (byte0 == 1) {
-								moderatorIcon[0].drawImage(k1 - 12, l1);
+								moderatorIcon[0].drawImage(l1, k1 - 12);
 								l1 += 14;
 							}
 							if (byte0 == 2) {
-								moderatorIcon[1].drawImage(k1 - 12, l1);
+								moderatorIcon[1].drawImage(l1, k1 - 12);
 								l1 += 14;
 							}
 							class50_sub1_sub1_sub2_1.method474(2245, l1, 0, k1, s1 + ":");
@@ -6159,11 +6156,11 @@ public class Game extends GameShell {
 							class50_sub1_sub1_sub2_1.method474(2245, i2, 0, k1, "From");
 							i2 += class50_sub1_sub1_sub2_1.method472((byte) 35, "From ");
 							if (byte0 == 1) {
-								moderatorIcon[0].drawImage(k1 - 12, i2);
+								moderatorIcon[0].drawImage(i2, k1 - 12);
 								i2 += 14;
 							}
 							if (byte0 == 2) {
-								moderatorIcon[1].drawImage(k1 - 12, i2);
+								moderatorIcon[1].drawImage(i2, k1 - 12);
 								i2 += 14;
 							}
 							class50_sub1_sub1_sub2_1.method474(2245, i2, 0, k1, s1 + ":");
@@ -9521,10 +9518,10 @@ public class Game extends GameShell {
 			j += 30;
 			int i1 = c / 2 - 80;
 			int l1 = c1 / 2 + 20;
-			titleboxButtonImage.drawImage(l1 - 20, i1 - 73);
+			titleboxButtonImage.drawImage(i1 - 73, l1 - 20);
 			fontBold.method471(true, anInt1056, 0xffffff, l1 + 5, i1, "New User");
 			i1 = c / 2 + 80;
-			titleboxButtonImage.drawImage(l1 - 20, i1 - 73);
+			titleboxButtonImage.drawImage(i1 - 73, l1 - 20);
 			fontBold.method471(true, anInt1056, 0xffffff, l1 + 5, i1, "Existing User");
 		}
 		if (loginScreenState == 2) {
@@ -9547,10 +9544,10 @@ public class Game extends GameShell {
 			if (!flag) {
 				int j1 = c / 2 - 80;
 				int i2 = c1 / 2 + 50;
-				titleboxButtonImage.drawImage(i2 - 20, j1 - 73);
+				titleboxButtonImage.drawImage(j1 - 73, i2 - 20);
 				fontBold.method471(true, anInt1056, 0xffffff, i2 + 5, j1, "Login");
 				j1 = c / 2 + 80;
-				titleboxButtonImage.drawImage(i2 - 20, j1 - 73);
+				titleboxButtonImage.drawImage(j1 - 73, i2 - 20);
 				fontBold.method471(true, anInt1056, 0xffffff, i2 + 5, j1, "Cancel");
 			}
 		}
@@ -9572,7 +9569,7 @@ public class Game extends GameShell {
 			l += 15;
 			int k1 = c / 2;
 			int j2 = c1 / 2 + 50;
-			titleboxButtonImage.drawImage(j2 - 20, k1 - 73);
+			titleboxButtonImage.drawImage(k1 - 73, j2 - 20);
 			fontBold.method471(true, anInt1056, 0xffffff, j2 + 5, k1, "Cancel");
 		}
 		aClass18_1200.drawGraphics(202, 171, super.gameGraphics);
@@ -10789,8 +10786,8 @@ public class Game extends GameShell {
 				IndexedImage class50_sub1_sub1_sub3_2 = aClass50_Sub1_Sub1_Sub3Array1153[class47_2.anInt795];
 				if (class50_sub1_sub1_sub3_2 != null) {
 					int i6 = (class47_2.sizeX * 4 - class50_sub1_sub1_sub3_2.width) / 2;
-					int j6 = (class47_2.sizeY * 4 - class50_sub1_sub1_sub3_2.anInt1519) / 2;
-					class50_sub1_sub1_sub3_2.drawImage(48 + (104 - i - class47_2.sizeY) * 4 + j6, 48 + k * 4 + i6
+					int j6 = (class47_2.sizeY * 4 - class50_sub1_sub1_sub3_2.height) / 2;
+					class50_sub1_sub1_sub3_2.drawImage(48 + k * 4 + i6, 48 + (104 - i - class47_2.sizeY) * 4 + j6
 					);
 				}
 			} else {
@@ -10860,8 +10857,8 @@ public class Game extends GameShell {
 				IndexedImage class50_sub1_sub1_sub3_1 = aClass50_Sub1_Sub1_Sub3Array1153[class47_1.anInt795];
 				if (class50_sub1_sub1_sub3_1 != null) {
 					int j5 = (class47_1.sizeX * 4 - class50_sub1_sub1_sub3_1.width) / 2;
-					int k5 = (class47_1.sizeY * 4 - class50_sub1_sub1_sub3_1.anInt1519) / 2;
-					class50_sub1_sub1_sub3_1.drawImage(48 + (104 - i - class47_1.sizeY) * 4 + k5, 48 + k * 4 + j5
+					int k5 = (class47_1.sizeY * 4 - class50_sub1_sub1_sub3_1.height) / 2;
+					class50_sub1_sub1_sub3_1.drawImage(48 + k * 4 + j5, 48 + (104 - i - class47_1.sizeY) * 4 + k5
 					);
 				}
 			} else if (j3 == 9) {
@@ -10891,8 +10888,8 @@ public class Game extends GameShell {
 				IndexedImage class50_sub1_sub1_sub3 = aClass50_Sub1_Sub1_Sub3Array1153[class47.anInt795];
 				if (class50_sub1_sub1_sub3 != null) {
 					int i4 = (class47.sizeX * 4 - class50_sub1_sub1_sub3.width) / 2;
-					int j4 = (class47.sizeY * 4 - class50_sub1_sub1_sub3.anInt1519) / 2;
-					class50_sub1_sub1_sub3.drawImage(48 + (104 - i - class47.sizeY) * 4 + j4, 48 + k * 4 + i4);
+					int j4 = (class47.sizeY * 4 - class50_sub1_sub1_sub3.height) / 2;
+					class50_sub1_sub1_sub3.drawImage(48 + k * 4 + i4, 48 + (104 - i - class47.sizeY) * 4 + j4);
 				}
 			}
 		}
