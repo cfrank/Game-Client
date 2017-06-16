@@ -84,8 +84,8 @@ public class Model extends Renderable {
     public static int anInt1707;
     public static int anInt1708;
     public static int anIntArray1709[] = new int[1000];
-    public static int anIntArray1710[];
-    public static int anIntArray1711[];
+    public static int SINE[];
+    public static int COSINE[];
     public static int anIntArray1712[];
     public static int anIntArray1713[];
 
@@ -110,8 +110,8 @@ public class Model extends Renderable {
         Model.anIntArray1696 = null;
         Model.anIntArray1697 = null;
         Model.anIntArray1698 = null;
-        Model.anIntArray1710 = null;
-        Model.anIntArray1711 = null;
+        Model.SINE = null;
+        Model.COSINE = null;
         Model.anIntArray1712 = null;
         Model.anIntArray1713 = null;
 
@@ -1048,22 +1048,22 @@ public class Model extends Renderable {
                         int l6 = (k & 0xff) * 8;
                         int i7 = (l & 0xff) * 8;
                         if (i7 != 0) {
-                            int j7 = anIntArray1710[i7];
-                            int i8 = anIntArray1711[i7];
+                            int j7 = SINE[i7];
+                            int i8 = COSINE[i7];
                             int l8 = verticesY[k5] * j7 + verticesX[k5] * i8 >> 16;
                             verticesY[k5] = verticesY[k5] * i8 - verticesX[k5] * j7 >> 16;
                             verticesX[k5] = l8;
                         }
                         if (k6 != 0) {
-                            int k7 = anIntArray1710[k6];
-                            int j8 = anIntArray1711[k6];
+                            int k7 = SINE[k6];
+                            int j8 = COSINE[k6];
                             int i9 = verticesY[k5] * j8 - verticesZ[k5] * k7 >> 16;
                             verticesZ[k5] = verticesY[k5] * k7 + verticesZ[k5] * j8 >> 16;
                             verticesY[k5] = i9;
                         }
                         if (l6 != 0) {
-                            int l7 = anIntArray1710[l6];
-                            int k8 = anIntArray1711[l6];
+                            int l7 = SINE[l6];
+                            int k8 = COSINE[l6];
                             int j9 = verticesZ[k5] * l7 + verticesX[k5] * k8 >> 16;
                             verticesZ[k5] = verticesZ[k5] * k8 - verticesX[k5] * l7 >> 16;
                             verticesX[k5] = j9;
@@ -1131,8 +1131,8 @@ public class Model extends Renderable {
     }
 
     public void rotateX(int i) {
-        int k = anIntArray1710[i];
-        int l = anIntArray1711[i];
+        int k = SINE[i];
+        int l = COSINE[i];
         for (int i1 = 0; i1 < vertexCount; i1++) {
             int j1 = verticesY[i1] * l - verticesZ[i1] * k >> 16;
             verticesZ[i1] = verticesY[i1] * k + verticesZ[i1] * l >> 16;
@@ -1344,14 +1344,14 @@ public class Model extends Renderable {
     public void render(int i, int j, int k, int l, int i1, int j1, int k1) {
         int l1 = Rasterizer3D.centerX;
         int i2 = Rasterizer3D.centerY;
-        int j2 = anIntArray1710[i];
-        int k2 = anIntArray1711[i];
-        int l2 = anIntArray1710[j];
-        int i3 = anIntArray1711[j];
-        int j3 = anIntArray1710[k];
-        int k3 = anIntArray1711[k];
-        int l3 = anIntArray1710[l];
-        int i4 = anIntArray1711[l];
+        int j2 = SINE[i];
+        int k2 = COSINE[i];
+        int l2 = SINE[j];
+        int i3 = COSINE[j];
+        int j3 = SINE[k];
+        int k3 = COSINE[k];
+        int l3 = SINE[l];
+        int i4 = COSINE[l];
         int j4 = j1 * l3 + k1 * i4 >> 16;
         for (int k4 = 0; k4 < vertexCount; k4++) {
             int l4 = verticesX[k4];
@@ -1456,8 +1456,8 @@ public class Model extends Renderable {
         int l6 = 0;
         int i7 = 0;
         if (i != 0) {
-            l6 = anIntArray1710[i];
-            i7 = anIntArray1711[i];
+            l6 = SINE[i];
+            i7 = COSINE[i];
         }
         for (int j7 = 0; j7 < vertexCount; j7++) {
             int k7 = verticesX[j7];
@@ -1900,8 +1900,8 @@ public class Model extends Renderable {
 
 
     static {
-        anIntArray1710 = Rasterizer3D.SINE;
-        anIntArray1711 = Rasterizer3D.COSINE;
+        SINE = Rasterizer3D.SINE;
+        COSINE = Rasterizer3D.COSINE;
         anIntArray1712 = Rasterizer3D.getRgbLookupTableId;
         anIntArray1713 = Rasterizer3D.anIntArray1535;
     }

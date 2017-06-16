@@ -317,8 +317,8 @@ public class Scene {
 		}
 	}
 
-	public boolean method252(int i, Renderable class50_sub1_sub4, int j, int k, boolean flag, int l, int i1,
-                             int j1, int k1, int l1) {
+	public boolean addEntity(int i, Renderable class50_sub1_sub4, int j, int k, boolean flag, int l, int i1,
+							 int j1, int k1, int l1) {
 		if (class50_sub1_sub4 == null)
 			return true;
 		int i2 = j - j1;
@@ -342,8 +342,8 @@ public class Scene {
 		return method254(i1, i2, j2, (k2 - i2) + 1, (l2 - j2) + 1, j, k1, k, class50_sub1_sub4, l1, true, i, (byte) 0);
 	}
 
-	public boolean method253(int i, int j, int k, int l, Renderable class50_sub1_sub4, int i1, int j1, int k1,
-                             int l1, int i2, int j2, int k2, int l2) {
+	public boolean addRenderable(int i, int j, int k, int l, Renderable class50_sub1_sub4, int i1, int j1, int k1,
+                                 int l1, int i2, int j2, int k2, int l2) {
 		if (class50_sub1_sub4 == null)
 			return true;
 		else
@@ -878,10 +878,10 @@ public class Scene {
 		boolean aflag[][][][] = new boolean[9][32][53][53];
 		for (int j1 = 128; j1 <= 384; j1 += 32) {
 			for (int k1 = 0; k1 < 2048; k1 += 64) {
-				anInt473 = Model.anIntArray1710[j1];
-				anInt474 = Model.anIntArray1711[j1];
-				anInt475 = Model.anIntArray1710[k1];
-				anInt476 = Model.anIntArray1711[k1];
+				anInt473 = Model.SINE[j1];
+				anInt474 = Model.COSINE[j1];
+				anInt475 = Model.SINE[k1];
+				anInt476 = Model.COSINE[k1];
 				int i2 = (j1 - 128) / 32;
 				int k2 = k1 / 64;
 				for (int i3 = -26; i3 <= 26; i3++) {
@@ -973,10 +973,10 @@ public class Scene {
 		else if (i1 >= anInt454 * 128)
 			i1 = anInt454 * 128 - 1;
 		anInt463++;
-		anInt473 = Model.anIntArray1710[k1];
-		anInt474 = Model.anIntArray1711[k1];
-		anInt475 = Model.anIntArray1710[j1];
-		anInt476 = Model.anIntArray1711[j1];
+		anInt473 = Model.SINE[k1];
+		anInt474 = Model.COSINE[k1];
+		anInt475 = Model.SINE[j1];
+		anInt476 = Model.COSINE[j1];
 		aBooleanArrayArray507 = aBooleanArrayArrayArrayArray506[(k1 - 128) / 32][j1 / 64];
 		anInt470 = i;
 		anInt471 = l;

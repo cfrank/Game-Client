@@ -15,7 +15,7 @@ public class Npc extends Actor {
 		if (super.emoteAnimation >= 0 && super.animationDelay == 0) {
 			int frameId = AnimationSequence.animations[super.emoteAnimation].getPrimaryFrame[super.displayedEmoteFrames];
 			int frameId2 = -1;
-			if (super.movementAnimation >= 0 && super.movementAnimation != super.standAnimationId)
+			if (super.movementAnimation >= 0 && super.movementAnimation != super.idleAnimation)
 				frameId2 = AnimationSequence.animations[super.movementAnimation].getPrimaryFrame[super.displayedMovementFrames];
 			return npcDefinition.getChildModel(frameId, frameId2, AnimationSequence.animations[super.emoteAnimation].flowControl);
 		}

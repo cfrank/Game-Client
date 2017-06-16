@@ -12,7 +12,7 @@ import com.jagex.runescape.util.TextUtils;
 
 public class Widget {
 
-	public String spellName;
+	public String optionText;
 	public ImageRGB disabledImage;
 	public int imageY[];
 	public static Archive mediaArchive;
@@ -23,7 +23,7 @@ public class Widget {
 	public boolean hiddenUntilHovered;
 	public byte alpha;
 	public int imageX[];
-	public int spellUsableOn;
+	public int optionAttributes;
 	public static TypeFace fonts[];
 	public int itemAmounts[];
 	public int unknownOne;
@@ -76,7 +76,7 @@ public class Widget {
 	public int childrenY[];
 	public static int anInt277 = -1;
 	public static int anInt280;
-	public String selectedActionName;
+	public String optionCircumfix;
 	public static byte data[][];
 	public int modelType;
 	public int modelId;
@@ -135,7 +135,7 @@ public class Widget {
 		if (modelType == 2)
 			model = ActorDefinition.getDefinition(modelId).getHeadModel();
 		if (modelType == 3)
-			model = Game.thisPlayer.getHeadModel();
+			model = Game.localPlayer.getHeadModel();
 		if (modelType == 4)
 			model = item.asStack(50);
 		if (modelType == 5)
@@ -322,9 +322,9 @@ public class Widget {
 		if (widget.type == 8)
 			widget.disabledText = buffer.getString();
 		if (widget.actionType == 2 || widget.type == 2) {
-			widget.selectedActionName = buffer.getString();
-			widget.spellName = buffer.getString();
-			widget.spellUsableOn = buffer.getUnsignedLEShort();
+			widget.optionCircumfix = buffer.getString();
+			widget.optionText = buffer.getString();
+			widget.optionAttributes = buffer.getUnsignedLEShort();
 		}
 		if (widget.actionType == 1 || widget.actionType == 4 || widget.actionType == 5 || widget.actionType == 6) {
 			widget.tooltip = buffer.getString();

@@ -104,7 +104,7 @@ public class Player extends Actor {
 		if (super.emoteAnimation >= 0 && super.animationDelay == 0) {
 			AnimationSequence emote = AnimationSequence.animations[super.emoteAnimation];
 			primaryFrame = emote.getPrimaryFrame[super.displayedEmoteFrames];
-			if (super.movementAnimation >= 0 && super.movementAnimation != super.standAnimationId)
+			if (super.movementAnimation >= 0 && super.movementAnimation != super.idleAnimation)
 				secondaryFrame = AnimationSequence.animations[super.movementAnimation].getPrimaryFrame[super.displayedMovementFrames];
 			if (emote.getPlayerShieldDelta >= 0) {
 				shieldModel = emote.getPlayerShieldDelta;
@@ -229,7 +229,7 @@ public class Player extends Actor {
 				playerModel = null;
 			if (Game.pulseCycle >= objectAppearanceStartTick && Game.pulseCycle < objectAppearanceEndTick) {
 				Model model = playerModel;
-				model.translate(anInt1743 - super.xWithBoundary, anInt1745 - super.yWithBoundary,
+				model.translate(anInt1743 - super.worldX, anInt1745 - super.worldY,
 						anInt1744 - anInt1750);
 				if (super.nextStepOrientation == 512) {
 					model.rotate90Degrees();
@@ -252,7 +252,7 @@ public class Player extends Actor {
 					model.rotate90Degrees();
 					model.rotate90Degrees();
 				}
-				model.translate(super.xWithBoundary - anInt1743, super.yWithBoundary - anInt1745,
+				model.translate(super.worldX - anInt1743, super.worldY - anInt1745,
 						anInt1750 - anInt1744);
 			}
 		}
@@ -293,9 +293,9 @@ public class Player extends Actor {
 			appearanceColors[l] = j1;
 		}
 
-		super.standAnimationId = buffer.getUnsignedLEShort();
-		if (super.standAnimationId == 65535)
-			super.standAnimationId = -1;
+		super.idleAnimation = buffer.getUnsignedLEShort();
+		if (super.idleAnimation == 65535)
+			super.idleAnimation = -1;
 		super.standTurnAnimationId = buffer.getUnsignedLEShort();
 		if (super.standTurnAnimationId == 65535)
 			super.standTurnAnimationId = -1;

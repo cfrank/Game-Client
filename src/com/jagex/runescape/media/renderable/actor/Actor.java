@@ -35,8 +35,8 @@ public abstract class Actor extends Renderable {
 	public int anInt1607;
 	public int anInt1608;
 	public int anInt1609 = -1;
-	public int xWithBoundary;
-	public int yWithBoundary;
+	public int worldX;
+	public int worldY;
 	public int anInt1612;
 	public int anInt1613;
 	public int graphic = -1;
@@ -59,7 +59,7 @@ public abstract class Actor extends Renderable {
 	public int[] hitTypes = new int[4];
 	public int[] hitCycles = new int[4];
 	public int pathLength;
-	public int standAnimationId = -1;
+	public int idleAnimation = -1;
 	public int standTurnAnimationId = -1;
 
 	public void resetPath() {
@@ -150,7 +150,7 @@ public abstract class Actor extends Renderable {
 		anInt1623 = 0;
 		pathX[0] = x;
 		pathY[0] = y;
-		xWithBoundary = pathX[0] * 128 + boundaryDimension * 64;
-		yWithBoundary = pathY[0] * 128 + boundaryDimension * 64;
+		worldX = pathX[0] * 128 + boundaryDimension * 64;
+		worldY = pathY[0] * 128 + boundaryDimension * 64;
 	}
 }
