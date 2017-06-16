@@ -504,7 +504,7 @@ public class Scene {
 		}
 	}
 
-	public void method262(int i, int j, int k) {
+	public void clearGroundItem(int i, int j, int k) {
 		SceneTile class50_sub3 = tiles[i][j][k];
 		if (class50_sub3 == null) {
 			return;

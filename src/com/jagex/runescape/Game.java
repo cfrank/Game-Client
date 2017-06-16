@@ -1272,42 +1272,42 @@ public class Game extends GameShell {
 
 	}
 
-	public void method26(int x, int y) {
-		LinkedList class6 = groundItems[plane][x][y];
-		if (class6 == null) {
-			currentScene.method262(plane, x, y);
+	public void processGroundItems(int x, int y) {
+		LinkedList linkedList = groundItems[plane][x][y];
+		if (linkedList == null) {
+			currentScene.clearGroundItem(plane, x, y);
 			return;
 		}
-		int k = 0xfa0a1f01;
-		Object obj = null;
-		for (Item class50_sub1_sub4_sub1 = (Item) class6.first(); class50_sub1_sub4_sub1 != null; class50_sub1_sub4_sub1 = (Item) class6
+		int maxValue = 0xfa0a1f01;
+		Object mostValuable = null;
+		for (Item item = (Item) linkedList.first(); item != null; item = (Item) linkedList
 				.next()) {
-			ItemDefinition class16 = ItemDefinition.lookup(class50_sub1_sub4_sub1.itemId);
-			int l = class16.value;
-			if (class16.stackable)
-				l *= class50_sub1_sub4_sub1.itemCount + 1;
-			if (l > k) {
-				k = l;
-				obj = class50_sub1_sub4_sub1;
+			ItemDefinition definition = ItemDefinition.lookup(item.itemId);
+			int value = definition.value;
+			if (definition.stackable)
+				value *= item.itemCount + 1;
+			if (value > maxValue) {
+				maxValue = value;
+				mostValuable = item;
 			}
 		}
 
-		class6.addFirst(((Node) (obj)));
-		Object obj1 = null;
-		Object obj2 = null;
-		for (Item class50_sub1_sub4_sub1_1 = (Item) class6.first(); class50_sub1_sub4_sub1_1 != null; class50_sub1_sub4_sub1_1 = (Item) class6
+		linkedList.addFirst(((Node) (mostValuable)));
+		Object first = null;
+		Object second = null;
+		for (Item item = (Item) linkedList.first(); item != null; item = (Item) linkedList
 				.next()) {
-			if (class50_sub1_sub4_sub1_1.itemId != ((Item) (obj)).itemId && obj1 == null)
-				obj1 = class50_sub1_sub4_sub1_1;
-			if (class50_sub1_sub4_sub1_1.itemId != ((Item) (obj)).itemId
-					&& class50_sub1_sub4_sub1_1.itemId != ((Item) (obj1)).itemId
-					&& obj2 == null)
-				obj2 = class50_sub1_sub4_sub1_1;
+			if (item.itemId != ((Item) (mostValuable)).itemId && first == null)
+				first = item;
+			if (item.itemId != ((Item) (mostValuable)).itemId
+					&& item.itemId != ((Item) (first)).itemId
+					&& second == null)
+				second = item;
 		}
 
-		int i1 = x + (y << 7) + 0x60000000;
+		int key = x + (y << 7) + 0x60000000;
 		currentScene.method248(method110(y * 128 + 64, x * 128 + 64, (byte) 9, plane), plane,
-				((Renderable) (obj)), ((Renderable) (obj1)), i1, ((Renderable) (obj2)), 2, y, x);
+				((Renderable) (mostValuable)), ((Renderable) (first)), key, ((Renderable) (second)), 2, y, x);
 	}
 
 
@@ -2560,7 +2560,7 @@ public class Game extends GameShell {
 					for (int i14 = placementY; i14 < placementY + 8; i14++)
 						if (groundItems[plane][k5][i14] != null) {
 							groundItems[plane][k5][i14] = null;
-							method26(k5, i14);
+							processGroundItems(k5, i14);
 						}
 
 				}
@@ -7374,7 +7374,7 @@ public class Game extends GameShell {
 				currentScene.method242(0);
 			for (int j5 = 0; j5 < 104; j5++) {
 				for (int j7 = 0; j7 < 104; j7++)
-					method26(j5, j7);
+					processGroundItems(j5, j7);
 
 			}
 
@@ -10241,7 +10241,7 @@ public class Game extends GameShell {
 				if (groundItems[plane][x][y] == null)
 					groundItems[plane][x][y] = new LinkedList();
 				groundItems[plane][x][y].insertBack(item);
-				method26(x, y);
+				processGroundItems(x, y);
 			}
 			return;
 		}
@@ -10310,7 +10310,7 @@ public class Game extends GameShell {
 				if (groundItems[plane][x][y] == null)
 					groundItems[plane][x][y] = new LinkedList();
 				groundItems[plane][x][y].insertBack(item);
-				method26(x, y);
+				processGroundItems(x, y);
 			}
 			return;
 		}
@@ -10331,7 +10331,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					method26(x, y);
+					processGroundItems(x, y);
 				}
 			}
 			return;
@@ -10428,7 +10428,7 @@ public class Game extends GameShell {
 
 					if (list.first() == null)
 						groundItems[plane][x][y] = null;
-					method26(x, y);
+					processGroundItems(x, y);
 				}
 			}
 			return;
