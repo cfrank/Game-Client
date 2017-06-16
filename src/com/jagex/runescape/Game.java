@@ -53,6 +53,512 @@ import com.jagex.runescape.util.*;
 @SuppressWarnings("serial")
 public class Game extends GameShell {
 
+
+	private final int[] soundVolume = new int[50];
+	public int archiveHashes[] = new int[9];
+	public byte aByteArrayArray838[][];
+	public String reportedName = "";
+	public static BigInteger JAGEX_MODULUS = new BigInteger("" +
+			"122160430267449798360978854041191852368220518230394092579319523064196043297582796633947085783119585744206711526658432067003468760585446552721871622840788528486712970246999980397054139494332878352882978447726827719186528904097434708997584641726572284342202641622966960383866799686443535696434839673638141409593" +
+			"");
+	public static int anInt841;
+	public int anIntArray842[] = { 0xffff00, 0xff0000, 65280, 65535, 0xff00ff, 0xffffff };
+	public int anIntArray843[] = new int[SkillConstants.SKILL_COUNT];
+	public int anInt844;
+	public int anInt845;
+	public int anInt846;
+	public int anInt847;
+	public int anInt848;
+	public String friendsListNames[] = new String[200];
+	public int anInt850;
+	public int anInt851;
+	public int anIntArray852[] = new int[5];
+	public int anInt853;
+	public int anInt854 = 2;
+	public int ignoresCount;
+	public int coordinates[];
+	public int anIntArray857[];
+	public int anIntArray858[];
+	public int friendsCount;
+	public int friendListStatus;
+	public String aString861 = "";
+	public int anInt862;
+	public String aStringArray863[] = new String[100];
+	public int anIntArray864[] = new int[100];
+	public int anInt865;
+	public boolean messagePromptRaised = false;
+	public int playerRights;
+	public static boolean fps;
+	public int packetSize;
+	public int opcode;
+	public int timeoutCounter;
+	public int anInt872;
+	public int anInt873;
+	public int anInt874;
+	public int anInt875;
+	public int anInt876;
+	public int anInt877;
+	public int anInt878;
+	public int constructedMapPalette[][][] = new int[4][13][13];
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_880;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_881;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_882;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_883;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_884;
+	public int anIntArrayArray885[][] = new int[104][104];
+	public int anIntArrayArray886[][] = new int[104][104];
+	public int privateChatMode;
+	public Archive titleArchive;
+	public int chunkX;
+	public int chunkY;
+	public int anIntArrayArrayArray891[][][];
+	public boolean aBoolean892 = false;
+	public int anInt893;
+	public int anInt894 = -992;
+	public static int anInt895;
+	public ImageRGB cursorCross[] = new ImageRGB[8];
+	public int anInt897 = 559;
+	public byte aByte898 = 6;
+	public ISAACCipher incomingRandom;
+	public boolean aBoolean900 = false;
+	public byte aByte901 = -123;
+	public long aLong902;
+	public int lastOpcode;
+	public int secondLastOpcode;
+	public int thirdLastOpcode;
+	public ProducingGraphicsBuffer aClass18_906;
+	public ProducingGraphicsBuffer aClass18_907;
+	public ProducingGraphicsBuffer aClass18_908;
+	public ProducingGraphicsBuffer aClass18_909;
+	public ProducingGraphicsBuffer aClass18_910;
+	public ProducingGraphicsBuffer aClass18_911;
+	public ProducingGraphicsBuffer aClass18_912;
+	public ProducingGraphicsBuffer aClass18_913;
+	public ProducingGraphicsBuffer aClass18_914;
+	public int anInt915;
+	public int anInt916;
+	public int anInt917 = 2;
+	public boolean aBoolean918 = true;
+	public boolean aBoolean919 = true;
+	public int anIntArray920[] = new int[151];
+	public int anInt921 = 8;
+	public int anInt922;
+	public static int world = 10;
+	public static int portOffset;
+	public static boolean memberServer = true;
+	public static boolean lowMemory;
+	public boolean aBooleanArray927[] = new boolean[5];
+	public int anInt928 = -188;
+	public Buffer tempBuffer = Buffer.allocate(1);
+	public long serverSeed;
+	public int anInt931 = 0x23201b;
+	public int anInt932 = -1;
+	public int anInt933 = -1;
+	public boolean aBoolean934;
+	public int anInt935 = -1;
+	public byte aByte936 = -113;
+	public String chatboxInputMessage = "";
+	public int anInt938 = -214;
+	public int anInt939;
+	public int anInt940 = 50;
+	public int anIntArray941[] = new int[anInt940];
+	public int anIntArray942[] = new int[anInt940];
+	public int anIntArray943[] = new int[anInt940];
+	public int anIntArray944[] = new int[anInt940];
+	public int anIntArray945[] = new int[anInt940];
+	public int anIntArray946[] = new int[anInt940];
+	public int anIntArray947[] = new int[anInt940];
+	public String aStringArray948[] = new String[anInt940];
+	public String inputInputMessage = "";
+	public boolean aBoolean950 = false;
+	public int tickDelta;
+	public static int xpForSkillLevel[];
+	public boolean aBoolean953 = false;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array954[] = new ImageRGB[32];
+	public int anInt955;
+	public byte aByte956 = 1;
+	public String statusLineOne = "";
+	public String statusLineTwo = "";
+	public boolean aBoolean959 = true;
+	public int anInt960 = -1;
+	public int thisPlayerServerId = -1;
+	public static boolean accountFlagged;
+	public static boolean aBoolean963 = true;
+	public Buffer outBuffer = Buffer.allocate(1);
+	public IndexedImage anIndexedImage1052;
+	public IndexedImage anIndexedImage1053;
+	public IndexedImage anIndexedImage1054;
+	public int anInt968 = 2048;
+	public int thisPlayerId = 2047;
+	public Player players[] = new Player[anInt968];
+	public int localPlayerCount;
+	public int localPlayers[] = new int[anInt968];
+	public int updatedPlayerCount;
+	public int updatedPlayers[] = new int[anInt968];
+	public Buffer cachedAppearances[] = new Buffer[anInt968];
+	public IndexedImage tabIcon[] = new IndexedImage[13];
+	public int anInt977;
+	public static int anInt978;
+	public int anIntArray979[] = new int[500];
+	public int anIntArray980[] = new int[500];
+	public int anIntArray981[] = new int[500];
+	public int anIntArray982[] = new int[500];
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_983;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_984;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_985;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_986;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3_987;
+	public int anInt988 = -1;
+	public int placementX;
+	public int placementY;
+	public int anIntArray991[] = new int[5];
+	public int anInt992;
+	public int anInt993;
+	public int anInt994;
+	public int anInt995;
+	public int anInt996;
+	public int anInt997;
+	public int anInt998;
+	public static boolean aBoolean999;
+	public int chatboxLineOffsets[];
+	public int anIntArray1001[];
+	public int anIntArray1002[];
+	public int anIntArray1003[];
+	public int anInt1004;
+	public int anIntArray1005[] = new int[2000];
+	public int publicChatMode;
+	public static String VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
+	public static final int playerColours[][] = {
+			{ 6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193 },
+			{ 8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239 },
+			{ 25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003 },
+			{ 4626, 11146, 6439, 12, 4758, 10270 }, { 4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574 } };
+	public int anInt1009;
+	public int anInt1010 = 2;
+	public int anInt1011;
+	public int anInt1012;
+	public static int anInt1013;
+	public boolean aBoolean1014 = false;
+	public int anInt1015;
+	public boolean aBoolean1016 = false;
+	public ImageRGB anImageRGB1226;
+	public ImageRGB anImageRGB1227;
+	public int anIntArray1019[] = new int[151];
+	public int anInt1020;
+	public int anInt1021;
+	public int crossIndex;
+	public int crossType;
+	public BufferedConnection bufferedConnection;
+	public String chatMessage = "";
+	public String aString1027;
+	public boolean aBoolean1028 = false;
+	public int anIntArray1029[] = new int[SkillConstants.SKILL_COUNT];
+	public int anInt1030;
+	public ImageRGB worldMapHintIcons[] = new ImageRGB[100];
+	public final int anIntArray1032[] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3 };
+	public boolean aBoolean1033 = false;
+	public int anInt1034;
+	public int currentSound;
+	public ImageRGB mapFlagMarker;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1037;
+	public boolean aBoolean1038 = true;
+	public int widgetSettings[] = new int[2000];
+	public int nextTopLeftTileX;
+	public int nextTopRightTileY;
+	public int topLeftTileX;
+	public int topLeftTileY;
+	public int anInt1044;
+	public int anInt1045;
+	public boolean aBoolean1046 = false;
+	public int anInt1047;
+	public int anInt1048;
+	public static int anInt1049;
+	public int minimapState;
+	public int anInt1051 = 69;
+	public static int anInt1052;
+	public int anInt1053 = -1;
+	public int anIntArray1054[] = new int[SkillConstants.SKILL_COUNT];
+	public int anInt1055 = 2;
+	public int anInt1056 = 3;
+	public int systemUpdateTime;
+	public String clickToContinueString;
+	public TypeFace fontSmall;
+	public TypeFace fontNormal;
+	public TypeFace fontBold;
+	public TypeFace fontFancy;
+	public int mouseInvInterfaceIndex;
+	public int lastActiveInvInterface;
+	public boolean aBoolean1065 = false;
+	public byte aByte1066 = 1;
+	public boolean aBoolean1067 = false;
+	public int playerMembers;
+	public String aStringArray1069[] = new String[5];
+	public boolean aBooleanArray1070[] = new boolean[5];
+	public int loadingStage;
+	public int anInt1072 = 20411;
+	public long ignores[] = new long[100];
+	public boolean aBoolean1074;
+	public int anInt1075;
+	public int minimapHintCount;
+	public int minimapHintX[] = new int[1000];
+	public int minimapHintY[] = new int[1000];
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1079[] = new ImageRGB[32];
+	public int anInt1080 = 0x4d4233;
+	public int anIntArray1081[] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
+	public static int anInt1082;
+	public int anInt1083;
+	public int anIntArray1084[];
+	public int anIntArray1085[];
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1086;
+	public int anInt1087;
+	public CRC32 aCRC32_1088 = new CRC32();
+	public int anInt1089 = -1;
+	public int sound[] = new int[50];
+	public int plane;
+	public String username = "";
+	public String password = "";
+	public int anInt1094;
+	public IndexedImage scrollbarUp;
+	public IndexedImage scrollbarDown;
+	public boolean aBoolean1097 = false;
+	public boolean reportMutePlayer = false;
+	public int characterEditColors[] = new int[5];
+	public static int anInt1100;
+	public int anInt1101;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1102;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1_1103;
+	public String chatboxInput = "";
+	public int anIntArray1105[] = new int[5];
+	public int anInt1106;
+	public int anInt1107 = 78;
+	public ProducingGraphicsBuffer aClass18_1108;
+	public ProducingGraphicsBuffer aClass18_1109;
+	public ProducingGraphicsBuffer aClass18_1110;
+	public int anInt1111;
+	public int anInt1112;
+	public int activeInterfaceType;
+	public int anInt1114;
+	public int anInt1115;
+	public ImageRGB minimapCompass;
+	public IndexedImage titleFlameEmblem[];
+	public int anInt1118;
+	public int anInt1119 = -30658;
+	public int destinationX;
+	public int anInt1121;
+	public ImageRGB minimapImage;
+	public int anIntArray1123[] = new int[4000];
+	public int anIntArray1124[] = new int[4000];
+	public byte currentSceneTileFlags[][][];
+	public int anInt1126;
+	public boolean aBoolean1127 = false;
+	public int previousSong;
+	public int anInt1129;
+	public long friends[] = new long[200];
+	public Buffer chatBuffer = new Buffer(new byte[5000]);
+	public Npc npcs[] = new Npc[16384];
+	public int anInt1133;
+	public int anIntArray1134[] = new int[16384];
+	public int anInt1135 = 0x766654;
+	public boolean aBoolean1136 = false;
+	public boolean loggedIn = false;
+	public int anInt1138;
+	public static int anInt1139;
+	public int anInt1140 = -110;
+	public long aLong1141;
+	public IndexedImage moderatorIcon[] = new IndexedImage[2];
+	public byte aByte1143 = -80;
+	public boolean characterEditChangeGenger = true;
+	public int quakeTimes[] = new int[5];
+	public int anInt1146;
+	public int anInt1147;
+	public int anInt1148;
+	public int anInt1149;
+	public String aString1150;
+	public int anInt1151;
+	public int anInt1152;
+	public IndexedImage aClass50_Sub1_Sub1_Sub3Array1153[] = new IndexedImage[100];
+	public int anInt1154 = -916;
+	public boolean aBoolean1155 = false;
+	public ProducingGraphicsBuffer aClass18_1156;
+	public ProducingGraphicsBuffer aClass18_1157;
+	public ProducingGraphicsBuffer aClass18_1158;
+	public ProducingGraphicsBuffer chatboxProducingGraphicsBuffer;
+	public static int anInt1160;
+	public byte aByte1161 = 97;
+	public static int anInt1162;
+	public boolean aBoolean1163 = false;
+	public Scene currentScene;
+	public static int anInt1165;
+	public int anIntArray1166[] = new int[256];
+	public static Player thisPlayer;
+	public static int anInt1168;
+	public int openInterfaceId = -1;
+	public int anInt1170;
+	public int anInt1171;
+	public int anInt1172;
+	public int anInt1173;
+	public String aString1174;
+	public int anInt1175 = -89;
+	public int anIntArray1176[];
+	public int anIntArray1177[];
+	public int anInt1178 = 300;
+	public int anInt1257;
+	public int anIntArray1180[] = new int[33];
+	public boolean aBoolean1181 = false;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1182[] = new ImageRGB[20];
+	public int menuActionRow;
+	public String aStringArray1184[] = new String[500];
+	public IndexedImage inventoryBackgroundImage;
+	public IndexedImage minimapBackgroundImage;
+	public IndexedImage chatboxBackgroundImage;
+	public Buffer buffer = Buffer.allocate(1);
+	public int cost[][] = new int[104][104];
+	public static boolean aBoolean1190 = true;
+	public int anInt1191 = -1;
+	public ImageRGB mapdotItem;
+	public ImageRGB mapdotActor;
+	public ImageRGB mapdotPlayer;
+	public ImageRGB mapdotFriend;
+	public ImageRGB mapdotTeammate;
+	public int anInt1197;
+	public ProducingGraphicsBuffer aClass18_1198;
+	public ProducingGraphicsBuffer aClass18_1199;
+	public ProducingGraphicsBuffer aClass18_1200;
+	public ProducingGraphicsBuffer flameLeftBackground;
+	public ProducingGraphicsBuffer flameRightBackground;
+	public ProducingGraphicsBuffer aClass18_1203;
+	public ProducingGraphicsBuffer aClass18_1204;
+	public ProducingGraphicsBuffer aClass18_1205;
+	public ProducingGraphicsBuffer aClass18_1206;
+	public static boolean aBoolean1207;
+	public int anInt1208;
+	public boolean aBoolean1209 = false;
+	public LinkedList aClass6_1210 = new LinkedList();
+	public boolean oriented = false;
+	public boolean aBoolean1212 = false;
+	public int anInt1213 = -1;
+	public static int BITFIELD_MAX_VALUE[];
+	public int anInt1215;
+	public int anInt1216;
+	public int anInt1217;
+	public int anInt1218;
+	public int anInt1219;
+	public int anInt1220;
+	public int friendsListAction;
+	public int anInt1222;
+	public int anInt1223;
+	public Socket aSocket1224;
+	public int loginScreenState;
+	public int anInt1226;
+	public int tradeMode;
+	public Index stores[] = new Index[5];
+	public long aLong1229;
+	public static int anInt1230;
+	public int reportAbuseInterfaceID = -1;
+	public byte aByteArrayArray1232[][];
+	public int anInt1233;
+	public int anInt1234 = 1;
+	public static int anInt1235;
+	public int anInt1236 = 326;
+	public static int anInt1237;
+	public int anInt1238;
+	public boolean aBoolean1239 = false;
+	public boolean redrawChatbox = false;
+	public int lastAddress;
+	public static boolean aBoolean1242 = true;
+	public volatile boolean aBoolean1243 = false;
+	public int inputType;
+	public byte aByteArray1245[] = new byte[16384];
+	public int anInt1246;
+	public ImageRGB minimapEdge;
+	public MouseCapturer mouseCapturer;
+	public Widget aClass13_1249 = new Widget();
+	public long aLong1172;
+	public int anInt1251 = 128;
+	public int cameraHorizontal;
+	public int anInt1186;
+	public int anInt1187;
+	public int anInt1255;
+	public int anInt1256 = 1;
+	public int anIntArray1258[] = new int[100];
+	public int soundDelay[] = new int[50];
+	public CollisionMap currentCollisionMap[] = new CollisionMap[4];
+	public LinkedList aClass6_1261 = new LinkedList();
+	public int anInt1262;
+	public int anInt1263;
+	public int anInt1264;
+	public boolean aBoolean1265 = false;
+	public boolean musicEnabled = true;
+	public int anIntArray1267[] = new int[200];
+	public static final int SKIN_COLOURS[] = { 9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654,
+			5027, 1457, 16565, 34991, 25486 };
+	public int anInt1269;
+	public int nextSong;
+	public boolean songChanging = true;
+	public int anInt1272 = -1;
+	public int anInt1273;
+	public boolean aBoolean1274 = true;
+	public boolean aBoolean1275 = true;
+	public int anInt1276 = -1;
+	public boolean aBoolean1277 = false;
+	public ImageRGB minimapHint[] = new ImageRGB[1000];
+	public int anInt1279 = -1;
+	public int anInt1280;
+	public int anInt1281 = -939;
+	public LinkedList aClass6_1282 = new LinkedList();
+	public boolean aBoolean1283 = false;
+	public int anInt1284;
+	public int anInt1285 = 3;
+	public int anIntArray1286[] = new int[33];
+	public int anInt1287 = 0x332d25;
+	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1288[] = new ImageRGB[32];
+	public int anInt1289;
+	public int anIntArray1290[] = { 17, 24, 34, 40 };
+	public OnDemandRequester onDemandRequester;
+	public IndexedImage titleboxImage;
+	public IndexedImage titleboxButtonImage;
+	public int removePlayerCount;
+	public int removePlayers[] = new int[1000];
+	public int anIntArray1296[] = new int[100];
+	public String aStringArray1297[] = new String[100];
+	public String aStringArray1298[] = new String[100];
+	public int duplicateClickCount;
+	public int anInt1300;
+	public boolean aBoolean1301 = true;
+	public int anInt1302;
+	public int anInt1303;
+	public int anInt1304;
+	public int anInt1305;
+	public int anInt1306;
+	public int anInt1307;
+	public int anInt1308;
+	public static int anInt1309;
+	public int anIntArray1310[];
+	public int anIntArray1311[];
+	public int anIntArray1312[];
+	public int anIntArray1313[];
+	public volatile boolean aBoolean1314 = false;
+	public int anInt1315;
+	public static BigInteger JAGEX_PUBLIC_KEY = new BigInteger("65537");
+	public byte aByte1317 = -58;
+	public int anInt1318 = 416;
+	public int anInt1319;
+	public volatile boolean aBoolean1320 = false;
+	public int soundType[] = new int[50];
+	public int anInt1322;
+	public LinkedList groundItems[][][] = new LinkedList[4][104][104];
+	public int anInt1324;
+	public static int pulseCycle;
+	public int characterEditIdentityKits[] = new int[7];
+	public int currentSong = -1;
+	public int anInt1328 = 409;
+	public int atInventoryLoopCycle;
+	public int anInt1330;
+	public int anInt1331;
+	public int atInventoryInterfaceType;
+	public static int anInt1333;
+
+
 	public void method14(String s, int i) {
 		if (s == null || s.length() == 0) {
 			anInt862 = 0;
@@ -586,9 +1092,7 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method25(int i) {
-		if (i != 0)
-			outBuffer.putByte(186);
+	public void method25() {
 		aBoolean1277 = true;
 		for (int j = 0; j < 7; j++) {
 			characterEditIdentityKits[j] = -1;
@@ -2540,7 +3044,7 @@ public class Game extends GameShell {
 			s = aStringArray1184[menuActionRow - 1];
 		if (menuActionRow > 2)
 			s = s + "@whi@ / " + (menuActionRow - 2) + " more options";
-		fontBold.method479(true, pulseCycle / 1000, 4, 0xffffff, 15, s, 0);
+		fontBold.drawShadowedSeededAlphaString(s, 4, 15, 0xffffff, pulseCycle / 1000);
 	}
 
 	public boolean walk(boolean flag, boolean flag1, int dstY, int srcY, int k, int l, int packetType, int j1, int dstX, int l1,
@@ -3677,7 +4181,7 @@ public class Game extends GameShell {
 			int k = 0x20000000 + (anIntArray1134[j] << 14);
 			if (class50_sub1_sub4_sub3_sub1 == null || !class50_sub1_sub4_sub3_sub1.isVisible()
 					|| class50_sub1_sub4_sub3_sub1.npcDefinition.visible != flag
-					|| !class50_sub1_sub4_sub3_sub1.npcDefinition.method360(-993))
+					|| !class50_sub1_sub4_sub3_sub1.npcDefinition.method360())
 				continue;
 			int l = ((Actor) (class50_sub1_sub4_sub3_sub1)).xWithBoundary >> 7;
 			int i1 = ((Actor) (class50_sub1_sub4_sub3_sub1)).yWithBoundary >> 7;
@@ -3799,11 +4303,11 @@ public class Game extends GameShell {
 		}
 		if (type == 324 && !characterEditChangeGenger) {
 			characterEditChangeGenger = true;
-			method25(anInt1015);
+			method25();
 		}
 		if (type == 325 && characterEditChangeGenger) {
 			characterEditChangeGenger = false;
-			method25(anInt1015);
+			method25();
 		}
 		if (type == 326) {
 			outBuffer.putOpcode(163);
@@ -4217,10 +4721,10 @@ public class Game extends GameShell {
 		try {
 			connectWebServer();
 			titleArchive = method61(14076, archiveHashes[1], "title", 25, 1, "title screen");
-			fontSmall = new TypeFace(false, titleArchive, -914, "p11_full");
-			fontNormal = new TypeFace(false, titleArchive, -914, "p12_full");
-			fontBold = new TypeFace(false, titleArchive, -914, "b12_full");
-			fontFancy = new TypeFace(true, titleArchive, -914, "q8_full");
+			fontSmall = new TypeFace(false, titleArchive, "p11_full");
+			fontNormal = new TypeFace(false, titleArchive, "p12_full");
+			fontBold = new TypeFace(false, titleArchive, "b12_full");
+			fontFancy = new TypeFace(true, titleArchive, "q8_full");
 			prepareTitleBackground();
 			prepareTitle();
 			Archive configArchive = method61(14076, archiveHashes[2], "config", 30, 2, "config");
@@ -5326,30 +5830,30 @@ public class Game extends GameShell {
 			aBoolean1212 = false;
 			aClass18_1108.createRasterizer();
 			anIndexedImage1052.drawImage(0, 0);
-			fontNormal.method471(true, anInt1056, 0xffffff, 28, 55, "Public chat");
+			fontNormal.drawStringCenter("Public chat", 55, 28, 0xffffff, true);
 			if (publicChatMode == 0)
-				fontNormal.method471(true, anInt1056, 65280, 41, 55, "On");
+				fontNormal.drawStringCenter("On", 55, 41, 65280, true);
 			if (publicChatMode == 1)
-				fontNormal.method471(true, anInt1056, 0xffff00, 41, 55, "Friends");
+				fontNormal.drawStringCenter("Friends", 55, 41, 0xffff00, true);
 			if (publicChatMode == 2)
-				fontNormal.method471(true, anInt1056, 0xff0000, 41, 55, "Off");
+				fontNormal.drawStringCenter("Off", 55, 41, 0xff0000, true);
 			if (publicChatMode == 3)
-				fontNormal.method471(true, anInt1056, 65535, 41, 55, "Hide");
-			fontNormal.method471(true, anInt1056, 0xffffff, 28, 184, "Private chat");
+				fontNormal.drawStringCenter("Hide", 55, 41, 65535, true);
+			fontNormal.drawStringCenter("Private chat", 184, 28, 0xffffff, true);
 			if (privateChatMode == 0)
-				fontNormal.method471(true, anInt1056, 65280, 41, 184, "On");
+				fontNormal.drawStringCenter("On", 184, 41, 65280, true);
 			if (privateChatMode == 1)
-				fontNormal.method471(true, anInt1056, 0xffff00, 41, 184, "Friends");
+				fontNormal.drawStringCenter("Friends", 184, 41, 0xffff00, true);
 			if (privateChatMode == 2)
-				fontNormal.method471(true, anInt1056, 0xff0000, 41, 184, "Off");
-			fontNormal.method471(true, anInt1056, 0xffffff, 28, 324, "Trade/compete");
+				fontNormal.drawStringCenter("Off", 184, 41, 0xff0000, true);
+			fontNormal.drawStringCenter("Trade/compete", 324, 28, 0xffffff, true);
 			if (tradeMode == 0)
-				fontNormal.method471(true, anInt1056, 65280, 41, 324, "On");
+				fontNormal.drawStringCenter("On", 324, 41, 65280, true);
 			if (tradeMode == 1)
-				fontNormal.method471(true, anInt1056, 0xffff00, 41, 324, "Friends");
+				fontNormal.drawStringCenter("Friends", 324, 41, 0xffff00, true);
 			if (tradeMode == 2)
-				fontNormal.method471(true, anInt1056, 0xff0000, 41, 324, "Off");
-			fontNormal.method471(true, anInt1056, 0xffffff, 33, 458, "Report abuse");
+				fontNormal.drawStringCenter("Off", 324, 41, 0xff0000, true);
+			fontNormal.drawStringCenter("Report abuse", 458, 33, 0xffffff, true);
 			aClass18_1108.drawGraphics(0, 453, super.gameGraphics);
 			aClass18_1158.createRasterizer();
 			Rasterizer3D.lineOffsets = anIntArray1002;
@@ -5384,9 +5888,9 @@ public class Game extends GameShell {
 				if ((l == 3 || l == 7) && (l == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, s))) {
 					int i1 = 329 - j * 13;
 					int l1 = 4;
-					class50_sub1_sub1_sub2.method474(2245, l1, 0, i1, "From");
-					class50_sub1_sub1_sub2.method474(2245, l1, 65535, i1 - 1, "From");
-					l1 += class50_sub1_sub1_sub2.method472((byte) 35, "From ");
+					class50_sub1_sub1_sub2.drawString("From", l1, i1, 0);
+					class50_sub1_sub1_sub2.drawString("From", l1, i1 - 1, 65535);
+					l1 += class50_sub1_sub1_sub2.getStringEffectWidth("From ");
 					if (byte0 == 1) {
 						moderatorIcon[0].drawImage(l1, i1 - 12);
 						l1 += 14;
@@ -5395,22 +5899,22 @@ public class Game extends GameShell {
 						moderatorIcon[1].drawImage(l1, i1 - 12);
 						l1 += 14;
 					}
-					class50_sub1_sub1_sub2.method474(2245, l1, 0, i1, s + ": " + aStringArray1298[k]);
-					class50_sub1_sub1_sub2.method474(2245, l1, 65535, i1 - 1, s + ": " + aStringArray1298[k]);
+					class50_sub1_sub1_sub2.drawString(s + ": " + aStringArray1298[k], l1, i1, 0);
+					class50_sub1_sub1_sub2.drawString(s + ": " + aStringArray1298[k], l1, i1 - 1, 65535);
 					if (++j >= 5)
 						return;
 				}
 				if (l == 5 && privateChatMode < 2) {
 					int j1 = 329 - j * 13;
-					class50_sub1_sub1_sub2.method474(2245, 4, 0, j1, aStringArray1298[k]);
-					class50_sub1_sub1_sub2.method474(2245, 4, 65535, j1 - 1, aStringArray1298[k]);
+					class50_sub1_sub1_sub2.drawString(aStringArray1298[k], 4, j1, 0);
+					class50_sub1_sub1_sub2.drawString(aStringArray1298[k], 4, j1 - 1, 65535);
 					if (++j >= 5)
 						return;
 				}
 				if (l == 6 && privateChatMode < 2) {
 					int k1 = 329 - j * 13;
-					class50_sub1_sub1_sub2.method474(2245, 4, 0, k1, "To " + s + ": " + aStringArray1298[k]);
-					class50_sub1_sub1_sub2.method474(2245, 4, 65535, k1 - 1, "To " + s + ": " + aStringArray1298[k]);
+					class50_sub1_sub1_sub2.drawString("To " + s + ": " + aStringArray1298[k], 4, k1, 0);
+					class50_sub1_sub1_sub2.drawString("To " + s + ": " + aStringArray1298[k], 4, k1 - 1, 65535);
 					if (++j >= 5)
 						return;
 				}
@@ -5654,7 +6158,7 @@ public class Game extends GameShell {
 				anInt1319 = 0;
 				anInt1213 = -1;
 				characterEditChangeGenger = true;
-				method25(anInt1015);
+				method25();
 				for (int j3 = 0; j3 < 5; j3++)
 					characterEditColors[j3] = 0;
 
@@ -6129,7 +6633,7 @@ public class Game extends GameShell {
 					}
 					if (j1 == 0) {
 						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.method474(2245, 4, 0, k1, aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString(aStringArray1298[i1], 4, k1, 0);
 						k++;
 					}
 					if ((j1 == 1 || j1 == 2) && (j1 == 1 || publicChatMode == 0 || publicChatMode == 1 && method148(13292, s1))) {
@@ -6143,9 +6647,9 @@ public class Game extends GameShell {
 								moderatorIcon[1].drawImage(l1, k1 - 12);
 								l1 += 14;
 							}
-							class50_sub1_sub1_sub2_1.method474(2245, l1, 0, k1, s1 + ":");
-							l1 += class50_sub1_sub1_sub2_1.method472((byte) 35, s1) + 8;
-							class50_sub1_sub1_sub2_1.method474(2245, l1, 255, k1, aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString(s1 + ":", l1, k1, 0);
+							l1 += class50_sub1_sub1_sub2_1.getStringEffectWidth(s1) + 8;
+							class50_sub1_sub1_sub2_1.drawString(aStringArray1298[i1], l1, k1, 255);
 						}
 						k++;
 					}
@@ -6153,8 +6657,8 @@ public class Game extends GameShell {
 							&& (j1 == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, s1))) {
 						if (k1 > 0 && k1 < 110) {
 							int i2 = 4;
-							class50_sub1_sub1_sub2_1.method474(2245, i2, 0, k1, "From");
-							i2 += class50_sub1_sub1_sub2_1.method472((byte) 35, "From ");
+							class50_sub1_sub1_sub2_1.drawString("From", i2, k1, 0);
+							i2 += class50_sub1_sub1_sub2_1.getStringEffectWidth("From ");
 							if (byte0 == 1) {
 								moderatorIcon[0].drawImage(i2, k1 - 12);
 								i2 += 14;
@@ -6163,33 +6667,33 @@ public class Game extends GameShell {
 								moderatorIcon[1].drawImage(i2, k1 - 12);
 								i2 += 14;
 							}
-							class50_sub1_sub1_sub2_1.method474(2245, i2, 0, k1, s1 + ":");
-							i2 += class50_sub1_sub1_sub2_1.method472((byte) 35, s1) + 8;
-							class50_sub1_sub1_sub2_1.method474(2245, i2, 0x800000, k1, aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString(s1 + ":", i2, k1, 0);
+							i2 += class50_sub1_sub1_sub2_1.getStringEffectWidth(s1) + 8;
+							class50_sub1_sub1_sub2_1.drawString(aStringArray1298[i1], i2, k1, 0x800000);
 						}
 						k++;
 					}
 					if (j1 == 4 && (tradeMode == 0 || tradeMode == 1 && method148(13292, s1))) {
 						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.method474(2245, 4, 0x800080, k1, s1 + " " + aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString(s1 + " " + aStringArray1298[i1], 4, k1, 0x800080);
 						k++;
 					}
 					if (j1 == 5 && anInt1223 == 0 && privateChatMode < 2) {
 						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.method474(2245, 4, 0x800000, k1, aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString(aStringArray1298[i1], 4, k1, 0x800000);
 						k++;
 					}
 					if (j1 == 6 && anInt1223 == 0 && privateChatMode < 2) {
 						if (k1 > 0 && k1 < 110) {
-							class50_sub1_sub1_sub2_1.method474(2245, 4, 0, k1, "To " + s1 + ":");
-							class50_sub1_sub1_sub2_1.method474(2245, 12 + class50_sub1_sub1_sub2_1.method472((byte) 35,
-									"To " + s1), 0x800000, k1, aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString("To " + s1 + ":", 4, k1, 0);
+							class50_sub1_sub1_sub2_1.drawString(aStringArray1298[i1], 12 + class50_sub1_sub1_sub2_1.getStringEffectWidth(
+									"To " + s1), k1, 0x800000);
 						}
 						k++;
 					}
 					if (j1 == 8 && (tradeMode == 0 || tradeMode == 1 && method148(13292, s1))) {
 						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.method474(2245, 4, 0x7e3200, k1, s1 + " " + aStringArray1298[i1]);
+							class50_sub1_sub1_sub2_1.drawString(s1 + " " + aStringArray1298[i1], 4, k1, 0x7e3200);
 						k++;
 					}
 				}
@@ -6204,9 +6708,9 @@ public class Game extends GameShell {
 				s = thisPlayer.playerName;
 			else
 				s = TextUtils.formatName(username);
-			class50_sub1_sub1_sub2_1.method474(2245, 4, 0, 90, s + ":");
-			class50_sub1_sub1_sub2_1.method474(2245, 6 + class50_sub1_sub1_sub2_1.method472((byte) 35, s + ": "), 255,
-					90, chatboxInput + "*");
+			class50_sub1_sub1_sub2_1.drawString(s + ":", 4, 90, 0);
+			class50_sub1_sub1_sub2_1.drawString(chatboxInput + "*", 6 + class50_sub1_sub1_sub2_1.getStringEffectWidth(s + ": "), 90, 255
+			);
 			Rasterizer.drawHorizontalLine(0, 77, 479, 0);
 		}
 		if (aBoolean1065 && anInt1304 == 2)
@@ -7502,9 +8006,9 @@ public class Game extends GameShell {
 	}
 
 	public void determineMenuSize(int i) {
-		int j = fontBold.method472((byte) 35, "Choose Option");
+		int j = fontBold.getStringEffectWidth("Choose Option");
 		for (int k = 0; k < menuActionRow; k++) {
-			int l = fontBold.method472((byte) 35, aStringArray1184[k]);
+			int l = fontBold.getStringEffectWidth(aStringArray1184[k]);
 			if (l > j)
 				j = l;
 		}
@@ -7601,7 +8105,7 @@ public class Game extends GameShell {
 				i1 = 0xff0000;
 			if (super.fps < 20 && !lowMemory)
 				i1 = 0xff0000;
-			fontNormal.method469(true, "Fps:" + super.fps, i1, c, k);
+			fontNormal.drawStringRight("Fps:" + super.fps, c, k, i1);
 			k += 15;
 			Runtime runtime = Runtime.getRuntime();
 			int j1 = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
@@ -7610,7 +8114,7 @@ public class Game extends GameShell {
 				i1 = 0xff0000;
 			if (j1 > 0x4000000 && !lowMemory)
 				i1 = 0xff0000;
-			fontNormal.method469(true, "Mem:" + j1 + "k", 0xffff00, c, k);
+			fontNormal.drawStringRight("Mem:" + j1 + "k", c, k, 0xffff00);
 			k += 15;
 		}
 		if (systemUpdateTime != 0) {
@@ -7618,9 +8122,9 @@ public class Game extends GameShell {
 			int l = j / 60;
 			j %= 60;
 			if (j < 10)
-				fontNormal.method474(2245, 4, 0xffff00, 329, "System update in: " + l + ":0" + j);
+				fontNormal.drawString("System update in: " + l + ":0" + j, 4, 329, 0xffff00);
 			else
-				fontNormal.method474(2245, 4, 0xffff00, 329, "System update in: " + l + ":" + j);
+				fontNormal.drawString("System update in: " + l + ":" + j, 4, 329, 0xffff00);
 			anInt895++;
 			if (anInt895 > 112) {
 				anInt895 = 0;
@@ -7682,7 +8186,7 @@ public class Game extends GameShell {
 				if ((l == 3 || l == 7) && (l == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, s))) {
 					int i1 = 329 - j * 13;
 					if (super.mouseX > 4 && super.mouseY - 4 > i1 - 10 && super.mouseY - 4 <= i1 + 3) {
-						int j1 = fontNormal.method472((byte) 35, "From:  " + s + aStringArray1298[k]) + 25;
+						int j1 = fontNormal.getStringEffectWidth("From:  " + s + aStringArray1298[k]) + 25;
 						if (j1 > 450)
 							j1 = 450;
 						if (super.mouseX < 4 + j1) {
@@ -8986,9 +9490,9 @@ public class Game extends GameShell {
 							&& method148(13292, ((Player) obj).playerName))) {
 				method136(((Actor) (obj)), false, ((Actor) (obj)).modelHeight);
 				if (anInt932 > -1 && anInt939 < anInt940) {
-					anIntArray944[anInt939] = fontBold.method473(((Actor) (obj)).forcedChat,
-							(byte) -53) / 2;
-					anIntArray943[anInt939] = fontBold.anInt1506;
+					anIntArray944[anInt939] = fontBold.getStringWidth(((Actor) (obj)).forcedChat
+					) / 2;
+					anIntArray943[anInt939] = fontBold.characterDefaultHeight;
 					anIntArray941[anInt939] = anInt932;
 					anIntArray942[anInt939] = anInt933;
 					anIntArray945[anInt939] = ((Actor) (obj)).textColour;
@@ -9103,25 +9607,25 @@ public class Game extends GameShell {
 					fontBold.drawStringLeft(s, anInt932, anInt933, k2);
 				}
 				if (anIntArray946[j] == 1) {
-					fontBold.method475(anInt933 + 1, (byte) 4, anInt1138, s, anInt932, 0);
-					fontBold.method475(anInt933, (byte) 4, anInt1138, s, anInt932, k2);
+					fontBold.drawCenteredStringWaveY(s, anInt932, anInt933 + 1, anInt1138, 0);
+					fontBold.drawCenteredStringWaveY(s, anInt932, anInt933, anInt1138, k2);
 				}
 				if (anIntArray946[j] == 2) {
-					fontBold.method476(anInt933 + 1, 0, (byte) 1, s, anInt932, anInt1138);
-					fontBold.method476(anInt933, k2, (byte) 1, s, anInt932, anInt1138);
+					fontBold.drawCeneteredStringWaveXY(s, anInt932, anInt933 + 1, anInt1138, 0);
+					fontBold.drawCeneteredStringWaveXY(s, anInt932, anInt933, anInt1138, k2);
 				}
 				if (anIntArray946[j] == 3) {
-					fontBold.method477(-601, s, 0, anInt932, anInt933 + 1, 150 - anIntArray947[j],
-							anInt1138);
-					fontBold.method477(-601, s, k2, anInt932, anInt933, 150 - anIntArray947[j],
-							anInt1138);
+					fontBold.drawCenteredStringWaveXYMove(s, anInt932, anInt933 + 1, anInt1138, 150 - anIntArray947[j], 0
+					);
+					fontBold.drawCenteredStringWaveXYMove(s, anInt932, anInt933, anInt1138, 150 - anIntArray947[j], k2
+					);
 				}
 				if (anIntArray946[j] == 4) {
-					int k3 = fontBold.method473(s, (byte) -53);
+					int k3 = fontBold.getStringWidth(s);
 					int i4 = ((150 - anIntArray947[j]) * (k3 + 100)) / 150;
 					Rasterizer.setCoordinates(0, anInt932 - 50, 334, anInt932 + 50);
-					fontBold.method474(2245, (anInt932 + 50) - i4, 0, anInt933 + 1, s);
-					fontBold.method474(2245, (anInt932 + 50) - i4, k2, anInt933, s);
+					fontBold.drawString(s, (anInt932 + 50) - i4, anInt933 + 1, 0);
+					fontBold.drawString(s, (anInt932 + 50) - i4, anInt933, k2);
 					Rasterizer.resetCoordinates();
 				}
 				if (anIntArray946[j] == 5) {
@@ -9131,7 +9635,7 @@ public class Game extends GameShell {
 						j4 = l3 - 25;
 					else if (l3 > 125)
 						j4 = l3 - 125;
-					Rasterizer.setCoordinates(anInt933 - fontBold.anInt1506 - 1, 0, anInt933 + 5,
+					Rasterizer.setCoordinates(anInt933 - fontBold.characterDefaultHeight - 1, 0, anInt933 + 5,
 							512);
 					fontBold.drawStringLeft(s, anInt932, anInt933 + 1 + j4, 0);
 					fontBold.drawStringLeft(s, anInt932, anInt933 + j4, k2);
@@ -9342,7 +9846,7 @@ public class Game extends GameShell {
 		Rasterizer.drawFilledRectangle(i, j, k, l, i1);
 		Rasterizer.drawFilledRectangle(i + 1, j + 1, k - 2, 16, 0);
 		Rasterizer.drawUnfilledRectangle(i + 1, j + 18, k - 2, l - 19, 0);
-		fontBold.method474(2245, i + 3, i1, j + 14, "Choose Option");
+		fontBold.drawString("Choose Option", i + 3, j + 14, i1);
 		int j1 = super.mouseX;
 		int k1 = super.mouseY;
 		if (anInt1304 == 0) {
@@ -9362,7 +9866,7 @@ public class Game extends GameShell {
 			int j2 = 0xffffff;
 			if (j1 > i && j1 < i + k && k1 > i2 - 13 && k1 < i2 + 3)
 				j2 = 0xffff00;
-			fontBold.method478(j2, i + 3, i2, true, aStringArray1184[l1], -39629);
+			fontBold.drawShadowedString(aStringArray1184[l1], i + 3, i2, true, j2);
 		}
 
 	}
@@ -9512,65 +10016,65 @@ public class Game extends GameShell {
 		}
 		if (loginScreenState == 0) {
 			int j = c1 / 2 + 80;
-			fontSmall.method471(true, anInt1056, 0x75a9a9, j, c / 2, onDemandRequester.message);
+			fontSmall.drawStringCenter(onDemandRequester.message, c / 2, j, 0x75a9a9, true);
 			j = c1 / 2 - 20;
-			fontBold.method471(true, anInt1056, 0xffff00, j, c / 2, "Welcome to RuneScape");
+			fontBold.drawStringCenter("Welcome to RuneScape", c / 2, j, 0xffff00, true);
 			j += 30;
 			int i1 = c / 2 - 80;
 			int l1 = c1 / 2 + 20;
 			titleboxButtonImage.drawImage(i1 - 73, l1 - 20);
-			fontBold.method471(true, anInt1056, 0xffffff, l1 + 5, i1, "New User");
+			fontBold.drawStringCenter("New User", i1, l1 + 5, 0xffffff, true);
 			i1 = c / 2 + 80;
 			titleboxButtonImage.drawImage(i1 - 73, l1 - 20);
-			fontBold.method471(true, anInt1056, 0xffffff, l1 + 5, i1, "Existing User");
+			fontBold.drawStringCenter("Existing User", i1, l1 + 5, 0xffffff, true);
 		}
 		if (loginScreenState == 2) {
 			int k = c1 / 2 - 40;
 			if (statusLineOne.length() > 0) {
-				fontBold.method471(true, anInt1056, 0xffff00, k - 15, c / 2, statusLineOne);
-				fontBold.method471(true, anInt1056, 0xffff00, k, c / 2, statusLineTwo);
+				fontBold.drawStringCenter(statusLineOne, c / 2, k - 15, 0xffff00, true);
+				fontBold.drawStringCenter(statusLineTwo, c / 2, k, 0xffff00, true);
 				k += 30;
 			} else {
-				fontBold.method471(true, anInt1056, 0xffff00, k - 7, c / 2, statusLineTwo);
+				fontBold.drawStringCenter(statusLineTwo, c / 2, k - 7, 0xffff00, true);
 				k += 30;
 			}
-			fontBold.method478(0xffffff, c / 2 - 90, k, true, "Username: " + username
-					+ ((anInt977 == 0) & (pulseCycle % 40 < 20) ? "@yel@|" : ""), -39629);
+			fontBold.drawShadowedString("Username: " + username
+					+ ((anInt977 == 0) & (pulseCycle % 40 < 20) ? "@yel@|" : ""), c / 2 - 90, k, true, 0xffffff);
 			k += 15;
-			fontBold.method478(0xffffff, c / 2 - 88, k, true, "Password: "
-					+ TextUtils.censorPassword(password) + ((anInt977 == 1) & (pulseCycle % 40 < 20) ? "@yel@|" : ""),
-					-39629);
+			fontBold.drawShadowedString("Password: "
+					+ TextUtils.censorPassword(password) + ((anInt977 == 1) & (pulseCycle % 40 < 20) ? "@yel@|" : ""), c / 2 - 88, k, true, 0xffffff
+			);
 			k += 15;
 			if (!flag) {
 				int j1 = c / 2 - 80;
 				int i2 = c1 / 2 + 50;
 				titleboxButtonImage.drawImage(j1 - 73, i2 - 20);
-				fontBold.method471(true, anInt1056, 0xffffff, i2 + 5, j1, "Login");
+				fontBold.drawStringCenter("Login", j1, i2 + 5, 0xffffff, true);
 				j1 = c / 2 + 80;
 				titleboxButtonImage.drawImage(j1 - 73, i2 - 20);
-				fontBold.method471(true, anInt1056, 0xffffff, i2 + 5, j1, "Cancel");
+				fontBold.drawStringCenter("Cancel", j1, i2 + 5, 0xffffff, true);
 			}
 		}
 		if (loginScreenState == 3) {
-			fontBold.method471(true, anInt1056, 0xffff00, c1 / 2 - 60, c / 2,
-					"Create a free account");
+			fontBold.drawStringCenter("Create a free account", c / 2, c1 / 2 - 60, 0xffff00, true
+			);
 			int l = c1 / 2 - 35;
-			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
-					"To create a new account you need to");
+			fontBold.drawStringCenter("To create a new account you need to", c / 2, l, 0xffffff, true
+			);
 			l += 15;
-			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
-					"go back to the main RuneScape webpage");
+			fontBold.drawStringCenter("go back to the main RuneScape webpage", c / 2, l, 0xffffff, true
+			);
 			l += 15;
-			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
-					"and choose the 'create account'");
+			fontBold.drawStringCenter("and choose the 'create account'", c / 2, l, 0xffffff, true
+			);
 			l += 15;
-			fontBold.method471(true, anInt1056, 0xffffff, l, c / 2,
-					"button near the top of that page.");
+			fontBold.drawStringCenter("button near the top of that page.", c / 2, l, 0xffffff, true
+			);
 			l += 15;
 			int k1 = c / 2;
 			int j2 = c1 / 2 + 50;
 			titleboxButtonImage.drawImage(k1 - 73, j2 - 20);
-			fontBold.method471(true, anInt1056, 0xffffff, j2 + 5, k1, "Cancel");
+			fontBold.drawStringCenter("Cancel", k1, j2 + 5, 0xffffff, true);
 		}
 		aClass18_1200.drawGraphics(202, 171, super.gameGraphics);
 		if (aBoolean1046) {
@@ -10261,10 +10765,10 @@ public class Game extends GameShell {
 											class50_sub1_sub1_sub1_2.drawImage(l6, i6);
 										if (class50_sub1_sub1_sub1_2.maxWidth == 33 || class13_1.itemAmounts[i3] != 1) {
 											int k12 = class13_1.itemAmounts[i3];
-											fontSmall.method474(2245, i6 + 1 + i7, 0, l6 + 10 + j8,
-													addMoneySuffix(k12, -243));
-											fontSmall.method474(2245, i6 + i7, 0xffff00,
-													l6 + 9 + j8, addMoneySuffix(k12, -243));
+											fontSmall.drawString(addMoneySuffix(k12, -243), i6 + 1 + i7, l6 + 10 + j8, 0
+											);
+											fontSmall.drawString(addMoneySuffix(k12, -243), i6 + i7, l6 + 9 + j8, 0xffff00
+											);
 										}
 									}
 								}
@@ -10333,7 +10837,7 @@ public class Game extends GameShell {
 						if (j4 == 49152)
 							j4 = 0xffffff;
 					}
-					for (int j7 = l2 + class50_sub1_sub1_sub2.anInt1506; s.length() > 0; j7 += class50_sub1_sub1_sub2.anInt1506) {
+					for (int j7 = l2 + class50_sub1_sub1_sub2.characterDefaultHeight; s.length() > 0; j7 += class50_sub1_sub1_sub2.characterDefaultHeight) {
 						if (s.indexOf("%") != -1) {
 							do {
 								int k8 = s.indexOf("%1");
@@ -10376,10 +10880,10 @@ public class Game extends GameShell {
 							s = "";
 						}
 						if (class13_1.aBoolean272)
-							class50_sub1_sub1_sub2.method471(class13_1.aBoolean247, anInt1056, j4, j7, k2
-									+ class13_1.anInt241 / 2, s3);
+							class50_sub1_sub1_sub2.drawStringCenter(s3, k2
+									+ class13_1.anInt241 / 2, j7, j4, class13_1.aBoolean247);
 						else
-							class50_sub1_sub1_sub2.method478(j4, k2, j7, class13_1.aBoolean247, s3, -39629);
+							class50_sub1_sub1_sub2.drawShadowedString(s3, k2, j7, class13_1.aBoolean247, j4);
 					}
 
 				} else if (class13_1.anInt236 == 5) {
@@ -10442,11 +10946,11 @@ public class Game extends GameShell {
 									int i10 = k2 + k6 * (115 + class13_1.anInt263);
 									int i11 = l2 + l5 * (12 + class13_1.anInt244);
 									if (class13_1.aBoolean272)
-										class50_sub1_sub1_sub2_1.method471(class13_1.aBoolean247, anInt1056,
-												class13_1.anInt240, i11, i10 + class13_1.anInt241 / 2, s6);
+										class50_sub1_sub1_sub2_1.drawStringCenter(s6, i10 + class13_1.anInt241 / 2, i11, class13_1.anInt240, class13_1.aBoolean247
+										);
 									else
-										class50_sub1_sub1_sub2_1.method478(class13_1.anInt240, i10, i11,
-												class13_1.aBoolean247, s6, -39629);
+										class50_sub1_sub1_sub2_1.drawShadowedString(s6, i10, i11, class13_1.aBoolean247, class13_1.anInt240
+										);
 								}
 								l4++;
 							}
@@ -10470,10 +10974,10 @@ public class Game extends GameShell {
 								s4 = s1;
 								s1 = "";
 							}
-							int j10 = class50_sub1_sub1_sub2_2.method472((byte) 35, s4);
+							int j10 = class50_sub1_sub1_sub2_2.getStringEffectWidth(s4);
 							if (j10 > l3)
 								l3 = j10;
-							i5 += class50_sub1_sub1_sub2_2.anInt1506 + 1;
+							i5 += class50_sub1_sub1_sub2_2.characterDefaultHeight + 1;
 						}
 
 						l3 += 6;
@@ -10489,7 +10993,7 @@ public class Game extends GameShell {
 						Rasterizer.drawFilledRectangle(i8, k10, l3, i5, 0xffffa0);
 						Rasterizer.drawUnfilledRectangle(i8, k10, l3, i5, 0);
 						String s2 = class13_1.aString230;
-						for (int j11 = k10 + class50_sub1_sub1_sub2_2.anInt1506 + 2; s2.length() > 0; j11 += class50_sub1_sub1_sub2_2.anInt1506 + 1) {
+						for (int j11 = k10 + class50_sub1_sub1_sub2_2.characterDefaultHeight + 2; s2.length() > 0; j11 += class50_sub1_sub1_sub2_2.characterDefaultHeight + 1) {
 							int l11 = s2.indexOf("\\n");
 							String s5;
 							if (l11 != -1) {
@@ -10499,7 +11003,7 @@ public class Game extends GameShell {
 								s5 = s2;
 								s2 = "";
 							}
-							class50_sub1_sub1_sub2_2.method478(0, i8 + 3, j11, false, s5, -39629);
+							class50_sub1_sub1_sub2_2.drawShadowedString(s5, i8 + 3, j11, false, 0);
 						}
 
 					}
@@ -11023,704 +11527,6 @@ public class Game extends GameShell {
 			}
 		}
 	}
-
-	public Game() {
-		archiveHashes = new int[9];
-		reportedName = "";
-		soundVolume = new int[50];
-		anIntArray843 = new int[SkillConstants.SKILL_COUNT];
-		anIntArray852 = new int[5];
-		anInt854 = 2;
-		aString861 = "";
-		aStringArray863 = new String[100];
-		anIntArray864 = new int[100];
-		messagePromptRaised = false;
-		constructedMapPalette = new int[4][13][13];
-		anIntArrayArray885 = new int[104][104];
-		anIntArrayArray886 = new int[104][104];
-		aBoolean892 = false;
-		anInt894 = -992;
-		cursorCross = new ImageRGB[8];
-		anInt897 = 559;
-		aByte898 = 6;
-		aBoolean900 = false;
-		aByte901 = -123;
-		anInt917 = 2;
-		aBoolean918 = true;
-		aBoolean919 = true;
-		anIntArray920 = new int[151];
-		anInt921 = 8;
-		aBooleanArray927 = new boolean[5];
-		anInt928 = -188;
-		tempBuffer = Buffer.allocate(1);
-		anInt931 = 0x23201b;
-		anInt932 = -1;
-		anInt933 = -1;
-		anInt935 = -1;
-		aByte936 = -113;
-		chatboxInputMessage = "";
-		anInt938 = -214;
-		anInt940 = 50;
-		anIntArray941 = new int[anInt940];
-		anIntArray942 = new int[anInt940];
-		anIntArray943 = new int[anInt940];
-		anIntArray944 = new int[anInt940];
-		anIntArray945 = new int[anInt940];
-		anIntArray946 = new int[anInt940];
-		anIntArray947 = new int[anInt940];
-		aStringArray948 = new String[anInt940];
-		inputInputMessage = "";
-		aBoolean950 = false;
-		aBoolean953 = false;
-		aClass50_Sub1_Sub1_Sub1Array954 = new ImageRGB[32];
-		aByte956 = 1;
-		statusLineOne = "";
-		statusLineTwo = "";
-		aBoolean959 = true;
-		anInt960 = -1;
-		thisPlayerServerId = -1;
-		outBuffer = Buffer.allocate(1);
-		anInt968 = 2048;
-		thisPlayerId = 2047;
-		players = new Player[anInt968];
-		localPlayers = new int[anInt968];
-		updatedPlayers = new int[anInt968];
-		cachedAppearances = new Buffer[anInt968];
-		tabIcon = new IndexedImage[13];
-		anIntArray979 = new int[500];
-		anIntArray980 = new int[500];
-		anIntArray981 = new int[500];
-		anIntArray982 = new int[500];
-		anInt988 = -1;
-		anIntArray991 = new int[5];
-		anIntArray1005 = new int[2000];
-		anInt1010 = 2;
-		aBoolean1014 = false;
-		aBoolean1016 = false;
-		anIntArray1019 = new int[151];
-		chatMessage = "";
-		aBoolean1028 = false;
-		anIntArray1029 = new int[SkillConstants.SKILL_COUNT];
-		worldMapHintIcons = new ImageRGB[100];
-		aBoolean1033 = false;
-		aBoolean1038 = true;
-		widgetSettings = new int[2000];
-		aBoolean1046 = false;
-		anInt1051 = 69;
-		anInt1053 = -1;
-		anIntArray1054 = new int[SkillConstants.SKILL_COUNT];
-		anInt1055 = 2;
-		anInt1056 = 3;
-		aBoolean1065 = false;
-		aByte1066 = 1;
-		aBoolean1067 = false;
-		aStringArray1069 = new String[5];
-		aBooleanArray1070 = new boolean[5];
-		anInt1072 = 20411;
-		ignores = new long[100];
-		minimapHintX = new int[1000];
-		minimapHintY = new int[1000];
-		aClass50_Sub1_Sub1_Sub1Array1079 = new ImageRGB[32];
-		anInt1080 = 0x4d4233;
-		aCRC32_1088 = new CRC32();
-		anInt1089 = -1;
-		sound = new int[50];
-		username = "";
-		password = "";
-		aBoolean1097 = false;
-		reportMutePlayer = false;
-		characterEditColors = new int[5];
-		chatboxInput = "";
-		anIntArray1105 = new int[5];
-		anInt1107 = 78;
-		anInt1119 = -30658;
-		anIntArray1123 = new int[4000];
-		anIntArray1124 = new int[4000];
-		aBoolean1127 = false;
-		friends = new long[200];
-		chatBuffer = new Buffer(new byte[5000]);
-		npcs = new Npc[16384];
-		anIntArray1134 = new int[16384];
-		anInt1135 = 0x766654;
-		aBoolean1136 = false;
-		loggedIn = false;
-		anInt1140 = -110;
-		moderatorIcon = new IndexedImage[2];
-		aByte1143 = -80;
-		characterEditChangeGenger = true;
-		quakeTimes = new int[5];
-		aClass50_Sub1_Sub1_Sub3Array1153 = new IndexedImage[100];
-		anInt1154 = -916;
-		aBoolean1155 = false;
-		aByte1161 = 97;
-		aBoolean1163 = false;
-		anIntArray1166 = new int[256];
-		openInterfaceId = -1;
-		anInt1175 = -89;
-		anInt1178 = 300;
-		anIntArray1180 = new int[33];
-		aBoolean1181 = false;
-		aClass50_Sub1_Sub1_Sub1Array1182 = new ImageRGB[20];
-		aStringArray1184 = new String[500];
-		buffer = Buffer.allocate(1);
-		cost = new int[104][104];
-		anInt1191 = -1;
-		aBoolean1209 = false;
-		aClass6_1210 = new LinkedList();
-		oriented = false;
-		aBoolean1212 = false;
-		anInt1213 = -1;
-		stores = new Index[5];
-		reportAbuseInterfaceID = -1;
-		anInt1234 = 1;
-		anInt1236 = 326;
-		aBoolean1239 = false;
-		redrawChatbox = false;
-		aBoolean1243 = false;
-		aByteArray1245 = new byte[16384];
-		aClass13_1249 = new Widget();
-		anInt1251 = 128;
-		anInt1256 = 1;
-		anIntArray1258 = new int[100];
-		soundDelay = new int[50];
-		currentCollisionMap = new CollisionMap[4];
-		aClass6_1261 = new LinkedList();
-		aBoolean1265 = false;
-		musicEnabled = true;
-		anIntArray1267 = new int[200];
-		songChanging = true;
-		anInt1272 = -1;
-		aBoolean1274 = true;
-		aBoolean1275 = true;
-		anInt1276 = -1;
-		aBoolean1277 = false;
-		minimapHint = new ImageRGB[1000];
-		anInt1279 = -1;
-		anInt1281 = -939;
-		aClass6_1282 = new LinkedList();
-		aBoolean1283 = false;
-		anInt1285 = 3;
-		anIntArray1286 = new int[33];
-		anInt1287 = 0x332d25;
-		aClass50_Sub1_Sub1_Sub1Array1288 = new ImageRGB[32];
-		removePlayers = new int[1000];
-		anIntArray1296 = new int[100];
-		aStringArray1297 = new String[100];
-		aStringArray1298 = new String[100];
-		aBoolean1301 = true;
-		aBoolean1314 = false;
-		aByte1317 = -58;
-		anInt1318 = 416;
-		aBoolean1320 = false;
-		soundType = new int[50];
-		groundItems = new LinkedList[4][104][104];
-		characterEditIdentityKits = new int[7];
-		currentSong = -1;
-		anInt1328 = 409;
-	}
-	private final int[] soundVolume;
-	public int archiveHashes[];
-	public byte aByteArrayArray838[][];
-	public String reportedName;
-	public static BigInteger JAGEX_MODULUS = new BigInteger("" +
-			"122160430267449798360978854041191852368220518230394092579319523064196043297582796633947085783119585744206711526658432067003468760585446552721871622840788528486712970246999980397054139494332878352882978447726827719186528904097434708997584641726572284342202641622966960383866799686443535696434839673638141409593" +
-			"");
-	public static int anInt841;
-	public int anIntArray842[] = { 0xffff00, 0xff0000, 65280, 65535, 0xff00ff, 0xffffff };
-	public int anIntArray843[];
-	public int anInt844;
-	public int anInt845;
-	public int anInt846;
-	public int anInt847;
-	public int anInt848;
-	public String friendsListNames[] = new String[200];
-	public int anInt850;
-	public int anInt851;
-	public int anIntArray852[];
-	public int anInt853;
-	public int anInt854;
-	public int ignoresCount;
-	public int coordinates[];
-	public int anIntArray857[];
-	public int anIntArray858[];
-	public int friendsCount;
-	public int friendListStatus;
-	public String aString861;
-	public int anInt862;
-	public String aStringArray863[];
-	public int anIntArray864[];
-	public int anInt865;
-	public boolean messagePromptRaised;
-	public int playerRights;
-	public static boolean fps;
-	public int packetSize;
-	public int opcode;
-	public int timeoutCounter;
-	public int anInt872;
-	public int anInt873;
-	public int anInt874;
-	public int anInt875;
-	public int anInt876;
-	public int anInt877;
-	public int anInt878;
-	public int constructedMapPalette[][][];
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_880;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_881;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_882;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_883;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_884;
-	public int anIntArrayArray885[][];
-	public int anIntArrayArray886[][];
-	public int privateChatMode;
-	public Archive titleArchive;
-	public int chunkX;
-	public int chunkY;
-	public int anIntArrayArrayArray891[][][];
-	public boolean aBoolean892;
-	public int anInt893;
-	public int anInt894;
-	public static int anInt895;
-	public ImageRGB cursorCross[];
-	public int anInt897;
-	public byte aByte898;
-	public ISAACCipher incomingRandom;
-	public boolean aBoolean900;
-	public byte aByte901;
-	public long aLong902;
-	public int lastOpcode;
-	public int secondLastOpcode;
-	public int thirdLastOpcode;
-	public ProducingGraphicsBuffer aClass18_906;
-	public ProducingGraphicsBuffer aClass18_907;
-	public ProducingGraphicsBuffer aClass18_908;
-	public ProducingGraphicsBuffer aClass18_909;
-	public ProducingGraphicsBuffer aClass18_910;
-	public ProducingGraphicsBuffer aClass18_911;
-	public ProducingGraphicsBuffer aClass18_912;
-	public ProducingGraphicsBuffer aClass18_913;
-	public ProducingGraphicsBuffer aClass18_914;
-	public int anInt915;
-	public int anInt916;
-	public int anInt917;
-	public boolean aBoolean918;
-	public boolean aBoolean919;
-	public int anIntArray920[];
-	public int anInt921;
-	public int anInt922;
-	public static int world = 10;
-	public static int portOffset;
-	public static boolean memberServer = true;
-	public static boolean lowMemory;
-	public boolean aBooleanArray927[];
-	public int anInt928;
-	public Buffer tempBuffer;
-	public long serverSeed;
-	public int anInt931;
-	public int anInt932;
-	public int anInt933;
-	public boolean aBoolean934;
-	public int anInt935;
-	public byte aByte936;
-	public String chatboxInputMessage;
-	public int anInt938;
-	public int anInt939;
-	public int anInt940;
-	public int anIntArray941[];
-	public int anIntArray942[];
-	public int anIntArray943[];
-	public int anIntArray944[];
-	public int anIntArray945[];
-	public int anIntArray946[];
-	public int anIntArray947[];
-	public String aStringArray948[];
-	public String inputInputMessage;
-	public boolean aBoolean950;
-	public int tickDelta;
-	public static int xpForSkillLevel[];
-	public boolean aBoolean953;
-	public ImageRGB aClass50_Sub1_Sub1_Sub1Array954[];
-	public int anInt955;
-	public byte aByte956;
-	public String statusLineOne;
-	public String statusLineTwo;
-	public boolean aBoolean959;
-	public int anInt960;
-	public int thisPlayerServerId;
-	public static boolean accountFlagged;
-	public static boolean aBoolean963 = true;
-	public Buffer outBuffer;
-	public IndexedImage anIndexedImage1052;
-	public IndexedImage anIndexedImage1053;
-	public IndexedImage anIndexedImage1054;
-	public int anInt968;
-	public int thisPlayerId;
-	public Player players[];
-	public int localPlayerCount;
-	public int localPlayers[];
-	public int updatedPlayerCount;
-	public int updatedPlayers[];
-	public Buffer cachedAppearances[];
-	public IndexedImage tabIcon[];
-	public int anInt977;
-	public static int anInt978;
-	public int anIntArray979[];
-	public int anIntArray980[];
-	public int anIntArray981[];
-	public int anIntArray982[];
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_983;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_984;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_985;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_986;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3_987;
-	public int anInt988;
-	public int placementX;
-	public int placementY;
-	public int anIntArray991[];
-	public int anInt992;
-	public int anInt993;
-	public int anInt994;
-	public int anInt995;
-	public int anInt996;
-	public int anInt997;
-	public int anInt998;
-	public static boolean aBoolean999;
-	public int chatboxLineOffsets[];
-	public int anIntArray1001[];
-	public int anIntArray1002[];
-	public int anIntArray1003[];
-	public int anInt1004;
-	public int anIntArray1005[];
-	public int publicChatMode;
-	public static String VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
-	public static final int playerColours[][] = {
-			{ 6798, 107, 10283, 16, 4797, 7744, 5799, 4634, 33697, 22433, 2983, 54193 },
-			{ 8741, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003, 25239 },
-			{ 25238, 8742, 12, 64030, 43162, 7735, 8404, 1701, 38430, 24094, 10153, 56621, 4783, 1341, 16578, 35003 },
-			{ 4626, 11146, 6439, 12, 4758, 10270 }, { 4550, 4537, 5681, 5673, 5790, 6806, 8076, 4574 } };
-	public int anInt1009;
-	public int anInt1010;
-	public int anInt1011;
-	public int anInt1012;
-	public static int anInt1013;
-	public boolean aBoolean1014;
-	public int anInt1015;
-	public boolean aBoolean1016;
-	public ImageRGB anImageRGB1226;
-	public ImageRGB anImageRGB1227;
-	public int anIntArray1019[];
-	public int anInt1020;
-	public int anInt1021;
-	public int crossIndex;
-	public int crossType;
-	public BufferedConnection bufferedConnection;
-	public String chatMessage;
-	public String aString1027;
-	public boolean aBoolean1028;
-	public int anIntArray1029[];
-	public int anInt1030;
-	public ImageRGB worldMapHintIcons[];
-	public final int anIntArray1032[] = { 0, 0, 0, 0, 1, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3 };
-	public boolean aBoolean1033;
-	public int anInt1034;
-	public int currentSound;
-	public ImageRGB mapFlagMarker;
-	public ImageRGB aClass50_Sub1_Sub1_Sub1_1037;
-	public boolean aBoolean1038;
-	public int widgetSettings[];
-	public int nextTopLeftTileX;
-	public int nextTopRightTileY;
-	public int topLeftTileX;
-	public int topLeftTileY;
-	public int anInt1044;
-	public int anInt1045;
-	public boolean aBoolean1046;
-	public int anInt1047;
-	public int anInt1048;
-	public static int anInt1049;
-	public int minimapState;
-	public int anInt1051;
-	public static int anInt1052;
-	public int anInt1053;
-	public int anIntArray1054[];
-	public int anInt1055;
-	public int anInt1056;
-	public int systemUpdateTime;
-	public String clickToContinueString;
-	public TypeFace fontSmall;
-	public TypeFace fontNormal;
-	public TypeFace fontBold;
-	public TypeFace fontFancy;
-	public int mouseInvInterfaceIndex;
-	public int lastActiveInvInterface;
-	public boolean aBoolean1065;
-	public byte aByte1066;
-	public boolean aBoolean1067;
-	public int playerMembers;
-	public String aStringArray1069[];
-	public boolean aBooleanArray1070[];
-	public int loadingStage;
-	public int anInt1072;
-	public long ignores[];
-	public boolean aBoolean1074;
-	public int anInt1075;
-	public int minimapHintCount;
-	public int minimapHintX[];
-	public int minimapHintY[];
-	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1079[];
-	public int anInt1080;
-	public int anIntArray1081[] = { -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1 };
-	public static int anInt1082;
-	public int anInt1083;
-	public int anIntArray1084[];
-	public int anIntArray1085[];
-	public ImageRGB aClass50_Sub1_Sub1_Sub1_1086;
-	public int anInt1087;
-	public CRC32 aCRC32_1088;
-	public int anInt1089;
-	public int sound[];
-	public int plane;
-	public String username;
-	public String password;
-	public int anInt1094;
-	public IndexedImage scrollbarUp;
-	public IndexedImage scrollbarDown;
-	public boolean aBoolean1097;
-	public boolean reportMutePlayer;
-	public int characterEditColors[];
-	public static int anInt1100;
-	public int anInt1101;
-	public ImageRGB aClass50_Sub1_Sub1_Sub1_1102;
-	public ImageRGB aClass50_Sub1_Sub1_Sub1_1103;
-	public String chatboxInput;
-	public int anIntArray1105[];
-	public int anInt1106;
-	public int anInt1107;
-	public ProducingGraphicsBuffer aClass18_1108;
-	public ProducingGraphicsBuffer aClass18_1109;
-	public ProducingGraphicsBuffer aClass18_1110;
-	public int anInt1111;
-	public int anInt1112;
-	public int activeInterfaceType;
-	public int anInt1114;
-	public int anInt1115;
-	public ImageRGB minimapCompass;
-	public IndexedImage titleFlameEmblem[];
-	public int anInt1118;
-	public int anInt1119;
-	public int destinationX;
-	public int anInt1121;
-	public ImageRGB minimapImage;
-	public int anIntArray1123[];
-	public int anIntArray1124[];
-	public byte currentSceneTileFlags[][][];
-	public int anInt1126;
-	public boolean aBoolean1127;
-	public int previousSong;
-	public int anInt1129;
-	public long friends[];
-	public Buffer chatBuffer;
-	public Npc npcs[];
-	public int anInt1133;
-	public int anIntArray1134[];
-	public int anInt1135;
-	public boolean aBoolean1136;
-	public boolean loggedIn;
-	public int anInt1138;
-	public static int anInt1139;
-	public int anInt1140;
-	public long aLong1141;
-	public IndexedImage moderatorIcon[];
-	public byte aByte1143;
-	public boolean characterEditChangeGenger;
-	public int quakeTimes[];
-	public int anInt1146;
-	public int anInt1147;
-	public int anInt1148;
-	public int anInt1149;
-	public String aString1150;
-	public int anInt1151;
-	public int anInt1152;
-	public IndexedImage aClass50_Sub1_Sub1_Sub3Array1153[];
-	public int anInt1154;
-	public boolean aBoolean1155;
-	public ProducingGraphicsBuffer aClass18_1156;
-	public ProducingGraphicsBuffer aClass18_1157;
-	public ProducingGraphicsBuffer aClass18_1158;
-	public ProducingGraphicsBuffer chatboxProducingGraphicsBuffer;
-	public static int anInt1160;
-	public byte aByte1161;
-	public static int anInt1162;
-	public boolean aBoolean1163;
-	public Scene currentScene;
-	public static int anInt1165;
-	public int anIntArray1166[];
-	public static Player thisPlayer;
-	public static int anInt1168;
-	public int openInterfaceId;
-	public int anInt1170;
-	public int anInt1171;
-	public int anInt1172;
-	public int anInt1173;
-	public String aString1174;
-	public int anInt1175;
-	public int anIntArray1176[];
-	public int anIntArray1177[];
-	public int anInt1178;
-	public int anInt1257;
-	public int anIntArray1180[];
-	public boolean aBoolean1181;
-	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1182[];
-	public int menuActionRow;
-	public String aStringArray1184[];
-	public IndexedImage inventoryBackgroundImage;
-	public IndexedImage minimapBackgroundImage;
-	public IndexedImage chatboxBackgroundImage;
-	public Buffer buffer;
-	public int cost[][];
-	public static boolean aBoolean1190 = true;
-	public int anInt1191;
-	public ImageRGB mapdotItem;
-	public ImageRGB mapdotActor;
-	public ImageRGB mapdotPlayer;
-	public ImageRGB mapdotFriend;
-	public ImageRGB mapdotTeammate;
-	public int anInt1197;
-	public ProducingGraphicsBuffer aClass18_1198;
-	public ProducingGraphicsBuffer aClass18_1199;
-	public ProducingGraphicsBuffer aClass18_1200;
-	public ProducingGraphicsBuffer flameLeftBackground;
-	public ProducingGraphicsBuffer flameRightBackground;
-	public ProducingGraphicsBuffer aClass18_1203;
-	public ProducingGraphicsBuffer aClass18_1204;
-	public ProducingGraphicsBuffer aClass18_1205;
-	public ProducingGraphicsBuffer aClass18_1206;
-	public static boolean aBoolean1207;
-	public int anInt1208;
-	public boolean aBoolean1209;
-	public LinkedList aClass6_1210;
-	public boolean oriented;
-	public boolean aBoolean1212;
-	public int anInt1213;
-	public static int BITFIELD_MAX_VALUE[];
-	public int anInt1215;
-	public int anInt1216;
-	public int anInt1217;
-	public int anInt1218;
-	public int anInt1219;
-	public int anInt1220;
-	public int friendsListAction;
-	public int anInt1222;
-	public int anInt1223;
-	public Socket aSocket1224;
-	public int loginScreenState;
-	public int anInt1226;
-	public int tradeMode;
-	public Index stores[];
-	public long aLong1229;
-	public static int anInt1230;
-	public int reportAbuseInterfaceID;
-	public byte aByteArrayArray1232[][];
-	public int anInt1233;
-	public int anInt1234;
-	public static int anInt1235;
-	public int anInt1236;
-	public static int anInt1237;
-	public int anInt1238;
-	public boolean aBoolean1239;
-	public boolean redrawChatbox;
-	public int lastAddress;
-	public static boolean aBoolean1242 = true;
-	public volatile boolean aBoolean1243;
-	public int inputType;
-	public byte aByteArray1245[];
-	public int anInt1246;
-	public ImageRGB minimapEdge;
-	public MouseCapturer mouseCapturer;
-	public Widget aClass13_1249;
-	public long aLong1172;
-	public int anInt1251;
-	public int cameraHorizontal;
-	public int anInt1186;
-	public int anInt1187;
-	public int anInt1255;
-	public int anInt1256;
-	public int anIntArray1258[];
-	public int soundDelay[];
-	public CollisionMap currentCollisionMap[];
-	public LinkedList aClass6_1261;
-	public int anInt1262;
-	public int anInt1263;
-	public int anInt1264;
-	public boolean aBoolean1265;
-	public boolean musicEnabled;
-	public int anIntArray1267[];
-	public static final int SKIN_COLOURS[] = { 9104, 10275, 7595, 3610, 7975, 8526, 918, 38802, 24466, 10145, 58654,
-			5027, 1457, 16565, 34991, 25486 };
-	public int anInt1269;
-	public int nextSong;
-	public boolean songChanging;
-	public int anInt1272;
-	public int anInt1273;
-	public boolean aBoolean1274;
-	public boolean aBoolean1275;
-	public int anInt1276;
-	public boolean aBoolean1277;
-	public ImageRGB minimapHint[];
-	public int anInt1279;
-	public int anInt1280;
-	public int anInt1281;
-	public LinkedList aClass6_1282;
-	public boolean aBoolean1283;
-	public int anInt1284;
-	public int anInt1285;
-	public int anIntArray1286[];
-	public int anInt1287;
-	public ImageRGB aClass50_Sub1_Sub1_Sub1Array1288[];
-	public int anInt1289;
-	public int anIntArray1290[] = { 17, 24, 34, 40 };
-	public OnDemandRequester onDemandRequester;
-	public IndexedImage titleboxImage;
-	public IndexedImage titleboxButtonImage;
-	public int removePlayerCount;
-	public int removePlayers[];
-	public int anIntArray1296[];
-	public String aStringArray1297[];
-	public String aStringArray1298[];
-	public int duplicateClickCount;
-	public int anInt1300;
-	public boolean aBoolean1301;
-	public int anInt1302;
-	public int anInt1303;
-	public int anInt1304;
-	public int anInt1305;
-	public int anInt1306;
-	public int anInt1307;
-	public int anInt1308;
-	public static int anInt1309;
-	public int anIntArray1310[];
-	public int anIntArray1311[];
-	public int anIntArray1312[];
-	public int anIntArray1313[];
-	public volatile boolean aBoolean1314;
-	public int anInt1315;
-	public static BigInteger JAGEX_PUBLIC_KEY = new BigInteger("65537");
-	public byte aByte1317;
-	public int anInt1318;
-	public int anInt1319;
-	public volatile boolean aBoolean1320;
-	public int soundType[];
-	public int anInt1322;
-	public LinkedList groundItems[][][];
-	public int anInt1324;
-	public static int pulseCycle;
-	public int characterEditIdentityKits[];
-	public int currentSong;
-	public int anInt1328;
-	public int atInventoryLoopCycle;
-	public int anInt1330;
-	public int anInt1331;
-	public int atInventoryInterfaceType;
-	public static int anInt1333;
 
 	static {
 		xpForSkillLevel = new int[99];

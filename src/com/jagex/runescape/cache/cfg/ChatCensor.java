@@ -166,7 +166,7 @@ public class ChatCensor {
 			char c = ac[j];
 			if (method405(true, c)) {
 				if (flag) {
-					if (method407(c, aBoolean738))
+					if (method407(c))
 						flag = false;
 				} else if (method408(-217, c))
 					ac[j] = (char) ((c + 97) - 65);
@@ -822,8 +822,6 @@ public class ChatCensor {
 	}
 
 	public static boolean method405(boolean flag, char c) {
-		if (!flag)
-			anInt729 = -367;
 		return c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z';
 	}
 
@@ -833,15 +831,11 @@ public class ChatCensor {
 		return c >= '0' && c <= '9';
 	}
 
-	public static boolean method407(char c, boolean flag) {
-		if (flag)
-			throw new NullPointerException();
+	public static boolean method407(char c) {
 		return c >= 'a' && c <= 'z';
 	}
 
 	public static boolean method408(int i, char c) {
-		if (i >= 0)
-			anInt734 = -483;
 		return c >= 'A' && c <= 'Z';
 	}
 

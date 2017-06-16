@@ -22,7 +22,6 @@ public class AnimationSequence {
 	public int anInt305 = -1;
 	public int priority = -1;
 	public int anInt307 = 2;
-	public int anInt308;
 
 	public static void load(Archive archive) {
 		Buffer buffer = new Buffer(archive.getFile("seq.dat"));
@@ -104,7 +103,7 @@ public class AnimationSequence {
 					anInt307 = buf.getUnsignedByte();
 					break;
 				case 12:
-					anInt308 = buf.getInt();
+					buf.getInt(); //dummy
 					break;
 				default:
 					System.out.println("Error unrecognised seq config code: " + attributeId);

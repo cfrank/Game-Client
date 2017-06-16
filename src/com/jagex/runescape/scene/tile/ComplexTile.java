@@ -15,8 +15,6 @@ public class ComplexTile {
 		int i5 = c / 2;
 		int j5 = c / 4;
 		int k5 = (c * 3) / 4;
-		if (k2 < anInt402 || k2 > anInt402)
-			throw new NullPointerException();
 		int ai[] = anIntArrayArray426[i3];
 		int l5 = ai.length;
 		anIntArray403 = new int[l5];
@@ -200,7 +198,6 @@ public class ComplexTile {
 			l9 = i;
 	}
 
-	public int anInt402;
 	public int anIntArray403[];
 	public int anIntArray404[];
 	public int anIntArray405[];

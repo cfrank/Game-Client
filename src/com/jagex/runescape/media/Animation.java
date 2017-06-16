@@ -5,7 +5,6 @@ package com.jagex.runescape.media;// Decompiled by Jad v1.5.8f. Copyright 2001 P
 import com.jagex.runescape.net.Buffer;
 
 public class Animation {
-	public static int anInt428 = 217;
 	public static Animation[] cache;
 	public int anInt431;
 	public Skins animationSkins;
