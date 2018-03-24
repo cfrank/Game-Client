@@ -4343,7 +4343,7 @@ public class Game extends GameShell {
 	}
 
 	public void setWaveVolume( int j) {
-		SignLink.wavevol = j;
+		SignLink.waveVolume = j;
 	}
 
 	public void dropClient() {

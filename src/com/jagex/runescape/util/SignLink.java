@@ -35,7 +35,7 @@ public final class SignLink implements Runnable {
 	public static int fadeMidi;
 	private static boolean midiplay;
 	private static int wavepos;
-	public static int wavevol;
+	public static int waveVolume;
 	public static boolean reportError = true;
 	public static String errorName = "";
 	public static boolean musicEnable = true;
