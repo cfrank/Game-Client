@@ -19,7 +19,7 @@ public final class SignLink implements Runnable {
 	private static InetAddress inetAddress;
 	private static int socketRequest;
 	private static Socket socket = null;
-	private static int threadreqpri = 1;
+	private static int threadRequestPriority = 1;
 	private static Runnable threadRequest = null;
 	private static String dnsRequest = null;
 	public static String dns = null;
@@ -96,7 +96,7 @@ public final class SignLink implements Runnable {
 				Thread thread = new Thread(threadRequest);
 				thread.setDaemon(true);
 				thread.start();
-				thread.setPriority(threadreqpri);
+				thread.setPriority(threadRequestPriority);
 				threadRequest = null;
 			} else if (dnsRequest != null) {
 				try {
@@ -360,7 +360,7 @@ public final class SignLink implements Runnable {
 	}
 
 	public static synchronized void startThread(Runnable runnable, int i) {
-		threadreqpri = i;
+		threadRequestPriority = i;
 		threadRequest = runnable;
 	}
 
