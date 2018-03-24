@@ -4846,9 +4846,9 @@ public class Game extends GameShell {
 
 	public void startup() {
 		drawLoadingText(20, "Starting up");
-		if (SignLink.cache_dat != null) {
+		if (SignLink.cacheData != null) {
 			for (int type = 0; type < 5; type++)
-				stores[type] = new Index(type + 1, 0x927c0, SignLink.cache_dat, SignLink.cache_idx[type]);
+				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cache_idx[type]);
 		}
 		try {
 			connectWebServer();
@@ -7386,7 +7386,7 @@ public class Game extends GameShell {
 			outBuffer.putOpcode(78);
 			outBuffer.putInt(0x3f008edd);
 		}
-		if (lowMemory && SignLink.cache_dat != null) {
+		if (lowMemory && SignLink.cacheData != null) {
 			int k = onDemandRequester.fileCount(0);
 			for (int j1 = 0; j1 < k; j1++) {
 				int i2 = onDemandRequester.modelId(j1);
