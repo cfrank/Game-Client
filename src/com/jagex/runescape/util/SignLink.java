@@ -24,7 +24,7 @@ public final class SignLink implements Runnable {
 	private static String dnsRequest = null;
 	public static String dns = null;
 	private static String urlRequest = null;
-	private static DataInputStream urlstream = null;
+	private static DataInputStream urlStream = null;
 	private static int savelen;
 	private static String saveRequest = null;
 	private static byte[] savebuf = null;
@@ -180,10 +180,10 @@ public final class SignLink implements Runnable {
 				saveRequest = null;
 			} else if (urlRequest != null) {
 				try {
-					System.out.println("urlstream");
-					urlstream = new DataInputStream((new URL(applet.getCodeBase(), urlRequest)).openStream());
+					System.out.println("urlStream");
+					urlStream = new DataInputStream((new URL(applet.getCodeBase(), urlRequest)).openStream());
 				} catch (Exception _ex) {
-					urlstream = null;
+					urlStream = null;
 				}
 				urlRequest = null;
 			}
@@ -348,10 +348,10 @@ public final class SignLink implements Runnable {
 				Thread.sleep(50L);
 			} catch (Exception _ex) {
 			}
-		if (urlstream == null)
+		if (urlStream == null)
 			throw new IOException("could not open: " + s);
 		else
-			return urlstream;
+			return urlStream;
 	}
 
 	public static synchronized void dnslookup(String s) {
