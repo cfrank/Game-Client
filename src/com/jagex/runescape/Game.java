@@ -4545,17 +4545,17 @@ public class Game extends GameShell {
 			} catch (NullPointerException _ex) {
 				s2 = "Null error";
 				abyte0 = null;
-				if (!SignLink.reporterror)
+				if (!SignLink.reportError)
 					return null;
 			} catch (ArrayIndexOutOfBoundsException _ex) {
 				s2 = "Bounds error";
 				abyte0 = null;
-				if (!SignLink.reporterror)
+				if (!SignLink.reportError)
 					return null;
 			} catch (Exception _ex) {
 				s2 = "Unexpected error";
 				abyte0 = null;
-				if (!SignLink.reporterror)
+				if (!SignLink.reportError)
 					return null;
 			}
 			if (abyte0 == null) {
@@ -6915,7 +6915,7 @@ public class Game extends GameShell {
 			} catch (Exception _ex) {
 				s = "logic problem";
 				archiveHashes[8] = 0;
-				if (!SignLink.reporterror)
+				if (!SignLink.reportError)
 					return;
 			}
 			if (archiveHashes[8] == 0) {
@@ -11491,7 +11491,7 @@ public class Game extends GameShell {
 
 				}
 			} catch (Exception exception) {
-				if (SignLink.reporterror) {
+				if (SignLink.reportError) {
 					outBuffer.putOpcode(80);
 					outBuffer.putShort(sound[index] & 0x7fff);
 				} else {
