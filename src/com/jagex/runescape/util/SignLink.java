@@ -6,9 +6,9 @@ import javax.sound.midi.*;
 import javax.sound.sampled.*;
 
 public final class SignLink implements Runnable {
-
-
-	public static final int clientversion = 377;
+	
+	public static final int CLIENT_REVISION = 377;
+	
 	public static int uid;
 	public static int storeid = 32;
 	public static RandomAccessFile cache_dat = null;
