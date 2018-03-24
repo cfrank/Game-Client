@@ -12,7 +12,7 @@ public final class SignLink implements Runnable {
 	public static int uid;
 	public static int storeId = 32;
 	public static RandomAccessFile cacheData = null;
-	public static final RandomAccessFile[] cache_idx = new RandomAccessFile[5];
+	public static final RandomAccessFile[] cacheIndex = new RandomAccessFile[5];
 	public static Applet mainapp = null;
 	private static boolean active;
 	private static int threadliveid;
@@ -80,7 +80,7 @@ public final class SignLink implements Runnable {
 		try {
 			cacheData = new RandomAccessFile(directory + "main_file_cache.dat", "rw");
 			for (int idx = 0; idx < 5; idx++)
-				cache_idx[idx] = new RandomAccessFile(directory + "main_file_cache.idx" + idx, "rw");
+				cacheIndex[idx] = new RandomAccessFile(directory + "main_file_cache.idx" + idx, "rw");
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}

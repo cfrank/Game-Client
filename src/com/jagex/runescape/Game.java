@@ -4848,7 +4848,7 @@ public class Game extends GameShell {
 		drawLoadingText(20, "Starting up");
 		if (SignLink.cacheData != null) {
 			for (int type = 0; type < 5; type++)
-				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cache_idx[type]);
+				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cacheIndex[type]);
 		}
 		try {
 			connectWebServer();
