@@ -15,7 +15,7 @@ public final class SignLink implements Runnable {
 	public static final RandomAccessFile[] cacheIndex = new RandomAccessFile[5];
 	public static Applet applet = null;
 	private static boolean active;
-	private static int threadliveid;
+	private static int threadLiveId;
 	private static InetAddress inetAddress;
 	private static int socketRequest;
 	private static Socket socket = null;
@@ -42,7 +42,7 @@ public final class SignLink implements Runnable {
 
 
 	public static final void initialize(InetAddress inetaddress) {
-		threadliveid = (int) (Math.random() * 99999999D);
+		threadLiveId = (int) (Math.random() * 99999999D);
 		if (active) {
 			try {
 				Thread.sleep(500L);
@@ -84,7 +84,7 @@ public final class SignLink implements Runnable {
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
-		for (int i = threadliveid; threadliveid == i;) {
+		for (int i = threadLiveId; threadLiveId == i;) {
 			if (socketRequest != 0) {
 				try {
 					socket = new Socket(inetAddress, socketRequest);
