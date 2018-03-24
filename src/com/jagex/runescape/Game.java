@@ -606,7 +606,7 @@ public class Game extends GameShell {
 			portOffset = 0;
 			setHighMemory();
 			memberServer = true;
-			SignLink.storeid = 32;
+			SignLink.storeId = 32;
 			SignLink.initialize(InetAddress.getLocalHost());
 			Game cl = new Game();
 			cl.initializeApplication(765, 503);
