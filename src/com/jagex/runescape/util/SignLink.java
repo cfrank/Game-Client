@@ -27,7 +27,7 @@ public final class SignLink implements Runnable {
 	private static DataInputStream urlStream = null;
 	private static int saveLength;
 	private static String saveRequest = null;
-	private static byte[] savebuf = null;
+	private static byte[] saveBuffer = null;
 	private static boolean play;
 	private static int midipos;
 	public static String midi = null;
@@ -106,10 +106,10 @@ public final class SignLink implements Runnable {
 				}
 				dnsRequest = null;
 			} else if (saveRequest != null) {
-				if (savebuf != null)
+				if (saveBuffer != null)
 					try {
 						FileOutputStream fileoutputstream = new FileOutputStream(directory + saveRequest);
-						fileoutputstream.write(savebuf, 0, saveLength);
+						fileoutputstream.write(saveBuffer, 0, saveLength);
 						fileoutputstream.close();
 					} catch (Exception _ex) {
 					}
@@ -372,7 +372,7 @@ public final class SignLink implements Runnable {
 		} else {
 			wavepos = (wavepos + 1) % 5;
 			saveLength = i;
-			savebuf = abyte0;
+			saveBuffer = abyte0;
 			midiplay = true;
 			saveRequest = "sound" + wavepos + ".wav";
 			return true;
@@ -383,7 +383,7 @@ public final class SignLink implements Runnable {
 		if (saveRequest != null) {
 			return false;
 		} else {
-			savebuf = null;
+			saveBuffer = null;
 			midiplay = true;
 			saveRequest = "sound" + wavepos + ".wav";
 			return true;
@@ -397,7 +397,7 @@ public final class SignLink implements Runnable {
 		} else {
 			midipos = (midipos + 1) % 5;
 			saveLength = i;
-			savebuf = abyte0;
+			saveBuffer = abyte0;
 			play = true;
 			saveRequest = "jingle" + midipos + ".mid";
 		}
