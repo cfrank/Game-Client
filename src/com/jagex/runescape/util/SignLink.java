@@ -13,7 +13,7 @@ public final class SignLink implements Runnable {
 	public static int storeId = 32;
 	public static RandomAccessFile cacheData = null;
 	public static final RandomAccessFile[] cacheIndex = new RandomAccessFile[5];
-	public static Applet mainapp = null;
+	public static Applet applet = null;
 	private static boolean active;
 	private static int threadliveid;
 	private static InetAddress inetAddress;
@@ -181,7 +181,7 @@ public final class SignLink implements Runnable {
 			} else if (urlRequest != null) {
 				try {
 					System.out.println("urlstream");
-					urlstream = new DataInputStream((new URL(mainapp.getCodeBase(), urlRequest)).openStream());
+					urlstream = new DataInputStream((new URL(applet.getCodeBase(), urlRequest)).openStream());
 				} catch (Exception _ex) {
 					urlstream = null;
 				}

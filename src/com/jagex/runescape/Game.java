@@ -1951,7 +1951,7 @@ public class Game extends GameShell {
 
 	public DataInputStream method31(String s) throws IOException {
 		if (!aBoolean900)
-			if (SignLink.mainapp != null)
+			if (SignLink.applet != null)
 				return SignLink.openURL(s);
 			else
 				return new DataInputStream((new URL(getCodeBase(), s)).openStream());
@@ -1971,7 +1971,7 @@ public class Game extends GameShell {
 	}
 
 	public Socket openSocket(int i) throws IOException {
-		if (SignLink.mainapp != null)
+		if (SignLink.applet != null)
 			return SignLink.openSocket(i);
 		else
 			return new Socket(InetAddress.getByName(getCodeBase().getHost()), i);
@@ -3455,8 +3455,8 @@ public class Game extends GameShell {
 	public String method37(int i) {
 		if (i != -42588)
 			opcode = buffer.getUnsignedByte();
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getDocumentBase().getHost().toLowerCase();
+		if (SignLink.applet != null)
+			return SignLink.applet.getDocumentBase().getHost().toLowerCase();
 		if (super.gameFrame != null)
 			return "runescape.com";
 		else
@@ -7066,8 +7066,8 @@ public class Game extends GameShell {
 	}
 
 	public URL getCodeBase() {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getCodeBase();
+		if (SignLink.applet != null)
+			return SignLink.applet.getCodeBase();
 		try {
 			if (super.gameFrame != null)
 				return new URL("http://127.0.0.1:" + (10080 + portOffset));
@@ -7531,8 +7531,8 @@ public class Game extends GameShell {
 	}
 
 	public String getParameter(String s) {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getParameter(s);
+		if (SignLink.applet != null)
+			return SignLink.applet.getParameter(s);
 		else
 			return super.getParameter(s);
 	}
@@ -8179,8 +8179,8 @@ public class Game extends GameShell {
 	}
 
 	public AppletContext getAppletContext() {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getAppletContext();
+		if (SignLink.applet != null)
+			return SignLink.applet.getAppletContext();
 		else
 			return super.getAppletContext();
 	}
@@ -8563,7 +8563,7 @@ public class Game extends GameShell {
 	public void startRunnable(Runnable runnable, int i) {
 		if (i > 10)
 			i = 10;
-		if (SignLink.mainapp != null) {
+		if (SignLink.applet != null) {
 			SignLink.startThread(runnable, i);
 			return;
 		} else {
@@ -10519,8 +10519,8 @@ public class Game extends GameShell {
 	}
 
 	public Component getParentComponent() {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp;
+		if (SignLink.applet != null)
+			return SignLink.applet;
 		if (super.gameFrame != null)
 			return super.gameFrame;
 		else
