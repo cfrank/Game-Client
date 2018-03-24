@@ -6135,7 +6135,7 @@ public class Game extends GameShell {
 
 
 	public void login(String username, String password, boolean reconnecting) {
-		SignLink.errorname = username;
+		SignLink.errorName = username;
 		try {
 			if (!reconnecting) {
 				statusLineOne = "";
