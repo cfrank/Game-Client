@@ -33,7 +33,7 @@ public final class SignLink implements Runnable {
 	public static String midi = null;
 	public static int midiVolume;
 	public static int fadeMidi;
-	private static boolean midiplay;
+	private static boolean midiPlay;
 	private static int wavepos;
 	public static int waveVolume;
 	public static boolean reportError = true;
@@ -113,9 +113,9 @@ public final class SignLink implements Runnable {
 						fileoutputstream.close();
 					} catch (Exception _ex) {
 					}
-				if (midiplay) {
+				if (midiPlay) {
 					String wave = directory + saveRequest;
-					midiplay = false;
+					midiPlay = false;
 					AudioInputStream audioInputStream = null;
 					try {
 						audioInputStream = AudioSystem.getAudioInputStream(new File(wave));
@@ -373,7 +373,7 @@ public final class SignLink implements Runnable {
 			wavepos = (wavepos + 1) % 5;
 			saveLength = i;
 			saveBuffer = abyte0;
-			midiplay = true;
+			midiPlay = true;
 			saveRequest = "sound" + wavepos + ".wav";
 			return true;
 		}
@@ -384,7 +384,7 @@ public final class SignLink implements Runnable {
 			return false;
 		} else {
 			saveBuffer = null;
-			midiplay = true;
+			midiPlay = true;
 			saveRequest = "sound" + wavepos + ".wav";
 			return true;
 		}
