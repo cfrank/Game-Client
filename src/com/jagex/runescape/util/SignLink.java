@@ -38,8 +38,6 @@ public final class SignLink implements Runnable {
 	public static int waveVolume;
 	public static boolean reportError = true;
 	public static String errorName = "";
-	public static boolean musicEnable = true;
-
 
 	public static final void initialize(InetAddress inetaddress) {
 		threadLiveId = (int) (Math.random() * 99999999D);
@@ -204,12 +202,10 @@ public final class SignLink implements Runnable {
 		sequence = null;
 		File midiFile = new File(location);
 		try {
-			if (musicEnable) {
-				sequence = MidiSystem.getSequence(midiFile);
-				music = MidiSystem.getSequencer();
-				music.open();
-				music.setSequence(sequence);
-			}
+			sequence = MidiSystem.getSequence(midiFile);
+			music = MidiSystem.getSequencer();
+			music.open();
+			music.setSequence(sequence);
 		} catch (Exception e) {
 			System.err.println("Problem loading MIDI file.");
 			e.printStackTrace();
