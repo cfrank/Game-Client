@@ -34,7 +34,7 @@ public final class SignLink implements Runnable {
 	public static int midiVolume;
 	public static int fadeMidi;
 	private static boolean midiPlay;
-	private static int wavepos;
+	private static int wavePosition;
 	public static int waveVolume;
 	public static boolean reportError = true;
 	public static String errorName = "";
@@ -370,11 +370,11 @@ public final class SignLink implements Runnable {
 		if (saveRequest != null) {
 			return false;
 		} else {
-			wavepos = (wavepos + 1) % 5;
+			wavePosition = (wavePosition + 1) % 5;
 			saveLength = i;
 			saveBuffer = abyte0;
 			midiPlay = true;
-			saveRequest = "sound" + wavepos + ".wav";
+			saveRequest = "sound" + wavePosition + ".wav";
 			return true;
 		}
 	}
@@ -385,7 +385,7 @@ public final class SignLink implements Runnable {
 		} else {
 			saveBuffer = null;
 			midiPlay = true;
-			saveRequest = "sound" + wavepos + ".wav";
+			saveRequest = "sound" + wavePosition + ".wav";
 			return true;
 		}
 	}
