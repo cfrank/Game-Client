@@ -39,29 +39,33 @@ public final class SignLink implements Runnable {
 	public static boolean reportError = true;
 	public static String errorName = "";
 
-	public static final void initialize(InetAddress inetaddress) {
+	public static void initialize(InetAddress address) {
 		threadLiveId = (int) (Math.random() * 99999999D);
+
 		if (active) {
 			try {
 				Thread.sleep(500L);
-			} catch (Exception _ex) {
-			}
+			} catch (Exception ignored) {}
+
 			active = false;
 		}
+
 		socketRequest = 0;
 		threadRequest = null;
 		dnsRequest = null;
 		saveRequest = null;
 		urlRequest = null;
-		inetAddress = inetaddress;
+		inetAddress = address;
 		Thread thread = new Thread(new SignLink());
+
 		thread.setDaemon(true);
 		thread.start();
-		while (!active)
-			try {
-				Thread.sleep(50L);
-			} catch (Exception _ex) {
-			}
+
+		while (!active) {
+            try {
+                Thread.sleep(50L);
+            } catch (Exception ignored) {}
+        }
 	}
 
 	enum Position {
