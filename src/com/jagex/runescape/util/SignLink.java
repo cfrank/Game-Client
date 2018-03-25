@@ -29,7 +29,7 @@ public final class SignLink implements Runnable {
 	private static String saveRequest = null;
 	private static byte[] saveBuffer = null;
 	private static boolean play;
-	private static int midipos;
+	private static int midiPosition;
 	public static String midi = null;
 	public static int midiVolume;
 	public static int fadeMidi;
@@ -395,11 +395,11 @@ public final class SignLink implements Runnable {
 			return;
 		if (saveRequest != null) {
 		} else {
-			midipos = (midipos + 1) % 5;
+			midiPosition = (midiPosition + 1) % 5;
 			saveLength = i;
 			saveBuffer = abyte0;
 			play = true;
-			saveRequest = "jingle" + midipos + ".mid";
+			saveRequest = "jingle" + midiPosition + ".mid";
 		}
 	}
 
