@@ -6168,7 +6168,7 @@ public class Game extends GameShell {
 				outBuffer.putInt(SignLink.uid);
 				outBuffer.putString(username);
 				outBuffer.putString(password);
-				outBuffer.rsa(Configuration.JAGEX_MODULUS, Configuration.JAGEX_PUBLIC_KEY);
+				outBuffer.rsa(Configuration.JAGEX_MODULUS, Configuration.RSA_PUBLIC_KEY);
 				tempBuffer.currentPosition = 0;
 				if (reconnecting)
 					tempBuffer.putByte(18);
