@@ -47,8 +47,8 @@ public final class SignLink implements Runnable {
     private Position curPosition;
 
     enum Position {
-        LEFT, RIGHT, NORMAL
-    };
+        LEFT, RIGHT
+    }
 
 	public static void initialize(InetAddress address) {
 		threadLiveId = (int) (Math.random() * 99999999D);
