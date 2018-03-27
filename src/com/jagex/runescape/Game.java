@@ -118,7 +118,7 @@ public class Game extends GameShell {
 	public int anInt897 = 559;
 	public byte aByte898 = 6;
 	public ISAACCipher incomingRandom;
-	public boolean aBoolean900 = false;
+	private boolean useJaggrab = Configuration.JAGGRAB_ENABLED;
 	public byte aByte901 = -123;
 	public long aLong902;
 	public int lastOpcode;
@@ -1946,7 +1946,7 @@ public class Game extends GameShell {
 	}
 
 	public DataInputStream method31(String s) throws IOException {
-		if (!aBoolean900)
+		if (!useJaggrab)
 			if (SignLink.applet != null)
 				return SignLink.openURL(s);
 			else
@@ -4571,7 +4571,7 @@ public class Game extends GameShell {
 				i1 *= 2;
 				if (i1 > 60)
 					i1 = 60;
-				aBoolean900 = !aBoolean900;
+				useJaggrab = !useJaggrab;
 			}
 		}
 		Archive class2_1 = new Archive(abyte0);
@@ -6932,7 +6932,7 @@ public class Game extends GameShell {
 				i *= 2;
 				if (i > 60)
 					i = 60;
-				aBoolean900 = !aBoolean900;
+				useJaggrab = !useJaggrab;
 			}
 		}
 	}
