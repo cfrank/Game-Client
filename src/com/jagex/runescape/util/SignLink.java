@@ -374,14 +374,15 @@ public final class SignLink implements Runnable {
 			return socket;
 	}
 
-	public static synchronized DataInputStream openURL(String s) throws IOException {
-		for (urlRequest = s; urlRequest != null;)
-			try {
-				Thread.sleep(50L);
-			} catch (Exception _ex) {
-			}
+	public static synchronized DataInputStream openURL(String url) throws IOException {
+		for (urlRequest = url; urlRequest != null;) {
+            try {
+                Thread.sleep(50L);
+            } catch (Exception ignored) {}
+        }
+
 		if (urlStream == null)
-			throw new IOException("could not open: " + s);
+			throw new IOException("could not open: " + url);
 		else
 			return urlStream;
 	}
