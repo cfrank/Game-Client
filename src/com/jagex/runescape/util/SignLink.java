@@ -72,8 +72,7 @@ public final class SignLink implements Runnable {
 		LEFT, RIGHT, NORMAL
 	};
 
-	private final int EXTERNAL_BUFFER_SIZE = 524288; // 128Kb
-	private Position curPosition;
+    private Position curPosition;
 
 	public void run() {
 		active = true;
@@ -160,7 +159,7 @@ public final class SignLink implements Runnable {
 					audioLine.start();
 
 					int nBytesRead = 0;
-					byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
+                    byte[] abData = new byte[524288];
 
 					try {
 						while (nBytesRead != -1) {
