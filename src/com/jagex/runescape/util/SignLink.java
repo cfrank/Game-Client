@@ -38,6 +38,14 @@ public final class SignLink implements Runnable {
 	public static int waveVolume;
 	public static boolean reportError = true;
 	public static String errorName = "";
+    public static Sequencer music = null;
+    public static Sequence sequence = null;
+    public static Synthesizer synthesizer = null;
+    private Position curPosition;
+
+    enum Position {
+        LEFT, RIGHT, NORMAL
+    };
 
 	public static void initialize(InetAddress address) {
 		threadLiveId = (int) (Math.random() * 99999999D);
@@ -67,12 +75,6 @@ public final class SignLink implements Runnable {
             } catch (Exception ignored) {}
         }
 	}
-
-	enum Position {
-		LEFT, RIGHT, NORMAL
-	};
-
-    private Position curPosition;
 
 	public void run() {
 		active = true;
@@ -287,10 +289,6 @@ public final class SignLink implements Runnable {
 			}
 		}
 	}
-
-	public static Sequencer music = null;
-	public static Sequence sequence = null;
-	public static Synthesizer synthesizer = null;
 
 	public static String cacheLocationOrig() {
 		String locations[] = { "c:/windows/", "c:/WINDOWS/", "c:/winnt/",
