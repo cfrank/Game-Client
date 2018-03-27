@@ -387,9 +387,9 @@ public final class SignLink implements Runnable {
 			return urlStream;
 	}
 
-	public static synchronized void dnslookup(String s) {
-		dns = s;
-		dnsRequest = s;
+	public static synchronized void dnsLookup(String host) {
+		dns = host;
+		dnsRequest = host;
 	}
 
 	public static synchronized void startThread(Runnable runnable, int i) {

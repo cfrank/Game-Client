@@ -2335,7 +2335,7 @@ public class Game extends GameShell {
 				lastAddress = buffer.method555();
 				anInt1034 = buffer.getLittleShortA();
 				buffer.getByteAdded();
-				SignLink.dnslookup(TextUtils.decodeAddress(lastAddress));
+				SignLink.dnsLookup(TextUtils.decodeAddress(lastAddress));
 				opcode = -1;
 				return true;
 			}
