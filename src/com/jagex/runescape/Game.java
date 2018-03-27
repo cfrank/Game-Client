@@ -1945,25 +1945,29 @@ public class Game extends GameShell {
 		}
 	}
 
-	public DataInputStream method31(String s) throws IOException {
-		if (!useJaggrab)
-			if (SignLink.applet != null)
-				return SignLink.openURL(s);
-			else
-				return new DataInputStream((new URL(getCodeBase(), s)).openStream());
+	private DataInputStream openJaggrabStream(String request) throws IOException {
+		if (!useJaggrab) {
+            if (SignLink.applet != null)
+                return SignLink.openURL(request);
+            else
+                return new DataInputStream((new URL(getCodeBase(), request)).openStream());
+        }
+
 		if (aSocket1224 != null) {
 			try {
 				aSocket1224.close();
-			} catch (Exception _ex) {
-			}
+			} catch (Exception ignored) {}
+
 			aSocket1224 = null;
 		}
-		aSocket1224 = openSocket(43595);
+
+		byte[] buffer = String.format("JAGGRAB /%s\n\n", request).getBytes();
+		aSocket1224 = openSocket(Configuration.JAGGRAB_PORT);
+
 		aSocket1224.setSoTimeout(10000);
-		InputStream inputstream = aSocket1224.getInputStream();
-		OutputStream outputstream = aSocket1224.getOutputStream();
-		outputstream.write(("JAGGRAB /" + s + "\n\n").getBytes());
-		return new DataInputStream(inputstream);
+		aSocket1224.getOutputStream().write(buffer);
+
+        return new DataInputStream(aSocket1224.getInputStream());
 	}
 
 	public Socket openSocket(int i) throws IOException {
@@ -4491,7 +4495,7 @@ public class Game extends GameShell {
 			drawLoadingText(k, "Requesting " + s1);
 			try {
 				int l1 = 0;
-				DataInputStream datainputstream = method31(s + j);
+				DataInputStream datainputstream = openJaggrabStream(s + j);
 				byte abyte1[] = new byte[6];
 				datainputstream.readFully(abyte1, 0, 6);
 				Buffer class50_sub1_sub2 = new Buffer(abyte1);
@@ -6886,7 +6890,7 @@ public class Game extends GameShell {
 			String s = "Unknown problem";
 			drawLoadingText(20, "Connecting to web server");
 			try {
-				DataInputStream datainputstream = method31("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
+				DataInputStream datainputstream = openJaggrabStream("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
 				Buffer class50_sub1_sub2 = new Buffer(new byte[40]);
 				datainputstream.readFully(class50_sub1_sub2.buffer, 0, 40);
 				datainputstream.close();
