@@ -392,8 +392,8 @@ public final class SignLink implements Runnable {
 		dnsRequest = host;
 	}
 
-	public static synchronized void startThread(Runnable runnable, int i) {
-		threadRequestPriority = i;
+	public static synchronized void startThread(Runnable runnable, int priority) {
+		threadRequestPriority = priority;
 		threadRequest = runnable;
 	}
 
