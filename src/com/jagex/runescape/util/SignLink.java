@@ -79,13 +79,16 @@ public final class SignLink implements Runnable {
 		active = true;
 		String directory = cacheLocation();
 		uid = getUID(directory);
+
 		try {
 			cacheData = new RandomAccessFile(directory + "main_file_cache.dat", "rw");
+
 			for (int idx = 0; idx < 5; idx++)
 				cacheIndex[idx] = new RandomAccessFile(directory + "main_file_cache.idx" + idx, "rw");
 		} catch (Exception exception) {
 			exception.printStackTrace();
 		}
+
 		for (int i = threadLiveId; threadLiveId == i;) {
 			if (socketRequest != 0) {
 				try {
@@ -93,12 +96,15 @@ public final class SignLink implements Runnable {
 				} catch (Exception _ex) {
 					socket = null;
 				}
+
 				socketRequest = 0;
 			} else if (threadRequest != null) {
 				Thread thread = new Thread(threadRequest);
+
 				thread.setDaemon(true);
 				thread.start();
 				thread.setPriority(threadRequestPriority);
+
 				threadRequest = null;
 			} else if (dnsRequest != null) {
 				try {
@@ -106,93 +112,105 @@ public final class SignLink implements Runnable {
 				} catch (Exception _ex) {
 					dns = "unknown";
 				}
+
 				dnsRequest = null;
 			} else if (saveRequest != null) {
-				if (saveBuffer != null)
+				if (saveBuffer != null) {
 					try {
 						FileOutputStream fileoutputstream = new FileOutputStream(directory + saveRequest);
+
 						fileoutputstream.write(saveBuffer, 0, saveLength);
 						fileoutputstream.close();
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
+				}
+
 				if (midiPlay) {
 					String wave = directory + saveRequest;
 					midiPlay = false;
-					AudioInputStream audioInputStream = null;
+					AudioInputStream audioInputStream;
+
 					try {
 						audioInputStream = AudioSystem.getAudioInputStream(new File(wave));
-					} catch (UnsupportedAudioFileException e1) {
-						e1.printStackTrace();
-						return;
-					} catch (IOException e1) {
-						e1.printStackTrace();
-						return;
-					}
-					AudioFormat format = audioInputStream.getFormat();
-					SourceDataLine auline = null;
-					DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-					try {
-						auline = (SourceDataLine) AudioSystem.getLine(info);
-						auline.open(format);
-					} catch (LineUnavailableException e) {
+					} catch (UnsupportedAudioFileException | IOException e) {
 						e.printStackTrace();
 						return;
+					}
+
+                    AudioFormat format = audioInputStream.getFormat();
+					DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
+                    SourceDataLine audioLine;
+
+					try {
+						audioLine = (SourceDataLine) AudioSystem.getLine(info);
+						audioLine.open(format);
 					} catch (Exception e) {
 						e.printStackTrace();
 						return;
 					}
-					if (auline.isControlSupported(FloatControl.Type.PAN)) {
-						FloatControl pan = (FloatControl) auline.getControl(FloatControl.Type.PAN);
+
+					if (audioLine.isControlSupported(FloatControl.Type.PAN)) {
+						FloatControl pan = (FloatControl) audioLine.getControl(FloatControl.Type.PAN);
+
 						if (curPosition == Position.RIGHT)
 							pan.setValue(1.0f);
 						else if (curPosition == Position.LEFT)
 							pan.setValue(-1.0f);
 					}
-					auline.start();
+
+					audioLine.start();
+
 					int nBytesRead = 0;
 					byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
+
 					try {
 						while (nBytesRead != -1) {
-							nBytesRead = audioInputStream.read(abData, 0,
-									abData.length);
+							nBytesRead = audioInputStream.read(abData, 0, abData.length);
+
 							if (nBytesRead >= 0)
-								auline.write(abData, 0, nBytesRead);
+								audioLine.write(abData, 0, nBytesRead);
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
 						return;
 					} finally {
-						auline.drain();
-						auline.close();
+						audioLine.drain();
+						audioLine.close();
 					}
 				}
+
 				if (play) {
 					midi = directory + saveRequest;
+
 					try {
 						if (music != null) {
 							music.stop();
 							music.close();
 						}
+
 						playMidi(midi);
 					} catch (Exception ex) {
 						ex.printStackTrace();
 					}
+
 					play = false;
 				}
+
 				saveRequest = null;
 			} else if (urlRequest != null) {
 				try {
 					System.out.println("urlStream");
+
 					urlStream = new DataInputStream((new URL(applet.getCodeBase(), urlRequest)).openStream());
 				} catch (Exception _ex) {
 					urlStream = null;
 				}
+
 				urlRequest = null;
 			}
+
 			try {
 				Thread.sleep(50L);
-			} catch (Exception _ex) {
-			}
+			} catch (Exception ignored) {}
 		}
 	}
 
