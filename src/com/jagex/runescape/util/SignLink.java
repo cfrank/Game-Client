@@ -361,12 +361,13 @@ public final class SignLink implements Runnable {
 		}
 	}
 
-	public static synchronized Socket openSocket(int i) throws IOException {
-		for (socketRequest = i; socketRequest != 0;)
-			try {
-				Thread.sleep(50L);
-			} catch (Exception _ex) {
-			}
+	public static synchronized Socket openSocket(int port) throws IOException {
+		for (socketRequest = port; socketRequest != 0;) {
+            try {
+                Thread.sleep(50L);
+            } catch (Exception ignored) {}
+        }
+
 		if (socket == null)
 			throw new IOException("could not open socket");
 		else
