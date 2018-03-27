@@ -292,32 +292,6 @@ public final class SignLink implements Runnable {
 		}
 	}
 
-	public static String cacheLocationOrig() {
-		String locations[] = { "c:/windows/", "c:/WINDOWS/", "c:/winnt/",
-				"d:/windows/", "d:/winnt/", "e:/windows/", "e:/winnt/",
-				"f:/windows/", "f:/winnt/", "c:/", "~/", "/tmp/", "",
-				"c:/rscache", "/rscache" };
-		String cacheFolder = ".377galkon";
-		for (int i = 0; i < locations.length; i++) {
-			try {
-				String location = locations[i];
-				if (location.length() > 0) {
-					File file = new File(location);
-					if (!file.exists())
-						continue;
-				}
-				File finalDirectory = new File(location + cacheFolder);
-				if (finalDirectory.exists() || finalDirectory.mkdir())
-					return location + cacheFolder
-							+ System.getProperty("file.separator");
-			} catch (Exception _ex) {
-			}
-		}
-		return System.getProperty("user.home")
-				+ System.getProperty("file.separator") + cacheFolder
-				+ System.getProperty("file.separator");
-	}
-
 	public static String cacheLocation() {
 		String name = ".377cache";
 		File file = new File(System.getProperty("user.home") + System.getProperty("file.separator") + name + System.getProperty("file.separator"));
