@@ -229,17 +229,20 @@ public class Buffer extends CacheableNode {
 			return getUnsignedLEShort() - 32768;
 	}
 
-	public void rsa(BigInteger modulus, BigInteger key) {
-		int len = currentPosition;
+	public void encrypt(BigInteger modulus, BigInteger key) {
+		int length = currentPosition;
 		currentPosition = 0;
-		byte rawBytes[] = new byte[len];
-		getBytes(rawBytes, 0, len);
-		BigInteger rawInteger = new BigInteger(rawBytes);
-		BigInteger encryptedInteger = rawInteger.modPow(key, modulus);
-		byte encryptedBytes[] = encryptedInteger.toByteArray();
+		byte bytes[] = new byte[length];
+
+		getBytes(bytes, 0, length);
+
+		BigInteger raw = new BigInteger(bytes);
+		BigInteger encrypted = raw.modPow(key, modulus);
+        bytes = encrypted.toByteArray();
 		currentPosition = 0;
-		putByte(encryptedBytes.length);
-		putBytes(encryptedBytes, 0, encryptedBytes.length);
+
+		putByte(bytes.length);
+		putBytes(bytes, 0, bytes.length);
 	}
 
 	public void putByteAdded(int value) {

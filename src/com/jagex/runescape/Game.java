@@ -6206,7 +6206,7 @@ public class Game extends GameShell {
 				outBuffer.putString(password);
 
 				if (Configuration.RSA_ENABLED)
-				    outBuffer.rsa(Configuration.RSA_MODULUS, Configuration.RSA_PUBLIC_KEY);
+				    outBuffer.encrypt(Configuration.RSA_MODULUS, Configuration.RSA_PUBLIC_KEY);
 
 				tempBuffer.currentPosition = 0;
 
