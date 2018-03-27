@@ -397,19 +397,17 @@ public final class SignLink implements Runnable {
 		threadRequest = runnable;
 	}
 
-	public static synchronized boolean saveWave(byte abyte0[], int i) {
-		if (i > 0x1e8480)
+	public static synchronized boolean saveWave(byte[] data, int length) {
+		if (length > 2000000 || saveRequest != null)
 			return false;
-		if (saveRequest != null) {
-			return false;
-		} else {
-			wavePosition = (wavePosition + 1) % 5;
-			saveLength = i;
-			saveBuffer = abyte0;
-			midiPlay = true;
-			saveRequest = "sound" + wavePosition + ".wav";
-			return true;
-		}
+
+		wavePosition = (wavePosition + 1) % 5;
+		saveLength = length;
+		saveBuffer = data;
+		midiPlay = true;
+		saveRequest = "sound" + wavePosition + ".wav";
+
+		return true;
 	}
 
 	public static synchronized boolean replayWave() {
