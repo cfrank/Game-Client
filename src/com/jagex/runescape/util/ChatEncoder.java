@@ -14,9 +14,11 @@ public class ChatEncoder {
 	public static String get(int length, Buffer buffer) {
 		int count = 0;
 		int validCharacterIndex = -1;
+
 		for (int lengthCounter = 0; lengthCounter < length; lengthCounter++) {
 			int character = buffer.getUnsignedByte();
 			int characterBit = character >> 4 & 0xf;
+
 			if (validCharacterIndex == -1) {
 				if (characterBit < 13)
 					message[count++] = VALID_CHARACTERS[characterBit];
@@ -26,7 +28,9 @@ public class ChatEncoder {
 				message[count++] = VALID_CHARACTERS[((validCharacterIndex << 4) + characterBit) - 195];
 				validCharacterIndex = -1;
 			}
+
 			characterBit = character & 0xf;
+
 			if (validCharacterIndex == -1) {
 				if (characterBit < 13)
 					message[count++] = VALID_CHARACTERS[characterBit];
@@ -39,12 +43,15 @@ public class ChatEncoder {
 		}
 
 		boolean isSymbol = true;
+
 		for (int messageIndex = 0; messageIndex < count; messageIndex++) {
 			char c = message[messageIndex];
+
 			if (isSymbol && c >= 'a' && c <= 'z') {
 				message[messageIndex] += '\uFFE0';
 				isSymbol = false;
 			}
+
 			if (c == '.' || c == '!' || c == '?')
 				isSymbol = true;
 		}
