@@ -436,8 +436,4 @@ public final class SignLink implements Runnable {
 		System.out.println("Error: " + error);
 	}
 
-	private SignLink() {
-	}
-
-
 }
