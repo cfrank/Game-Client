@@ -4468,118 +4468,142 @@ public class Game extends GameShell {
 		return false;
 	}
 
-	public Archive method61(int i, int j, String s, int k, int l, String s1) {
-		byte abyte0[] = null;
-		int i1 = 5;
+	private Archive requestArchive(int id, String file, int expectedCrc, int x, String displayName) {
+		byte[] archiveBuffer = null;
+		int reconnectionDelay = 5;
+
 		try {
 			if (stores[0] != null)
-				abyte0 = stores[0].get(l);
-		} catch (Exception _ex) {
-		}
-		if (abyte0 != null) {
-			aCRC32_1088.reset();
-			aCRC32_1088.update(abyte0);
-			int j1 = (int) aCRC32_1088.getValue();
-			if (j1 != j)
-				abyte0 = null;
-		}
-		if (abyte0 != null) {
-			Archive class2 = new Archive(abyte0);
-			return class2;
-		}
-		int k1 = 0;
-		if (i != 14076)
-			anInt1281 = -343;
-		while (abyte0 == null) {
-			String s2 = "Unknown error";
-			drawLoadingText(k, "Requesting " + s1);
-			try {
-				int l1 = 0;
-				DataInputStream datainputstream = openJaggrabStream(s + j);
-				byte abyte1[] = new byte[6];
-				datainputstream.readFully(abyte1, 0, 6);
-				Buffer class50_sub1_sub2 = new Buffer(abyte1);
-				class50_sub1_sub2.currentPosition = 3;
-				int j2 = class50_sub1_sub2.get24BitInt() + 6;
-				int k2 = 6;
-				abyte0 = new byte[j2];
-				for (int l2 = 0; l2 < 6; l2++)
-					abyte0[l2] = abyte1[l2];
+				archiveBuffer = stores[0].get(id);
+		} catch (Exception ignored) {}
 
-				while (k2 < j2) {
-					int i3 = j2 - k2;
-					if (i3 > 1000)
-						i3 = 1000;
-					int k3 = datainputstream.read(abyte0, k2, i3);
-					if (k3 < 0) {
-						s2 = "Length error: " + k2 + "/" + j2;
+		if (archiveBuffer != null && Configuration.JAGGRAB_ENABLED) {
+			aCRC32_1088.reset();
+			aCRC32_1088.update(archiveBuffer);
+
+			int calculatedCrc = (int) aCRC32_1088.getValue();
+
+			if (calculatedCrc != expectedCrc)
+				archiveBuffer = null;
+		}
+
+		if (archiveBuffer != null)
+			return new Archive(archiveBuffer);
+
+		int attempts = 0;
+
+		while (archiveBuffer == null) {
+			String error = "Unknown error";
+
+			drawLoadingText(x, "Requesting " + displayName);
+
+			try {
+				int currentPercentage = 0;
+				DataInputStream jaggrabStream = openJaggrabStream(file + expectedCrc);
+				byte[] bytes = new byte[6];
+
+				jaggrabStream.readFully(bytes, 0, 6);
+
+				Buffer buffer = new Buffer(bytes);
+				buffer.currentPosition = 3;
+				int archiveLength = buffer.get24BitInt() + 6;
+				int archiveRead = 6;
+				archiveBuffer = new byte[archiveLength];
+
+				System.arraycopy(bytes, 0, archiveBuffer, 0, 6);
+
+				while (archiveRead < archiveLength) {
+					int remaining = archiveLength - archiveRead;
+
+					if (remaining > 1000)
+						remaining = 1000;
+
+					int read = jaggrabStream.read(archiveBuffer, archiveRead, remaining);
+
+					if (read < 0) {
+						error = "Length error: " + archiveRead + "/" + archiveLength;
 						throw new IOException("EOF");
 					}
-					k2 += k3;
-					int l3 = (k2 * 100) / j2;
-					if (l3 != l1)
-						drawLoadingText(k, "Loading " + s1 + " - " + l3 + "%");
-					l1 = l3;
+
+					archiveRead += read;
+					int calculatedPercentage = (archiveRead * 100) / archiveLength;
+
+					if (calculatedPercentage != currentPercentage)
+						drawLoadingText(x, "Loading " + displayName + " - " + calculatedPercentage + "%");
+
+					currentPercentage = calculatedPercentage;
 				}
-				datainputstream.close();
+
+				jaggrabStream.close();
+
 				try {
 					if (stores[0] != null)
-						stores[0].put(abyte0.length, abyte0, l);
+						stores[0].put(archiveBuffer.length, archiveBuffer, id);
 				} catch (Exception _ex) {
 					stores[0] = null;
 				}
-				if (abyte0 != null) {
+
+				if (Configuration.JAGGRAB_ENABLED) {
 					aCRC32_1088.reset();
-					aCRC32_1088.update(abyte0);
-					int j3 = (int) aCRC32_1088.getValue();
-					if (j3 != j) {
-						abyte0 = null;
-						k1++;
-						s2 = "Checksum error: " + j3;
+					aCRC32_1088.update(archiveBuffer);
+
+					int calculatedCrc = (int) aCRC32_1088.getValue();
+
+					if (calculatedCrc != expectedCrc) {
+						archiveBuffer = null;
+						attempts++;
+						error = "Checksum error: " + calculatedCrc;
 					}
 				}
-			} catch (IOException ioexception) {
-				if (s2.equals("Unknown error"))
-					s2 = "Connection error";
-				abyte0 = null;
-			} catch (NullPointerException _ex) {
-				s2 = "Null error";
-				abyte0 = null;
+			} catch (IOException ex) {
+				if (error.equals("Unknown error"))
+					error = "Connection error";
+
+				archiveBuffer = null;
+			} catch (NullPointerException ex) {
+				error = "Null error";
+				archiveBuffer = null;
+
 				if (!SignLink.reportError)
 					return null;
-			} catch (ArrayIndexOutOfBoundsException _ex) {
-				s2 = "Bounds error";
-				abyte0 = null;
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				error = "Bounds error";
+				archiveBuffer = null;
+
 				if (!SignLink.reportError)
 					return null;
-			} catch (Exception _ex) {
-				s2 = "Unexpected error";
-				abyte0 = null;
+			} catch (Exception ex) {
+				error = "Unexpected error";
+				archiveBuffer = null;
+
 				if (!SignLink.reportError)
 					return null;
 			}
-			if (abyte0 == null) {
-				for (int i2 = i1; i2 > 0; i2--) {
-					if (k1 >= 3) {
-						drawLoadingText(k, "Game updated - please reload page");
-						i2 = 10;
+
+			if (archiveBuffer == null) {
+				for (int time = reconnectionDelay; time > 0; time--) {
+					if (attempts >= 3) {
+						drawLoadingText(x, "Game updated - please reload page");
+						time = 10;
 					} else {
-						drawLoadingText(k, s2 + " - Retrying in " + i2);
+						drawLoadingText(x, error + " - Retrying in " + time);
 					}
+
 					try {
 						Thread.sleep(1000L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 
-				i1 *= 2;
-				if (i1 > 60)
-					i1 = 60;
+				reconnectionDelay *= 2;
+
+				if (reconnectionDelay > 60)
+					reconnectionDelay = 60;
+
 				useJaggrab = !useJaggrab;
 			}
 		}
-		Archive class2_1 = new Archive(abyte0);
-		return class2_1;
+
+		return new Archive(archiveBuffer);
 	}
 
 	public void redraw() {
@@ -4852,19 +4876,19 @@ public class Game extends GameShell {
 		}
 		try {
 			connectWebServer();
-			titleArchive = method61(14076, archiveHashes[1], "title", 25, 1, "title screen");
+			titleArchive = requestArchive(1, "title", archiveHashes[1], 25, "title screen");
 			fontSmall = new TypeFace(false, titleArchive, "p11_full");
 			fontNormal = new TypeFace(false, titleArchive, "p12_full");
 			fontBold = new TypeFace(false, titleArchive, "b12_full");
 			fontFancy = new TypeFace(true, titleArchive, "q8_full");
 			prepareTitleBackground();
 			prepareTitle();
-			Archive configArchive = method61(14076, archiveHashes[2], "config", 30, 2, "config");
-			Archive archiveInterface = method61(14076, archiveHashes[3], "interface", 35, 3, "interface");
-			Archive archiveMedia = method61(14076, archiveHashes[4], "media", 40, 4, "2d gameGraphics");
-			Archive textureArchive = method61(14076, archiveHashes[6], "textures", 45, 6, "textures");
-			Archive chatArchive = method61(14076, archiveHashes[7], "wordenc", 50, 7, "chat system");
-			Archive soundArchive = method61(14076, archiveHashes[8], "sounds", 55, 8, "sound effects");
+			Archive configArchive = requestArchive(2, "config", archiveHashes[2], 30, "config");
+			Archive archiveInterface = requestArchive(3, "interface", archiveHashes[3], 35, "interface");
+			Archive archiveMedia = requestArchive(4, "media", archiveHashes[4], 40, "2d gameGraphics");
+			Archive textureArchive = requestArchive(6, "textures", archiveHashes[6], 45, "textures");
+			Archive chatArchive = requestArchive(7, "wordenc", archiveHashes[7], 50, "chat system");
+			Archive soundArchive = requestArchive(8, "sounds", archiveHashes[8], 55, "sound effects");
 			currentSceneTileFlags = new byte[4][104][104];
 			anIntArrayArrayArray891 = new int[4][105][105];
 			currentScene = new Scene(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
@@ -4872,7 +4896,7 @@ public class Game extends GameShell {
 				currentCollisionMap[j] = new CollisionMap(104, 104);
 
 			minimapImage = new ImageRGB(512, 512);
-			Archive versionListArchive = method61(14076, archiveHashes[5], "versionlist", 60, 5, "update list");
+			Archive versionListArchive = requestArchive(5, "versionlist", archiveHashes[5], 60, "update list");
 			drawLoadingText(60, "Connecting to update server");
 			onDemandRequester = new OnDemandRequester();
 			onDemandRequester.init(versionListArchive, this);
