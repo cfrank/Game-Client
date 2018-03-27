@@ -421,17 +421,15 @@ public final class SignLink implements Runnable {
 		return true;
 	}
 
-	public static synchronized void saveMidi(byte abyte0[], int i) {
-		if (i > 0x1e8480)
+	public static synchronized void saveMidi(byte[] data, int length) {
+		if (length > 2000000 || saveRequest != null)
 			return;
-		if (saveRequest != null) {
-		} else {
-			midiPosition = (midiPosition + 1) % 5;
-			saveLength = i;
-			saveBuffer = abyte0;
-			play = true;
-			saveRequest = "jingle" + midiPosition + ".mid";
-		}
+
+		midiPosition = (midiPosition + 1) % 5;
+		saveLength = length;
+		saveBuffer = data;
+		play = true;
+		saveRequest = "jingle" + midiPosition + ".mid";
 	}
 
 	public static void reporterror(String s) {
