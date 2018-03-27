@@ -411,14 +411,14 @@ public final class SignLink implements Runnable {
 	}
 
 	public static synchronized boolean replayWave() {
-		if (saveRequest != null) {
+		if (saveRequest != null)
 			return false;
-		} else {
-			saveBuffer = null;
-			midiPlay = true;
-			saveRequest = "sound" + wavePosition + ".wav";
-			return true;
-		}
+
+		saveBuffer = null;
+		midiPlay = true;
+		saveRequest = "sound" + wavePosition + ".wav";
+
+		return true;
 	}
 
 	public static synchronized void saveMidi(byte abyte0[], int i) {
