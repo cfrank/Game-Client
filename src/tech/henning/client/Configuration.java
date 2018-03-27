@@ -15,9 +15,9 @@ public class Configuration {
     public static final String CACHE_NAME = ".377cache";
 
     /**
-     * Port for establishing a connection to the game.
+     * Port for establishing a connection to the game server.
      */
-    public static final int SERVER_PORT = 43594;
+    public static final int GAME_PORT = 43594;
 
     /**
      * Port for establishing a connection to the update server.
