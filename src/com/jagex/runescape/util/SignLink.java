@@ -432,8 +432,8 @@ public final class SignLink implements Runnable {
 		saveRequest = "jingle" + midiPosition + ".mid";
 	}
 
-	public static void reporterror(String s) {
-		System.out.println("Error: " + s);
+	public static void reportError(String error) {
+		System.out.println("Error: " + error);
 	}
 
 	private SignLink() {

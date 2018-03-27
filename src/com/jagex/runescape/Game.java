@@ -707,7 +707,7 @@ public class Game extends GameShell {
 			outBuffer.putLong(name);
 			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("94629, " + name + ", " + ", " + runtimeexception.toString());
+			SignLink.reportError("94629, " + name + ", " + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -739,7 +739,7 @@ public class Game extends GameShell {
 			outBuffer.putLong(name);
 			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("27939, " + i + ", " + name + ", " + runtimeexception.toString());
+			SignLink.reportError("27939, " + i + ", " + name + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -1209,7 +1209,7 @@ public class Game extends GameShell {
 				return;
 			}
 		} catch (Exception _ex) {
-			SignLink.reporterror("glfc_ex " + localPlayer.worldX + ","
+			SignLink.reportError("glfc_ex " + localPlayer.worldX + ","
 					+ localPlayer.worldY + "," + anInt1262 + "," + anInt1263 + "," + chunkX + ","
 					+ chunkY + "," + nextTopLeftTileX + "," + nextTopRightTileY);
 			throw new RuntimeException("eek");
@@ -2624,7 +2624,7 @@ public class Game extends GameShell {
 						else
 							addChatMessage(TextUtils.formatName(TextUtils.longToName(l6)), s9, 3);
 					} catch (Exception exception1) {
-						SignLink.reporterror("cde1");
+						SignLink.reportError("cde1");
 					}
 				opcode = -1;
 				return true;
@@ -3168,7 +3168,7 @@ public class Game extends GameShell {
 				opcode = -1;
 				return true;
 			}
-			SignLink.reporterror("T1 - " + opcode + "," + packetSize + " - " + secondLastOpcode + "," + thirdLastOpcode);
+			SignLink.reportError("T1 - " + opcode + "," + packetSize + " - " + secondLastOpcode + "," + thirdLastOpcode);
 			logout();
 		} catch (IOException _ex) {
 			dropClient();
@@ -3179,7 +3179,7 @@ public class Game extends GameShell {
 			for (int j16 = 0; j16 < packetSize && j16 < 50; j16++)
 				s1 = s1 + buffer.buffer[j16] + ",";
 
-			SignLink.reporterror(s1);
+			SignLink.reportError(s1);
 			logout();
 
 			exception.printStackTrace();
@@ -3937,7 +3937,7 @@ public class Game extends GameShell {
 
 		}
 		if (j > anInt1133) {
-			SignLink.reporterror(username + " Too many npcs");
+			SignLink.reportError(username + " Too many npcs");
 			throw new RuntimeException("eek");
 		}
 		anInt1133 = 0;
@@ -3995,13 +3995,13 @@ public class Game extends GameShell {
 		}
 
 		if (class50_sub1_sub2.currentPosition != i) {
-			SignLink.reporterror(username + " size mismatch in getnpcpos - coord:" + class50_sub1_sub2.currentPosition
+			SignLink.reportError(username + " size mismatch in getnpcpos - coord:" + class50_sub1_sub2.currentPosition
 					+ " psize:" + i);
 			throw new RuntimeException("eek");
 		}
 		for (int l = 0; l < anInt1133; l++)
 			if (npcs[anIntArray1134[l]] == null) {
-				SignLink.reporterror(username + " null entry in npc list - coord:" + l + " size:" + anInt1133);
+				SignLink.reportError(username + " null entry in npc list - coord:" + l + " size:" + anInt1133);
 				throw new RuntimeException("eek");
 			}
 
@@ -4160,7 +4160,7 @@ public class Game extends GameShell {
 			}
 
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("38799, " + l + ", " + runtimeexception.toString());
+			SignLink.reportError("38799, " + l + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -4793,7 +4793,7 @@ public class Game extends GameShell {
 						else
 							addChatMessage(plr.playerName, s, 2);
 					} catch (Exception exception) {
-						SignLink.reporterror("cde2");
+						SignLink.reportError("cde2");
 					}
 			}
 			vec.currentPosition = i4 + length;
@@ -5196,7 +5196,7 @@ public class Game extends GameShell {
 			ActorDefinition.client = this;
 			return;
 		} catch (Exception exception) {
-			SignLink.reporterror("loaderror " + aString1027 + " " + anInt1322);
+			SignLink.reportError("loaderror " + aString1027 + " " + anInt1322);
 		}
 		aBoolean1283 = true;
 	}
@@ -7493,12 +7493,12 @@ public class Game extends GameShell {
 
 		if (vec.currentPosition != packetSize) {
 			SignLink
-					.reporterror("Error packet size mismatch in getplayer coord:" + vec.currentPosition + " psize:" + packetSize);
+					.reportError("Error packet size mismatch in getplayer coord:" + vec.currentPosition + " psize:" + packetSize);
 			throw new RuntimeException("eek");
 		}
 		for (int i1 = 0; i1 < localPlayerCount; i1++)
 			if (players[playerList[i1]] == null) {
-				SignLink.reporterror(username + " null entry in pl list - coord:" + i1 + " size:"
+				SignLink.reportError(username + " null entry in pl list - coord:" + i1 + " size:"
 						+ localPlayerCount);
 				throw new RuntimeException("eek");
 			}
@@ -7525,7 +7525,7 @@ public class Game extends GameShell {
 			i = 42 / i;
 			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("45745, " + i + ", " + l + ", " + runtimeexception.toString());
+			SignLink.reportError("45745, " + i + ", " + l + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -8329,7 +8329,7 @@ public class Game extends GameShell {
 
 		}
 		if (playerCount > localPlayerCount) {
-			SignLink.reporterror(username + " Too many players");
+			SignLink.reportError(username + " Too many players");
 			throw new RuntimeException("eek");
 		}
 		localPlayerCount = 0;
@@ -11024,7 +11024,7 @@ public class Game extends GameShell {
 		if (loadingStage == 1) {
 			int i = method144(5);
 			if (i != 0 && System.currentTimeMillis() - aLong1229 > 0x57e40L) {
-				SignLink.reporterror(username + " glcfb " + serverSeed + "," + i + "," + lowMemory + ","
+				SignLink.reportError(username + " glcfb " + serverSeed + "," + i + "," + lowMemory + ","
 						+ stores[0] + "," + onDemandRequester.method333() + "," + plane + ","
 						+ chunkX + "," + chunkY);
 				aLong1229 = System.currentTimeMillis();

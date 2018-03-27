@@ -95,7 +95,7 @@ public class OnDemandRequester extends Requester implements Runnable {
 				if (onDemandNode != null) {
 					idleCycles = 0;
 					if (size == 0) {
-						SignLink.reporterror("Rej: " + type + "," + id);
+						SignLink.reportError("Rej: " + type + "," + id);
 						onDemandNode.buffer = null;
 						if (onDemandNode.immediate)
 							synchronized (completed) {
@@ -373,7 +373,7 @@ public class OnDemandRequester extends Requester implements Runnable {
 			}
 			return;
 		} catch (Exception exception) {
-			SignLink.reporterror("od_ex " + exception.getMessage());
+			SignLink.reportError("od_ex " + exception.getMessage());
 		}
 	}
 
