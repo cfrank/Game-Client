@@ -223,9 +223,11 @@ public final class SignLink implements Runnable {
 		synthesizer = null;
 		sequence = null;
 		File midiFile = new File(location);
+
 		try {
 			sequence = MidiSystem.getSequence(midiFile);
 			music = MidiSystem.getSequencer();
+
 			music.open();
 			music.setSequence(sequence);
 		} catch (Exception e) {
@@ -233,12 +235,15 @@ public final class SignLink implements Runnable {
 			e.printStackTrace();
 			return;
 		}
+
 		if (music instanceof Synthesizer) {
 			synthesizer = (Synthesizer) music;
 		} else {
 			try {
 				synthesizer = MidiSystem.getSynthesizer();
+
 				synthesizer.open();
+
 				if (synthesizer.getDefaultSoundbank() == null) {
 					music.getTransmitter().setReceiver(MidiSystem.getReceiver());
 				} else {
@@ -249,6 +254,7 @@ public final class SignLink implements Runnable {
 				return;
 			}
 		}
+
 		music.setLoopCount(Sequencer.LOOP_CONTINUOUSLY);
 		music.start();
 	}
