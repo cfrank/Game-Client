@@ -308,7 +308,7 @@ public class Game extends GameShell {
 	public int anIntArray1085[];
 	public ImageRGB aClass50_Sub1_Sub1_Sub1_1086;
 	public int anInt1087;
-	public CRC32 aCRC32_1088 = new CRC32();
+	public CRC32 archiveCrc = new CRC32();
 	public int anInt1089 = -1;
 	public int sound[] = new int[50];
 	public int plane;
@@ -4478,10 +4478,10 @@ public class Game extends GameShell {
 		} catch (Exception ignored) {}
 
 		if (archiveBuffer != null && Configuration.JAGGRAB_ENABLED) {
-			aCRC32_1088.reset();
-			aCRC32_1088.update(archiveBuffer);
+			archiveCrc.reset();
+			archiveCrc.update(archiveBuffer);
 
-			int calculatedCrc = (int) aCRC32_1088.getValue();
+			int calculatedCrc = (int) archiveCrc.getValue();
 
 			if (calculatedCrc != expectedCrc)
 				archiveBuffer = null;
@@ -4544,10 +4544,10 @@ public class Game extends GameShell {
 				}
 
 				if (Configuration.JAGGRAB_ENABLED) {
-					aCRC32_1088.reset();
-					aCRC32_1088.update(archiveBuffer);
+					archiveCrc.reset();
+					archiveCrc.update(archiveBuffer);
 
-					int calculatedCrc = (int) aCRC32_1088.getValue();
+					int calculatedCrc = (int) archiveCrc.getValue();
 
 					if (calculatedCrc != expectedCrc) {
 						archiveBuffer = null;
