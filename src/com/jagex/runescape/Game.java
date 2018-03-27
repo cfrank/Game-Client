@@ -245,7 +245,7 @@ public class Game extends GameShell {
 	public int anInt1021;
 	public int crossIndex;
 	public int crossType;
-	public BufferedConnection bufferedConnection;
+	public BufferedConnection gameConnection;
 	public String chatMessage = "";
 	public String aString1027;
 	public boolean aBoolean1028 = false;
@@ -995,11 +995,11 @@ public class Game extends GameShell {
 		minimapBackgroundImage = null;
 		chatboxBackgroundImage = null;
 		try {
-			if (bufferedConnection != null)
-				bufferedConnection.close();
+			if (gameConnection != null)
+				gameConnection.close();
 		} catch (Exception _ex) {
 		}
-		bufferedConnection = null;
+		gameConnection = null;
 		minimapHintX = null;
 		minimapHintY = null;
 		minimapHint = null;
@@ -1606,8 +1606,8 @@ public class Game extends GameShell {
 		if (anInt872 > 50)
 			outBuffer.putOpcode(40);
 		try {
-			if (bufferedConnection != null && outBuffer.currentPosition > 0) {
-				bufferedConnection.write(outBuffer.currentPosition, 0, outBuffer.buffer);
+			if (gameConnection != null && outBuffer.currentPosition > 0) {
+				gameConnection.write(outBuffer.currentPosition, 0, outBuffer.buffer);
 				outBuffer.currentPosition = 0;
 				anInt872 = 0;
 				return;
@@ -1978,14 +1978,14 @@ public class Game extends GameShell {
 	}
 
 	public boolean parseIncomingPacket() {
-		if (bufferedConnection == null)
+		if (gameConnection == null)
 			return false;
 		try {
-			int available = bufferedConnection.getAvailable();
+			int available = gameConnection.getAvailable();
 			if (available == 0)
 				return false;
 			if (opcode == -1) {
-				bufferedConnection.read(buffer.buffer, 0, 1);
+				gameConnection.read(buffer.buffer, 0, 1);
 				opcode = buffer.buffer[0] & 0xff;
 				if (incomingRandom != null)
 					opcode = opcode - incomingRandom.nextInt() & 0xff;
@@ -1994,7 +1994,7 @@ public class Game extends GameShell {
 			}
 			if (packetSize == -1)
 				if (available > 0) {
-					bufferedConnection.read(buffer.buffer, 0, 1);
+					gameConnection.read(buffer.buffer, 0, 1);
 					packetSize = buffer.buffer[0] & 0xff;
 					available--;
 				} else {
@@ -2002,7 +2002,7 @@ public class Game extends GameShell {
 				}
 			if (packetSize == -2)
 				if (available > 1) {
-					bufferedConnection.read(buffer.buffer, 0, 2);
+					gameConnection.read(buffer.buffer, 0, 2);
 					buffer.currentPosition = 0;
 					packetSize = buffer.getUnsignedLEShort();
 					available -= 2;
@@ -2012,7 +2012,7 @@ public class Game extends GameShell {
 			if (available < packetSize)
 				return false;
 			buffer.currentPosition = 0;
-			bufferedConnection.read(buffer.buffer, 0, packetSize);
+			gameConnection.read(buffer.buffer, 0, packetSize);
 			timeoutCounter = 0;
 			thirdLastOpcode = secondLastOpcode;
 			secondLastOpcode = lastOpcode;
@@ -4354,7 +4354,7 @@ public class Game extends GameShell {
 		method125("Please wait - attempting to reestablish", "Connection lost");
 		minimapState = 0;
 		destinationX = 0;
-		BufferedConnection class17 = bufferedConnection;
+		BufferedConnection class17 = gameConnection;
 		loggedIn = false;
 		anInt850 = 0;
 		login(username, password, true);
@@ -6167,23 +6167,23 @@ public class Game extends GameShell {
 				drawLoginScreen(true);
 			}
 
-			bufferedConnection = new BufferedConnection(this, openSocket(Configuration.GAME_PORT + portOffset));
+			gameConnection = new BufferedConnection(this, openSocket(Configuration.GAME_PORT + portOffset));
 			long base37name = TextUtils.nameToLong(username);
 			int hash = (int) (base37name >> 16 & 31L);
 			outBuffer.currentPosition = 0;
 
 			outBuffer.putByte(14);
 			outBuffer.putByte(hash);
-			bufferedConnection.write(2, 0, outBuffer.buffer);
+			gameConnection.write(2, 0, outBuffer.buffer);
 
 			for (int j = 0; j < 8; j++)
-				bufferedConnection.read();
+				gameConnection.read();
 
-			int responseCode = bufferedConnection.read();
+			int responseCode = gameConnection.read();
 			int initialResponseCode = responseCode;
 
 			if (responseCode == 0) {
-				bufferedConnection.read(buffer.buffer, 0, 8);
+				gameConnection.read(buffer.buffer, 0, 8);
 
 				buffer.currentPosition = 0;
 				serverSeed = buffer.getLong();
@@ -6232,9 +6232,9 @@ public class Game extends GameShell {
 
 				incomingRandom = new ISAACCipher(seed);
 
-				bufferedConnection.write(tempBuffer.currentPosition, 0, tempBuffer.buffer);
+				gameConnection.write(tempBuffer.currentPosition, 0, tempBuffer.buffer);
 
-				responseCode = bufferedConnection.read();
+				responseCode = gameConnection.read();
 			}
 
 			if (responseCode == 1) {
@@ -6247,8 +6247,8 @@ public class Game extends GameShell {
 			}
 
 			if (responseCode == 2) {
-				playerRights = bufferedConnection.read();
-				accountFlagged = bufferedConnection.read() == 1;
+				playerRights = gameConnection.read();
+				accountFlagged = gameConnection.read() == 1;
 				aLong902 = 0L;
 				duplicateClickCount = 0;
 				mouseCapturer.coord = 0;
@@ -6478,7 +6478,7 @@ public class Game extends GameShell {
 			}
 
 			if (responseCode == 21) {
-				int time = bufferedConnection.read();
+				int time = gameConnection.read();
 
 				for (time += 3; time >= 0; time--) {
 					statusLineOne = "You have only just left another world";
@@ -9844,11 +9844,11 @@ public class Game extends GameShell {
 
 	public void logout() {
 		try {
-			if (bufferedConnection != null)
-				bufferedConnection.close();
+			if (gameConnection != null)
+				gameConnection.close();
 		} catch (Exception _ex) {
 		}
-		bufferedConnection = null;
+		gameConnection = null;
 		loggedIn = false;
 		loginScreenState = 0;
 		username = "";
@@ -10599,8 +10599,8 @@ public class Game extends GameShell {
 		System.out.println("draw-cycle:" + anInt1309);
 		System.out.println("ptype:" + opcode);
 		System.out.println("psize:" + packetSize);
-		if (bufferedConnection != null)
-			bufferedConnection.printDebug();
+		if (gameConnection != null)
+			gameConnection.printDebug();
 		super.dumpRequested = true;
 	}
 
