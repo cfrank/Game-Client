@@ -42,8 +42,7 @@ public final class SignLink implements Runnable {
 	public static boolean reportError = true;
 	public static String errorName = "";
     public static Sequencer music = null;
-    public static Sequence sequence = null;
-    public static Synthesizer synthesizer = null;
+    private static Synthesizer synthesizer = null;
     private Position curPosition;
 
     enum Position {
@@ -223,9 +222,9 @@ public final class SignLink implements Runnable {
 	 * @param location
 	 */
 	private void playMidi(String location) {
+        Sequence sequence;
 		music = null;
 		synthesizer = null;
-		sequence = null;
 		File midiFile = new File(location);
 
 		try {
