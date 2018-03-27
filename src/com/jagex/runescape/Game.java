@@ -6156,38 +6156,46 @@ public class Game extends GameShell {
 		} while (true);
 	}
 
-
-
-	public void login(String username, String password, boolean reconnecting) {
+	private void login(String username, String password, boolean reconnecting) {
 		SignLink.errorName = username;
+
 		try {
 			if (!reconnecting) {
 				statusLineOne = "";
 				statusLineTwo = "Connecting to server...";
+
 				drawLoginScreen(true);
 			}
-			bufferedConnection = new BufferedConnection(this, openSocket(43594 + portOffset));
+
+			bufferedConnection = new BufferedConnection(this, openSocket(Configuration.GAME_PORT + portOffset));
 			long base37name = TextUtils.nameToLong(username);
 			int hash = (int) (base37name >> 16 & 31L);
 			outBuffer.currentPosition = 0;
+
 			outBuffer.putByte(14);
 			outBuffer.putByte(hash);
 			bufferedConnection.write(2, 0, outBuffer.buffer);
+
 			for (int j = 0; j < 8; j++)
 				bufferedConnection.read();
 
-			int returnCode = bufferedConnection.read();
-			int i1 = returnCode;
-			if (returnCode == 0) {
+			int responseCode = bufferedConnection.read();
+			int initialResponseCode = responseCode;
+
+			if (responseCode == 0) {
 				bufferedConnection.read(buffer.buffer, 0, 8);
+
 				buffer.currentPosition = 0;
 				serverSeed = buffer.getLong();
 				int seed[] = new int[4];
+
 				seed[0] = (int) (Math.random() * 99999999D);
 				seed[1] = (int) (Math.random() * 99999999D);
 				seed[2] = (int) (serverSeed >> 32);
 				seed[3] = (int) serverSeed;
+
 				outBuffer.currentPosition = 0;
+
 				outBuffer.putByte(10);
 				outBuffer.putInt(seed[0]);
 				outBuffer.putInt(seed[1]);
@@ -6196,37 +6204,49 @@ public class Game extends GameShell {
 				outBuffer.putInt(SignLink.uid);
 				outBuffer.putString(username);
 				outBuffer.putString(password);
-				outBuffer.rsa(Configuration.RSA_MODULUS, Configuration.RSA_PUBLIC_KEY);
+
+				if (Configuration.RSA_ENABLED)
+				    outBuffer.rsa(Configuration.RSA_MODULUS, Configuration.RSA_PUBLIC_KEY);
+
 				tempBuffer.currentPosition = 0;
+
 				if (reconnecting)
 					tempBuffer.putByte(18);
 				else
 					tempBuffer.putByte(16);
+
 				tempBuffer.putByte(outBuffer.currentPosition + 36 + 1 + 1 + 2);
 				tempBuffer.putByte(255);
-				tempBuffer.putShort(377);
+				tempBuffer.putShort(SignLink.CLIENT_REVISION);
 				tempBuffer.putByte(lowMemory ? 1 : 0);
+
 				for (int i = 0; i < 9; i++)
 					tempBuffer.putInt(archiveHashes[i]);
 
 				tempBuffer.putBytes(outBuffer.buffer, 0, outBuffer.currentPosition);
+
 				outBuffer.random = new ISAACCipher(seed);
+
 				for (int i = 0; i < 4; i++)
 					seed[i] += 50;
 
 				incomingRandom = new ISAACCipher(seed);
+
 				bufferedConnection.write(tempBuffer.currentPosition, 0, tempBuffer.buffer);
-				returnCode = bufferedConnection.read();
+
+				responseCode = bufferedConnection.read();
 			}
-			if (returnCode == 1) {
+
+			if (responseCode == 1) {
 				try {
 					Thread.sleep(2000L);
-				} catch (Exception _ex) {
-				}
+				} catch (Exception ignored) {}
+
 				login(username, password, reconnecting);
 				return;
 			}
-			if (returnCode == 2) {
+
+			if (responseCode == 2) {
 				playerRights = bufferedConnection.read();
 				accountFlagged = bufferedConnection.read() == 1;
 				aLong902 = 0L;
@@ -6249,6 +6269,7 @@ public class Game extends GameShell {
 				menuActionRow = 0;
 				menuOpen = false;
 				super.idleTime = 0;
+
 				for (int j1 = 0; j1 < 100; j1++)
 					chatMessages[j1] = null;
 
@@ -6268,6 +6289,7 @@ public class Game extends GameShell {
 				destinationY = 0;
 				localPlayerCount = 0;
 				anInt1133 = 0;
+
 				for (int i2 = 0; i2 < anInt968; i2++) {
 					players[i2] = null;
 					cachedAppearances[i2] = null;
@@ -6277,34 +6299,42 @@ public class Game extends GameShell {
 					npcs[k2] = null;
 
 				localPlayer = players[thisPlayerId] = new Player();
+
 				aClass6_1282.getNodeCount();
 				aClass6_1210.getNodeCount();
+
 				for (int l2 = 0; l2 < 4; l2++) {
 					for (int i3 = 0; i3 < 104; i3++) {
 						for (int k3 = 0; k3 < 104; k3++)
 							groundItems[l2][i3][k3] = null;
-
 					}
-
 				}
 
 				aClass6_1261 = new LinkedList();
 				friendListStatus = 0;
 				friendsCount = 0;
+
 				method44(aBoolean1190, dialogueId);
 				dialogueId = -1;
+
 				method44(aBoolean1190, backDialogueId);
 				backDialogueId = -1;
+
 				method44(aBoolean1190, openInterfaceId);
 				openInterfaceId = -1;
+
 				method44(aBoolean1190, anInt1053);
 				anInt1053 = -1;
+
 				method44(aBoolean1190, anInt960);
 				anInt960 = -1;
+
 				method44(aBoolean1190, anInt1089);
 				anInt1089 = -1;
+
 				method44(aBoolean1190, anInt1279);
 				anInt1279 = -1;
+
 				aBoolean1239 = false;
 				anInt1285 = 3;
 				inputType = 0;
@@ -6314,7 +6344,9 @@ public class Game extends GameShell {
 				anInt1319 = 0;
 				anInt1213 = -1;
 				characterEditChangeGenger = true;
+
 				method25();
+
 				for (int j3 = 0; j3 < 5; j3++)
 					characterEditColors[j3] = 0;
 
@@ -6333,65 +6365,78 @@ public class Game extends GameShell {
 				anInt1013 = 0;
 				anInt1049 = 0;
 				anInt1162 = 0;
+
 				method122(-906);
 				return;
 			}
-			if (returnCode == 3) {
+
+			if (responseCode == 3) {
 				statusLineOne = "";
 				statusLineTwo = "Invalid username or password.";
 				return;
 			}
-			if (returnCode == 4) {
+
+			if (responseCode == 4) {
 				statusLineOne = "Your account has been disabled.";
 				statusLineTwo = "Please check your message-centre for details.";
 				return;
 			}
-			if (returnCode == 5) {
+
+			if (responseCode == 5) {
 				statusLineOne = "Your account is already logged in.";
 				statusLineTwo = "Try again in 60 secs...";
 				return;
 			}
-			if (returnCode == 6) {
+
+			if (responseCode == 6) {
 				statusLineOne = "RuneScape has been updated!";
 				statusLineTwo = "Please reload this page.";
 				return;
 			}
-			if (returnCode == 7) {
+
+			if (responseCode == 7) {
 				statusLineOne = "This world is full.";
 				statusLineTwo = "Please use a different world.";
 				return;
 			}
-			if (returnCode == 8) {
+
+			if (responseCode == 8) {
 				statusLineOne = "Unable to connect.";
 				statusLineTwo = "Login server offline.";
 				return;
 			}
-			if (returnCode == 9) {
+
+			if (responseCode == 9) {
 				statusLineOne = "Login limit exceeded.";
 				statusLineTwo = "Too many connections from your address.";
 				return;
 			}
-			if (returnCode == 10) {
+
+			if (responseCode == 10) {
 				statusLineOne = "Unable to connect.";
 				statusLineTwo = "Bad session id.";
 				return;
 			}
-			if (returnCode == 12) {
+
+			if (responseCode == 12) {
 				statusLineOne = "You need a members account to login to this world.";
 				statusLineTwo = "Please subscribe, or use a different world.";
 				return;
 			}
-			if (returnCode == 13) {
+
+			if (responseCode == 13) {
 				statusLineOne = "Could not complete login.";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-			if (returnCode == 14) {
+
+			if (responseCode == 14) {
 				statusLineOne = "The server is being updated.";
 				statusLineTwo = "Please wait 1 minute and try again.";
 				return;
 			}
-			if (returnCode == 15) {
+
+			if (responseCode == 15) {
 				loggedIn = true;
 				outBuffer.currentPosition = 0;
 				buffer.currentPosition = 0;
@@ -6407,74 +6452,88 @@ public class Game extends GameShell {
 				aLong1229 = System.currentTimeMillis();
 				return;
 			}
-			if (returnCode == 16) {
+
+			if (responseCode == 16) {
 				statusLineOne = "Login attempts exceeded.";
 				statusLineTwo = "Please wait 1 minute and try again.";
 				return;
 			}
-			if (returnCode == 17) {
+
+			if (responseCode == 17) {
 				statusLineOne = "You are standing in a members-only area.";
 				statusLineTwo = "To play on this world move to a free area first";
 				return;
 			}
-			if (returnCode == 18) {
+
+			if (responseCode == 18) {
 				statusLineOne = "Account locked as we suspect it has been stolen.";
 				statusLineTwo = "Press 'recover a locked account' on front page.";
 				return;
 			}
-			if (returnCode == 20) {
+
+			if (responseCode == 20) {
 				statusLineOne = "Invalid loginserver requested";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-			if (returnCode == 21) {
-				int k1 = bufferedConnection.read();
-				for (k1 += 3; k1 >= 0; k1--) {
+
+			if (responseCode == 21) {
+				int time = bufferedConnection.read();
+
+				for (time += 3; time >= 0; time--) {
 					statusLineOne = "You have only just left another world";
-					statusLineTwo = "Your profile will be transferred in: " + k1;
+					statusLineTwo = "Your profile will be transferred in: " + time;
+
 					drawLoginScreen(true);
+
 					try {
 						Thread.sleep(1200L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 
 				login(username, password, reconnecting);
 				return;
 			}
-			if (returnCode == 22) {
+
+			if (responseCode == 22) {
 				statusLineOne = "Malformed login packet.";
 				statusLineTwo = "Please try again.";
 				return;
 			}
-			if (returnCode == 23) {
+
+			if (responseCode == 23) {
 				statusLineOne = "No reply from loginserver.";
 				statusLineTwo = "Please try again.";
 				return;
 			}
-			if (returnCode == 24) {
+
+			if (responseCode == 24) {
 				statusLineOne = "Error loading your profile.";
 				statusLineTwo = "Please contact customer support.";
 				return;
 			}
-			if (returnCode == 25) {
+
+			if (responseCode == 25) {
 				statusLineOne = "Unexpected loginserver response.";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-			if (returnCode == 26) {
+
+			if (responseCode == 26) {
 				statusLineOne = "This computers address has been blocked";
 				statusLineTwo = "as it was used to break our rules";
 				return;
 			}
-			if (returnCode == -1) {
-				if (i1 == 0) {
+
+			if (responseCode == -1) {
+				if (initialResponseCode == 0) {
 					if (anInt850 < 2) {
 						try {
 							Thread.sleep(2000L);
-						} catch (Exception _ex) {
-						}
+						} catch (Exception ignored) {}
+
 						anInt850++;
+
 						login(username, password, reconnecting);
 						return;
 					} else {
@@ -6488,14 +6547,16 @@ public class Game extends GameShell {
 					return;
 				}
 			} else {
-				System.out.println("response:" + returnCode);
+				System.out.println("response:" + responseCode);
+
 				statusLineOne = "Unexpected server response";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-		} catch (IOException _ex) {
+		} catch (IOException ex) {
 			statusLineOne = "";
 		}
+
 		statusLineTwo = "Error connecting to server.";
 	}
 
