@@ -264,11 +264,13 @@ public final class SignLink implements Runnable {
 	 * @param value
 	 */
 	public static void setVolume(int value) {
-		int CHANGE_VOLUME = 7;
+		final int CHANGE_VOLUME = 7;
 		midiVolume = value;
+
 		if (synthesizer.getDefaultSoundbank() == null) {
 			try {
 				ShortMessage volumeMessage = new ShortMessage();
+
 				for (int i = 0; i < 16; i++) {
 					volumeMessage.setMessage(ShortMessage.CONTROL_CHANGE, i, CHANGE_VOLUME, midiVolume);
 					volumeMessage.setMessage(ShortMessage.CONTROL_CHANGE, i, 39, midiVolume);
@@ -279,6 +281,7 @@ public final class SignLink implements Runnable {
 			}
 		} else {
 			MidiChannel[] channels = synthesizer.getChannels();
+
 			for (int c = 0; channels != null && c < channels.length; c++) {
 				channels[c].controlChange(CHANGE_VOLUME, midiVolume);
 				channels[c].controlChange(39, midiVolume);
