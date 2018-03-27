@@ -33,7 +33,7 @@ public class Configuration {
     /**
      * Whether or not the update server should be used.
      */
-    public static boolean JAGGRAB_ENABLED = true;
+    public static final boolean JAGGRAB_ENABLED = true;
 
     /**
      * Whether or not the network packets should be encrypted.
