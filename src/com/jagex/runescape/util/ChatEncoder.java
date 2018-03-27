@@ -100,9 +100,12 @@ public class ChatEncoder {
 
 	public static String formatChatMessage(String chatMessage) {
 		messageBuffer.currentPosition = 0;
+
 		put(chatMessage, messageBuffer);
+
 		int offset = messageBuffer.currentPosition;
 		messageBuffer.currentPosition = 0;
+
 		return get(offset, messageBuffer);
 	}
 
