@@ -337,22 +337,26 @@ public final class SignLink implements Runnable {
 		return file.toString();
 	}
 
-	private static int getUID(String name) {
+	private static int getUID(String location) {
 		try {
-			File file = new File(name + "uid.dat");
-			if (!file.exists() || file.length() < 4L) {
-				DataOutputStream dataoutputstream = new DataOutputStream(new FileOutputStream(name + "uid.dat"));
-				dataoutputstream.writeInt((int) (Math.random() * 99999999D));
-				dataoutputstream.close();
+			File uid = new File(location + "uid.dat");
+
+			if (!uid.exists() || uid.length() < 4L) {
+				DataOutputStream output = new DataOutputStream(new FileOutputStream(location + "uid.dat"));
+
+				output.writeInt((int) (Math.random() * 99999999D));
+				output.close();
 			}
-		} catch (Exception _ex) {
-		}
+		} catch (Exception ignored) {}
+
 		try {
-			DataInputStream datainputstream = new DataInputStream(new FileInputStream(name + "uid.dat"));
-			int i = datainputstream.readInt();
-			datainputstream.close();
-			return i + 1;
-		} catch (Exception _ex) {
+			DataInputStream input = new DataInputStream(new FileInputStream(location + "uid.dat"));
+			int value = input.readInt();
+
+			input.close();
+
+			return value + 1;
+		} catch (Exception ex) {
 			return 0;
 		}
 	}
