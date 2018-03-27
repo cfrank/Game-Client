@@ -7064,11 +7064,12 @@ public class Game extends GameShell {
 	public URL getCodeBase() {
 		if (SignLink.applet != null)
 			return SignLink.applet.getCodeBase();
+
 		try {
 			if (super.gameFrame != null)
-				return new URL("http://127.0.0.1:" + (10080 + portOffset));
-		} catch (Exception _ex) {
-		}
+				return new URL("http://" + Configuration.SERVER_ADDRESS + ":" + (Configuration.HTTP_PORT + portOffset));
+		} catch (Exception ignored) {}
+
 		return super.getCodeBase();
 	}
 
