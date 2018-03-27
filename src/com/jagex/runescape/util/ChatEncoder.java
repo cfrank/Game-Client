@@ -62,20 +62,24 @@ public class ChatEncoder {
 	public static void put(String chatMessage, Buffer buffer) {
 		if (chatMessage.length() > 80)
 			chatMessage = chatMessage.substring(0, 80);
+
 		int chatMessageCharacter = -1;
+
 		for (int index = 0; index < chatMessage.length(); index++) {
 			char character = chatMessage.charAt(index);
 			int validCharacterIndex = 0;
+
 			for (int validIndex = 0; validIndex < VALID_CHARACTERS.length; validIndex++) {
 				if (character != VALID_CHARACTERS[validIndex])
 					continue;
+
 				validCharacterIndex = validIndex;
 				break;
 			}
 
-
 			if (validCharacterIndex > 12)
 				validCharacterIndex += 195;
+
 			if (chatMessageCharacter == -1) {
 				if (validCharacterIndex < 13)
 					chatMessageCharacter = validCharacterIndex;
