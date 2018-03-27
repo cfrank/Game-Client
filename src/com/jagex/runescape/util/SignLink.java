@@ -1,9 +1,12 @@
 package com.jagex.runescape.util;
-import java.applet.Applet;
-import java.io.*;
-import java.net.*;
+
 import javax.sound.midi.*;
 import javax.sound.sampled.*;
+import java.applet.Applet;
+import java.io.*;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.URL;
 
 public final class SignLink implements Runnable {
 	
