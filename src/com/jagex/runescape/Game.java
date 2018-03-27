@@ -1970,11 +1970,11 @@ public class Game extends GameShell {
         return new DataInputStream(jaggrabSocket.getInputStream());
 	}
 
-	public Socket openSocket(int i) throws IOException {
+	public Socket openSocket(int port) throws IOException {
 		if (SignLink.applet != null)
-			return SignLink.openSocket(i);
-		else
-			return new Socket(InetAddress.getByName(getCodeBase().getHost()), i);
+			return SignLink.openSocket(port);
+
+		return new Socket(InetAddress.getByName(getCodeBase().getHost()), port);
 	}
 
 	public boolean parseIncomingPacket() {
