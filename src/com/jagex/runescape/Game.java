@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.io.*;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -50,6 +49,7 @@ import com.jagex.runescape.sound.SoundPlayer;
 import com.jagex.runescape.sound.SoundTrack;
 import com.jagex.runescape.util.*;
 import tech.henning.client.Actions;
+import tech.henning.client.Configuration;
 
 @SuppressWarnings("serial")
 public class Game extends GameShell {
@@ -536,7 +536,6 @@ public class Game extends GameShell {
 	public int anIntArray1313[];
 	public volatile boolean aBoolean1314 = false;
 	public int anInt1315;
-	public static BigInteger JAGEX_PUBLIC_KEY = new BigInteger("65537");
 	public byte aByte1317 = -58;
 	public int anInt1318 = 416;
 	public int anInt1319;
@@ -554,9 +553,6 @@ public class Game extends GameShell {
 	public int anInt1331;
 	public int atInventoryInterfaceType;
 	public static String VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
-	public static BigInteger JAGEX_MODULUS = new BigInteger("" +
-			"122160430267449798360978854041191852368220518230394092579319523064196043297582796633947085783119585744206711526658432067003468760585446552721871622840788528486712970246999980397054139494332878352882978447726827719186528904097434708997584641726572284342202641622966960383866799686443535696434839673638141409593" +
-			"");
 
 	static {
 		SKILL_EXPERIENCE = new int[99];
@@ -6172,7 +6168,7 @@ public class Game extends GameShell {
 				outBuffer.putInt(SignLink.uid);
 				outBuffer.putString(username);
 				outBuffer.putString(password);
-				outBuffer.rsa(JAGEX_MODULUS, JAGEX_PUBLIC_KEY);
+				outBuffer.rsa(Configuration.JAGEX_MODULUS, Configuration.JAGEX_PUBLIC_KEY);
 				tempBuffer.currentPosition = 0;
 				if (reconnecting)
 					tempBuffer.putByte(18);
