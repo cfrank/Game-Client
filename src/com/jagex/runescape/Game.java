@@ -444,7 +444,7 @@ public class Game extends GameShell {
 	public int friendsListAction;
 	public int anInt1222;
 	public int anInt1223;
-	public Socket aSocket1224;
+	public Socket jaggrabSocket;
 	public int loginScreenState;
 	public int anInt1226;
 	public int tradeMode;
@@ -1953,21 +1953,21 @@ public class Game extends GameShell {
                 return new DataInputStream((new URL(getCodeBase(), request)).openStream());
         }
 
-		if (aSocket1224 != null) {
+		if (jaggrabSocket != null) {
 			try {
-				aSocket1224.close();
+				jaggrabSocket.close();
 			} catch (Exception ignored) {}
 
-			aSocket1224 = null;
+			jaggrabSocket = null;
 		}
 
 		byte[] buffer = String.format("JAGGRAB /%s\n\n", request).getBytes();
-		aSocket1224 = openSocket(Configuration.JAGGRAB_PORT);
+		jaggrabSocket = openSocket(Configuration.JAGGRAB_PORT);
 
-		aSocket1224.setSoTimeout(10000);
-		aSocket1224.getOutputStream().write(buffer);
+		jaggrabSocket.setSoTimeout(10000);
+		jaggrabSocket.getOutputStream().write(buffer);
 
-        return new DataInputStream(aSocket1224.getInputStream());
+        return new DataInputStream(jaggrabSocket.getInputStream());
 	}
 
 	public Socket openSocket(int i) throws IOException {
