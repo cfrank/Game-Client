@@ -6,7 +6,6 @@ import java.awt.Component;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.io.*;
-import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -50,6 +49,7 @@ import com.jagex.runescape.sound.SoundPlayer;
 import com.jagex.runescape.sound.SoundTrack;
 import com.jagex.runescape.util.*;
 import tech.henning.client.Actions;
+import tech.henning.client.Configuration;
 
 @SuppressWarnings("serial")
 public class Game extends GameShell {
@@ -118,7 +118,7 @@ public class Game extends GameShell {
 	public int anInt897 = 559;
 	public byte aByte898 = 6;
 	public ISAACCipher incomingRandom;
-	public boolean aBoolean900 = false;
+	private boolean useJaggrab = Configuration.JAGGRAB_ENABLED;
 	public byte aByte901 = -123;
 	public long aLong902;
 	public int lastOpcode;
@@ -245,7 +245,7 @@ public class Game extends GameShell {
 	public int anInt1021;
 	public int crossIndex;
 	public int crossType;
-	public BufferedConnection bufferedConnection;
+	public BufferedConnection gameConnection;
 	public String chatMessage = "";
 	public String aString1027;
 	public boolean aBoolean1028 = false;
@@ -308,7 +308,7 @@ public class Game extends GameShell {
 	public int anIntArray1085[];
 	public ImageRGB aClass50_Sub1_Sub1_Sub1_1086;
 	public int anInt1087;
-	public CRC32 aCRC32_1088 = new CRC32();
+	public CRC32 archiveCrc = new CRC32();
 	public int anInt1089 = -1;
 	public int sound[] = new int[50];
 	public int plane;
@@ -444,7 +444,7 @@ public class Game extends GameShell {
 	public int friendsListAction;
 	public int anInt1222;
 	public int anInt1223;
-	public Socket aSocket1224;
+	public Socket jaggrabSocket;
 	public int loginScreenState;
 	public int anInt1226;
 	public int tradeMode;
@@ -536,7 +536,6 @@ public class Game extends GameShell {
 	public int anIntArray1313[];
 	public volatile boolean aBoolean1314 = false;
 	public int anInt1315;
-	public static BigInteger JAGEX_PUBLIC_KEY = new BigInteger("65537");
 	public byte aByte1317 = -58;
 	public int anInt1318 = 416;
 	public int anInt1319;
@@ -554,9 +553,6 @@ public class Game extends GameShell {
 	public int anInt1331;
 	public int atInventoryInterfaceType;
 	public static String VALID_CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!\"\243$%^&*()-_=+[{]};:'@#~,<.>/?\\| ";
-	public static BigInteger JAGEX_MODULUS = new BigInteger("" +
-			"122160430267449798360978854041191852368220518230394092579319523064196043297582796633947085783119585744206711526658432067003468760585446552721871622840788528486712970246999980397054139494332878352882978447726827719186528904097434708997584641726572284342202641622966960383866799686443535696434839673638141409593" +
-			"");
 
 	static {
 		SKILL_EXPERIENCE = new int[99];
@@ -606,7 +602,7 @@ public class Game extends GameShell {
 			portOffset = 0;
 			setHighMemory();
 			memberServer = true;
-			SignLink.storeid = 32;
+			SignLink.storeId = 32;
 			SignLink.initialize(InetAddress.getLocalHost());
 			Game cl = new Game();
 			cl.initializeApplication(765, 503);
@@ -707,7 +703,7 @@ public class Game extends GameShell {
 			outBuffer.putLong(name);
 			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("94629, " + name + ", " + ", " + runtimeexception.toString());
+			SignLink.reportError("94629, " + name + ", " + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -739,7 +735,7 @@ public class Game extends GameShell {
 			outBuffer.putLong(name);
 			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("27939, " + i + ", " + name + ", " + runtimeexception.toString());
+			SignLink.reportError("27939, " + i + ", " + name + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -999,11 +995,11 @@ public class Game extends GameShell {
 		minimapBackgroundImage = null;
 		chatboxBackgroundImage = null;
 		try {
-			if (bufferedConnection != null)
-				bufferedConnection.close();
+			if (gameConnection != null)
+				gameConnection.close();
 		} catch (Exception _ex) {
 		}
-		bufferedConnection = null;
+		gameConnection = null;
 		minimapHintX = null;
 		minimapHintY = null;
 		minimapHint = null;
@@ -1209,7 +1205,7 @@ public class Game extends GameShell {
 				return;
 			}
 		} catch (Exception _ex) {
-			SignLink.reporterror("glfc_ex " + localPlayer.worldX + ","
+			SignLink.reportError("glfc_ex " + localPlayer.worldX + ","
 					+ localPlayer.worldY + "," + anInt1262 + "," + anInt1263 + "," + chunkX + ","
 					+ chunkY + "," + nextTopLeftTileX + "," + nextTopRightTileY);
 			throw new RuntimeException("eek");
@@ -1610,8 +1606,8 @@ public class Game extends GameShell {
 		if (anInt872 > 50)
 			outBuffer.putOpcode(40);
 		try {
-			if (bufferedConnection != null && outBuffer.currentPosition > 0) {
-				bufferedConnection.write(outBuffer.currentPosition, 0, outBuffer.buffer);
+			if (gameConnection != null && outBuffer.currentPosition > 0) {
+				gameConnection.write(outBuffer.currentPosition, 0, outBuffer.buffer);
 				outBuffer.currentPosition = 0;
 				anInt872 = 0;
 				return;
@@ -1949,43 +1945,47 @@ public class Game extends GameShell {
 		}
 	}
 
-	public DataInputStream method31(String s) throws IOException {
-		if (!aBoolean900)
-			if (SignLink.mainapp != null)
-				return SignLink.openURL(s);
-			else
-				return new DataInputStream((new URL(getCodeBase(), s)).openStream());
-		if (aSocket1224 != null) {
+	private DataInputStream openJaggrabStream(String request) throws IOException {
+		if (!useJaggrab) {
+            if (SignLink.applet != null)
+                return SignLink.openURL(request);
+            else
+                return new DataInputStream((new URL(getCodeBase(), request)).openStream());
+        }
+
+		if (jaggrabSocket != null) {
 			try {
-				aSocket1224.close();
-			} catch (Exception _ex) {
-			}
-			aSocket1224 = null;
+				jaggrabSocket.close();
+			} catch (Exception ignored) {}
+
+			jaggrabSocket = null;
 		}
-		aSocket1224 = openSocket(43595);
-		aSocket1224.setSoTimeout(10000);
-		InputStream inputstream = aSocket1224.getInputStream();
-		OutputStream outputstream = aSocket1224.getOutputStream();
-		outputstream.write(("JAGGRAB /" + s + "\n\n").getBytes());
-		return new DataInputStream(inputstream);
+
+		byte[] buffer = String.format("JAGGRAB /%s\n\n", request).getBytes();
+		jaggrabSocket = openSocket(Configuration.JAGGRAB_PORT);
+
+		jaggrabSocket.setSoTimeout(10000);
+		jaggrabSocket.getOutputStream().write(buffer);
+
+        return new DataInputStream(jaggrabSocket.getInputStream());
 	}
 
-	public Socket openSocket(int i) throws IOException {
-		if (SignLink.mainapp != null)
-			return SignLink.openSocket(i);
-		else
-			return new Socket(InetAddress.getByName(getCodeBase().getHost()), i);
+	public Socket openSocket(int port) throws IOException {
+		if (SignLink.applet != null)
+			return SignLink.openSocket(port);
+
+		return new Socket(InetAddress.getByName(getCodeBase().getHost()), port);
 	}
 
 	public boolean parseIncomingPacket() {
-		if (bufferedConnection == null)
+		if (gameConnection == null)
 			return false;
 		try {
-			int available = bufferedConnection.getAvailable();
+			int available = gameConnection.getAvailable();
 			if (available == 0)
 				return false;
 			if (opcode == -1) {
-				bufferedConnection.read(buffer.buffer, 0, 1);
+				gameConnection.read(buffer.buffer, 0, 1);
 				opcode = buffer.buffer[0] & 0xff;
 				if (incomingRandom != null)
 					opcode = opcode - incomingRandom.nextInt() & 0xff;
@@ -1994,7 +1994,7 @@ public class Game extends GameShell {
 			}
 			if (packetSize == -1)
 				if (available > 0) {
-					bufferedConnection.read(buffer.buffer, 0, 1);
+					gameConnection.read(buffer.buffer, 0, 1);
 					packetSize = buffer.buffer[0] & 0xff;
 					available--;
 				} else {
@@ -2002,7 +2002,7 @@ public class Game extends GameShell {
 				}
 			if (packetSize == -2)
 				if (available > 1) {
-					bufferedConnection.read(buffer.buffer, 0, 2);
+					gameConnection.read(buffer.buffer, 0, 2);
 					buffer.currentPosition = 0;
 					packetSize = buffer.getUnsignedLEShort();
 					available -= 2;
@@ -2012,7 +2012,7 @@ public class Game extends GameShell {
 			if (available < packetSize)
 				return false;
 			buffer.currentPosition = 0;
-			bufferedConnection.read(buffer.buffer, 0, packetSize);
+			gameConnection.read(buffer.buffer, 0, packetSize);
 			timeoutCounter = 0;
 			thirdLastOpcode = secondLastOpcode;
 			secondLastOpcode = lastOpcode;
@@ -2335,7 +2335,7 @@ public class Game extends GameShell {
 				lastAddress = buffer.method555();
 				anInt1034 = buffer.getLittleShortA();
 				buffer.getByteAdded();
-				SignLink.dnslookup(TextUtils.decodeAddress(lastAddress));
+				SignLink.dnsLookup(TextUtils.decodeAddress(lastAddress));
 				opcode = -1;
 				return true;
 			}
@@ -2624,7 +2624,7 @@ public class Game extends GameShell {
 						else
 							addChatMessage(TextUtils.formatName(TextUtils.longToName(l6)), s9, 3);
 					} catch (Exception exception1) {
-						SignLink.reporterror("cde1");
+						SignLink.reportError("cde1");
 					}
 				opcode = -1;
 				return true;
@@ -3168,7 +3168,7 @@ public class Game extends GameShell {
 				opcode = -1;
 				return true;
 			}
-			SignLink.reporterror("T1 - " + opcode + "," + packetSize + " - " + secondLastOpcode + "," + thirdLastOpcode);
+			SignLink.reportError("T1 - " + opcode + "," + packetSize + " - " + secondLastOpcode + "," + thirdLastOpcode);
 			logout();
 		} catch (IOException _ex) {
 			dropClient();
@@ -3179,7 +3179,7 @@ public class Game extends GameShell {
 			for (int j16 = 0; j16 < packetSize && j16 < 50; j16++)
 				s1 = s1 + buffer.buffer[j16] + ",";
 
-			SignLink.reporterror(s1);
+			SignLink.reportError(s1);
 			logout();
 
 			exception.printStackTrace();
@@ -3455,8 +3455,8 @@ public class Game extends GameShell {
 	public String method37(int i) {
 		if (i != -42588)
 			opcode = buffer.getUnsignedByte();
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getDocumentBase().getHost().toLowerCase();
+		if (SignLink.applet != null)
+			return SignLink.applet.getDocumentBase().getHost().toLowerCase();
 		if (super.gameFrame != null)
 			return "runescape.com";
 		else
@@ -3937,7 +3937,7 @@ public class Game extends GameShell {
 
 		}
 		if (j > anInt1133) {
-			SignLink.reporterror(username + " Too many npcs");
+			SignLink.reportError(username + " Too many npcs");
 			throw new RuntimeException("eek");
 		}
 		anInt1133 = 0;
@@ -3995,13 +3995,13 @@ public class Game extends GameShell {
 		}
 
 		if (class50_sub1_sub2.currentPosition != i) {
-			SignLink.reporterror(username + " size mismatch in getnpcpos - coord:" + class50_sub1_sub2.currentPosition
+			SignLink.reportError(username + " size mismatch in getnpcpos - coord:" + class50_sub1_sub2.currentPosition
 					+ " psize:" + i);
 			throw new RuntimeException("eek");
 		}
 		for (int l = 0; l < anInt1133; l++)
 			if (npcs[anIntArray1134[l]] == null) {
-				SignLink.reporterror(username + " null entry in npc list - coord:" + l + " size:" + anInt1133);
+				SignLink.reportError(username + " null entry in npc list - coord:" + l + " size:" + anInt1133);
 				throw new RuntimeException("eek");
 			}
 
@@ -4160,7 +4160,7 @@ public class Game extends GameShell {
 			}
 
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("38799, " + l + ", " + runtimeexception.toString());
+			SignLink.reportError("38799, " + l + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
@@ -4343,7 +4343,7 @@ public class Game extends GameShell {
 	}
 
 	public void setWaveVolume( int j) {
-		SignLink.wavevol = j;
+		SignLink.waveVolume = j;
 	}
 
 	public void dropClient() {
@@ -4354,7 +4354,7 @@ public class Game extends GameShell {
 		method125("Please wait - attempting to reestablish", "Connection lost");
 		minimapState = 0;
 		destinationX = 0;
-		BufferedConnection class17 = bufferedConnection;
+		BufferedConnection class17 = gameConnection;
 		loggedIn = false;
 		anInt850 = 0;
 		login(username, password, true);
@@ -4468,118 +4468,142 @@ public class Game extends GameShell {
 		return false;
 	}
 
-	public Archive method61(int i, int j, String s, int k, int l, String s1) {
-		byte abyte0[] = null;
-		int i1 = 5;
+	private Archive requestArchive(int id, String file, int expectedCrc, int x, String displayName) {
+		byte[] archiveBuffer = null;
+		int reconnectionDelay = 5;
+
 		try {
 			if (stores[0] != null)
-				abyte0 = stores[0].get(l);
-		} catch (Exception _ex) {
-		}
-		if (abyte0 != null) {
-			aCRC32_1088.reset();
-			aCRC32_1088.update(abyte0);
-			int j1 = (int) aCRC32_1088.getValue();
-			if (j1 != j)
-				abyte0 = null;
-		}
-		if (abyte0 != null) {
-			Archive class2 = new Archive(abyte0);
-			return class2;
-		}
-		int k1 = 0;
-		if (i != 14076)
-			anInt1281 = -343;
-		while (abyte0 == null) {
-			String s2 = "Unknown error";
-			drawLoadingText(k, "Requesting " + s1);
-			try {
-				int l1 = 0;
-				DataInputStream datainputstream = method31(s + j);
-				byte abyte1[] = new byte[6];
-				datainputstream.readFully(abyte1, 0, 6);
-				Buffer class50_sub1_sub2 = new Buffer(abyte1);
-				class50_sub1_sub2.currentPosition = 3;
-				int j2 = class50_sub1_sub2.get24BitInt() + 6;
-				int k2 = 6;
-				abyte0 = new byte[j2];
-				for (int l2 = 0; l2 < 6; l2++)
-					abyte0[l2] = abyte1[l2];
+				archiveBuffer = stores[0].get(id);
+		} catch (Exception ignored) {}
 
-				while (k2 < j2) {
-					int i3 = j2 - k2;
-					if (i3 > 1000)
-						i3 = 1000;
-					int k3 = datainputstream.read(abyte0, k2, i3);
-					if (k3 < 0) {
-						s2 = "Length error: " + k2 + "/" + j2;
+		if (archiveBuffer != null && Configuration.JAGGRAB_ENABLED) {
+			archiveCrc.reset();
+			archiveCrc.update(archiveBuffer);
+
+			int calculatedCrc = (int) archiveCrc.getValue();
+
+			if (calculatedCrc != expectedCrc)
+				archiveBuffer = null;
+		}
+
+		if (archiveBuffer != null)
+			return new Archive(archiveBuffer);
+
+		int attempts = 0;
+
+		while (archiveBuffer == null) {
+			String error = "Unknown error";
+
+			drawLoadingText(x, "Requesting " + displayName);
+
+			try {
+				int currentPercentage = 0;
+				DataInputStream jaggrabStream = openJaggrabStream(file + expectedCrc);
+				byte[] bytes = new byte[6];
+
+				jaggrabStream.readFully(bytes, 0, 6);
+
+				Buffer buffer = new Buffer(bytes);
+				buffer.currentPosition = 3;
+				int archiveLength = buffer.get24BitInt() + 6;
+				int archiveRead = 6;
+				archiveBuffer = new byte[archiveLength];
+
+				System.arraycopy(bytes, 0, archiveBuffer, 0, 6);
+
+				while (archiveRead < archiveLength) {
+					int remaining = archiveLength - archiveRead;
+
+					if (remaining > 1000)
+						remaining = 1000;
+
+					int read = jaggrabStream.read(archiveBuffer, archiveRead, remaining);
+
+					if (read < 0) {
+						error = "Length error: " + archiveRead + "/" + archiveLength;
 						throw new IOException("EOF");
 					}
-					k2 += k3;
-					int l3 = (k2 * 100) / j2;
-					if (l3 != l1)
-						drawLoadingText(k, "Loading " + s1 + " - " + l3 + "%");
-					l1 = l3;
+
+					archiveRead += read;
+					int calculatedPercentage = (archiveRead * 100) / archiveLength;
+
+					if (calculatedPercentage != currentPercentage)
+						drawLoadingText(x, "Loading " + displayName + " - " + calculatedPercentage + "%");
+
+					currentPercentage = calculatedPercentage;
 				}
-				datainputstream.close();
+
+				jaggrabStream.close();
+
 				try {
 					if (stores[0] != null)
-						stores[0].put(abyte0.length, abyte0, l);
+						stores[0].put(archiveBuffer.length, archiveBuffer, id);
 				} catch (Exception _ex) {
 					stores[0] = null;
 				}
-				if (abyte0 != null) {
-					aCRC32_1088.reset();
-					aCRC32_1088.update(abyte0);
-					int j3 = (int) aCRC32_1088.getValue();
-					if (j3 != j) {
-						abyte0 = null;
-						k1++;
-						s2 = "Checksum error: " + j3;
+
+				if (Configuration.JAGGRAB_ENABLED) {
+					archiveCrc.reset();
+					archiveCrc.update(archiveBuffer);
+
+					int calculatedCrc = (int) archiveCrc.getValue();
+
+					if (calculatedCrc != expectedCrc) {
+						archiveBuffer = null;
+						attempts++;
+						error = "Checksum error: " + calculatedCrc;
 					}
 				}
-			} catch (IOException ioexception) {
-				if (s2.equals("Unknown error"))
-					s2 = "Connection error";
-				abyte0 = null;
-			} catch (NullPointerException _ex) {
-				s2 = "Null error";
-				abyte0 = null;
-				if (!SignLink.reporterror)
+			} catch (IOException ex) {
+				if (error.equals("Unknown error"))
+					error = "Connection error";
+
+				archiveBuffer = null;
+			} catch (NullPointerException ex) {
+				error = "Null error";
+				archiveBuffer = null;
+
+				if (!SignLink.reportError)
 					return null;
-			} catch (ArrayIndexOutOfBoundsException _ex) {
-				s2 = "Bounds error";
-				abyte0 = null;
-				if (!SignLink.reporterror)
+			} catch (ArrayIndexOutOfBoundsException ex) {
+				error = "Bounds error";
+				archiveBuffer = null;
+
+				if (!SignLink.reportError)
 					return null;
-			} catch (Exception _ex) {
-				s2 = "Unexpected error";
-				abyte0 = null;
-				if (!SignLink.reporterror)
+			} catch (Exception ex) {
+				error = "Unexpected error";
+				archiveBuffer = null;
+
+				if (!SignLink.reportError)
 					return null;
 			}
-			if (abyte0 == null) {
-				for (int i2 = i1; i2 > 0; i2--) {
-					if (k1 >= 3) {
-						drawLoadingText(k, "Game updated - please reload page");
-						i2 = 10;
+
+			if (archiveBuffer == null) {
+				for (int time = reconnectionDelay; time > 0; time--) {
+					if (attempts >= 3) {
+						drawLoadingText(x, "Game updated - please reload page");
+						time = 10;
 					} else {
-						drawLoadingText(k, s2 + " - Retrying in " + i2);
+						drawLoadingText(x, error + " - Retrying in " + time);
 					}
+
 					try {
 						Thread.sleep(1000L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 
-				i1 *= 2;
-				if (i1 > 60)
-					i1 = 60;
-				aBoolean900 = !aBoolean900;
+				reconnectionDelay *= 2;
+
+				if (reconnectionDelay > 60)
+					reconnectionDelay = 60;
+
+				useJaggrab = !useJaggrab;
 			}
 		}
-		Archive class2_1 = new Archive(abyte0);
-		return class2_1;
+
+		return new Archive(archiveBuffer);
 	}
 
 	public void redraw() {
@@ -4793,7 +4817,7 @@ public class Game extends GameShell {
 						else
 							addChatMessage(plr.playerName, s, 2);
 					} catch (Exception exception) {
-						SignLink.reporterror("cde2");
+						SignLink.reportError("cde2");
 					}
 			}
 			vec.currentPosition = i4 + length;
@@ -4846,25 +4870,25 @@ public class Game extends GameShell {
 
 	public void startup() {
 		drawLoadingText(20, "Starting up");
-		if (SignLink.cache_dat != null) {
+		if (SignLink.cacheData != null) {
 			for (int type = 0; type < 5; type++)
-				stores[type] = new Index(type + 1, 0x927c0, SignLink.cache_dat, SignLink.cache_idx[type]);
+				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cacheIndex[type]);
 		}
 		try {
 			connectWebServer();
-			titleArchive = method61(14076, archiveHashes[1], "title", 25, 1, "title screen");
+			titleArchive = requestArchive(1, "title", archiveHashes[1], 25, "title screen");
 			fontSmall = new TypeFace(false, titleArchive, "p11_full");
 			fontNormal = new TypeFace(false, titleArchive, "p12_full");
 			fontBold = new TypeFace(false, titleArchive, "b12_full");
 			fontFancy = new TypeFace(true, titleArchive, "q8_full");
 			prepareTitleBackground();
 			prepareTitle();
-			Archive configArchive = method61(14076, archiveHashes[2], "config", 30, 2, "config");
-			Archive archiveInterface = method61(14076, archiveHashes[3], "interface", 35, 3, "interface");
-			Archive archiveMedia = method61(14076, archiveHashes[4], "media", 40, 4, "2d gameGraphics");
-			Archive textureArchive = method61(14076, archiveHashes[6], "textures", 45, 6, "textures");
-			Archive chatArchive = method61(14076, archiveHashes[7], "wordenc", 50, 7, "chat system");
-			Archive soundArchive = method61(14076, archiveHashes[8], "sounds", 55, 8, "sound effects");
+			Archive configArchive = requestArchive(2, "config", archiveHashes[2], 30, "config");
+			Archive archiveInterface = requestArchive(3, "interface", archiveHashes[3], 35, "interface");
+			Archive archiveMedia = requestArchive(4, "media", archiveHashes[4], 40, "2d gameGraphics");
+			Archive textureArchive = requestArchive(6, "textures", archiveHashes[6], 45, "textures");
+			Archive chatArchive = requestArchive(7, "wordenc", archiveHashes[7], 50, "chat system");
+			Archive soundArchive = requestArchive(8, "sounds", archiveHashes[8], 55, "sound effects");
 			currentSceneTileFlags = new byte[4][104][104];
 			anIntArrayArrayArray891 = new int[4][105][105];
 			currentScene = new Scene(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
@@ -4872,7 +4896,7 @@ public class Game extends GameShell {
 				currentCollisionMap[j] = new CollisionMap(104, 104);
 
 			minimapImage = new ImageRGB(512, 512);
-			Archive versionListArchive = method61(14076, archiveHashes[5], "versionlist", 60, 5, "update list");
+			Archive versionListArchive = requestArchive(5, "versionlist", archiveHashes[5], 60, "update list");
 			drawLoadingText(60, "Connecting to update server");
 			onDemandRequester = new OnDemandRequester();
 			onDemandRequester.init(versionListArchive, this);
@@ -5196,7 +5220,7 @@ public class Game extends GameShell {
 			ActorDefinition.client = this;
 			return;
 		} catch (Exception exception) {
-			SignLink.reporterror("loaderror " + aString1027 + " " + anInt1322);
+			SignLink.reportError("loaderror " + aString1027 + " " + anInt1322);
 		}
 		aBoolean1283 = true;
 	}
@@ -6132,38 +6156,46 @@ public class Game extends GameShell {
 		} while (true);
 	}
 
+	private void login(String username, String password, boolean reconnecting) {
+		SignLink.errorName = username;
 
-
-	public void login(String username, String password, boolean reconnecting) {
-		SignLink.errorname = username;
 		try {
 			if (!reconnecting) {
 				statusLineOne = "";
 				statusLineTwo = "Connecting to server...";
+
 				drawLoginScreen(true);
 			}
-			bufferedConnection = new BufferedConnection(this, openSocket(43594 + portOffset));
+
+			gameConnection = new BufferedConnection(this, openSocket(Configuration.GAME_PORT + portOffset));
 			long base37name = TextUtils.nameToLong(username);
 			int hash = (int) (base37name >> 16 & 31L);
 			outBuffer.currentPosition = 0;
+
 			outBuffer.putByte(14);
 			outBuffer.putByte(hash);
-			bufferedConnection.write(2, 0, outBuffer.buffer);
-			for (int j = 0; j < 8; j++)
-				bufferedConnection.read();
+			gameConnection.write(2, 0, outBuffer.buffer);
 
-			int returnCode = bufferedConnection.read();
-			int i1 = returnCode;
-			if (returnCode == 0) {
-				bufferedConnection.read(buffer.buffer, 0, 8);
+			for (int j = 0; j < 8; j++)
+				gameConnection.read();
+
+			int responseCode = gameConnection.read();
+			int initialResponseCode = responseCode;
+
+			if (responseCode == 0) {
+				gameConnection.read(buffer.buffer, 0, 8);
+
 				buffer.currentPosition = 0;
 				serverSeed = buffer.getLong();
 				int seed[] = new int[4];
+
 				seed[0] = (int) (Math.random() * 99999999D);
 				seed[1] = (int) (Math.random() * 99999999D);
 				seed[2] = (int) (serverSeed >> 32);
 				seed[3] = (int) serverSeed;
+
 				outBuffer.currentPosition = 0;
+
 				outBuffer.putByte(10);
 				outBuffer.putInt(seed[0]);
 				outBuffer.putInt(seed[1]);
@@ -6172,39 +6204,51 @@ public class Game extends GameShell {
 				outBuffer.putInt(SignLink.uid);
 				outBuffer.putString(username);
 				outBuffer.putString(password);
-				outBuffer.rsa(JAGEX_MODULUS, JAGEX_PUBLIC_KEY);
+
+				if (Configuration.RSA_ENABLED)
+				    outBuffer.encrypt(Configuration.RSA_MODULUS, Configuration.RSA_PUBLIC_KEY);
+
 				tempBuffer.currentPosition = 0;
+
 				if (reconnecting)
 					tempBuffer.putByte(18);
 				else
 					tempBuffer.putByte(16);
+
 				tempBuffer.putByte(outBuffer.currentPosition + 36 + 1 + 1 + 2);
 				tempBuffer.putByte(255);
-				tempBuffer.putShort(377);
+				tempBuffer.putShort(SignLink.CLIENT_REVISION);
 				tempBuffer.putByte(lowMemory ? 1 : 0);
+
 				for (int i = 0; i < 9; i++)
 					tempBuffer.putInt(archiveHashes[i]);
 
 				tempBuffer.putBytes(outBuffer.buffer, 0, outBuffer.currentPosition);
+
 				outBuffer.random = new ISAACCipher(seed);
+
 				for (int i = 0; i < 4; i++)
 					seed[i] += 50;
 
 				incomingRandom = new ISAACCipher(seed);
-				bufferedConnection.write(tempBuffer.currentPosition, 0, tempBuffer.buffer);
-				returnCode = bufferedConnection.read();
+
+				gameConnection.write(tempBuffer.currentPosition, 0, tempBuffer.buffer);
+
+				responseCode = gameConnection.read();
 			}
-			if (returnCode == 1) {
+
+			if (responseCode == 1) {
 				try {
 					Thread.sleep(2000L);
-				} catch (Exception _ex) {
-				}
+				} catch (Exception ignored) {}
+
 				login(username, password, reconnecting);
 				return;
 			}
-			if (returnCode == 2) {
-				playerRights = bufferedConnection.read();
-				accountFlagged = bufferedConnection.read() == 1;
+
+			if (responseCode == 2) {
+				playerRights = gameConnection.read();
+				accountFlagged = gameConnection.read() == 1;
 				aLong902 = 0L;
 				duplicateClickCount = 0;
 				mouseCapturer.coord = 0;
@@ -6225,6 +6269,7 @@ public class Game extends GameShell {
 				menuActionRow = 0;
 				menuOpen = false;
 				super.idleTime = 0;
+
 				for (int j1 = 0; j1 < 100; j1++)
 					chatMessages[j1] = null;
 
@@ -6244,6 +6289,7 @@ public class Game extends GameShell {
 				destinationY = 0;
 				localPlayerCount = 0;
 				anInt1133 = 0;
+
 				for (int i2 = 0; i2 < anInt968; i2++) {
 					players[i2] = null;
 					cachedAppearances[i2] = null;
@@ -6253,34 +6299,42 @@ public class Game extends GameShell {
 					npcs[k2] = null;
 
 				localPlayer = players[thisPlayerId] = new Player();
+
 				aClass6_1282.getNodeCount();
 				aClass6_1210.getNodeCount();
+
 				for (int l2 = 0; l2 < 4; l2++) {
 					for (int i3 = 0; i3 < 104; i3++) {
 						for (int k3 = 0; k3 < 104; k3++)
 							groundItems[l2][i3][k3] = null;
-
 					}
-
 				}
 
 				aClass6_1261 = new LinkedList();
 				friendListStatus = 0;
 				friendsCount = 0;
+
 				method44(aBoolean1190, dialogueId);
 				dialogueId = -1;
+
 				method44(aBoolean1190, backDialogueId);
 				backDialogueId = -1;
+
 				method44(aBoolean1190, openInterfaceId);
 				openInterfaceId = -1;
+
 				method44(aBoolean1190, anInt1053);
 				anInt1053 = -1;
+
 				method44(aBoolean1190, anInt960);
 				anInt960 = -1;
+
 				method44(aBoolean1190, anInt1089);
 				anInt1089 = -1;
+
 				method44(aBoolean1190, anInt1279);
 				anInt1279 = -1;
+
 				aBoolean1239 = false;
 				anInt1285 = 3;
 				inputType = 0;
@@ -6290,7 +6344,9 @@ public class Game extends GameShell {
 				anInt1319 = 0;
 				anInt1213 = -1;
 				characterEditChangeGenger = true;
+
 				method25();
+
 				for (int j3 = 0; j3 < 5; j3++)
 					characterEditColors[j3] = 0;
 
@@ -6309,65 +6365,78 @@ public class Game extends GameShell {
 				anInt1013 = 0;
 				anInt1049 = 0;
 				anInt1162 = 0;
+
 				method122(-906);
 				return;
 			}
-			if (returnCode == 3) {
+
+			if (responseCode == 3) {
 				statusLineOne = "";
 				statusLineTwo = "Invalid username or password.";
 				return;
 			}
-			if (returnCode == 4) {
+
+			if (responseCode == 4) {
 				statusLineOne = "Your account has been disabled.";
 				statusLineTwo = "Please check your message-centre for details.";
 				return;
 			}
-			if (returnCode == 5) {
+
+			if (responseCode == 5) {
 				statusLineOne = "Your account is already logged in.";
 				statusLineTwo = "Try again in 60 secs...";
 				return;
 			}
-			if (returnCode == 6) {
+
+			if (responseCode == 6) {
 				statusLineOne = "RuneScape has been updated!";
 				statusLineTwo = "Please reload this page.";
 				return;
 			}
-			if (returnCode == 7) {
+
+			if (responseCode == 7) {
 				statusLineOne = "This world is full.";
 				statusLineTwo = "Please use a different world.";
 				return;
 			}
-			if (returnCode == 8) {
+
+			if (responseCode == 8) {
 				statusLineOne = "Unable to connect.";
 				statusLineTwo = "Login server offline.";
 				return;
 			}
-			if (returnCode == 9) {
+
+			if (responseCode == 9) {
 				statusLineOne = "Login limit exceeded.";
 				statusLineTwo = "Too many connections from your address.";
 				return;
 			}
-			if (returnCode == 10) {
+
+			if (responseCode == 10) {
 				statusLineOne = "Unable to connect.";
 				statusLineTwo = "Bad session id.";
 				return;
 			}
-			if (returnCode == 12) {
+
+			if (responseCode == 12) {
 				statusLineOne = "You need a members account to login to this world.";
 				statusLineTwo = "Please subscribe, or use a different world.";
 				return;
 			}
-			if (returnCode == 13) {
+
+			if (responseCode == 13) {
 				statusLineOne = "Could not complete login.";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-			if (returnCode == 14) {
+
+			if (responseCode == 14) {
 				statusLineOne = "The server is being updated.";
 				statusLineTwo = "Please wait 1 minute and try again.";
 				return;
 			}
-			if (returnCode == 15) {
+
+			if (responseCode == 15) {
 				loggedIn = true;
 				outBuffer.currentPosition = 0;
 				buffer.currentPosition = 0;
@@ -6383,74 +6452,88 @@ public class Game extends GameShell {
 				aLong1229 = System.currentTimeMillis();
 				return;
 			}
-			if (returnCode == 16) {
+
+			if (responseCode == 16) {
 				statusLineOne = "Login attempts exceeded.";
 				statusLineTwo = "Please wait 1 minute and try again.";
 				return;
 			}
-			if (returnCode == 17) {
+
+			if (responseCode == 17) {
 				statusLineOne = "You are standing in a members-only area.";
 				statusLineTwo = "To play on this world move to a free area first";
 				return;
 			}
-			if (returnCode == 18) {
+
+			if (responseCode == 18) {
 				statusLineOne = "Account locked as we suspect it has been stolen.";
 				statusLineTwo = "Press 'recover a locked account' on front page.";
 				return;
 			}
-			if (returnCode == 20) {
+
+			if (responseCode == 20) {
 				statusLineOne = "Invalid loginserver requested";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-			if (returnCode == 21) {
-				int k1 = bufferedConnection.read();
-				for (k1 += 3; k1 >= 0; k1--) {
+
+			if (responseCode == 21) {
+				int time = gameConnection.read();
+
+				for (time += 3; time >= 0; time--) {
 					statusLineOne = "You have only just left another world";
-					statusLineTwo = "Your profile will be transferred in: " + k1;
+					statusLineTwo = "Your profile will be transferred in: " + time;
+
 					drawLoginScreen(true);
+
 					try {
 						Thread.sleep(1200L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 
 				login(username, password, reconnecting);
 				return;
 			}
-			if (returnCode == 22) {
+
+			if (responseCode == 22) {
 				statusLineOne = "Malformed login packet.";
 				statusLineTwo = "Please try again.";
 				return;
 			}
-			if (returnCode == 23) {
+
+			if (responseCode == 23) {
 				statusLineOne = "No reply from loginserver.";
 				statusLineTwo = "Please try again.";
 				return;
 			}
-			if (returnCode == 24) {
+
+			if (responseCode == 24) {
 				statusLineOne = "Error loading your profile.";
 				statusLineTwo = "Please contact customer support.";
 				return;
 			}
-			if (returnCode == 25) {
+
+			if (responseCode == 25) {
 				statusLineOne = "Unexpected loginserver response.";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-			if (returnCode == 26) {
+
+			if (responseCode == 26) {
 				statusLineOne = "This computers address has been blocked";
 				statusLineTwo = "as it was used to break our rules";
 				return;
 			}
-			if (returnCode == -1) {
-				if (i1 == 0) {
+
+			if (responseCode == -1) {
+				if (initialResponseCode == 0) {
 					if (anInt850 < 2) {
 						try {
 							Thread.sleep(2000L);
-						} catch (Exception _ex) {
-						}
+						} catch (Exception ignored) {}
+
 						anInt850++;
+
 						login(username, password, reconnecting);
 						return;
 					} else {
@@ -6464,14 +6547,16 @@ public class Game extends GameShell {
 					return;
 				}
 			} else {
-				System.out.println("response:" + returnCode);
+				System.out.println("response:" + responseCode);
+
 				statusLineOne = "Unexpected server response";
 				statusLineTwo = "Please try using a different world.";
 				return;
 			}
-		} catch (IOException _ex) {
+		} catch (IOException ex) {
 			statusLineOne = "";
 		}
+
 		statusLineTwo = "Error connecting to server.";
 	}
 
@@ -6890,7 +6975,7 @@ public class Game extends GameShell {
 			String s = "Unknown problem";
 			drawLoadingText(20, "Connecting to web server");
 			try {
-				DataInputStream datainputstream = method31("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
+				DataInputStream datainputstream = openJaggrabStream("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
 				Buffer class50_sub1_sub2 = new Buffer(new byte[40]);
 				datainputstream.readFully(class50_sub1_sub2.buffer, 0, 40);
 				datainputstream.close();
@@ -6915,7 +7000,7 @@ public class Game extends GameShell {
 			} catch (Exception _ex) {
 				s = "logic problem";
 				archiveHashes[8] = 0;
-				if (!SignLink.reporterror)
+				if (!SignLink.reportError)
 					return;
 			}
 			if (archiveHashes[8] == 0) {
@@ -6936,7 +7021,7 @@ public class Game extends GameShell {
 				i *= 2;
 				if (i > 60)
 					i = 60;
-				aBoolean900 = !aBoolean900;
+				useJaggrab = !useJaggrab;
 			}
 		}
 	}
@@ -7066,13 +7151,14 @@ public class Game extends GameShell {
 	}
 
 	public URL getCodeBase() {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getCodeBase();
+		if (SignLink.applet != null)
+			return SignLink.applet.getCodeBase();
+
 		try {
 			if (super.gameFrame != null)
-				return new URL("http://127.0.0.1:" + (10080 + portOffset));
-		} catch (Exception _ex) {
-		}
+				return new URL("http://" + Configuration.SERVER_ADDRESS + ":" + (Configuration.HTTP_PORT + portOffset));
+		} catch (Exception ignored) {}
+
 		return super.getCodeBase();
 	}
 
@@ -7386,7 +7472,7 @@ public class Game extends GameShell {
 			outBuffer.putOpcode(78);
 			outBuffer.putInt(0x3f008edd);
 		}
-		if (lowMemory && SignLink.cache_dat != null) {
+		if (lowMemory && SignLink.cacheData != null) {
 			int k = onDemandRequester.fileCount(0);
 			for (int j1 = 0; j1 < k; j1++) {
 				int i2 = onDemandRequester.modelId(j1);
@@ -7493,12 +7579,12 @@ public class Game extends GameShell {
 
 		if (vec.currentPosition != packetSize) {
 			SignLink
-					.reporterror("Error packet size mismatch in getplayer coord:" + vec.currentPosition + " psize:" + packetSize);
+					.reportError("Error packet size mismatch in getplayer coord:" + vec.currentPosition + " psize:" + packetSize);
 			throw new RuntimeException("eek");
 		}
 		for (int i1 = 0; i1 < localPlayerCount; i1++)
 			if (players[playerList[i1]] == null) {
-				SignLink.reporterror(username + " null entry in pl list - coord:" + i1 + " size:"
+				SignLink.reportError(username + " null entry in pl list - coord:" + i1 + " size:"
 						+ localPlayerCount);
 				throw new RuntimeException("eek");
 			}
@@ -7525,14 +7611,14 @@ public class Game extends GameShell {
 			i = 42 / i;
 			return;
 		} catch (RuntimeException runtimeexception) {
-			SignLink.reporterror("45745, " + i + ", " + l + ", " + runtimeexception.toString());
+			SignLink.reportError("45745, " + i + ", " + l + ", " + runtimeexception.toString());
 		}
 		throw new RuntimeException();
 	}
 
 	public String getParameter(String s) {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getParameter(s);
+		if (SignLink.applet != null)
+			return SignLink.applet.getParameter(s);
 		else
 			return super.getParameter(s);
 	}
@@ -8179,8 +8265,8 @@ public class Game extends GameShell {
 	}
 
 	public AppletContext getAppletContext() {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp.getAppletContext();
+		if (SignLink.applet != null)
+			return SignLink.applet.getAppletContext();
 		else
 			return super.getAppletContext();
 	}
@@ -8329,7 +8415,7 @@ public class Game extends GameShell {
 
 		}
 		if (playerCount > localPlayerCount) {
-			SignLink.reporterror(username + " Too many players");
+			SignLink.reportError(username + " Too many players");
 			throw new RuntimeException("eek");
 		}
 		localPlayerCount = 0;
@@ -8563,7 +8649,7 @@ public class Game extends GameShell {
 	public void startRunnable(Runnable runnable, int i) {
 		if (i > 10)
 			i = 10;
-		if (SignLink.mainapp != null) {
+		if (SignLink.applet != null) {
 			SignLink.startThread(runnable, i);
 			return;
 		} else {
@@ -9758,11 +9844,11 @@ public class Game extends GameShell {
 
 	public void logout() {
 		try {
-			if (bufferedConnection != null)
-				bufferedConnection.close();
+			if (gameConnection != null)
+				gameConnection.close();
 		} catch (Exception _ex) {
 		}
-		bufferedConnection = null;
+		gameConnection = null;
 		loggedIn = false;
 		loginScreenState = 0;
 		username = "";
@@ -10513,14 +10599,14 @@ public class Game extends GameShell {
 		System.out.println("draw-cycle:" + anInt1309);
 		System.out.println("ptype:" + opcode);
 		System.out.println("psize:" + packetSize);
-		if (bufferedConnection != null)
-			bufferedConnection.printDebug();
+		if (gameConnection != null)
+			gameConnection.printDebug();
 		super.dumpRequested = true;
 	}
 
 	public Component getParentComponent() {
-		if (SignLink.mainapp != null)
-			return SignLink.mainapp;
+		if (SignLink.applet != null)
+			return SignLink.applet;
 		if (super.gameFrame != null)
 			return super.gameFrame;
 		else
@@ -11024,7 +11110,7 @@ public class Game extends GameShell {
 		if (loadingStage == 1) {
 			int i = method144(5);
 			if (i != 0 && System.currentTimeMillis() - aLong1229 > 0x57e40L) {
-				SignLink.reporterror(username + " glcfb " + serverSeed + "," + i + "," + lowMemory + ","
+				SignLink.reportError(username + " glcfb " + serverSeed + "," + i + "," + lowMemory + ","
 						+ stores[0] + "," + onDemandRequester.method333() + "," + plane + ","
 						+ chunkX + "," + chunkY);
 				aLong1229 = System.currentTimeMillis();
@@ -11491,7 +11577,7 @@ public class Game extends GameShell {
 
 				}
 			} catch (Exception exception) {
-				if (SignLink.reporterror) {
+				if (SignLink.reportError) {
 					outBuffer.putOpcode(80);
 					outBuffer.putShort(sound[index] & 0x7fff);
 				} else {
