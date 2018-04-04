@@ -7510,33 +7510,34 @@ public class Game extends GameShell {
 
 	}
 
-	public void method94(int i, int j, int k, int l, int i1, int j1, byte byte0) {
-		int k1 = 2048 - k & 0x7ff;
-		int l1 = 2048 - i1 & 0x7ff;
-		if (byte0 != -103)
-			opcode = -1;
-		int i2 = 0;
-		int j2 = 0;
-		int k2 = l;
-		if (k1 != 0) {
-			int l2 = Model.SINE[k1];
-			int j3 = Model.COSINE[k1];
-			int l3 = j2 * j3 - k2 * l2 >> 16;
-			k2 = j2 * l2 + k2 * j3 >> 16;
-			j2 = l3;
+	private void setCameraPosition(int x, int y, int z, int pitch, int yaw) {
+		int pitchDifference = 2048 - pitch & 0x7ff;
+		int yawDifference = 2048 - yaw & 0x7ff;
+		int xOffset = 0;
+		int zOffset = 0;
+		int yOffset = 600 + pitch * 3;
+
+		if (pitchDifference != 0) {
+			int sine = Model.SINE[pitchDifference];
+			int cosine = Model.COSINE[pitchDifference];
+			int temp = zOffset * cosine - yOffset * sine >> 16;
+			yOffset = zOffset * sine + yOffset * cosine >> 16;
+			zOffset = temp;
 		}
-		if (l1 != 0) {
-			int i3 = Model.SINE[l1];
-			int k3 = Model.COSINE[l1];
-			int i4 = k2 * i3 + i2 * k3 >> 16;
-			k2 = k2 * k3 - i2 * i3 >> 16;
-			i2 = i4;
+
+		if (yawDifference != 0) {
+			int sine = Model.SINE[yawDifference];
+			int cosine = Model.COSINE[yawDifference];
+			int temp = yOffset * sine + xOffset * cosine >> 16;
+			yOffset = yOffset * cosine - xOffset * sine >> 16;
+			xOffset = temp;
 		}
-		anInt1216 = j - i2;
-		anInt1217 = i - j2;
-		anInt1218 = j1 - k2;
-		anInt1219 = k;
-		anInt1220 = i1;
+
+		anInt1216 = x - xOffset;
+		anInt1217 = z - zOffset;
+		anInt1218 = y - yOffset;
+		anInt1219 = pitch;
+		anInt1220 = yaw;
 	}
 
 	public boolean method95(Widget class13, int i) {
@@ -11500,8 +11501,8 @@ public class Game extends GameShell {
 			if (aBooleanArray927[4] && anIntArray852[4] + 128 > j)
 				j = anIntArray852[4] + 128;
 			int l = cameraHorizontal + anInt1255 & 0x7ff;
-			method94(method110(localPlayer.worldY, localPlayer.worldX, (byte) 9,
-					plane) - 50, anInt1262, j, 600 + j * 3, l, anInt1263, (byte) -103);
+			setCameraPosition(anInt1262, anInt1263, method110(localPlayer.worldY, localPlayer.worldX, (byte) 9,
+					plane) - 50, j, l);
 		}
 		int k;
 		if (!oriented)
