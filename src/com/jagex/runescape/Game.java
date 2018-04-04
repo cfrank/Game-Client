@@ -437,7 +437,7 @@ public class Game extends GameShell {
 	public static int BITFIELD_MAX_VALUE[];
 	public int anInt1215;
 	public int cameraX;
-	public int anInt1217;
+	public int cameraZ;
 	public int anInt1218;
 	public int anInt1219;
 	public int anInt1220;
@@ -1634,15 +1634,15 @@ public class Game extends GameShell {
 			if (cameraX < i)
 				cameraX = i;
 		}
-		if (anInt1217 < k) {
-			anInt1217 += anInt877 + ((k - anInt1217) * anInt878) / 1000;
-			if (anInt1217 > k)
-				anInt1217 = k;
+		if (cameraZ < k) {
+			cameraZ += anInt877 + ((k - cameraZ) * anInt878) / 1000;
+			if (cameraZ > k)
+				cameraZ = k;
 		}
-		if (anInt1217 > k) {
-			anInt1217 -= anInt877 + ((anInt1217 - k) * anInt878) / 1000;
-			if (anInt1217 < k)
-				anInt1217 = k;
+		if (cameraZ > k) {
+			cameraZ -= anInt877 + ((cameraZ - k) * anInt878) / 1000;
+			if (cameraZ < k)
+				cameraZ = k;
 		}
 		if (anInt1218 < j) {
 			anInt1218 += anInt877 + ((j - anInt1218) * anInt878) / 1000;
@@ -1658,7 +1658,7 @@ public class Game extends GameShell {
 		j = anInt994 * 128 + 64;
 		k = method110(j, i, (byte) 9, plane) - anInt995;
 		int l = i - cameraX;
-		int i1 = k - anInt1217;
+		int i1 = k - cameraZ;
 		int j1 = j - anInt1218;
 		int k1 = (int) Math.sqrt(l * l + j1 * j1);
 		int l1 = (int) (Math.atan2(i1, k1) * 325.94900000000001D) & 0x7ff;
@@ -2258,7 +2258,7 @@ public class Game extends GameShell {
 					int l12 = anInt994 * 128 + 64;
 					int l17 = method110(l12, i4, (byte) 9, plane) - anInt995;
 					int k22 = i4 - cameraX;
-					int i25 = l17 - anInt1217;
+					int i25 = l17 - cameraZ;
 					int k27 = l12 - anInt1218;
 					int i30 = (int) Math.sqrt(k22 * k22 + k27 * k27);
 					anInt1219 = (int) (Math.atan2(i25, i30) * 325.94900000000001D) & 0x7ff;
@@ -2996,7 +2996,7 @@ public class Game extends GameShell {
 				if (anInt878 >= 100) {
 					cameraX = anInt874 * 128 + 64;
 					anInt1218 = anInt875 * 128 + 64;
-					anInt1217 = method110(anInt1218, cameraX, (byte) 9, plane) - anInt876;
+					cameraZ = method110(anInt1218, cameraX, (byte) 9, plane) - anInt876;
 				}
 				opcode = -1;
 				return true;
@@ -7534,7 +7534,7 @@ public class Game extends GameShell {
 		}
 
 		cameraX = x - xOffset;
-		anInt1217 = z - zOffset;
+		cameraZ = z - zOffset;
 		anInt1218 = y - yOffset;
 		anInt1219 = pitch;
 		anInt1220 = yaw;
@@ -8641,7 +8641,7 @@ public class Game extends GameShell {
 		int j = method110(anInt1218, cameraX, (byte) 9, plane);
 		while (i >= 0)
 			opcode = buffer.getUnsignedByte();
-		if (j - anInt1217 < 800 && (currentSceneTileFlags[plane][cameraX >> 7][anInt1218 >> 7] & 4) != 0)
+		if (j - cameraZ < 800 && (currentSceneTileFlags[plane][cameraX >> 7][anInt1218 >> 7] & 4) != 0)
 			return plane;
 		else
 			return 3;
@@ -10566,7 +10566,7 @@ public class Game extends GameShell {
 		}
 		int i1 = method110(k, i, (byte) 9, plane) - j;
 		i -= cameraX;
-		i1 -= anInt1217;
+		i1 -= cameraZ;
 		k -= anInt1218;
 		int j1 = Model.SINE[anInt1219];
 		int k1 = Model.COSINE[anInt1219];
@@ -11510,7 +11510,7 @@ public class Game extends GameShell {
 		else
 			k = method118(-276);
 		int i1 = cameraX;
-		int j1 = anInt1217;
+		int j1 = cameraZ;
 		int k1 = anInt1218;
 		int l1 = anInt1219;
 		int i2 = anInt1220;
@@ -11524,7 +11524,7 @@ public class Game extends GameShell {
 				if (j2 == 0)
 					cameraX += k2;
 				if (j2 == 1)
-					anInt1217 += k2;
+					cameraZ += k2;
 				if (j2 == 2)
 					anInt1218 += k2;
 				if (j2 == 3)
@@ -11544,7 +11544,7 @@ public class Game extends GameShell {
 		Model.anInt1706 = super.mouseX - 4;
 		Model.anInt1707 = super.mouseY - 4;
 		Rasterizer.resetPixels();
-		currentScene.method280(cameraX, k, 0, anInt1217, anInt1218, anInt1220, anInt1219);
+		currentScene.method280(cameraX, k, 0, cameraZ, anInt1218, anInt1220, anInt1219);
 		currentScene.method255();
 		method121(false);
 		method127(true);
@@ -11552,7 +11552,7 @@ public class Game extends GameShell {
 		method109(30729);
 		aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
 		cameraX = i1;
-		anInt1217 = j1;
+		cameraZ = j1;
 		anInt1218 = k1;
 		anInt1219 = l1;
 		anInt1220 = i2;
