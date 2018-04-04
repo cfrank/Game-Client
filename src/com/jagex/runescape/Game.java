@@ -436,7 +436,7 @@ public class Game extends GameShell {
 	public int anInt1213 = -1;
 	public static int BITFIELD_MAX_VALUE[];
 	public int anInt1215;
-	public int anInt1216;
+	public int cameraX;
 	public int anInt1217;
 	public int anInt1218;
 	public int anInt1219;
@@ -1624,15 +1624,15 @@ public class Game extends GameShell {
 		int i = anInt874 * 128 + 64;
 		int j = anInt875 * 128 + 64;
 		int k = method110(j, i, (byte) 9, plane) - anInt876;
-		if (anInt1216 < i) {
-			anInt1216 += anInt877 + ((i - anInt1216) * anInt878) / 1000;
-			if (anInt1216 > i)
-				anInt1216 = i;
+		if (cameraX < i) {
+			cameraX += anInt877 + ((i - cameraX) * anInt878) / 1000;
+			if (cameraX > i)
+				cameraX = i;
 		}
-		if (anInt1216 > i) {
-			anInt1216 -= anInt877 + ((anInt1216 - i) * anInt878) / 1000;
-			if (anInt1216 < i)
-				anInt1216 = i;
+		if (cameraX > i) {
+			cameraX -= anInt877 + ((cameraX - i) * anInt878) / 1000;
+			if (cameraX < i)
+				cameraX = i;
 		}
 		if (anInt1217 < k) {
 			anInt1217 += anInt877 + ((k - anInt1217) * anInt878) / 1000;
@@ -1657,7 +1657,7 @@ public class Game extends GameShell {
 		i = anInt993 * 128 + 64;
 		j = anInt994 * 128 + 64;
 		k = method110(j, i, (byte) 9, plane) - anInt995;
-		int l = i - anInt1216;
+		int l = i - cameraX;
 		int i1 = k - anInt1217;
 		int j1 = j - anInt1218;
 		int k1 = (int) Math.sqrt(l * l + j1 * j1);
@@ -2257,7 +2257,7 @@ public class Game extends GameShell {
 					int i4 = anInt993 * 128 + 64;
 					int l12 = anInt994 * 128 + 64;
 					int l17 = method110(l12, i4, (byte) 9, plane) - anInt995;
-					int k22 = i4 - anInt1216;
+					int k22 = i4 - cameraX;
 					int i25 = l17 - anInt1217;
 					int k27 = l12 - anInt1218;
 					int i30 = (int) Math.sqrt(k22 * k22 + k27 * k27);
@@ -2994,9 +2994,9 @@ public class Game extends GameShell {
 				anInt877 = buffer.getUnsignedByte();
 				anInt878 = buffer.getUnsignedByte();
 				if (anInt878 >= 100) {
-					anInt1216 = anInt874 * 128 + 64;
+					cameraX = anInt874 * 128 + 64;
 					anInt1218 = anInt875 * 128 + 64;
-					anInt1217 = method110(anInt1218, anInt1216, (byte) 9, plane) - anInt876;
+					anInt1217 = method110(anInt1218, cameraX, (byte) 9, plane) - anInt876;
 				}
 				opcode = -1;
 				return true;
@@ -7533,7 +7533,7 @@ public class Game extends GameShell {
 			xOffset = temp;
 		}
 
-		anInt1216 = x - xOffset;
+		cameraX = x - xOffset;
 		anInt1217 = z - zOffset;
 		anInt1218 = y - yOffset;
 		anInt1219 = pitch;
@@ -8572,7 +8572,7 @@ public class Game extends GameShell {
 				outBuffer.putByte((int) (Math.random() * 256D));
 				outBuffer.putLength(outBuffer.currentPosition - j);
 			}
-			int k = anInt1216 >> 7;
+			int k = cameraX >> 7;
 			int l = anInt1218 >> 7;
 			int i1 = localPlayer.worldX >> 7;
 			int j1 = localPlayer.worldY >> 7;
@@ -8638,10 +8638,10 @@ public class Game extends GameShell {
 	}
 
 	public int method118(int i) {
-		int j = method110(anInt1218, anInt1216, (byte) 9, plane);
+		int j = method110(anInt1218, cameraX, (byte) 9, plane);
 		while (i >= 0)
 			opcode = buffer.getUnsignedByte();
-		if (j - anInt1217 < 800 && (currentSceneTileFlags[plane][anInt1216 >> 7][anInt1218 >> 7] & 4) != 0)
+		if (j - anInt1217 < 800 && (currentSceneTileFlags[plane][cameraX >> 7][anInt1218 >> 7] & 4) != 0)
 			return plane;
 		else
 			return 3;
@@ -10565,7 +10565,7 @@ public class Game extends GameShell {
 			return;
 		}
 		int i1 = method110(k, i, (byte) 9, plane) - j;
-		i -= anInt1216;
+		i -= cameraX;
 		i1 -= anInt1217;
 		k -= anInt1218;
 		int j1 = Model.SINE[anInt1219];
@@ -11509,7 +11509,7 @@ public class Game extends GameShell {
 			k = method117((byte) 1);
 		else
 			k = method118(-276);
-		int i1 = anInt1216;
+		int i1 = cameraX;
 		int j1 = anInt1217;
 		int k1 = anInt1218;
 		int l1 = anInt1219;
@@ -11522,7 +11522,7 @@ public class Game extends GameShell {
 						.sin((double) quakeTimes[j2] * ((double) anIntArray991[j2] / 100D))
 						* (double) anIntArray852[j2]);
 				if (j2 == 0)
-					anInt1216 += k2;
+					cameraX += k2;
 				if (j2 == 1)
 					anInt1217 += k2;
 				if (j2 == 2)
@@ -11544,14 +11544,14 @@ public class Game extends GameShell {
 		Model.anInt1706 = super.mouseX - 4;
 		Model.anInt1707 = super.mouseY - 4;
 		Rasterizer.resetPixels();
-		currentScene.method280(anInt1216, k, 0, anInt1217, anInt1218, anInt1220, anInt1219);
+		currentScene.method280(cameraX, k, 0, anInt1217, anInt1218, anInt1220, anInt1219);
 		currentScene.method255();
 		method121(false);
 		method127(true);
 		method65(l2);
 		method109(30729);
 		aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
-		anInt1216 = i1;
+		cameraX = i1;
 		anInt1217 = j1;
 		anInt1218 = k1;
 		anInt1219 = l1;
