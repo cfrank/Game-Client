@@ -5899,7 +5899,7 @@ public class Game extends GameShell {
 			redrawChatbox = false;
 		}
 		if (loadingStage == 2) {
-			method87(503);
+			renderMinimap();
 			aClass18_1157.drawGraphics(550, 4, super.gameGraphics);
 		}
 		if (anInt1213 != -1)
@@ -7026,127 +7026,145 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method87(int i) {
+	private void renderMinimap() {
 		aClass18_1157.createRasterizer();
+
 		if (minimapState == 2) {
-			byte abyte0[] = minimapBackgroundImage.pixels;
-			int ai[] = Rasterizer.pixels;
-			int l2 = abyte0.length;
-			for (int j5 = 0; j5 < l2; j5++)
-				if (abyte0[j5] == 0)
-					ai[j5] = 0;
+			byte[] mmBackgroundPixels = minimapBackgroundImage.pixels;
+			int[] rasterPixels = Rasterizer.pixels;
+			int pixelCount = mmBackgroundPixels.length;
+
+			for (int i = 0; i < pixelCount; i++)
+				if (mmBackgroundPixels[i] == 0)
+					rasterPixels[i] = 0;
 
 			minimapCompass.shapeImageToPixels(0, 33, 25, 33, anIntArray1286, 0, cameraHorizontal, 256,
 					anIntArray1180, 25);
 			aClass18_1158.createRasterizer();
+
 			Rasterizer3D.lineOffsets = anIntArray1002;
 			return;
 		}
-		int j = cameraHorizontal + anInt916 & 0x7ff;
-		int k = 48 + localPlayer.worldX / 32;
-		i = 58 / i;
-		int i3 = 464 - localPlayer.worldY / 32;
-		minimapImage.shapeImageToPixels(5, 151, k, 146, anIntArray920, 25, j, 256 + anInt1233,
-				anIntArray1019, i3);
-		minimapCompass.shapeImageToPixels(0, 33, 25, 33, anIntArray1286, 0, cameraHorizontal, 256, anIntArray1180,
-				25);
-		for (int k5 = 0; k5 < minimapHintCount; k5++) {
-			int l = (minimapHintX[k5] * 4 + 2) - localPlayer.worldX / 32;
-			int j3 = (minimapHintY[k5] * 4 + 2) - localPlayer.worldY / 32;
-			drawOnMinimap(minimapHint[k5], l, j3);
+
+		int angle = cameraHorizontal + anInt916 & 0x7ff;
+		int centerX = 48 + localPlayer.worldX / 32;
+		int centerY = 464 - localPlayer.worldY / 32;
+
+		minimapImage.shapeImageToPixels(5, 151, centerX, 146, anIntArray920,
+                25, angle, 256 + anInt1233, anIntArray1019, centerY);
+		minimapCompass.shapeImageToPixels(0, 33, 25, 33, anIntArray1286,
+                0, cameraHorizontal, 256, anIntArray1180, 25);
+
+		for (int i = 0; i < minimapHintCount; i++) {
+			int hintX = (minimapHintX[i] * 4 + 2) - localPlayer.worldX / 32;
+			int hintY = (minimapHintY[i] * 4 + 2) - localPlayer.worldY / 32;
+
+			drawOnMinimap(minimapHint[i], hintX, hintY);
 		}
 
-		for (int l5 = 0; l5 < 104; l5++) {
-			for (int i6 = 0; i6 < 104; i6++) {
-				LinkedList class6 = groundItems[plane][l5][i6];
-				if (class6 != null) {
-					int i1 = (l5 * 4 + 2) - localPlayer.worldX / 32;
-					int k3 = (i6 * 4 + 2) - localPlayer.worldY / 32;
-					drawOnMinimap(mapdotItem, i1, k3);
+		for (int x = 0; x < 104; x++) {
+			for (int y = 0; y < 104; y++) {
+				LinkedList itemList = groundItems[plane][x][y];
+
+				if (itemList != null) {
+					int itemX = (x * 4 + 2) - localPlayer.worldX / 32;
+					int itemY = (y * 4 + 2) - localPlayer.worldY / 32;
+
+					drawOnMinimap(mapdotItem, itemX, itemY);
 				}
 			}
 
 		}
 
-		for (int j6 = 0; j6 < anInt1133; j6++) {
-			Npc class50_sub1_sub4_sub3_sub1 = npcs[anIntArray1134[j6]];
-			if (class50_sub1_sub4_sub3_sub1 != null && class50_sub1_sub4_sub3_sub1.isVisible()) {
-				ActorDefinition class37 = class50_sub1_sub4_sub3_sub1.npcDefinition;
-				if (class37.childrenIds != null)
-					class37 = class37.getChildDefinition();
-				if (class37 != null && class37.minimapVisible && class37.clickable) {
-					int j1 = class50_sub1_sub4_sub3_sub1.worldX / 32
-							- localPlayer.worldX / 32;
-					int l3 = class50_sub1_sub4_sub3_sub1.worldY / 32
-							- localPlayer.worldY / 32;
-					drawOnMinimap(mapdotActor, j1, l3);
+		for (int i = 0; i < anInt1133; i++) {
+			Npc npc = npcs[anIntArray1134[i]];
+
+			if (npc != null && npc.isVisible()) {
+				ActorDefinition definition = npc.npcDefinition;
+
+				if (definition.childrenIds != null)
+					definition = definition.getChildDefinition();
+
+				if (definition != null && definition.minimapVisible && definition.clickable) {
+					int npcX = npc.worldX / 32 - localPlayer.worldX / 32;
+					int npcY = npc.worldY / 32 - localPlayer.worldY / 32;
+
+					drawOnMinimap(mapdotActor, npcX, npcY);
 				}
 			}
 		}
 
-		for (int k6 = 0; k6 < localPlayerCount; k6++) {
-			Player class50_sub1_sub4_sub3_sub2 = players[playerList[k6]];
-			if (class50_sub1_sub4_sub3_sub2 != null && class50_sub1_sub4_sub3_sub2.isVisible()) {
-				int k1 = class50_sub1_sub4_sub3_sub2.worldX / 32
-						- localPlayer.worldX / 32;
-				int i4 = class50_sub1_sub4_sub3_sub2.worldY / 32
-						- localPlayer.worldY / 32;
-				boolean flag = false;
-				long l6 = TextUtils.nameToLong(class50_sub1_sub4_sub3_sub2.playerName);
-				for (int i7 = 0; i7 < friendsCount; i7++) {
-					if (l6 != friends[i7] || friendWorlds[i7] == 0)
+		for (int i = 0; i < localPlayerCount; i++) {
+			Player player = players[playerList[i]];
+
+			if (player != null && player.isVisible()) {
+				int playerX = player.worldX / 32 - localPlayer.worldX / 32;
+				int playerY = player.worldY / 32 - localPlayer.worldY / 32;
+				long name = TextUtils.nameToLong(player.playerName);
+                boolean isFriend = false;
+                boolean isTeammate = false;
+
+				for (int x = 0; x < friendsCount; x++) {
+					if (name != friends[x] || friendWorlds[x] == 0)
 						continue;
-					flag = true;
+
+					isFriend = true;
 					break;
 				}
 
-				boolean flag1 = false;
-				if (localPlayer.teamId != 0 && class50_sub1_sub4_sub3_sub2.teamId != 0
-						&& localPlayer.teamId == class50_sub1_sub4_sub3_sub2.teamId)
-					flag1 = true;
-				if (flag)
-					drawOnMinimap(mapdotFriend, k1, i4);
-				else if (flag1)
-					drawOnMinimap(mapdotTeammate, k1, i4);
+				if (localPlayer.teamId != 0 && player.teamId != 0 && localPlayer.teamId == player.teamId)
+					isTeammate = true;
+
+				if (isFriend)
+					drawOnMinimap(mapdotFriend, playerX, playerY);
+				else if (isTeammate)
+					drawOnMinimap(mapdotTeammate, playerX, playerY);
 				else
-					drawOnMinimap(mapdotPlayer, k1, i4);
+					drawOnMinimap(mapdotPlayer, playerX, playerY);
 			}
 		}
 
 		if (anInt1197 != 0 && pulseCycle % 20 < 10) {
 			if (anInt1197 == 1 && anInt1226 >= 0 && anInt1226 < npcs.length) {
-				Npc class50_sub1_sub4_sub3_sub1_1 = npcs[anInt1226];
-				if (class50_sub1_sub4_sub3_sub1_1 != null) {
-					int l1 = class50_sub1_sub4_sub3_sub1_1.worldX / 32
-							- localPlayer.worldX / 32;
-					int j4 = class50_sub1_sub4_sub3_sub1_1.worldY / 32
-							- localPlayer.worldY / 32;
-					drawMinimap(aClass50_Sub1_Sub1_Sub1_1037, l1, j4);
+				Npc npc = npcs[anInt1226];
+
+				if (npc != null) {
+					int npcX = npc.worldX / 32 - localPlayer.worldX / 32;
+					int npcY = npc.worldY / 32 - localPlayer.worldY / 32;
+
+					drawMinimap(aClass50_Sub1_Sub1_Sub1_1037, npcX, npcY);
 				}
 			}
+
 			if (anInt1197 == 2) {
-				int i2 = ((anInt844 - nextTopLeftTileX) * 4 + 2) - localPlayer.worldX / 32;
-				int k4 = ((anInt845 - nextTopRightTileY) * 4 + 2) - localPlayer.worldY / 32;
-				drawMinimap(aClass50_Sub1_Sub1_Sub1_1037, i2, k4);
+				int hintX = ((anInt844 - nextTopLeftTileX) * 4 + 2) - localPlayer.worldX / 32;
+				int hintY = ((anInt845 - nextTopRightTileY) * 4 + 2) - localPlayer.worldY / 32;
+
+				drawMinimap(aClass50_Sub1_Sub1_Sub1_1037, hintX, hintY);
 			}
+
 			if (anInt1197 == 10 && anInt1151 >= 0 && anInt1151 < players.length) {
-				Player class50_sub1_sub4_sub3_sub2_1 = players[anInt1151];
-				if (class50_sub1_sub4_sub3_sub2_1 != null) {
-					int j2 = class50_sub1_sub4_sub3_sub2_1.worldX / 32
-							- localPlayer.worldX / 32;
-					int l4 = class50_sub1_sub4_sub3_sub2_1.worldY / 32
-							- localPlayer.worldY / 32;
-					drawMinimap(aClass50_Sub1_Sub1_Sub1_1037, j2, l4);
+				Player player = players[anInt1151];
+
+				if (player != null) {
+					int playerX = player.worldX / 32 - localPlayer.worldX / 32;
+					int playerY = player.worldY / 32 - localPlayer.worldY / 32;
+
+					drawMinimap(aClass50_Sub1_Sub1_Sub1_1037, playerX, playerY);
 				}
 			}
 		}
+
 		if (destinationX != 0) {
-			int k2 = (destinationX * 4 + 2) - localPlayer.worldX / 32;
-			int i5 = (destinationY * 4 + 2) - localPlayer.worldY / 32;
-			drawOnMinimap(mapFlagMarker, k2, i5);
+			int flagX = (destinationX * 4 + 2) - localPlayer.worldX / 32;
+			int flagY = (destinationY * 4 + 2) - localPlayer.worldY / 32;
+
+			drawOnMinimap(mapFlagMarker, flagX, flagY);
 		}
+
 		Rasterizer.drawFilledRectangle(97, 78, 3, 3, 0xffffff);
 		aClass18_1158.createRasterizer();
+
 		Rasterizer3D.lineOffsets = anIntArray1002;
 	}
 
