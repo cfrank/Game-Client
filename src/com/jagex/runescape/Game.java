@@ -1437,7 +1437,7 @@ public class Game extends GameShell {
 			dropClient();
 		method100(0);
 		method67(-37214);
-		method85(0);
+		processActorOverheadText();
 		tickDelta++;
 		if (crossType != 0) {
 			crossIndex += 20;
@@ -6939,32 +6939,30 @@ public class Game extends GameShell {
 			groundItems = null;
 	}
 
-	public void method85(int i) {
-		for (int j = -1; j < localPlayerCount; j++) {
-			int k;
-			if (j == -1)
-				k = thisPlayerId;
-			else
-				k = playerList[j];
-			Player class50_sub1_sub4_sub3_sub2 = players[k];
-			if (class50_sub1_sub4_sub3_sub2 != null && class50_sub1_sub4_sub3_sub2.textCycle > 0) {
-				class50_sub1_sub4_sub3_sub2.textCycle--;
-				if (class50_sub1_sub4_sub3_sub2.textCycle == 0)
-					class50_sub1_sub4_sub3_sub2.forcedChat = null;
+	private void processActorOverheadText() {
+		for (int i = -1; i < localPlayerCount; i++) {
+			int index = i == -1 ? thisPlayerId : playerList[i];
+			Player player = players[index];
+
+			if (player != null && player.textCycle > 0) {
+				player.textCycle--;
+
+				if (player.textCycle == 0)
+					player.forcedChat = null;
 			}
 		}
 
-		packetSize += i;
-		for (int l = 0; l < anInt1133; l++) {
-			int i1 = anIntArray1134[l];
-			Npc class50_sub1_sub4_sub3_sub1 = npcs[i1];
-			if (class50_sub1_sub4_sub3_sub1 != null && class50_sub1_sub4_sub3_sub1.textCycle > 0) {
-				class50_sub1_sub4_sub3_sub1.textCycle--;
-				if (class50_sub1_sub4_sub3_sub1.textCycle == 0)
-					class50_sub1_sub4_sub3_sub1.forcedChat = null;
+		for (int i = 0; i < anInt1133; i++) {
+			int index = anIntArray1134[i];
+			Npc npc = npcs[index];
+
+			if (npc != null && npc.textCycle > 0) {
+				npc.textCycle--;
+
+				if (npc.textCycle == 0)
+					npc.forcedChat = null;
 			}
 		}
-
 	}
 
 	private void requestArchiveCrcs() {
