@@ -846,39 +846,38 @@ public class Game extends GameShell {
 		buf.finishBitAccess();
 	}
 
-
-
-	public void method17(byte byte0) {
+	private void processFlamesCycle() {
 		aBoolean1320 = true;
-		if (byte0 == 4)
-			byte0 = 0;
-		else
-			groundItems = null;
+
 		try {
-			long l = System.currentTimeMillis();
-			int i = 0;
-			int j = 20;
+			long startTime = System.currentTimeMillis();
+			int cycle = 0;
+			int interval = 20;
+
 			while (aBoolean1243) {
 				anInt1101++;
+
 				method81((byte) 1);
 				method81((byte) 1);
 				method98(47);
-				if (++i > 10) {
-					long l1 = System.currentTimeMillis();
-					int k = (int) (l1 - l) / 10 - j;
-					j = 40 - k;
-					if (j < 5)
-						j = 5;
-					i = 0;
-					l = l1;
+
+				if (++cycle > 10) {
+					long currentTime = System.currentTimeMillis();
+					int difference = (int) (currentTime - startTime) / 10 - interval;
+					interval = 40 - difference;
+
+					if (interval < 5)
+						interval = 5;
+
+					cycle = 0;
+					startTime = currentTime;
 				}
 				try {
-					Thread.sleep(j);
-				} catch (Exception _ex) {
-				}
+					Thread.sleep(interval);
+				} catch (Exception ignored) {}
 			}
-		} catch (Exception _ex) {
-		}
+		} catch (Exception ignored) {}
+
 		aBoolean1320 = false;
 	}
 
@@ -8315,7 +8314,7 @@ public class Game extends GameShell {
 
 	public void run() {
 		if (aBoolean1314) {
-			method17((byte) 4);
+			processFlamesCycle();
 		} else {
 			super.run();
 		}
