@@ -5895,7 +5895,7 @@ public class Game extends GameShell {
 		if (menuOpen && anInt1304 == 2)
 			redrawChatbox = true;
 		if (redrawChatbox) {
-			drawChatbox(0);
+			renderChatbox();
 			redrawChatbox = false;
 		}
 		if (loadingStage == 2) {
@@ -6787,10 +6787,13 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void drawChatbox(int i) {
+	private void renderChatbox() {
 		chatboxProducingGraphicsBuffer.createRasterizer();
+
 		Rasterizer3D.lineOffsets = chatboxLineOffsets;
+
 		chatboxBackgroundImage.drawImage(0, 0);
+
 		if (messagePromptRaised) {
 			fontBold.drawStringLeft(chatboxInputMessage, 239, 40, 0);
 			fontBold.drawStringLeft(chatMessage + "*", 239, 60, 128);
@@ -6801,142 +6804,184 @@ public class Game extends GameShell {
 			fontBold.drawStringLeft("Enter name:", 239, 40, 0);
 			fontBold.drawStringLeft(inputInputMessage + "*", 239, 60, 128);
 		} else if (inputType == 3) {
-			if (inputInputMessage != aString861) {
+			if (!inputInputMessage.equals(aString861)) {
 				method14(inputInputMessage, 2);
 				aString861 = inputInputMessage;
 			}
-			TypeFace class50_sub1_sub1_sub2 = fontNormal;
+
+			TypeFace typeFace = fontNormal;
+
 			Rasterizer.setCoordinates(0, 0, 77, 463);
-			for (int j = 0; j < anInt862; j++) {
-				int l = (18 + j * 14) - anInt865;
-				if (l > 0 && l < 110)
-					class50_sub1_sub1_sub2.drawStringLeft(aStringArray863[j], 239, l, 0);
+
+			for (int i = 0; i < anInt862; i++) {
+				int y = (18 + i * 14) - anInt865;
+
+				if (y > 0 && y < 110)
+					typeFace.drawStringLeft(aStringArray863[i], 239, y, 0);
 			}
 
 			Rasterizer.resetCoordinates();
+
 			if (anInt862 > 5)
 				method56(true, anInt865, 463, 77, anInt862 * 14 + 7, 0);
+
 			if (inputInputMessage.length() == 0)
-					fontBold.drawStringLeft("Enter object name", 239, 40, 255);
+			    fontBold.drawStringLeft("Enter object name", 239, 40, 255);
 			else if (anInt862 == 0)
-				fontBold.drawStringLeft("No matching objects found, please shorten search", 239, 40, 0
-				);
-			class50_sub1_sub1_sub2.drawStringLeft(inputInputMessage + "*", 239, 90, 0);
+				fontBold.drawStringLeft("No matching objects found, please shorten search", 239, 40, 0);
+
+			typeFace.drawStringLeft(inputInputMessage + "*", 239, 90, 0);
 			Rasterizer.drawHorizontalLine(0, 77, 479, 0);
 		} else if (clickToContinueString != null) {
 			fontBold.drawStringLeft(clickToContinueString, 239, 40, 0);
 			fontBold.drawStringLeft("Click to continue", 239, 60, 128);
-		} else if (backDialogueId != -1)
-			method142(0, 0, Widget.forId(backDialogueId), 0, 8);
-		else if (dialogueId != -1) {
+		} else if (backDialogueId != -1) {
+            method142(0, 0, Widget.forId(backDialogueId), 0, 8);
+        } else if (dialogueId != -1) {
 			method142(0, 0, Widget.forId(dialogueId), 0, 8);
 		} else {
-			TypeFace class50_sub1_sub1_sub2_1 = fontNormal;
-			int k = 0;
+			TypeFace typeFace = fontNormal;
+			int line = 0;
+
 			Rasterizer.setCoordinates(0, 0, 77, 463);
-			for (int i1 = 0; i1 < 100; i1++)
-				if (chatMessages[i1] != null) {
-					int j1 = chatTypes[i1];
-					int k1 = (70 - k * 14) + anInt851;
-					String s1 = chatPlayerNames[i1];
-					byte byte0 = 0;
-					if (s1 != null && s1.startsWith("@cr1@")) {
-						s1 = s1.substring(5);
-						byte0 = 1;
-					}
-					if (s1 != null && s1.startsWith("@cr2@")) {
-						s1 = s1.substring(5);
-						byte0 = 2;
-					}
-					if (j1 == 0) {
-						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.drawString(chatMessages[i1], 4, k1, 0);
-						k++;
-					}
-					if ((j1 == 1 || j1 == 2) && (j1 == 1 || publicChatMode == 0 || publicChatMode == 1 && method148(13292, s1))) {
-						if (k1 > 0 && k1 < 110) {
-							int l1 = 4;
-							if (byte0 == 1) {
-								moderatorIcon[0].drawImage(l1, k1 - 12);
-								l1 += 14;
-							}
-							if (byte0 == 2) {
-								moderatorIcon[1].drawImage(l1, k1 - 12);
-								l1 += 14;
-							}
-							class50_sub1_sub1_sub2_1.drawString(s1 + ":", l1, k1, 0);
-							l1 += class50_sub1_sub1_sub2_1.getStringEffectWidth(s1) + 8;
-							class50_sub1_sub1_sub2_1.drawString(chatMessages[i1], l1, k1, 255);
-						}
-						k++;
-					}
-					if ((j1 == 3 || j1 == 7) && anInt1223 == 0
-							&& (j1 == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, s1))) {
-						if (k1 > 0 && k1 < 110) {
-							int i2 = 4;
-							class50_sub1_sub1_sub2_1.drawString("From", i2, k1, 0);
-							i2 += class50_sub1_sub1_sub2_1.getStringEffectWidth("From ");
-							if (byte0 == 1) {
-								moderatorIcon[0].drawImage(i2, k1 - 12);
-								i2 += 14;
-							}
-							if (byte0 == 2) {
-								moderatorIcon[1].drawImage(i2, k1 - 12);
-								i2 += 14;
-							}
-							class50_sub1_sub1_sub2_1.drawString(s1 + ":", i2, k1, 0);
-							i2 += class50_sub1_sub1_sub2_1.getStringEffectWidth(s1) + 8;
-							class50_sub1_sub1_sub2_1.drawString(chatMessages[i1], i2, k1, 0x800000);
-						}
-						k++;
-					}
-					if (j1 == 4 && (tradeMode == 0 || tradeMode == 1 && method148(13292, s1))) {
-						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.drawString(s1 + " " + chatMessages[i1], 4, k1, 0x800080);
-						k++;
-					}
-					if (j1 == 5 && anInt1223 == 0 && privateChatMode < 2) {
-						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.drawString(chatMessages[i1], 4, k1, 0x800000);
-						k++;
-					}
-					if (j1 == 6 && anInt1223 == 0 && privateChatMode < 2) {
-						if (k1 > 0 && k1 < 110) {
-							class50_sub1_sub1_sub2_1.drawString("To " + s1 + ":", 4, k1, 0);
-							class50_sub1_sub1_sub2_1.drawString(chatMessages[i1], 12 + class50_sub1_sub1_sub2_1.getStringEffectWidth(
-									"To " + s1), k1, 0x800000);
-						}
-						k++;
-					}
-					if (j1 == 8 && (tradeMode == 0 || tradeMode == 1 && method148(13292, s1))) {
-						if (k1 > 0 && k1 < 110)
-							class50_sub1_sub1_sub2_1.drawString(s1 + " " + chatMessages[i1], 4, k1, 0x7e3200);
-						k++;
-					}
-				}
+
+			for (int i = 0; i < 100; i++) {
+                if (chatMessages[i] != null) {
+                    String name = chatPlayerNames[i];
+                    int type = chatTypes[i];
+                    int y = (70 - line * 14) + anInt851;
+                    byte privilege = 0;
+
+                    if (name != null && name.startsWith("@cr1@")) {
+                        name = name.substring(5);
+                        privilege = 1;
+                    }
+
+                    if (name != null && name.startsWith("@cr2@")) {
+                        name = name.substring(5);
+                        privilege = 2;
+                    }
+
+                    if (type == 0) {
+                        if (y > 0 && y < 110)
+                            typeFace.drawString(chatMessages[i], 4, y, 0);
+
+                        line++;
+                    }
+
+                    if ((type == 1 || type == 2) && (type == 1 || publicChatMode == 0 || publicChatMode == 1 && method148(13292, name))) {
+                        if (y > 0 && y < 110) {
+                            int x = 4;
+
+                            if (privilege == 1) {
+                                moderatorIcon[0].drawImage(x, y - 12);
+                                x += 14;
+                            }
+
+                            if (privilege == 2) {
+                                moderatorIcon[1].drawImage(x, y - 12);
+                                x += 14;
+                            }
+
+                            typeFace.drawString(name + ":", x, y, 0);
+
+                            x += typeFace.getStringEffectWidth(name) + 8;
+
+                            typeFace.drawString(chatMessages[i], x, y, 255);
+                        }
+
+                        line++;
+                    }
+
+                    if ((type == 3 || type == 7) && anInt1223 == 0
+                            && (type == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, name))) {
+                        if (y > 0 && y < 110) {
+                            int x = 4;
+
+                            typeFace.drawString("From", x, y, 0);
+
+                            x += typeFace.getStringEffectWidth("From ");
+
+                            if (privilege == 1) {
+                                moderatorIcon[0].drawImage(x, y - 12);
+                                x += 14;
+                            }
+
+                            if (privilege == 2) {
+                                moderatorIcon[1].drawImage(x, y - 12);
+                                x += 14;
+                            }
+
+                            typeFace.drawString(name + ":", x, y, 0);
+
+                            x += typeFace.getStringEffectWidth(name) + 8;
+
+                            typeFace.drawString(chatMessages[i], x, y, 0x800000);
+                        }
+
+                        line++;
+                    }
+
+                    if (type == 4 && (tradeMode == 0 || tradeMode == 1 && method148(13292, name))) {
+                        if (y > 0 && y < 110)
+                            typeFace.drawString(name + " " + chatMessages[i], 4, y, 0x800080);
+
+                        line++;
+                    }
+
+                    if (type == 5 && anInt1223 == 0 && privateChatMode < 2) {
+                        if (y > 0 && y < 110)
+                            typeFace.drawString(chatMessages[i], 4, y, 0x800000);
+
+                        line++;
+                    }
+
+                    if (type == 6 && anInt1223 == 0 && privateChatMode < 2) {
+                        if (y > 0 && y < 110) {
+                            typeFace.drawString("To " + name + ":", 4, y, 0);
+                            typeFace.drawString(chatMessages[i], 12 + typeFace.getStringEffectWidth("To " + name), y, 0x800000);
+                        }
+
+                        line++;
+                    }
+
+                    if (type == 8 && (tradeMode == 0 || tradeMode == 1 && method148(13292, name))) {
+                        if (y > 0 && y < 110)
+                            typeFace.drawString(name + " " + chatMessages[i], 4, y, 0x7e3200);
+
+                        line++;
+                    }
+                }
+            }
 
 			Rasterizer.resetCoordinates();
-			anInt1107 = k * 14 + 7;
+
+			anInt1107 = line * 14 + 7;
+
 			if (anInt1107 < 78)
 				anInt1107 = 78;
+
 			method56(true, anInt1107 - anInt851 - 77, 463, 77, anInt1107, 0);
-			String s;
+
+			String name;
+
 			if (localPlayer != null && localPlayer.playerName != null)
-				s = localPlayer.playerName;
+				name = localPlayer.playerName;
 			else
-				s = TextUtils.formatName(username);
-			class50_sub1_sub1_sub2_1.drawString(s + ":", 4, 90, 0);
-			class50_sub1_sub1_sub2_1.drawString(chatboxInput + "*", 6 + class50_sub1_sub1_sub2_1.getStringEffectWidth(s + ": "), 90, 255
-			);
+				name = TextUtils.formatName(username);
+
+			typeFace.drawString(name + ":", 4, 90, 0);
+			typeFace.drawString(chatboxInput + "*", 6 + typeFace.getStringEffectWidth(name + ": "), 90, 255);
 			Rasterizer.drawHorizontalLine(0, 77, 479, 0);
 		}
+
 		if (menuOpen && anInt1304 == 2)
 			method128(false);
+
 		chatboxProducingGraphicsBuffer.drawGraphics(17, 357, super.gameGraphics);
 		aClass18_1158.createRasterizer();
+
 		Rasterizer3D.lineOffsets = anIntArray1002;
-		if (i != 0)
-			groundItems = null;
 	}
 
 	private void processActorOverheadText() {
