@@ -4875,7 +4875,7 @@ public class Game extends GameShell {
 				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cacheIndex[type]);
 		}
 		try {
-			connectWebServer();
+			requestArchiveCrcs();
 			titleArchive = requestArchive(1, "title", archiveHashes[1], 25, "title screen");
 			fontSmall = new TypeFace(false, titleArchive, "p11_full");
 			fontNormal = new TypeFace(false, titleArchive, "p12_full");
@@ -6967,60 +6967,72 @@ public class Game extends GameShell {
 
 	}
 
-	public void connectWebServer() {
-		int i = 5;
-		archiveHashes[8] = 0;
-		int k = 0;
+	private void requestArchiveCrcs() {
+		int reconnectionDelay = 5;
+		int attempts = 0;
+        archiveHashes[8] = 0;
+
 		while (archiveHashes[8] == 0) {
-			String s = "Unknown problem";
+			String error = "Unknown problem";
+
 			drawLoadingText(20, "Connecting to web server");
+
 			try {
-				DataInputStream datainputstream = openJaggrabStream("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
-				Buffer class50_sub1_sub2 = new Buffer(new byte[40]);
-				datainputstream.readFully(class50_sub1_sub2.buffer, 0, 40);
-				datainputstream.close();
-				for (int i1 = 0; i1 < 9; i1++)
-					archiveHashes[i1] = class50_sub1_sub2.getInt();
+				DataInputStream stream = openJaggrabStream("crc" + (int) (Math.random() * 99999999D) + "-" + 377);
+				Buffer jaggrab = new Buffer(new byte[40]);
 
-				int j1 = class50_sub1_sub2.getInt();
-				int k1 = 1234;
-				for (int l1 = 0; l1 < 9; l1++)
-					k1 = (k1 << 1) + archiveHashes[l1];
+				stream.readFully(jaggrab.buffer, 0, 40);
+				stream.close();
 
-				if (j1 != k1) {
-					s = "checksum problem";
+				for (int i = 0; i < 9; i++)
+					archiveHashes[i] = jaggrab.getInt();
+
+				int expectedCrc = jaggrab.getInt();
+				int calculatedCrc = 1234;
+
+				for (int i = 0; i < 9; i++)
+					calculatedCrc = (calculatedCrc << 1) + archiveHashes[i];
+
+				if (expectedCrc != calculatedCrc) {
+					error = "Checksum problem";
 					archiveHashes[8] = 0;
 				}
 			} catch (EOFException _ex) {
-				s = "EOF problem";
+				error = "EOF problem";
 				archiveHashes[8] = 0;
 			} catch (IOException _ex) {
-				s = "Connection problem";
+				error = "Connection problem";
 				archiveHashes[8] = 0;
 			} catch (Exception _ex) {
-				s = "logic problem";
+				error = "Logic problem";
 				archiveHashes[8] = 0;
+
 				if (!SignLink.reportError)
 					return;
 			}
+
 			if (archiveHashes[8] == 0) {
-				k++;
-				for (int l = i; l > 0; l--) {
-					if (k >= 10) {
+				attempts++;
+
+				for (int time = reconnectionDelay; time > 0; time--) {
+					if (attempts >= 10) {
 						drawLoadingText(10, "Game updated - please reload page");
-						l = 10;
+
+						time = 10;
 					} else {
-						drawLoadingText(10, s + " - Will retry in " + l + " secs.");
+						drawLoadingText(10, error + " - Will retry in " + time + " secs.");
 					}
+
 					try {
 						Thread.sleep(1000L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 
-				i *= 2;
-				if (i > 60)
-					i = 60;
+				reconnectionDelay *= 2;
+
+				if (reconnectionDelay > 60)
+					reconnectionDelay = 60;
+
 				useJaggrab = !useJaggrab;
 			}
 		}
