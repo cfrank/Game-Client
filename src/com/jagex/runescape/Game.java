@@ -6019,62 +6019,79 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method75(int i) {
-		packetSize += i;
+	private void renderSplitPrivateMessages() {
 		if (anInt1223 == 0)
 			return;
-		TypeFace class50_sub1_sub1_sub2 = fontNormal;
-		int j = 0;
-		if (systemUpdateTime != 0)
-			j = 1;
-		for (int k = 0; k < 100; k++)
-			if (chatMessages[k] != null) {
-				int l = chatTypes[k];
-				String s = chatPlayerNames[k];
-				byte byte0 = 0;
-				if (s != null && s.startsWith("@cr1@")) {
-					s = s.substring(5);
-					byte0 = 1;
-				}
-				if (s != null && s.startsWith("@cr2@")) {
-					s = s.substring(5);
-					byte0 = 2;
-				}
-				if ((l == 3 || l == 7) && (l == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, s))) {
-					int i1 = 329 - j * 13;
-					int l1 = 4;
-					class50_sub1_sub1_sub2.drawString("From", l1, i1, 0);
-					class50_sub1_sub1_sub2.drawString("From", l1, i1 - 1, 65535);
-					l1 += class50_sub1_sub1_sub2.getStringEffectWidth("From ");
-					if (byte0 == 1) {
-						moderatorIcon[0].drawImage(l1, i1 - 12);
-						l1 += 14;
-					}
-					if (byte0 == 2) {
-						moderatorIcon[1].drawImage(l1, i1 - 12);
-						l1 += 14;
-					}
-					class50_sub1_sub1_sub2.drawString(s + ": " + chatMessages[k], l1, i1, 0);
-					class50_sub1_sub1_sub2.drawString(s + ": " + chatMessages[k], l1, i1 - 1, 65535);
-					if (++j >= 5)
-						return;
-				}
-				if (l == 5 && privateChatMode < 2) {
-					int j1 = 329 - j * 13;
-					class50_sub1_sub1_sub2.drawString(chatMessages[k], 4, j1, 0);
-					class50_sub1_sub1_sub2.drawString(chatMessages[k], 4, j1 - 1, 65535);
-					if (++j >= 5)
-						return;
-				}
-				if (l == 6 && privateChatMode < 2) {
-					int k1 = 329 - j * 13;
-					class50_sub1_sub1_sub2.drawString("To " + s + ": " + chatMessages[k], 4, k1, 0);
-					class50_sub1_sub1_sub2.drawString("To " + s + ": " + chatMessages[k], 4, k1 - 1, 65535);
-					if (++j >= 5)
-						return;
-				}
-			}
 
+		TypeFace typeFace = fontNormal;
+		int line = 0;
+
+		if (systemUpdateTime != 0)
+			line = 1;
+
+		for (int i = 0; i < 100; i++) {
+            if (chatMessages[i] != null) {
+                int type = chatTypes[i];
+                String name = chatPlayerNames[i];
+                byte privilege = 0;
+
+                if (name != null && name.startsWith("@cr1@")) {
+                    name = name.substring(5);
+                    privilege = 1;
+                }
+
+                if (name != null && name.startsWith("@cr2@")) {
+                    name = name.substring(5);
+                    privilege = 2;
+                }
+
+                if ((type == 3 || type == 7) && (type == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, name))) {
+                    int y = 329 - line * 13;
+                    int x = 4;
+
+                    typeFace.drawString("From", x, y, 0);
+                    typeFace.drawString("From", x, y - 1, 65535);
+
+                    x += typeFace.getStringEffectWidth("From ");
+
+                    if (privilege == 1) {
+                        moderatorIcon[0].drawImage(x, y - 12);
+                        x += 14;
+                    }
+
+                    if (privilege == 2) {
+                        moderatorIcon[1].drawImage(x, y - 12);
+                        x += 14;
+                    }
+
+                    typeFace.drawString(name + ": " + chatMessages[i], x, y, 0);
+                    typeFace.drawString(name + ": " + chatMessages[i], x, y - 1, 65535);
+
+                    if (++line >= 5)
+                        return;
+                }
+
+                if (type == 5 && privateChatMode < 2) {
+                    int y = 329 - line * 13;
+
+                    typeFace.drawString(chatMessages[i], 4, y, 0);
+                    typeFace.drawString(chatMessages[i], 4, y - 1, 65535);
+
+                    if (++line >= 5)
+                        return;
+                }
+
+                if (type == 6 && privateChatMode < 2) {
+                    int y = 329 - line * 13;
+
+                    typeFace.drawString("To " + name + ": " + chatMessages[i], 4, y, 0);
+                    typeFace.drawString("To " + name + ": " + chatMessages[i], 4, y - 1, 65535);
+
+                    if (++line >= 5)
+                        return;
+                }
+            }
+        }
 	}
 
 	public void init() {
@@ -8254,7 +8271,7 @@ public class Game extends GameShell {
 	public void method109(int i) {
 		if (i != 30729)
 			anInt1056 = incomingRandom.nextInt();
-		method75(0);
+		renderSplitPrivateMessages();
 		if (crossType == 1)
 			cursorCross[crossIndex / 100].drawImage(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
 		if (crossType == 2)
