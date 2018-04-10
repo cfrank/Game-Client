@@ -466,7 +466,7 @@ public class Game extends GameShell {
 	public volatile boolean aBoolean1243 = false;
 	public int inputType;
 	public byte aByteArray1245[] = new byte[16384];
-	public int anInt1246;
+	public boolean inTutorialIsland;
 	public ImageRGB minimapEdge;
 	public MouseCapturer mouseCapturer;
 	public Widget aClass13_1249 = new Widget();
@@ -2351,7 +2351,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					if (!flag1 && anInt1246 == 0)
+					if (!flag1 && !inTutorialIsland)
 						addChatMessage(s3, "wishes to trade with you.", 4);
 				} else if (message.endsWith(":duelreq:")) {
 					String s4 = message.substring(0, message.indexOf(":"));
@@ -2364,7 +2364,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					if (!flag2 && anInt1246 == 0)
+					if (!flag2 && !inTutorialIsland)
 						addChatMessage(s4, "wishes to duel with you.", 8);
 				} else if (message.endsWith(":chalreq:")) {
 					String s5 = message.substring(0, message.indexOf(":"));
@@ -2377,7 +2377,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					if (!flag3 && anInt1246 == 0) {
+					if (!flag3 && !inTutorialIsland) {
 						String s8 = message.substring(message.indexOf(":") + 1, message.length() - 9);
 						addChatMessage(s5, s8, 8);
 					}
@@ -2607,7 +2607,7 @@ public class Game extends GameShell {
 					}
 
 				}
-				if (!flag4 && anInt1246 == 0)
+				if (!flag4 && !inTutorialIsland)
 					try {
 						anIntArray1258[anInt1152] = i19;
 						anInt1152 = (anInt1152 + 1) % 100;
@@ -4798,7 +4798,7 @@ public class Game extends GameShell {
 					}
 
 				}
-				if (!flag && anInt1246 == 0)
+				if (!flag && !inTutorialIsland)
 					try {
 						chatBuffer.currentPosition = 0;
 						vec.getBytesAdded(chatBuffer.buffer, 0, length);
@@ -8188,14 +8188,14 @@ public class Game extends GameShell {
 	private void setTutorialIslandFlag() {
 		int x = (localPlayer.worldX >> 7) + nextTopLeftTileX;
 		int y = (localPlayer.worldY >> 7) + nextTopRightTileY;
-        anInt1246 = 0;
+        inTutorialIsland = false;
 
 		if (x >= 3053 && x <= 3156 && y >= 3056 && y <= 3136)
-			anInt1246 = 1;
+			inTutorialIsland = true;
 		if (x >= 3072 && x <= 3118 && y >= 9492 && y <= 9535)
-			anInt1246 = 1;
-		if (anInt1246 == 1 && x >= 3139 && x <= 3199 && y >= 3008 && y <= 3062)
-			anInt1246 = 0;
+			inTutorialIsland = true;
+		if (inTutorialIsland && x >= 3139 && x <= 3199 && y >= 3008 && y <= 3062)
+			inTutorialIsland = false;
 	}
 
 	private void determineMenuSize() {
