@@ -8185,18 +8185,16 @@ public class Game extends GameShell {
 				+ ((i & 0xff00) * i1 + (j & 0xff00) * k & 0xff0000) >> 8;
 	}
 
-	public void method107(int i) {
-		anInt1246 = 0;
-		int j = (localPlayer.worldX >> 7) + nextTopLeftTileX;
-		int k;
-		for (k = (localPlayer.worldY >> 7) + nextTopRightTileY; i >= 0;)
-			return;
+	private void setTutorialIslandFlag() {
+		int x = (localPlayer.worldX >> 7) + nextTopLeftTileX;
+		int y = (localPlayer.worldY >> 7) + nextTopRightTileY;
+        anInt1246 = 0;
 
-		if (j >= 3053 && j <= 3156 && k >= 3056 && k <= 3136)
+		if (x >= 3053 && x <= 3156 && y >= 3056 && y <= 3136)
 			anInt1246 = 1;
-		if (j >= 3072 && j <= 3118 && k >= 9492 && k <= 9535)
+		if (x >= 3072 && x <= 3118 && y >= 9492 && y <= 9535)
 			anInt1246 = 1;
-		if (anInt1246 == 1 && j >= 3139 && j <= 3199 && k >= 3008 && k <= 3062)
+		if (anInt1246 == 1 && x >= 3139 && x <= 3199 && y >= 3008 && y <= 3062)
 			anInt1246 = 0;
 	}
 
@@ -8301,7 +8299,7 @@ public class Game extends GameShell {
 			method142(0, 0, Widget.forId(openInterfaceId), 0, 8);
 		}
 
-		method107(-7);
+		setTutorialIslandFlag();
 
 		if (!menuOpen) {
 			processRightClick(-521);
