@@ -1502,7 +1502,7 @@ public class Game extends GameShell {
 						outBuffer.putLEShortDup(selectedInventorySlot);
 					}
 				} else if ((anInt1300 == 1 || menuHasAddFriend(menuActionRow - 1, aByte1161)) && menuActionRow > 2)
-					determineMenuSize(811);
+					determineMenuSize();
 				else if (menuActionRow > 0)
 					processMenuActions(menuActionRow - 1);
 				atInventoryLoopCycle = 10;
@@ -4260,7 +4260,7 @@ public class Game extends GameShell {
 			if (meta == 1 && menuActionRow > 0)
 				processMenuActions(menuActionRow - 1);
 			if (meta == 2 && menuActionRow > 0)
-				determineMenuSize(811);
+				determineMenuSize();
 		}
 	}
 
@@ -8200,71 +8200,86 @@ public class Game extends GameShell {
 			anInt1246 = 0;
 	}
 
-	public void determineMenuSize(int i) {
-		int j = fontBold.getStringEffectWidth("Choose Option");
-		for (int k = 0; k < menuActionRow; k++) {
-			int l = fontBold.getStringEffectWidth(menuActionTexts[k]);
-			if (l > j)
-				j = l;
+	private void determineMenuSize() {
+		int width = fontBold.getStringEffectWidth("Choose Option");
+
+		for (int i = 0; i < menuActionRow; i++) {
+			int rowWidth = fontBold.getStringEffectWidth(menuActionTexts[i]);
+
+			if (rowWidth > width)
+				width = rowWidth;
 		}
 
-		j += 8;
-		if (i <= 0)
-			aBoolean1190 = !aBoolean1190;
-		int i1 = 15 * menuActionRow + 21;
+		width += 8;
+		int height = 15 * menuActionRow + 21;
+
 		if (super.clickX > 4 && super.clickY > 4 && super.clickX < 516 && super.clickY < 338) {
-			int j1 = super.clickX - 4 - j / 2;
-			if (j1 + j > 512)
-				j1 = 512 - j;
-			if (j1 < 0)
-				j1 = 0;
-			int i2 = super.clickY - 4;
-			if (i2 + i1 > 334)
-				i2 = 334 - i1;
-			if (i2 < 0)
-				i2 = 0;
+			int x = super.clickX - 4 - width / 2;
+
+			if (x + width > 512)
+				x = 512 - width;
+			if (x < 0)
+				x = 0;
+
+			int y = super.clickY - 4;
+
+			if (y + height > 334)
+				y = 334 - height;
+			if (y < 0)
+				y = 0;
+
 			menuOpen = true;
 			anInt1304 = 0;
-			menuClickX = j1;
-			menuClickY = i2;
-			anInt1307 = j;
-			anInt1308 = 15 * menuActionRow + 22;
+			menuClickX = x;
+			menuClickY = y;
+			anInt1307 = width;
+			anInt1308 = height + 1;
 		}
+
 		if (super.clickX > 553 && super.clickY > 205 && super.clickX < 743 && super.clickY < 466) {
-			int k1 = super.clickX - 553 - j / 2;
-			if (k1 < 0)
-				k1 = 0;
-			else if (k1 + j > 190)
-				k1 = 190 - j;
-			int j2 = super.clickY - 205;
-			if (j2 < 0)
-				j2 = 0;
-			else if (j2 + i1 > 261)
-				j2 = 261 - i1;
+			int x = super.clickX - 553 - width / 2;
+
+			if (x < 0)
+				x = 0;
+			else if (x + width > 190)
+				x = 190 - width;
+
+			int y = super.clickY - 205;
+
+			if (y < 0)
+				y = 0;
+			else if (y + height > 261)
+				y = 261 - height;
+
 			menuOpen = true;
 			anInt1304 = 1;
-			menuClickX = k1;
-			menuClickY = j2;
-			anInt1307 = j;
-			anInt1308 = 15 * menuActionRow + 22;
+			menuClickX = x;
+			menuClickY = y;
+			anInt1307 = width;
+			anInt1308 = height + 1;
 		}
+
 		if (super.clickX > 17 && super.clickY > 357 && super.clickX < 496 && super.clickY < 453) {
-			int l1 = super.clickX - 17 - j / 2;
-			if (l1 < 0)
-				l1 = 0;
-			else if (l1 + j > 479)
-				l1 = 479 - j;
-			int k2 = super.clickY - 357;
-			if (k2 < 0)
-				k2 = 0;
-			else if (k2 + i1 > 96)
-				k2 = 96 - i1;
+			int x = super.clickX - 17 - width / 2;
+
+			if (x < 0)
+				x = 0;
+			else if (x + width > 479)
+				x = 479 - width;
+
+			int y = super.clickY - 357;
+
+			if (y < 0)
+				y = 0;
+			else if (y + height > 96)
+				y = 96 - height;
+
 			menuOpen = true;
 			anInt1304 = 2;
-			menuClickX = l1;
-			menuClickY = k2;
-			anInt1307 = j;
-			anInt1308 = 15 * menuActionRow + 22;
+			menuClickX = x;
+			menuClickY = y;
+			anInt1307 = width;
+			anInt1308 = height + 1;
 		}
 	}
 
