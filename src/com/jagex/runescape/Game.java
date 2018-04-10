@@ -8021,7 +8021,7 @@ public class Game extends GameShell {
 			if (anInt1034 == 0)
 				class13.disabledText = "\\nYou have not yet set any recovery questions.\\nIt is @lre@strongly@yel@ recommended that you do so.\\n\\nIf you don't you will be @lre@unable to recover your\\n@lre@password@yel@ if you forget it, or it is stolen.";
 			else if (anInt1034 <= anInt1170) {
-				class13.disabledText = "\\n\\nRecovery Questions Last Set:\\n@gre@" + method104(anInt1034, (byte) 83);
+				class13.disabledText = "\\n\\nRecovery Questions Last Set:\\n@gre@" + getDate(anInt1034);
 			} else {
 				int l1 = (anInt1170 + 14) - anInt1034;
 				String s2;
@@ -8033,7 +8033,7 @@ public class Game extends GameShell {
 					s2 = l1 + " days ago";
 				class13.disabledText = s2
 						+ " you requested@lre@ new recovery\\n@lre@questions.@yel@ The requested change will occur\\non: @lre@"
-						+ method104(anInt1034, (byte) 83)
+						+ getDate(anInt1034)
 						+ "\\n\\nIf you do not remember making this request\\ncancel it immediately, and change your password.";
 			}
 		if (i == 662) {
@@ -8050,7 +8050,7 @@ public class Game extends GameShell {
 			if (anInt1083 <= 0 || anInt1083 > anInt1170 + 10)
 				class13.disabledText = "Last password change:\\n@gre@Never changed";
 			else
-				class13.disabledText = "Last password change:\\n@gre@" + method104(anInt1083, (byte) 83);
+				class13.disabledText = "Last password change:\\n@gre@" + getDate(anInt1083);
 		if (i == 665)
 			if (anInt992 > 2 && !memberServer)
 				class13.disabledText = "This is a non-members\\nworld. To enjoy your\\nmembers benefits we\\nrecommend you play on a\\nmembers world instead.";
@@ -8078,20 +8078,22 @@ public class Game extends GameShell {
 		}
 	}
 
-	public String method104(int i, byte byte0) {
-		if (byte0 != 83)
-			opcode = buffer.getUnsignedByte();
-		if (i > anInt1170 + 10) {
+	private String getDate(int time) {
+		if (time > anInt1170 + 10) {
 			return "Unknown";
 		} else {
-			long l = ((long) i + 11745L) * 0x5265c00L;
+			long date = ((long) time + 11745L) * 0x5265c00L;
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(new Date(l));
-			int j = calendar.get(5);
-			int k = calendar.get(2);
-			int i1 = calendar.get(1);
-			String as[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-			return j + "-" + as[k] + "-" + i1;
+			
+			calendar.setTime(new Date(date));
+			
+			int day = calendar.get(Calendar.DAY_OF_MONTH);
+			int month = calendar.get(Calendar.MONTH);
+			int year = calendar.get(Calendar.YEAR);
+			String[] monthNames = { "Jan", "Feb", "Mar", "Apr", "May",
+                    "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+			
+			return day + "-" + monthNames[month] + "-" + year;
 		}
 	}
 
