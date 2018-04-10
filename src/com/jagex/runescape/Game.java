@@ -8268,59 +8268,72 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method109(int i) {
-		if (i != 30729)
-			anInt1056 = incomingRandom.nextInt();
+	private void renderGameView() {
 		renderSplitPrivateMessages();
+
 		if (crossType == 1)
 			cursorCross[crossIndex / 100].drawImage(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
 		if (crossType == 2)
 			cursorCross[4 + crossIndex / 100].drawImage(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
+
 		if (anInt1279 != -1) {
 			method88(tickDelta, anInt1279, (byte) 5);
 			method142(0, 0, Widget.forId(anInt1279), 0, 8);
 		}
+
 		if (openInterfaceId != -1) {
 			method88(tickDelta, openInterfaceId, (byte) 5);
 			method142(0, 0, Widget.forId(openInterfaceId), 0, 8);
 		}
+
 		method107(-7);
+
 		if (!menuOpen) {
 			processRightClick(-521);
 			method34((byte) -79);
-		} else if (anInt1304 == 0)
-			method128(false);
+		} else if (anInt1304 == 0) {
+            method128(false);
+        }
+
 		if (anInt1319 == 1)
 			aClass50_Sub1_Sub1_Sub1_1086.drawImage(296, 472);
+
 		if (fps) {
-			char c = '\u01FB';
-			int k = 20;
-			int i1 = 0xffff00;
+            int y = 20;
+			int colour = 0xffff00;
+
 			if (super.fps < 30 && lowMemory)
-				i1 = 0xff0000;
+				colour = 0xff0000;
 			if (super.fps < 20 && !lowMemory)
-				i1 = 0xff0000;
-			fontNormal.drawStringRight("Fps:" + super.fps, c, k, i1);
-			k += 15;
+				colour = 0xff0000;
+
+			fontNormal.drawStringRight("Fps:" + super.fps, 507, y, colour);
+
+			y += 15;
 			Runtime runtime = Runtime.getRuntime();
-			int j1 = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
-			i1 = 0xffff00;
-			if (j1 > 0x2000000 && lowMemory)
-				i1 = 0xff0000;
-			if (j1 > 0x4000000 && !lowMemory)
-				i1 = 0xff0000;
-			fontNormal.drawStringRight("Mem:" + j1 + "k", c, k, 0xffff00);
-			k += 15;
+			int memoryUsed = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
+			colour = 0xffff00;
+
+			if (memoryUsed > 0x2000000 && lowMemory)
+				colour = 0xff0000;
+			if (memoryUsed > 0x4000000 && !lowMemory)
+				colour = 0xff0000;
+
+			fontNormal.drawStringRight("Mem:" + memoryUsed + "k", 507, y, colour);
 		}
+
 		if (systemUpdateTime != 0) {
-			int j = systemUpdateTime / 50;
-			int l = j / 60;
-			j %= 60;
-			if (j < 10)
-				fontNormal.drawString("System update in: " + l + ":0" + j, 4, 329, 0xffff00);
+			int seconds = systemUpdateTime / 50;
+			int minutes = seconds / 60;
+			seconds %= 60;
+
+			if (seconds < 10)
+				fontNormal.drawString("System update in: " + minutes + ":0" + seconds, 4, 329, 0xffff00);
 			else
-				fontNormal.drawString("System update in: " + l + ":" + j, 4, 329, 0xffff00);
+				fontNormal.drawString("System update in: " + minutes + ":" + seconds, 4, 329, 0xffff00);
+
 			anInt895++;
+
 			if (anInt895 > 112) {
 				anInt895 = 0;
 				outBuffer.putOpcode(197);
@@ -11638,7 +11651,7 @@ public class Game extends GameShell {
 		method121(false);
 		method127(true);
 		method65(l2);
-		method109(30729);
+		renderGameView();
 		aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
 		cameraX = i1;
 		cameraZ = j1;
