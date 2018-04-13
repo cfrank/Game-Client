@@ -4869,19 +4869,25 @@ public class Game extends GameShell {
 
 	public void startup() {
 		drawLoadingText(20, "Starting up");
+
 		if (SignLink.cacheData != null) {
 			for (int type = 0; type < 5; type++)
 				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cacheIndex[type]);
 		}
+
 		try {
-			requestArchiveCrcs();
+		    if (Configuration.JAGGRAB_ENABLED)
+			    requestArchiveCrcs();
+
 			titleArchive = requestArchive(1, "title", archiveHashes[1], 25, "title screen");
 			fontSmall = new TypeFace(false, titleArchive, "p11_full");
 			fontNormal = new TypeFace(false, titleArchive, "p12_full");
 			fontBold = new TypeFace(false, titleArchive, "b12_full");
 			fontFancy = new TypeFace(true, titleArchive, "q8_full");
+
 			prepareTitleBackground();
 			prepareTitle();
+
 			Archive configArchive = requestArchive(2, "config", archiveHashes[2], 30, "config");
 			Archive archiveInterface = requestArchive(3, "interface", archiveHashes[3], 35, "interface");
 			Archive archiveMedia = requestArchive(4, "media", archiveHashes[4], 40, "2d gameGraphics");
@@ -4891,75 +4897,97 @@ public class Game extends GameShell {
 			currentSceneTileFlags = new byte[4][104][104];
 			anIntArrayArrayArray891 = new int[4][105][105];
 			currentScene = new Scene(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
+
 			for (int j = 0; j < 4; j++)
 				currentCollisionMap[j] = new CollisionMap(104, 104);
 
 			minimapImage = new ImageRGB(512, 512);
 			Archive versionListArchive = requestArchive(5, "versionlist", archiveHashes[5], 60, "update list");
+
 			drawLoadingText(60, "Connecting to update server");
+
 			onDemandRequester = new OnDemandRequester();
 			onDemandRequester.init(versionListArchive, this);
+
 			Animation.method235(onDemandRequester.animCount());
 			Model.init(onDemandRequester.fileCount(0), onDemandRequester);
+
 			if (!lowMemory) {
 				nextSong = 0;
-				try
-				{
+
+				try {
 					nextSong = Integer.parseInt(getParameter("music"));
-				}
-				catch(Exception _ex) { }
-				songChanging = true;
+				} catch(Exception ignored) {}
+
+                songChanging = true;
+
 				onDemandRequester.request(2, nextSong);
+
 				while (onDemandRequester.method333() > 0) {
 					method77(false);
+
 					try {
 						Thread.sleep(100L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
+
 					if (onDemandRequester.requestFails > 3) {
 						method19("ondemand");
 						return;
 					}
 				}
 			}
+
 			drawLoadingText(65, "Requesting animations");
+
 			int fileRequestCount = onDemandRequester.fileCount(1);
-			for (int l = 0; l < fileRequestCount; l++)
-				onDemandRequester.request(1, l);
+
+			for (int i = 0; i < fileRequestCount; i++)
+				onDemandRequester.request(1, i);
 
 			while (onDemandRequester.method333() > 0) {
-				int i1 = fileRequestCount - onDemandRequester.method333();
-				if (i1 > 0)
-					drawLoadingText(65, "Loading animations - " + (i1 * 100) / fileRequestCount + "%");
+				int total = fileRequestCount - onDemandRequester.method333();
+
+				if (total > 0)
+					drawLoadingText(65, "Loading animations - " + (total * 100) / fileRequestCount + "%");
+
 				method77(false);
+
 				try {
 					Thread.sleep(100L);
-				} catch (Exception _ex) {
-				}
+				} catch (Exception ignored) {}
+
 				if (onDemandRequester.requestFails > 3) {
 					method19("ondemand");
 					return;
 				}
 			}
+
 			drawLoadingText(70, "Requesting models");
+
 			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int j1 = 0; j1 < fileRequestCount; j1++) {
-				int k1 = onDemandRequester.modelId(j1);
-				if ((k1 & 1) != 0)
-					onDemandRequester.request(0, j1);
+
+			for (int i = 0; i < fileRequestCount; i++) {
+				int id = onDemandRequester.modelId(i);
+
+				if ((id & 1) != 0)
+					onDemandRequester.request(0, i);
 			}
 
 			fileRequestCount = onDemandRequester.method333();
+
 			while (onDemandRequester.method333() > 0) {
-				int l1 = fileRequestCount - onDemandRequester.method333();
-				if (l1 > 0)
-					drawLoadingText(70, "Loading models - " + (l1 * 100) / fileRequestCount + "%");
+				int total = fileRequestCount - onDemandRequester.method333();
+
+				if (total > 0)
+					drawLoadingText(70, "Loading models - " + (total * 100) / fileRequestCount + "%");
+
 				method77(false);
+
 				try {
 					Thread.sleep(100L);
-				} catch (Exception _ex) {
-				}
+				} catch (Exception ignored) {}
 			}
+
 			if (stores[0] != null) {
 				drawLoadingText(75, "Requesting maps");
 				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 48, 0)); // these are the maps around tutorial island
@@ -4974,70 +5002,86 @@ public class Game extends GameShell {
 				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 47, 1));
 				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 148, 0));
 				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 148, 1));
+
 				fileRequestCount = onDemandRequester.method333();
+
 				while (onDemandRequester.method333() > 0) {
-					int i2 = fileRequestCount - onDemandRequester.method333();
-					if (i2 > 0)
-						drawLoadingText(75, "Loading maps - " + (i2 * 100) / fileRequestCount + "%");
+					int total = fileRequestCount - onDemandRequester.method333();
+
+					if (total > 0)
+						drawLoadingText(75, "Loading maps - " + (total * 100) / fileRequestCount + "%");
+
 					method77(false);
+
 					try {
 						Thread.sleep(100L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 			}
+
 			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int j2 = 0; j2 < fileRequestCount; j2++) {
-				int k2 = onDemandRequester.modelId(j2);
-				byte byte0 = 0;
-				if ((k2 & 8) != 0)
-					byte0 = 10;
-				else if ((k2 & 0x20) != 0)
-					byte0 = 9;
-				else if ((k2 & 0x10) != 0)
-					byte0 = 8;
-				else if ((k2 & 0x40) != 0)
-					byte0 = 7;
-				else if ((k2 & 0x80) != 0)
-					byte0 = 6;
-				else if ((k2 & 2) != 0)
-					byte0 = 5;
-				else if ((k2 & 4) != 0)
-					byte0 = 4;
-				if ((k2 & 1) != 0)
-					byte0 = 3;
-				if (byte0 != 0)
-					onDemandRequester.setPriority(byte0, 0, j2);
+
+			for (int i = 0; i < fileRequestCount; i++) {
+				int id = onDemandRequester.modelId(i);
+				byte priority = 0;
+
+				if ((id & 8) != 0)
+					priority = 10;
+				else if ((id & 0x20) != 0)
+					priority = 9;
+				else if ((id & 0x10) != 0)
+					priority = 8;
+				else if ((id & 0x40) != 0)
+					priority = 7;
+				else if ((id & 0x80) != 0)
+					priority = 6;
+				else if ((id & 2) != 0)
+					priority = 5;
+				else if ((id & 4) != 0)
+					priority = 4;
+				if ((id & 1) != 0)
+					priority = 3;
+
+				if (priority != 0)
+					onDemandRequester.setPriority(priority, 0, i);
 			}
 
 			onDemandRequester.preloadRegions(memberServer);
+
 			if (!lowMemory) {
 				fileRequestCount = onDemandRequester.fileCount(2);
-				for (int id = 1; id < fileRequestCount; id++)
-					if (onDemandRequester.midiIdEqualsOne(id))
-						onDemandRequester.setPriority((byte) 1, 2, id);
 
+				for (int i = 1; i < fileRequestCount; i++) {
+                    if (onDemandRequester.midiIdEqualsOne(i))
+                        onDemandRequester.setPriority((byte) 1, 2, i);
+                }
 			}
+
 			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int i3 = 0; i3 < fileRequestCount; i3++) {
-				int j3 = onDemandRequester.modelId(i3);
-				if (j3 == 0 && onDemandRequester.anInt1350 < 200)
-					onDemandRequester.setPriority((byte) 1, 0, i3);
+
+			for (int i = 0; i < fileRequestCount; i++) {
+				int id = onDemandRequester.modelId(i);
+
+				if (id == 0 && onDemandRequester.anInt1350 < 200)
+					onDemandRequester.setPriority((byte) 1, 0, i);
 			}
 
 			drawLoadingText(80, "Unpacking media");
+
 			inventoryBackgroundImage = new IndexedImage(archiveMedia, "invback", 0);
 			chatboxBackgroundImage = new IndexedImage(archiveMedia, "chatback", 0);
 			minimapBackgroundImage = new IndexedImage(archiveMedia, "mapback", 0);
 			anIndexedImage1052 = new IndexedImage(archiveMedia, "backbase1", 0);
 			anIndexedImage1053 = new IndexedImage(archiveMedia, "backbase2", 0);
 			anIndexedImage1054 = new IndexedImage(archiveMedia, "backhmid1", 0);
-			for (int tab = 0; tab < 13; tab++)
-				tabIcon[tab] = new IndexedImage(archiveMedia, "sideicons", tab);
+
+			for (int i = 0; i < 13; i++)
+				tabIcon[i] = new IndexedImage(archiveMedia, "sideicons", i);
 
 			minimapCompass = new ImageRGB(archiveMedia, "compass", 0);
 			minimapEdge = new ImageRGB(archiveMedia, "mapedge", 0);
 			minimapEdge.trim();
+
 			for (int i = 0; i < 72; i++)
 				aClass50_Sub1_Sub1_Sub3Array1153[i] = new IndexedImage(archiveMedia, "mapscene", i);
 
@@ -5059,6 +5103,7 @@ public class Game extends GameShell {
 			aClass50_Sub1_Sub1_Sub1_1086 = new ImageRGB(archiveMedia, "overlay_multiway", 0);
 			mapFlagMarker = new ImageRGB(archiveMedia, "mapmarker", 0);
 			aClass50_Sub1_Sub1_Sub1_1037 = new ImageRGB(archiveMedia, "mapmarker", 1);
+
 			for (int i = 0; i < 8; i++)
 				cursorCross[i] = new ImageRGB(archiveMedia, "cross", i);
 
@@ -5074,59 +5119,77 @@ public class Game extends GameShell {
 			aClass50_Sub1_Sub1_Sub3_882 = new IndexedImage(archiveMedia, "redstone3", 0);
 			aClass50_Sub1_Sub1_Sub3_883 = new IndexedImage(archiveMedia, "redstone1", 0);
 			aClass50_Sub1_Sub1_Sub3_883.flipHorizontal();
+
 			aClass50_Sub1_Sub1_Sub3_884 = new IndexedImage(archiveMedia, "redstone2", 0);
 			aClass50_Sub1_Sub1_Sub3_884.flipHorizontal();
+
 			aClass50_Sub1_Sub1_Sub3_983 = new IndexedImage(archiveMedia, "redstone1", 0);
 			aClass50_Sub1_Sub1_Sub3_983.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_984 = new IndexedImage(archiveMedia, "redstone2", 0);
 			aClass50_Sub1_Sub1_Sub3_984.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_985 = new IndexedImage(archiveMedia, "redstone3", 0);
 			aClass50_Sub1_Sub1_Sub3_985.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_986 = new IndexedImage(archiveMedia, "redstone1", 0);
 			aClass50_Sub1_Sub1_Sub3_986.flipHorizontal();
 			aClass50_Sub1_Sub1_Sub3_986.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_987 = new IndexedImage(archiveMedia, "redstone2", 0);
 			aClass50_Sub1_Sub1_Sub3_987.flipHorizontal();
 			aClass50_Sub1_Sub1_Sub3_987.flipVertical();
+
 			for (int i = 0; i < 2; i++)
 				moderatorIcon[i] = new IndexedImage(archiveMedia, "mod_icons", i);
 
 			ImageRGB image = new ImageRGB(archiveMedia, "backleft1", 0);
 			aClass18_906 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backleft2", 0);
 			aClass18_907 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backright1", 0);
 			aClass18_908 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backright2", 0);
 			aClass18_909 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backtop1", 0);
 			aClass18_910 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backvmid1", 0);
 			aClass18_911 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backvmid2", 0);
 			aClass18_912 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backvmid3", 0);
 			aClass18_913 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backhmid2", 0);
 			aClass18_914 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
-			int l5 = (int) (Math.random() * 21D) - 10;
-			int i6 = (int) (Math.random() * 21D) - 10;
-			int j6 = (int) (Math.random() * 21D) - 10;
-			int k6 = (int) (Math.random() * 41D) - 20;
-			for (int l6 = 0; l6 < 100; l6++) {
-				if (worldMapHintIcons[l6] != null)
-					worldMapHintIcons[l6].adjustRGB(l5 + k6, i6 + k6, j6 + k6);
-				if (aClass50_Sub1_Sub1_Sub3Array1153[l6] != null)
-					aClass50_Sub1_Sub1_Sub3Array1153[l6].mixPalette(l5 + k6, i6 + k6, j6 + k6);
+
+            int offset = (int) (Math.random() * 41D) - 20;
+			int redOffset = (int) ((Math.random() * 21D) - 10) + offset;
+			int greenOffset = (int) ((Math.random() * 21D) - 10) + offset;
+            int blueOffset = (int) ((Math.random() * 21D) - 10) + offset;
+
+			for (int i = 0; i < 100; i++) {
+				if (worldMapHintIcons[i] != null)
+					worldMapHintIcons[i].adjustRGB(redOffset, greenOffset, blueOffset);
+
+				if (aClass50_Sub1_Sub1_Sub3Array1153[i] != null)
+					aClass50_Sub1_Sub1_Sub3Array1153[i].mixPalette(redOffset, greenOffset, blueOffset);
 			}
 
 			drawLoadingText(83, "Unpacking textures");
@@ -5143,77 +5206,100 @@ public class Game extends GameShell {
 			SpotAnimation.load(configArchive);
 			Varp.load(configArchive);
 			Varbit.load(configArchive);
+
 			ItemDefinition.memberServer = memberServer;
+
 			if (!lowMemory) {
 				drawLoadingText(90, "Unpacking sounds");
-				byte bs[] = soundArchive.getFile("sounds.dat");
-				Buffer buffer = new Buffer(bs);
+
+				byte[] bytes = soundArchive.getFile("sounds.dat");
+				Buffer buffer = new Buffer(bytes);
+
 				SoundTrack.load(buffer);
 			}
+
 			drawLoadingText(95, "Unpacking interfaces");
-			TypeFace[] typefaces = {fontSmall,
-					fontNormal, fontBold, fontFancy};
+
+			TypeFace[] typefaces = {fontSmall, fontNormal, fontBold, fontFancy};
+
 			Widget.load(archiveInterface, typefaces, archiveMedia);
 			drawLoadingText(100, "Preparing game engine");
-			for (int i7 = 0; i7 < 33; i7++) {
-				int j7 = 999;
-				int l7 = 0;
-				for (int j8 = 0; j8 < 34; j8++) {
-					if (minimapBackgroundImage.pixels[j8 + i7 * minimapBackgroundImage.width] == 0) {
-						if (j7 == 999)
-							j7 = j8;
+
+			for (int y = 0; y < 33; y++) {
+				int minWidth = 999;
+				int maxWidth = 0;
+
+				for (int x = 0; x < 34; x++) {
+					if (minimapBackgroundImage.pixels[x + y * minimapBackgroundImage.width] == 0) {
+						if (minWidth == 999)
+							minWidth = x;
+
 						continue;
 					}
-					if (j7 == 999)
+
+					if (minWidth == 999)
 						continue;
-					l7 = j8;
+
+					maxWidth = x;
 					break;
 				}
 
-				anIntArray1180[i7] = j7;
-				anIntArray1286[i7] = l7 - j7;
+				anIntArray1180[y] = minWidth;
+				anIntArray1286[y] = maxWidth - minWidth;
 			}
 
-			for (int k7 = 5; k7 < 156; k7++) {
-				int i8 = 999;
-				int k8 = 0;
-				for (int i9 = 25; i9 < 172; i9++) {
-					if (minimapBackgroundImage.pixels[i9 + k7 * minimapBackgroundImage.width] == 0
-							&& (i9 > 34 || k7 > 34)) {
-						if (i8 == 999)
-							i8 = i9;
+			for (int y = 5; y < 156; y++) {
+				int minWidth = 999;
+				int maxWidth = 0;
+
+				for (int x = 25; x < 172; x++) {
+					if (minimapBackgroundImage.pixels[x + y * minimapBackgroundImage.width] == 0
+                            && (x > 34 || y > 34)) {
+						if (minWidth == 999)
+							minWidth = x;
+
 						continue;
 					}
-					if (i8 == 999)
+
+					if (minWidth == 999)
 						continue;
-					k8 = i9;
+
+					maxWidth = x;
 					break;
 				}
 
-				anIntArray1019[k7 - 5] = i8 - 25;
-				anIntArray920[k7 - 5] = k8 - i8;
+				anIntArray1019[y - 5] = minWidth - 25;
+				anIntArray920[y - 5] = maxWidth - minWidth;
 			}
 
 			Rasterizer3D.method494(765, 503);
 			anIntArray1003 = Rasterizer3D.lineOffsets;
+
 			Rasterizer3D.method494(479, 96);
 			chatboxLineOffsets = Rasterizer3D.lineOffsets;
+
 			Rasterizer3D.method494(190, 261);
 			anIntArray1001 = Rasterizer3D.lineOffsets;
+
 			Rasterizer3D.method494(512, 334);
 			anIntArray1002 = Rasterizer3D.lineOffsets;
+
 			int ai[] = new int[9];
-			for (int l8 = 0; l8 < 9; l8++) {
-				int j9 = 128 + l8 * 32 + 15;
+
+			for (int i = 0; i < 9; i++) { //TODO: Needs refactoring
+				int j9 = 128 + i * 32 + 15;
 				int k9 = 600 + j9 * 3;
 				int l9 = Rasterizer3D.SINE[j9];
-				ai[l8] = k9 * l9 >> 16;
+				ai[i] = k9 * l9 >> 16;
 			}
 
 			Scene.method277(500, 800, 512, 334, ai);
 			ChatCensor.load(chatArchive);
+
 			mouseCapturer = new MouseCapturer(this);
+
 			startRunnable(mouseCapturer, 10);
+
 			GameObject.client = this;
 			GameObjectDefinition.client = this;
 			ActorDefinition.client = this;
@@ -5221,6 +5307,7 @@ public class Game extends GameShell {
 		} catch (Exception exception) {
 			SignLink.reportError("loaderror " + aString1027 + " " + anInt1322);
 		}
+
 		aBoolean1283 = true;
 	}
 
