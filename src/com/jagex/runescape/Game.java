@@ -857,8 +857,8 @@ public class Game extends GameShell {
 			while (aBoolean1243) {
 				anInt1101++;
 
-				method81((byte) 1);
-				method81((byte) 1);
+				calculateFlamePositions();
+				calculateFlamePositions();
 				method98(47);
 
 				if (++cycle > 10) {
@@ -6698,65 +6698,67 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public void method81(byte byte0) {
-		char c = '\u0100';
-		for (int i = 10; i < 117; i++) {
-			int j = (int) (Math.random() * 100D);
-			if (j < 50)
-				anIntArray1084[i + (c - 2 << 7)] = 255;
+	private void calculateFlamePositions() { //TODO: Needs more refactoring
+		int c = 256;
+
+		for (int x = 10; x < 117; x++) {
+			int rand = (int) (Math.random() * 100D);
+
+			if (rand < 50)
+				anIntArray1084[x + (c - 2 << 7)] = 255;
 		}
 
-		for (int k = 0; k < 100; k++) {
-			int l = (int) (Math.random() * 124D) + 2;
-			int j1 = (int) (Math.random() * 128D) + 128;
-			int j2 = l + (j1 << 7);
-			anIntArray1084[j2] = 192;
+		for (int i = 0; i < 100; i++) {
+            int x = (int) (Math.random() * 124D) + 2;
+            int y = (int) (Math.random() * 128D) + 128;
+			int pixel = x + (y << 7);
+			anIntArray1084[pixel] = 192;
 		}
 
-		for (int i1 = 1; i1 < c - 1; i1++) {
-			for (int k1 = 1; k1 < 127; k1++) {
-				int k2 = k1 + (i1 << 7);
-				anIntArray1085[k2] = (anIntArray1084[k2 - 1] + anIntArray1084[k2 + 1] + anIntArray1084[k2 - 128] + anIntArray1084[k2 + 128]) / 4;
+		for (int y = 1; y < c - 1; y++) {
+			for (int x = 1; x < 127; x++) {
+				int pixel = x + (y << 7);
+				anIntArray1085[pixel] = (anIntArray1084[pixel - 1] + anIntArray1084[pixel + 1] + anIntArray1084[pixel - 128] + anIntArray1084[pixel + 128]) / 4;
 			}
-
 		}
 
 		anInt1238 += 128;
+
 		if (anInt1238 > anIntArray1176.length) {
 			anInt1238 -= anIntArray1176.length;
-			int l1 = (int) (Math.random() * 12D);
-			method83(titleFlameEmblem[l1], 0);
+			int rand = (int) (Math.random() * 12D);
+
+			method83(titleFlameEmblem[rand], 0);
 		}
-		for (int i2 = 1; i2 < c - 1; i2++) {
-			for (int l2 = 1; l2 < 127; l2++) {
-				int k3 = l2 + (i2 << 7);
-				int i4 = anIntArray1085[k3 + 128] - anIntArray1176[k3 + anInt1238 & anIntArray1176.length - 1] / 5;
+
+		for (int y = 1; y < c - 1; y++) {
+			for (int x = 1; x < 127; x++) {
+				int pixel = x + (y << 7);
+				int i4 = anIntArray1085[pixel + 128] - anIntArray1176[pixel + anInt1238 & anIntArray1176.length - 1] / 5;
+
 				if (i4 < 0)
 					i4 = 0;
-				anIntArray1084[k3] = i4;
+
+				anIntArray1084[pixel] = i4;
 			}
-
 		}
 
-		if (byte0 == 1) {
-			byte0 = 0;
-		} else {
-			for (int i3 = 1; i3 > 0; i3++);
-		}
-		for (int j3 = 0; j3 < c - 1; j3++)
-			anIntArray1166[j3] = anIntArray1166[j3 + 1];
+		for (int i = 0; i < c - 1; i++)
+			anIntArray1166[i] = anIntArray1166[i + 1];
 
 		anIntArray1166[c - 1] = (int) (Math.sin((double) pulseCycle / 14D) * 16D + Math.sin((double) pulseCycle / 15D)
 				* 14D + Math.sin((double) pulseCycle / 16D) * 12D);
+
 		if (anInt1047 > 0)
 			anInt1047 -= 4;
 		if (anInt1048 > 0)
 			anInt1048 -= 4;
 		if (anInt1047 == 0 && anInt1048 == 0) {
-			int l3 = (int) (Math.random() * 2000D);
-			if (l3 == 0)
+			int rand = (int) (Math.random() * 2000D);
+
+			if (rand == 0)
 				anInt1047 = 1024;
-			if (l3 == 1)
+			if (rand == 1)
 				anInt1048 = 1024;
 		}
 	}
