@@ -3581,14 +3581,16 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void parsePlayerBlocks(Buffer vec, int packetSize) {
-		for (int k = 0; k < updatedPlayerCount; k++) {
-			int id = updatedPlayers[k];
-			Player plr = players[id];
-			int mask = vec.getUnsignedByte();
+	private void parsePlayerBlocks(Buffer buffer) {
+		for (int i = 0; i < updatedPlayerCount; i++) {
+			int id = updatedPlayers[i];
+			Player player = players[id];
+			int mask = buffer.getUnsignedByte();
+
 			if ((mask & 0x20) != 0)
-				mask += vec.getUnsignedByte() << 8;
-			parsePlayerBlock(id, plr, mask, vec);
+				mask += buffer.getUnsignedByte() << 8;
+
+			parsePlayerBlock(id, player, mask, buffer);
 		}
 	}
 
@@ -7795,7 +7797,7 @@ public class Game extends GameShell {
 		updateOtherPlayerMovement(packetSize, vec);
 		j = 40 / j;
 		addNewPlayers(packetSize, vec);
-		parsePlayerBlocks(vec, packetSize);
+		parsePlayerBlocks(vec);
 		for (int k = 0; k < removePlayerCount; k++) {
 			int l = removePlayers[k];
 			if (players[l].pulseCycle != pulseCycle)
