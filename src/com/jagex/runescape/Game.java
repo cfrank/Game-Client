@@ -859,7 +859,7 @@ public class Game extends GameShell {
 
 				calculateFlamePositions();
 				calculateFlamePositions();
-				method98(47);
+				renderFlames();
 
 				if (++cycle > 10) {
 					long currentTime = System.currentTimeMillis();
@@ -7802,44 +7802,48 @@ public class Game extends GameShell {
 			return super.getParameter(s);
 	}
 
-	public void method98(int i) {
-		char c = '\u0100';
+	private void renderFlames() { //TODO: Needs more refactoring
+		int c = 256;
+
 		if (anInt1047 > 0) {
-			for (int j = 0; j < 256; j++)
+			for (int j = 0; j < 256; j++) {
 				if (anInt1047 > 768)
 					anIntArray1310[j] = method106(anIntArray1311[j], anIntArray1312[j], 1024 - anInt1047, 8);
 				else if (anInt1047 > 256)
 					anIntArray1310[j] = anIntArray1312[j];
 				else
 					anIntArray1310[j] = method106(anIntArray1312[j], anIntArray1311[j], 256 - anInt1047, 8);
-
+			}
 		} else if (anInt1048 > 0) {
-			for (int k = 0; k < 256; k++)
+			for (int k = 0; k < 256; k++) {
 				if (anInt1048 > 768)
 					anIntArray1310[k] = method106(anIntArray1311[k], anIntArray1313[k], 1024 - anInt1048, 8);
 				else if (anInt1048 > 256)
 					anIntArray1310[k] = anIntArray1313[k];
 				else
 					anIntArray1310[k] = method106(anIntArray1313[k], anIntArray1311[k], 256 - anInt1048, 8);
-
+			}
 		} else {
-			for (int l = 0; l < 256; l++)
-				anIntArray1310[l] = anIntArray1311[l];
-
+			System.arraycopy(anIntArray1311, 0, anIntArray1310, 0, 256);
 		}
-		for (int i1 = 0; i1 < 33920; i1++)
-			flameLeftBackground.pixels[i1] = anImageRGB1226.pixels[i1];
+
+		System.arraycopy(anImageRGB1226.pixels, 0, flameLeftBackground.pixels, 0, 33920);
 
 		int j1 = 0;
 		int k1 = 1152;
+
 		for (int l1 = 1; l1 < c - 1; l1++) {
 			int i2 = (anIntArray1166[l1] * (c - l1)) / c;
 			int k2 = 22 + i2;
+
 			if (k2 < 0)
 				k2 = 0;
+
 			j1 += k2;
+
 			for (int i3 = k2; i3 < 128; i3++) {
 				int k3 = anIntArray1084[j1++];
+
 				if (k3 != 0) {
 					int i4 = k3;
 					int k4 = 256 - k3;
@@ -7856,18 +7860,20 @@ public class Game extends GameShell {
 		}
 
 		flameLeftBackground.drawGraphics(0, 0, super.gameGraphics);
-		i = 66 / i;
-		for (int j2 = 0; j2 < 33920; j2++)
-			flameRightBackground.pixels[j2] = anImageRGB1227.pixels[j2];
+
+		System.arraycopy(anImageRGB1227.pixels, 0, flameRightBackground.pixels, 0, 33920);
 
 		j1 = 0;
 		k1 = 1176;
+
 		for (int l2 = 1; l2 < c - 1; l2++) {
 			int j3 = (anIntArray1166[l2] * (c - l2)) / c;
 			int l3 = 103 - j3;
 			k1 += j3;
+
 			for (int j4 = 0; j4 < l3; j4++) {
 				int l4 = anIntArray1084[j1++];
+
 				if (l4 != 0) {
 					int j5 = l4;
 					int k5 = 256 - l4;
