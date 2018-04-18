@@ -4696,138 +4696,173 @@ public class Game extends GameShell {
 
 	}
 
-	public void parsePlayerBlock(int id, Player plr, int mask, Buffer vec) {
+	private void parsePlayerBlock(int id, Player player, int mask, Buffer buffer) {
 		if ((mask & 8) != 0) {
-			int i1 = vec.getUnsignedLEShort();
-			if (i1 == 65535)
-				i1 = -1;
-			int k2 = vec.getByteSubtracted();
-			if (i1 == plr.emoteAnimation && i1 != -1) {
-				int k3 = AnimationSequence.animations[i1].anInt307;
-				if (k3 == 1) {
-					plr.displayedEmoteFrames = 0;
-					plr.anInt1626 = 0;
-					plr.animationDelay = k2;
-					plr.anInt1628 = 0;
+			int animation = buffer.getUnsignedLEShort();
+
+			if (animation == 65535)
+				animation = -1;
+
+			int delay = buffer.getByteSubtracted();
+
+			if (animation == player.emoteAnimation && animation != -1) {
+				int mode = AnimationSequence.animations[animation].anInt307;
+
+				if (mode == 1) {
+					player.displayedEmoteFrames = 0;
+					player.anInt1626 = 0;
+					player.animationDelay = delay;
+					player.anInt1628 = 0;
 				}
-				if (k3 == 2)
-					plr.anInt1628 = 0;
-			} else if (i1 == -1
-					|| plr.emoteAnimation == -1
-					|| AnimationSequence.animations[i1].anInt301 >= AnimationSequence.animations[plr.emoteAnimation].anInt301) {
-				plr.emoteAnimation = i1;
-				plr.displayedEmoteFrames = 0;
-				plr.anInt1626 = 0;
-				plr.animationDelay = k2;
-				plr.anInt1628 = 0;
-				plr.anInt1613 = plr.pathLength;
+
+				if (mode == 2)
+					player.anInt1628 = 0;
+			} else if (animation == -1 || player.emoteAnimation == -1
+					|| AnimationSequence.animations[animation].anInt301 >= AnimationSequence.animations[player.emoteAnimation].anInt301) {
+				player.emoteAnimation = animation;
+				player.displayedEmoteFrames = 0;
+				player.anInt1626 = 0;
+				player.animationDelay = delay;
+				player.anInt1628 = 0;
+				player.anInt1613 = player.pathLength;
 			}
 		}
+
 		if ((mask & 0x10) != 0) {
-			plr.forcedChat = vec.getString();
-			if (plr.forcedChat.charAt(0) == '~') {
-				plr.forcedChat = plr.forcedChat.substring(1);
-				addChatMessage(plr.playerName, plr.forcedChat, 2);
-			} else if (plr == localPlayer)
-				addChatMessage(plr.playerName, plr.forcedChat, 2);
-			plr.textColour = 0;
-			plr.textEffect = 0;
-			plr.textCycle = 150;
+			player.forcedChat = buffer.getString();
+
+			if (player.forcedChat.charAt(0) == '~') {
+				player.forcedChat = player.forcedChat.substring(1);
+				addChatMessage(player.playerName, player.forcedChat, 2);
+			} else if (player == localPlayer) {
+                addChatMessage(player.playerName, player.forcedChat, 2);
+            }
+
+			player.textColour = 0;
+			player.textEffect = 0;
+			player.textCycle = 150;
 		}
+
 		if ((mask & 0x100) != 0) {
-			plr.anInt1602 = vec.getByteAdded();
-			plr.anInt1604 = vec.getByteNegated();
-			plr.anInt1603 = vec.getByteSubtracted();
-			plr.anInt1605 = vec.getUnsignedByte();
-			plr.anInt1606 = vec.getUnsignedLEShort() + pulseCycle;
-			plr.anInt1607 = vec.method550() + pulseCycle;
-			plr.anInt1608 = vec.getUnsignedByte();
-			plr.resetPath();
+			player.anInt1602 = buffer.getByteAdded();
+			player.anInt1604 = buffer.getByteNegated();
+			player.anInt1603 = buffer.getByteSubtracted();
+			player.anInt1605 = buffer.getUnsignedByte();
+			player.anInt1606 = buffer.getUnsignedLEShort() + pulseCycle;
+			player.anInt1607 = buffer.method550() + pulseCycle;
+			player.anInt1608 = buffer.getUnsignedByte();
+
+			player.resetPath();
 		}
+
 		if ((mask & 1) != 0) {
-			plr.anInt1609 = vec.method550();
-			if (plr.anInt1609 == 65535)
-				plr.anInt1609 = -1;
+			player.anInt1609 = buffer.method550();
+
+			if (player.anInt1609 == 65535)
+				player.anInt1609 = -1;
 		}
+
 		if ((mask & 2) != 0) {
-			plr.anInt1598 = vec.getUnsignedLEShort();
-			plr.anInt1599 = vec.getUnsignedLEShort();
+			player.anInt1598 = buffer.getUnsignedLEShort();
+			player.anInt1599 = buffer.getUnsignedLEShort();
 		}
+
 		if ((mask & 0x200) != 0) {
-			plr.graphic = vec.method550();
-			int j1 = vec.method556();
-			plr.spotAnimationDelay = j1 >> 16;
-			plr.anInt1617 = pulseCycle + (j1 & 0xffff);
-			plr.currentAnimation = 0;
-			plr.anInt1616 = 0;
-			if (plr.anInt1617 > pulseCycle)
-				plr.currentAnimation = -1;
-			if (plr.graphic == 65535)
-				plr.graphic = -1;
+			player.graphic = buffer.method550();
+			int heightAndDelay = buffer.method556();
+			player.spotAnimationDelay = heightAndDelay >> 16;
+			player.anInt1617 = pulseCycle + (heightAndDelay & 0xffff);
+			player.currentAnimation = 0;
+			player.anInt1616 = 0;
+
+			if (player.anInt1617 > pulseCycle)
+				player.currentAnimation = -1;
+
+			if (player.graphic == 65535)
+				player.graphic = -1;
 		}
+
 		if ((mask & 4) != 0) {
-			int size = vec.getUnsignedByte();
+			int size = buffer.getUnsignedByte();
 			byte bytes[] = new byte[size];
 			Buffer appearance = new Buffer(bytes);
-			vec.getBytesReverse(bytes, 0, size);
+
+			buffer.getBytesReverse(bytes, 0, size);
+
 			cachedAppearances[id] = appearance;
-			plr.updateAppearance(appearance);
+
+			player.updateAppearance(appearance);
 		}
+
 		if ((mask & 0x400) != 0) {
-			int l1 = vec.getByteAdded();
-			int l2 = vec.getByteSubtracted();
-			plr.updateHits(l2, l1, pulseCycle);
-			plr.endCycle = pulseCycle + 300;
-			plr.anInt1596 = vec.getByteNegated();
-			plr.anInt1597 = vec.getUnsignedByte();
+			int damage = buffer.getByteAdded();
+			int type = buffer.getByteSubtracted();
+
+			player.updateHits(type, damage, pulseCycle);
+
+			player.endCycle = pulseCycle + 300;
+			player.anInt1596 = buffer.getByteNegated();
+			player.anInt1597 = buffer.getUnsignedByte();
 		}
+
 		if ((mask & 0x40) != 0) {
-			int i2 = vec.getUnsignedLEShort();
-			int rights = vec.getByteNegated();
-			int length = vec.getByteAdded();
-			int i4 = vec.currentPosition;
-			if (plr.playerName != null && plr.visible) {
-				long l4 = TextUtils.nameToLong(plr.playerName);
-				boolean flag = false;
+			int effectsAndColour = buffer.getUnsignedLEShort();
+			int rights = buffer.getByteNegated();
+			int length = buffer.getByteAdded();
+			int currentPosition = buffer.currentPosition;
+
+			if (player.playerName != null && player.visible) {
+				long nameLong = TextUtils.nameToLong(player.playerName);
+				boolean ignored = false;
+
 				if (rights <= 1) {
-					for (int j4 = 0; j4 < ignoresCount; j4++) {
-						if (ignores[j4] != l4)
+					for (int i = 0; i < ignoresCount; i++) {
+						if (ignores[i] != nameLong)
 							continue;
-						flag = true;
+
+						ignored = true;
 						break;
 					}
 
 				}
-				if (!flag && !inTutorialIsland)
-					try {
-						chatBuffer.currentPosition = 0;
-						vec.getBytesAdded(chatBuffer.buffer, 0, length);
-						chatBuffer.currentPosition = 0;
-						String s = ChatEncoder.get(length, chatBuffer);
-						s = ChatCensor.censorString(s);
-						plr.forcedChat = s;
-						plr.textColour = i2 >> 8;
-						plr.textEffect = i2 & 0xff;
-						plr.textCycle = 150;
-						if (rights == 2 || rights == 3)
-							addChatMessage("@cr2@" + plr.playerName, s, 1);
-						else if (rights == 1)
-							addChatMessage("@cr1@" + plr.playerName, s, 1);
-						else
-							addChatMessage(plr.playerName, s, 2);
-					} catch (Exception exception) {
-						SignLink.reportError("cde2");
-					}
+
+				if (!ignored && !inTutorialIsland) {
+                    try {
+                        chatBuffer.currentPosition = 0;
+
+                        buffer.getBytesAdded(chatBuffer.buffer, 0, length);
+
+                        chatBuffer.currentPosition = 0;
+                        String message = ChatCensor.censorString(ChatEncoder.get(length, chatBuffer));
+                        player.forcedChat = message;
+                        player.textColour = effectsAndColour >> 8;
+                        player.textEffect = effectsAndColour & 0xff;
+                        player.textCycle = 150;
+
+                        if (rights == 2 || rights == 3)
+                            addChatMessage("@cr2@" + player.playerName, message, 1);
+                        else if (rights == 1)
+                            addChatMessage("@cr1@" + player.playerName, message, 1);
+                        else
+                            addChatMessage(player.playerName, message, 2);
+                    } catch (Exception exception) {
+                        SignLink.reportError("cde2");
+                    }
+                }
 			}
-			vec.currentPosition = i4 + length;
+
+			buffer.currentPosition = currentPosition + length;
 		}
+
 		if ((mask & 0x80) != 0) {
-			int j2 = vec.getByteSubtracted();
-			int j3 = vec.getByteNegated();
-			plr.updateHits(j3, j2, pulseCycle);
-			plr.endCycle = pulseCycle + 300;
-			plr.anInt1596 = vec.getByteSubtracted();
-			plr.anInt1597 = vec.getUnsignedByte();
+			int damage = buffer.getByteSubtracted();
+			int type = buffer.getByteNegated();
+
+			player.updateHits(type, damage, pulseCycle);
+
+			player.endCycle = pulseCycle + 300;
+			player.anInt1596 = buffer.getByteSubtracted();
+			player.anInt1597 = buffer.getUnsignedByte();
 		}
 	}
 
