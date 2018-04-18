@@ -4834,6 +4834,7 @@ public class Game extends GameShell {
 	public void resetTitleScreen() {
 		if (aClass18_1198 != null)
 			return;
+
 		super.imageProducer = null;
 		chatboxProducingGraphicsBuffer = null;
 		aClass18_1157 = null;
@@ -4844,26 +4845,36 @@ public class Game extends GameShell {
 
 		flameLeftBackground = new ProducingGraphicsBuffer(128, 265, getParentComponent());
 		Rasterizer.resetPixels();
+
 		flameRightBackground = new ProducingGraphicsBuffer(128, 265, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1198 = new ProducingGraphicsBuffer(509, 171, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1199 = new ProducingGraphicsBuffer(360, 132, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1200 = new ProducingGraphicsBuffer(360, 200, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1203 = new ProducingGraphicsBuffer(202, 238, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1204 = new ProducingGraphicsBuffer(203, 238, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1205 = new ProducingGraphicsBuffer(74, 94, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1206 = new ProducingGraphicsBuffer(75, 94, getParentComponent());
 		Rasterizer.resetPixels();
+
 		if (titleArchive != null) {
 			prepareTitleBackground();
 			prepareTitle();
 		}
+
 		aBoolean1046 = true;
 	}
 
