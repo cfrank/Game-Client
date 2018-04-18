@@ -5180,16 +5180,16 @@ public class Game extends GameShell {
 			image.drawInverse(0, 0);
 
             int offset = (int) (Math.random() * 41D) - 20;
-			int redOffset = (int) ((Math.random() * 21D) - 10) + offset;
-			int greenOffset = (int) ((Math.random() * 21D) - 10) + offset;
-            int blueOffset = (int) ((Math.random() * 21D) - 10) + offset;
+			int red = (int) ((Math.random() * 21D) - 10) + offset;
+			int green = (int) ((Math.random() * 21D) - 10) + offset;
+            int blue = (int) ((Math.random() * 21D) - 10) + offset;
 
 			for (int i = 0; i < 100; i++) {
 				if (worldMapHintIcons[i] != null)
-					worldMapHintIcons[i].adjustRGB(redOffset, greenOffset, blueOffset);
+					worldMapHintIcons[i].adjustRGB(red, green, blue);
 
 				if (aClass50_Sub1_Sub1_Sub3Array1153[i] != null)
-					aClass50_Sub1_Sub1_Sub3Array1153[i].mixPalette(redOffset, greenOffset, blueOffset);
+					aClass50_Sub1_Sub1_Sub3Array1153[i].mixPalette(red, green, blue);
 			}
 
 			drawLoadingText(83, "Unpacking textures");
