@@ -7811,7 +7811,7 @@ public class Game extends GameShell {
 		updatedPlayerCount = 0;
 
 		updateLocalPlayerMovement(buffer);
-		updateOtherPlayerMovement(size, buffer);
+		updateOtherPlayerMovement(buffer);
 		addNewPlayers(size, buffer);
 		parsePlayerBlocks(buffer);
 
@@ -8685,54 +8685,67 @@ public class Game extends GameShell {
 
 	}
 
-	public void updateOtherPlayerMovement(int packetSize, Buffer buffer) {
+	private void updateOtherPlayerMovement(Buffer buffer) {
 		int playerCount = buffer.getBits(8);
-		if (playerCount < localPlayerCount) {
-			for (int l = playerCount; l < localPlayerCount; l++)
-				removePlayers[removePlayerCount++] = playerList[l];
 
+		if (playerCount < localPlayerCount) {
+			for (int i = playerCount; i < localPlayerCount; i++)
+				removePlayers[removePlayerCount++] = playerList[i];
 		}
+
 		if (playerCount > localPlayerCount) {
 			SignLink.reportError(username + " Too many players");
 			throw new RuntimeException("eek");
 		}
+
 		localPlayerCount = 0;
+
 		for (int i = 0; i < playerCount; i++) {
 			int id = playerList[i];
-			Player plr = players[id];
+			Player player = players[id];
 			int updated = buffer.getBits(1);
+
 			if (updated == 0) {
 				playerList[localPlayerCount++] = id;
-				plr.pulseCycle = pulseCycle;
+				player.pulseCycle = pulseCycle;
 			} else {
 				int moveType = buffer.getBits(2);
+
 				if (moveType == 0) {
 					playerList[localPlayerCount++] = id;
-					plr.pulseCycle = pulseCycle;
+					player.pulseCycle = pulseCycle;
 					updatedPlayers[updatedPlayerCount++] = id;
 				} else if (moveType == 1) {
 					playerList[localPlayerCount++] = id;
-					plr.pulseCycle = pulseCycle;
+					player.pulseCycle = pulseCycle;
 					int direction = buffer.getBits(3);
-					plr.move(direction, false);
+
+					player.move(direction, false);
+
 					int blockUpdateRequired = buffer.getBits(1);
+
 					if (blockUpdateRequired == 1)
 						updatedPlayers[updatedPlayerCount++] = id;
 				} else if (moveType == 2) {
 					playerList[localPlayerCount++] = id;
-					plr.pulseCycle = pulseCycle;
+					player.pulseCycle = pulseCycle;
 					int direction1 = buffer.getBits(3);
-					plr.move(direction1, true);
+
+					player.move(direction1, true);
+
 					int direction2 = buffer.getBits(3);
-					plr.move(direction2, true);
+
+					player.move(direction2, true);
+
 					int updateRequired = buffer.getBits(1);
+
 					if (updateRequired == 1)
 						updatedPlayers[updatedPlayerCount++] = id;
-				} else if (moveType == 3)
-					removePlayers[removePlayerCount++] = id;
+				} else if (moveType == 3) {
+                    removePlayers[removePlayerCount++] = id;
+                }
 			}
 		}
-
 	}
 
 	public void renderViewport(int plane) {
