@@ -3594,43 +3594,59 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void updateThisPlayerMovement(int i, boolean flag, Buffer buffer) {
+	private void updateLocalPlayerMovement(Buffer buffer) {
 		buffer.initBitAccess();
+
 		int moved = buffer.getBits(1);
+
 		if (moved == 0)
 			return;
+
 		int moveType = buffer.getBits(2);
-		loggedIn &= flag;
+
 		if (moveType == 0) {
 			updatedPlayers[updatedPlayerCount++] = thisPlayerId;
 			return;
 		}
+
 		if (moveType == 1) {
 			int direction = buffer.getBits(3);
+
 			localPlayer.move(direction, false);
+
 			int blockUpdateRequired = buffer.getBits(1);
+
 			if (blockUpdateRequired == 1)
 				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
 			return;
 		}
+
 		if (moveType == 2) {
 			int direction1 = buffer.getBits(3);
+
 			localPlayer.move(direction1, true);
+
 			int direction2 = buffer.getBits(3);
+
 			localPlayer.move(direction2, true);
+
 			int blockUpdateRequired = buffer.getBits(1);
+
 			if (blockUpdateRequired == 1)
 				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
 			return;
 		}
+
 		if (moveType == 3) {
 			int discardWalkingQueue = buffer.getBits(1);
 			plane = buffer.getBits(2);
 			int localY = buffer.getBits(7);
 			int localX = buffer.getBits(7);
 			int blockUpdateRequired = buffer.getBits(1);
+
 			if (blockUpdateRequired == 1)
 				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
+
 			localPlayer.setPosition(localX, localY, discardWalkingQueue == 1);
 		}
 	}
@@ -7793,7 +7809,7 @@ public class Game extends GameShell {
 	public void updatePlayers(int packetSize, int j, Buffer vec) {
 		removePlayerCount = 0;
 		updatedPlayerCount = 0;
-		updateThisPlayerMovement(packetSize, aBoolean1274, vec);
+		updateLocalPlayerMovement(vec);
 		updateOtherPlayerMovement(packetSize, vec);
 		j = 40 / j;
 		addNewPlayers(packetSize, vec);
