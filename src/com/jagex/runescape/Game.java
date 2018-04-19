@@ -3128,7 +3128,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (opcode == 90) { // player update
-				updatePlayers(packetSize, 69, buffer);
+				updatePlayers(packetSize, buffer);
 				aBoolean1209 = false;
 				opcode = -1;
 				return true;
@@ -7806,32 +7806,33 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public void updatePlayers(int packetSize, int j, Buffer vec) {
+	private void updatePlayers(int size, Buffer buffer) {
 		removePlayerCount = 0;
 		updatedPlayerCount = 0;
-		updateLocalPlayerMovement(vec);
-		updateOtherPlayerMovement(packetSize, vec);
-		j = 40 / j;
-		addNewPlayers(packetSize, vec);
-		parsePlayerBlocks(vec);
-		for (int k = 0; k < removePlayerCount; k++) {
-			int l = removePlayers[k];
-			if (players[l].pulseCycle != pulseCycle)
-				players[l] = null;
+
+		updateLocalPlayerMovement(buffer);
+		updateOtherPlayerMovement(size, buffer);
+		addNewPlayers(size, buffer);
+		parsePlayerBlocks(buffer);
+
+		for (int i = 0; i < removePlayerCount; i++) {
+			int index = removePlayers[i];
+
+			if (players[index].pulseCycle != pulseCycle)
+				players[index] = null;
 		}
 
-		if (vec.currentPosition != packetSize) {
-			SignLink
-					.reportError("Error packet size mismatch in getplayer coord:" + vec.currentPosition + " psize:" + packetSize);
+		if (buffer.currentPosition != size) {
+			SignLink.reportError("Error packet size mismatch in getplayer coord:" + buffer.currentPosition + " psize:" + size);
 			throw new RuntimeException("eek");
 		}
-		for (int i1 = 0; i1 < localPlayerCount; i1++)
-			if (players[playerList[i1]] == null) {
-				SignLink.reportError(username + " null entry in pl list - coord:" + i1 + " size:"
-						+ localPlayerCount);
+
+		for (int i = 0; i < localPlayerCount; i++) {
+			if (players[playerList[i]] == null) {
+				SignLink.reportError(username + " null entry in pl list - coord:" + i + " size:" + localPlayerCount);
 				throw new RuntimeException("eek");
 			}
-
+		}
 	}
 
 	public void removeIgnore(int i, long l) {
