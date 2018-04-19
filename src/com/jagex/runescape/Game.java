@@ -817,33 +817,43 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void addNewPlayers(int newPlayers, Buffer buf) {
-		while (buf.bitPosition + 10 < newPlayers * 8) {
-			int id = buf.getBits(11);
+	private void addNewPlayers(int size, Buffer buffer) {
+		while (buffer.bitPosition + 10 < size * 8) {
+			int id = buffer.getBits(11);
+
 			if (id == 2047)
 				break;
+
 			if (players[id] == null) {
 				players[id] = new Player();
+
 				if (cachedAppearances[id] != null)
 					players[id].updateAppearance(cachedAppearances[id]);
 			}
+
 			playerList[localPlayerCount++] = id;
-			Player plr = players[id];
-			plr.pulseCycle = pulseCycle;
-			int x = buf.getBits(5);
+			Player player = players[id];
+			player.pulseCycle = pulseCycle;
+			int x = buffer.getBits(5);
+
 			if (x > 15)
 				x -= 32;
-			int updated = buf.getBits(1);
+
+			int updated = buffer.getBits(1);
+
 			if (updated == 1)
 				updatedPlayers[updatedPlayerCount++] = id;
-			int discardQueue = buf.getBits(1);
-			int y = buf.getBits(5);
+
+			int discardQueue = buffer.getBits(1);
+			int y = buffer.getBits(5);
+
 			if (y > 15)
 				y -= 32;
-			plr.setPosition(localPlayer.pathX[0] + x, localPlayer.pathY[0] + y,
-					discardQueue == 1);
+
+			player.setPosition(localPlayer.pathX[0] + x, localPlayer.pathY[0] + y, discardQueue == 1);
 		}
-		buf.finishBitAccess();
+
+		buffer.finishBitAccess();
 	}
 
 	private void processFlamesCycle() {
