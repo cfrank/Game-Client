@@ -3196,21 +3196,23 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public void method34(byte byte0) {
+	private void drawMenuTooltip() {
 		if (menuActionRow < 2 && itemSelected == 0 && widgetSelected == 0)
 			return;
-		if (byte0 != -79)
-			return;
-		String s;
+
+		String str;
+
 		if (itemSelected == 1 && menuActionRow < 2)
-			s = "Use " + aString1150 + " with...";
+			str = "Use " + aString1150 + " with...";
 		else if (widgetSelected == 1 && menuActionRow < 2)
-			s = selectedWidgetName + "...";
+			str = selectedWidgetName + "...";
 		else
-			s = menuActionTexts[menuActionRow - 1];
+			str = menuActionTexts[menuActionRow - 1];
+
 		if (menuActionRow > 2)
-			s = s + "@whi@ / " + (menuActionRow - 2) + " more options";
-		fontBold.drawShadowedSeededAlphaString(s, 4, 15, 0xffffff, pulseCycle / 1000);
+			str = str + "@whi@ / " + (menuActionRow - 2) + " more options";
+
+		fontBold.drawShadowedSeededAlphaString(str, 4, 15, 0xffffff, pulseCycle / 1000);
 	}
 
 	public boolean walk(boolean flag, boolean flag1, int dstY, int srcY, int k, int l, int packetType, int j1, int dstX, int l1,
@@ -5961,7 +5963,7 @@ public class Game extends GameShell {
 				}
 				if (!menuOpen) {
 					processRightClick(-521);
-					method34((byte) -79);
+					drawMenuTooltip();
 				} else {
 					method128(false);
 				}
@@ -8475,7 +8477,7 @@ public class Game extends GameShell {
 
 		if (!menuOpen) {
 			processRightClick(-521);
-			method34((byte) -79);
+			drawMenuTooltip();
 		} else if (anInt1304 == 0) {
             method128(false);
         }
