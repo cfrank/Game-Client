@@ -466,7 +466,7 @@ public class Game extends GameShell {
 	public volatile boolean aBoolean1243 = false;
 	public int inputType;
 	public byte aByteArray1245[] = new byte[16384];
-	public int anInt1246;
+	public boolean inTutorialIsland;
 	public ImageRGB minimapEdge;
 	public MouseCapturer mouseCapturer;
 	public Widget aClass13_1249 = new Widget();
@@ -817,33 +817,43 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void addNewPlayers(int newPlayers, Buffer buf) {
-		while (buf.bitPosition + 10 < newPlayers * 8) {
-			int id = buf.getBits(11);
+	private void addNewPlayers(int size, Buffer buffer) {
+		while (buffer.bitPosition + 10 < size * 8) {
+			int id = buffer.getBits(11);
+
 			if (id == 2047)
 				break;
+
 			if (players[id] == null) {
 				players[id] = new Player();
+
 				if (cachedAppearances[id] != null)
 					players[id].updateAppearance(cachedAppearances[id]);
 			}
+
 			playerList[localPlayerCount++] = id;
-			Player plr = players[id];
-			plr.pulseCycle = pulseCycle;
-			int x = buf.getBits(5);
+			Player player = players[id];
+			player.pulseCycle = pulseCycle;
+			int x = buffer.getBits(5);
+
 			if (x > 15)
 				x -= 32;
-			int updated = buf.getBits(1);
+
+			int updated = buffer.getBits(1);
+
 			if (updated == 1)
 				updatedPlayers[updatedPlayerCount++] = id;
-			int discardQueue = buf.getBits(1);
-			int y = buf.getBits(5);
+
+			int discardQueue = buffer.getBits(1);
+			int y = buffer.getBits(5);
+
 			if (y > 15)
 				y -= 32;
-			plr.setPosition(localPlayer.pathX[0] + x, localPlayer.pathY[0] + y,
-					discardQueue == 1);
+
+			player.setPosition(localPlayer.pathX[0] + x, localPlayer.pathY[0] + y, discardQueue == 1);
 		}
-		buf.finishBitAccess();
+
+		buffer.finishBitAccess();
 	}
 
 	private void processFlamesCycle() {
@@ -857,9 +867,9 @@ public class Game extends GameShell {
 			while (aBoolean1243) {
 				anInt1101++;
 
-				method81((byte) 1);
-				method81((byte) 1);
-				method98(47);
+				calculateFlamePositions();
+				calculateFlamePositions();
+				renderFlames();
 
 				if (++cycle > 10) {
 					long currentTime = System.currentTimeMillis();
@@ -1502,7 +1512,7 @@ public class Game extends GameShell {
 						outBuffer.putLEShortDup(selectedInventorySlot);
 					}
 				} else if ((anInt1300 == 1 || menuHasAddFriend(menuActionRow - 1, aByte1161)) && menuActionRow > 2)
-					determineMenuSize(811);
+					determineMenuSize();
 				else if (menuActionRow > 0)
 					processMenuActions(menuActionRow - 1);
 				atInventoryLoopCycle = 10;
@@ -2351,7 +2361,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					if (!flag1 && anInt1246 == 0)
+					if (!flag1 && !inTutorialIsland)
 						addChatMessage(s3, "wishes to trade with you.", 4);
 				} else if (message.endsWith(":duelreq:")) {
 					String s4 = message.substring(0, message.indexOf(":"));
@@ -2364,7 +2374,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					if (!flag2 && anInt1246 == 0)
+					if (!flag2 && !inTutorialIsland)
 						addChatMessage(s4, "wishes to duel with you.", 8);
 				} else if (message.endsWith(":chalreq:")) {
 					String s5 = message.substring(0, message.indexOf(":"));
@@ -2377,7 +2387,7 @@ public class Game extends GameShell {
 						break;
 					}
 
-					if (!flag3 && anInt1246 == 0) {
+					if (!flag3 && !inTutorialIsland) {
 						String s8 = message.substring(message.indexOf(":") + 1, message.length() - 9);
 						addChatMessage(s5, s8, 8);
 					}
@@ -2607,7 +2617,7 @@ public class Game extends GameShell {
 					}
 
 				}
-				if (!flag4 && anInt1246 == 0)
+				if (!flag4 && !inTutorialIsland)
 					try {
 						anIntArray1258[anInt1152] = i19;
 						anInt1152 = (anInt1152 + 1) % 100;
@@ -3128,7 +3138,7 @@ public class Game extends GameShell {
 				return true;
 			}
 			if (opcode == 90) { // player update
-				updatePlayers(packetSize, 69, buffer);
+				updatePlayers(packetSize, buffer);
 				aBoolean1209 = false;
 				opcode = -1;
 				return true;
@@ -3186,21 +3196,23 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public void method34(byte byte0) {
+	private void drawMenuTooltip() {
 		if (menuActionRow < 2 && itemSelected == 0 && widgetSelected == 0)
 			return;
-		if (byte0 != -79)
-			return;
-		String s;
+
+		String str;
+
 		if (itemSelected == 1 && menuActionRow < 2)
-			s = "Use " + aString1150 + " with...";
+			str = "Use " + aString1150 + " with...";
 		else if (widgetSelected == 1 && menuActionRow < 2)
-			s = selectedWidgetName + "...";
+			str = selectedWidgetName + "...";
 		else
-			s = menuActionTexts[menuActionRow - 1];
+			str = menuActionTexts[menuActionRow - 1];
+
 		if (menuActionRow > 2)
-			s = s + "@whi@ / " + (menuActionRow - 2) + " more options";
-		fontBold.drawShadowedSeededAlphaString(s, 4, 15, 0xffffff, pulseCycle / 1000);
+			str = str + "@whi@ / " + (menuActionRow - 2) + " more options";
+
+		fontBold.drawShadowedSeededAlphaString(str, 4, 15, 0xffffff, pulseCycle / 1000);
 	}
 
 	public boolean walk(boolean flag, boolean flag1, int dstY, int srcY, int k, int l, int packetType, int j1, int dstX, int l1,
@@ -3581,54 +3593,72 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void parsePlayerBlocks(Buffer vec, int packetSize) {
-		for (int k = 0; k < updatedPlayerCount; k++) {
-			int id = updatedPlayers[k];
-			Player plr = players[id];
-			int mask = vec.getUnsignedByte();
+	private void parsePlayerBlocks(Buffer buffer) {
+		for (int i = 0; i < updatedPlayerCount; i++) {
+			int id = updatedPlayers[i];
+			Player player = players[id];
+			int mask = buffer.getUnsignedByte();
+
 			if ((mask & 0x20) != 0)
-				mask += vec.getUnsignedByte() << 8;
-			parsePlayerBlock(id, plr, mask, vec);
+				mask += buffer.getUnsignedByte() << 8;
+
+			parsePlayerBlock(id, player, mask, buffer);
 		}
 	}
 
-	public void updateThisPlayerMovement(int i, boolean flag, Buffer buffer) {
+	private void updateLocalPlayerMovement(Buffer buffer) {
 		buffer.initBitAccess();
+
 		int moved = buffer.getBits(1);
+
 		if (moved == 0)
 			return;
+
 		int moveType = buffer.getBits(2);
-		loggedIn &= flag;
+
 		if (moveType == 0) {
 			updatedPlayers[updatedPlayerCount++] = thisPlayerId;
 			return;
 		}
+
 		if (moveType == 1) {
 			int direction = buffer.getBits(3);
+
 			localPlayer.move(direction, false);
+
 			int blockUpdateRequired = buffer.getBits(1);
+
 			if (blockUpdateRequired == 1)
 				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
 			return;
 		}
+
 		if (moveType == 2) {
 			int direction1 = buffer.getBits(3);
+
 			localPlayer.move(direction1, true);
+
 			int direction2 = buffer.getBits(3);
+
 			localPlayer.move(direction2, true);
+
 			int blockUpdateRequired = buffer.getBits(1);
+
 			if (blockUpdateRequired == 1)
 				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
 			return;
 		}
+
 		if (moveType == 3) {
 			int discardWalkingQueue = buffer.getBits(1);
 			plane = buffer.getBits(2);
 			int localY = buffer.getBits(7);
 			int localX = buffer.getBits(7);
 			int blockUpdateRequired = buffer.getBits(1);
+
 			if (blockUpdateRequired == 1)
 				updatedPlayers[updatedPlayerCount++] = thisPlayerId;
+
 			localPlayer.setPosition(localX, localY, discardWalkingQueue == 1);
 		}
 	}
@@ -4260,7 +4290,7 @@ public class Game extends GameShell {
 			if (meta == 1 && menuActionRow > 0)
 				processMenuActions(menuActionRow - 1);
 			if (meta == 2 && menuActionRow > 0)
-				determineMenuSize(811);
+				determineMenuSize();
 		}
 	}
 
@@ -4696,144 +4726,180 @@ public class Game extends GameShell {
 
 	}
 
-	public void parsePlayerBlock(int id, Player plr, int mask, Buffer vec) {
+	private void parsePlayerBlock(int id, Player player, int mask, Buffer buffer) {
 		if ((mask & 8) != 0) {
-			int i1 = vec.getUnsignedLEShort();
-			if (i1 == 65535)
-				i1 = -1;
-			int k2 = vec.getByteSubtracted();
-			if (i1 == plr.emoteAnimation && i1 != -1) {
-				int k3 = AnimationSequence.animations[i1].anInt307;
-				if (k3 == 1) {
-					plr.displayedEmoteFrames = 0;
-					plr.anInt1626 = 0;
-					plr.animationDelay = k2;
-					plr.anInt1628 = 0;
+			int animation = buffer.getUnsignedLEShort();
+
+			if (animation == 65535)
+				animation = -1;
+
+			int delay = buffer.getByteSubtracted();
+
+			if (animation == player.emoteAnimation && animation != -1) {
+				int mode = AnimationSequence.animations[animation].anInt307;
+
+				if (mode == 1) {
+					player.displayedEmoteFrames = 0;
+					player.anInt1626 = 0;
+					player.animationDelay = delay;
+					player.anInt1628 = 0;
 				}
-				if (k3 == 2)
-					plr.anInt1628 = 0;
-			} else if (i1 == -1
-					|| plr.emoteAnimation == -1
-					|| AnimationSequence.animations[i1].anInt301 >= AnimationSequence.animations[plr.emoteAnimation].anInt301) {
-				plr.emoteAnimation = i1;
-				plr.displayedEmoteFrames = 0;
-				plr.anInt1626 = 0;
-				plr.animationDelay = k2;
-				plr.anInt1628 = 0;
-				plr.anInt1613 = plr.pathLength;
+
+				if (mode == 2)
+					player.anInt1628 = 0;
+			} else if (animation == -1 || player.emoteAnimation == -1
+					|| AnimationSequence.animations[animation].anInt301 >= AnimationSequence.animations[player.emoteAnimation].anInt301) {
+				player.emoteAnimation = animation;
+				player.displayedEmoteFrames = 0;
+				player.anInt1626 = 0;
+				player.animationDelay = delay;
+				player.anInt1628 = 0;
+				player.anInt1613 = player.pathLength;
 			}
 		}
+
 		if ((mask & 0x10) != 0) {
-			plr.forcedChat = vec.getString();
-			if (plr.forcedChat.charAt(0) == '~') {
-				plr.forcedChat = plr.forcedChat.substring(1);
-				addChatMessage(plr.playerName, plr.forcedChat, 2);
-			} else if (plr == localPlayer)
-				addChatMessage(plr.playerName, plr.forcedChat, 2);
-			plr.textColour = 0;
-			plr.textEffect = 0;
-			plr.textCycle = 150;
+			player.forcedChat = buffer.getString();
+
+			if (player.forcedChat.charAt(0) == '~') {
+				player.forcedChat = player.forcedChat.substring(1);
+				addChatMessage(player.playerName, player.forcedChat, 2);
+			} else if (player == localPlayer) {
+                addChatMessage(player.playerName, player.forcedChat, 2);
+            }
+
+			player.textColour = 0;
+			player.textEffect = 0;
+			player.textCycle = 150;
 		}
+
 		if ((mask & 0x100) != 0) {
-			plr.anInt1602 = vec.getByteAdded();
-			plr.anInt1604 = vec.getByteNegated();
-			plr.anInt1603 = vec.getByteSubtracted();
-			plr.anInt1605 = vec.getUnsignedByte();
-			plr.anInt1606 = vec.getUnsignedLEShort() + pulseCycle;
-			plr.anInt1607 = vec.method550() + pulseCycle;
-			plr.anInt1608 = vec.getUnsignedByte();
-			plr.resetPath();
+			player.anInt1602 = buffer.getByteAdded();
+			player.anInt1604 = buffer.getByteNegated();
+			player.anInt1603 = buffer.getByteSubtracted();
+			player.anInt1605 = buffer.getUnsignedByte();
+			player.anInt1606 = buffer.getUnsignedLEShort() + pulseCycle;
+			player.anInt1607 = buffer.method550() + pulseCycle;
+			player.anInt1608 = buffer.getUnsignedByte();
+
+			player.resetPath();
 		}
+
 		if ((mask & 1) != 0) {
-			plr.anInt1609 = vec.method550();
-			if (plr.anInt1609 == 65535)
-				plr.anInt1609 = -1;
+			player.anInt1609 = buffer.method550();
+
+			if (player.anInt1609 == 65535)
+				player.anInt1609 = -1;
 		}
+
 		if ((mask & 2) != 0) {
-			plr.anInt1598 = vec.getUnsignedLEShort();
-			plr.anInt1599 = vec.getUnsignedLEShort();
+			player.anInt1598 = buffer.getUnsignedLEShort();
+			player.anInt1599 = buffer.getUnsignedLEShort();
 		}
+
 		if ((mask & 0x200) != 0) {
-			plr.graphic = vec.method550();
-			int j1 = vec.method556();
-			plr.spotAnimationDelay = j1 >> 16;
-			plr.anInt1617 = pulseCycle + (j1 & 0xffff);
-			plr.currentAnimation = 0;
-			plr.anInt1616 = 0;
-			if (plr.anInt1617 > pulseCycle)
-				plr.currentAnimation = -1;
-			if (plr.graphic == 65535)
-				plr.graphic = -1;
+			player.graphic = buffer.method550();
+			int heightAndDelay = buffer.method556();
+			player.spotAnimationDelay = heightAndDelay >> 16;
+			player.anInt1617 = pulseCycle + (heightAndDelay & 0xffff);
+			player.currentAnimation = 0;
+			player.anInt1616 = 0;
+
+			if (player.anInt1617 > pulseCycle)
+				player.currentAnimation = -1;
+
+			if (player.graphic == 65535)
+				player.graphic = -1;
 		}
+
 		if ((mask & 4) != 0) {
-			int size = vec.getUnsignedByte();
+			int size = buffer.getUnsignedByte();
 			byte bytes[] = new byte[size];
 			Buffer appearance = new Buffer(bytes);
-			vec.getBytesReverse(bytes, 0, size);
+
+			buffer.getBytesReverse(bytes, 0, size);
+
 			cachedAppearances[id] = appearance;
-			plr.updateAppearance(appearance);
+
+			player.updateAppearance(appearance);
 		}
+
 		if ((mask & 0x400) != 0) {
-			int l1 = vec.getByteAdded();
-			int l2 = vec.getByteSubtracted();
-			plr.updateHits(l2, l1, pulseCycle);
-			plr.endCycle = pulseCycle + 300;
-			plr.anInt1596 = vec.getByteNegated();
-			plr.anInt1597 = vec.getUnsignedByte();
+			int damage = buffer.getByteAdded();
+			int type = buffer.getByteSubtracted();
+
+			player.updateHits(type, damage, pulseCycle);
+
+			player.endCycle = pulseCycle + 300;
+			player.anInt1596 = buffer.getByteNegated();
+			player.anInt1597 = buffer.getUnsignedByte();
 		}
+
 		if ((mask & 0x40) != 0) {
-			int i2 = vec.getUnsignedLEShort();
-			int rights = vec.getByteNegated();
-			int length = vec.getByteAdded();
-			int i4 = vec.currentPosition;
-			if (plr.playerName != null && plr.visible) {
-				long l4 = TextUtils.nameToLong(plr.playerName);
-				boolean flag = false;
+			int effectsAndColour = buffer.getUnsignedLEShort();
+			int rights = buffer.getByteNegated();
+			int length = buffer.getByteAdded();
+			int currentPosition = buffer.currentPosition;
+
+			if (player.playerName != null && player.visible) {
+				long nameLong = TextUtils.nameToLong(player.playerName);
+				boolean ignored = false;
+
 				if (rights <= 1) {
-					for (int j4 = 0; j4 < ignoresCount; j4++) {
-						if (ignores[j4] != l4)
+					for (int i = 0; i < ignoresCount; i++) {
+						if (ignores[i] != nameLong)
 							continue;
-						flag = true;
+
+						ignored = true;
 						break;
 					}
 
 				}
-				if (!flag && anInt1246 == 0)
-					try {
-						chatBuffer.currentPosition = 0;
-						vec.getBytesAdded(chatBuffer.buffer, 0, length);
-						chatBuffer.currentPosition = 0;
-						String s = ChatEncoder.get(length, chatBuffer);
-						s = ChatCensor.censorString(s);
-						plr.forcedChat = s;
-						plr.textColour = i2 >> 8;
-						plr.textEffect = i2 & 0xff;
-						plr.textCycle = 150;
-						if (rights == 2 || rights == 3)
-							addChatMessage("@cr2@" + plr.playerName, s, 1);
-						else if (rights == 1)
-							addChatMessage("@cr1@" + plr.playerName, s, 1);
-						else
-							addChatMessage(plr.playerName, s, 2);
-					} catch (Exception exception) {
-						SignLink.reportError("cde2");
-					}
+
+				if (!ignored && !inTutorialIsland) {
+                    try {
+                        chatBuffer.currentPosition = 0;
+
+                        buffer.getBytesAdded(chatBuffer.buffer, 0, length);
+
+                        chatBuffer.currentPosition = 0;
+                        String message = ChatCensor.censorString(ChatEncoder.get(length, chatBuffer));
+                        player.forcedChat = message;
+                        player.textColour = effectsAndColour >> 8;
+                        player.textEffect = effectsAndColour & 0xff;
+                        player.textCycle = 150;
+
+                        if (rights == 2 || rights == 3)
+                            addChatMessage("@cr2@" + player.playerName, message, 1);
+                        else if (rights == 1)
+                            addChatMessage("@cr1@" + player.playerName, message, 1);
+                        else
+                            addChatMessage(player.playerName, message, 2);
+                    } catch (Exception exception) {
+                        SignLink.reportError("cde2");
+                    }
+                }
 			}
-			vec.currentPosition = i4 + length;
+
+			buffer.currentPosition = currentPosition + length;
 		}
+
 		if ((mask & 0x80) != 0) {
-			int j2 = vec.getByteSubtracted();
-			int j3 = vec.getByteNegated();
-			plr.updateHits(j3, j2, pulseCycle);
-			plr.endCycle = pulseCycle + 300;
-			plr.anInt1596 = vec.getByteSubtracted();
-			plr.anInt1597 = vec.getUnsignedByte();
+			int damage = buffer.getByteSubtracted();
+			int type = buffer.getByteNegated();
+
+			player.updateHits(type, damage, pulseCycle);
+
+			player.endCycle = pulseCycle + 300;
+			player.anInt1596 = buffer.getByteSubtracted();
+			player.anInt1597 = buffer.getUnsignedByte();
 		}
 	}
 
 	public void resetTitleScreen() {
 		if (aClass18_1198 != null)
 			return;
+
 		super.imageProducer = null;
 		chatboxProducingGraphicsBuffer = null;
 		aClass18_1157 = null;
@@ -4844,44 +4910,60 @@ public class Game extends GameShell {
 
 		flameLeftBackground = new ProducingGraphicsBuffer(128, 265, getParentComponent());
 		Rasterizer.resetPixels();
+
 		flameRightBackground = new ProducingGraphicsBuffer(128, 265, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1198 = new ProducingGraphicsBuffer(509, 171, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1199 = new ProducingGraphicsBuffer(360, 132, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1200 = new ProducingGraphicsBuffer(360, 200, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1203 = new ProducingGraphicsBuffer(202, 238, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1204 = new ProducingGraphicsBuffer(203, 238, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1205 = new ProducingGraphicsBuffer(74, 94, getParentComponent());
 		Rasterizer.resetPixels();
+
 		aClass18_1206 = new ProducingGraphicsBuffer(75, 94, getParentComponent());
 		Rasterizer.resetPixels();
+
 		if (titleArchive != null) {
 			prepareTitleBackground();
 			prepareTitle();
 		}
+
 		aBoolean1046 = true;
 	}
 
 	public void startup() {
 		drawLoadingText(20, "Starting up");
+
 		if (SignLink.cacheData != null) {
 			for (int type = 0; type < 5; type++)
 				stores[type] = new Index(type + 1, 0x927c0, SignLink.cacheData, SignLink.cacheIndex[type]);
 		}
+
 		try {
-			requestArchiveCrcs();
+		    if (Configuration.JAGGRAB_ENABLED)
+			    requestArchiveCrcs();
+
 			titleArchive = requestArchive(1, "title", archiveHashes[1], 25, "title screen");
 			fontSmall = new TypeFace(false, titleArchive, "p11_full");
 			fontNormal = new TypeFace(false, titleArchive, "p12_full");
 			fontBold = new TypeFace(false, titleArchive, "b12_full");
 			fontFancy = new TypeFace(true, titleArchive, "q8_full");
+
 			prepareTitleBackground();
 			prepareTitle();
+
 			Archive configArchive = requestArchive(2, "config", archiveHashes[2], 30, "config");
 			Archive archiveInterface = requestArchive(3, "interface", archiveHashes[3], 35, "interface");
 			Archive archiveMedia = requestArchive(4, "media", archiveHashes[4], 40, "2d gameGraphics");
@@ -4891,75 +4973,97 @@ public class Game extends GameShell {
 			currentSceneTileFlags = new byte[4][104][104];
 			anIntArrayArrayArray891 = new int[4][105][105];
 			currentScene = new Scene(anIntArrayArrayArray891, 104, 4, 104, (byte) 5);
+
 			for (int j = 0; j < 4; j++)
 				currentCollisionMap[j] = new CollisionMap(104, 104);
 
 			minimapImage = new ImageRGB(512, 512);
 			Archive versionListArchive = requestArchive(5, "versionlist", archiveHashes[5], 60, "update list");
+
 			drawLoadingText(60, "Connecting to update server");
+
 			onDemandRequester = new OnDemandRequester();
 			onDemandRequester.init(versionListArchive, this);
+
 			Animation.method235(onDemandRequester.animCount());
 			Model.init(onDemandRequester.fileCount(0), onDemandRequester);
+
 			if (!lowMemory) {
 				nextSong = 0;
-				try
-				{
+
+				try {
 					nextSong = Integer.parseInt(getParameter("music"));
-				}
-				catch(Exception _ex) { }
-				songChanging = true;
+				} catch(Exception ignored) {}
+
+                songChanging = true;
+
 				onDemandRequester.request(2, nextSong);
+
 				while (onDemandRequester.method333() > 0) {
 					method77(false);
+
 					try {
 						Thread.sleep(100L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
+
 					if (onDemandRequester.requestFails > 3) {
 						method19("ondemand");
 						return;
 					}
 				}
 			}
+
 			drawLoadingText(65, "Requesting animations");
+
 			int fileRequestCount = onDemandRequester.fileCount(1);
-			for (int l = 0; l < fileRequestCount; l++)
-				onDemandRequester.request(1, l);
+
+			for (int i = 0; i < fileRequestCount; i++)
+				onDemandRequester.request(1, i);
 
 			while (onDemandRequester.method333() > 0) {
-				int i1 = fileRequestCount - onDemandRequester.method333();
-				if (i1 > 0)
-					drawLoadingText(65, "Loading animations - " + (i1 * 100) / fileRequestCount + "%");
+				int total = fileRequestCount - onDemandRequester.method333();
+
+				if (total > 0)
+					drawLoadingText(65, "Loading animations - " + (total * 100) / fileRequestCount + "%");
+
 				method77(false);
+
 				try {
 					Thread.sleep(100L);
-				} catch (Exception _ex) {
-				}
+				} catch (Exception ignored) {}
+
 				if (onDemandRequester.requestFails > 3) {
 					method19("ondemand");
 					return;
 				}
 			}
+
 			drawLoadingText(70, "Requesting models");
+
 			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int j1 = 0; j1 < fileRequestCount; j1++) {
-				int k1 = onDemandRequester.modelId(j1);
-				if ((k1 & 1) != 0)
-					onDemandRequester.request(0, j1);
+
+			for (int i = 0; i < fileRequestCount; i++) {
+				int id = onDemandRequester.modelId(i);
+
+				if ((id & 1) != 0)
+					onDemandRequester.request(0, i);
 			}
 
 			fileRequestCount = onDemandRequester.method333();
+
 			while (onDemandRequester.method333() > 0) {
-				int l1 = fileRequestCount - onDemandRequester.method333();
-				if (l1 > 0)
-					drawLoadingText(70, "Loading models - " + (l1 * 100) / fileRequestCount + "%");
+				int total = fileRequestCount - onDemandRequester.method333();
+
+				if (total > 0)
+					drawLoadingText(70, "Loading models - " + (total * 100) / fileRequestCount + "%");
+
 				method77(false);
+
 				try {
 					Thread.sleep(100L);
-				} catch (Exception _ex) {
-				}
+				} catch (Exception ignored) {}
 			}
+
 			if (stores[0] != null) {
 				drawLoadingText(75, "Requesting maps");
 				onDemandRequester.request(3, onDemandRequester.regId(0, 47, 48, 0)); // these are the maps around tutorial island
@@ -4974,70 +5078,86 @@ public class Game extends GameShell {
 				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 47, 1));
 				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 148, 0));
 				onDemandRequester.request(3, onDemandRequester.regId(0, 48, 148, 1));
+
 				fileRequestCount = onDemandRequester.method333();
+
 				while (onDemandRequester.method333() > 0) {
-					int i2 = fileRequestCount - onDemandRequester.method333();
-					if (i2 > 0)
-						drawLoadingText(75, "Loading maps - " + (i2 * 100) / fileRequestCount + "%");
+					int total = fileRequestCount - onDemandRequester.method333();
+
+					if (total > 0)
+						drawLoadingText(75, "Loading maps - " + (total * 100) / fileRequestCount + "%");
+
 					method77(false);
+
 					try {
 						Thread.sleep(100L);
-					} catch (Exception _ex) {
-					}
+					} catch (Exception ignored) {}
 				}
 			}
+
 			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int j2 = 0; j2 < fileRequestCount; j2++) {
-				int k2 = onDemandRequester.modelId(j2);
-				byte byte0 = 0;
-				if ((k2 & 8) != 0)
-					byte0 = 10;
-				else if ((k2 & 0x20) != 0)
-					byte0 = 9;
-				else if ((k2 & 0x10) != 0)
-					byte0 = 8;
-				else if ((k2 & 0x40) != 0)
-					byte0 = 7;
-				else if ((k2 & 0x80) != 0)
-					byte0 = 6;
-				else if ((k2 & 2) != 0)
-					byte0 = 5;
-				else if ((k2 & 4) != 0)
-					byte0 = 4;
-				if ((k2 & 1) != 0)
-					byte0 = 3;
-				if (byte0 != 0)
-					onDemandRequester.setPriority(byte0, 0, j2);
+
+			for (int i = 0; i < fileRequestCount; i++) {
+				int id = onDemandRequester.modelId(i);
+				byte priority = 0;
+
+				if ((id & 8) != 0)
+					priority = 10;
+				else if ((id & 0x20) != 0)
+					priority = 9;
+				else if ((id & 0x10) != 0)
+					priority = 8;
+				else if ((id & 0x40) != 0)
+					priority = 7;
+				else if ((id & 0x80) != 0)
+					priority = 6;
+				else if ((id & 2) != 0)
+					priority = 5;
+				else if ((id & 4) != 0)
+					priority = 4;
+				if ((id & 1) != 0)
+					priority = 3;
+
+				if (priority != 0)
+					onDemandRequester.setPriority(priority, 0, i);
 			}
 
 			onDemandRequester.preloadRegions(memberServer);
+
 			if (!lowMemory) {
 				fileRequestCount = onDemandRequester.fileCount(2);
-				for (int id = 1; id < fileRequestCount; id++)
-					if (onDemandRequester.midiIdEqualsOne(id))
-						onDemandRequester.setPriority((byte) 1, 2, id);
 
+				for (int i = 1; i < fileRequestCount; i++) {
+                    if (onDemandRequester.midiIdEqualsOne(i))
+                        onDemandRequester.setPriority((byte) 1, 2, i);
+                }
 			}
+
 			fileRequestCount = onDemandRequester.fileCount(0);
-			for (int i3 = 0; i3 < fileRequestCount; i3++) {
-				int j3 = onDemandRequester.modelId(i3);
-				if (j3 == 0 && onDemandRequester.anInt1350 < 200)
-					onDemandRequester.setPriority((byte) 1, 0, i3);
+
+			for (int i = 0; i < fileRequestCount; i++) {
+				int id = onDemandRequester.modelId(i);
+
+				if (id == 0 && onDemandRequester.anInt1350 < 200)
+					onDemandRequester.setPriority((byte) 1, 0, i);
 			}
 
 			drawLoadingText(80, "Unpacking media");
+
 			inventoryBackgroundImage = new IndexedImage(archiveMedia, "invback", 0);
 			chatboxBackgroundImage = new IndexedImage(archiveMedia, "chatback", 0);
 			minimapBackgroundImage = new IndexedImage(archiveMedia, "mapback", 0);
 			anIndexedImage1052 = new IndexedImage(archiveMedia, "backbase1", 0);
 			anIndexedImage1053 = new IndexedImage(archiveMedia, "backbase2", 0);
 			anIndexedImage1054 = new IndexedImage(archiveMedia, "backhmid1", 0);
-			for (int tab = 0; tab < 13; tab++)
-				tabIcon[tab] = new IndexedImage(archiveMedia, "sideicons", tab);
+
+			for (int i = 0; i < 13; i++)
+				tabIcon[i] = new IndexedImage(archiveMedia, "sideicons", i);
 
 			minimapCompass = new ImageRGB(archiveMedia, "compass", 0);
 			minimapEdge = new ImageRGB(archiveMedia, "mapedge", 0);
 			minimapEdge.trim();
+
 			for (int i = 0; i < 72; i++)
 				aClass50_Sub1_Sub1_Sub3Array1153[i] = new IndexedImage(archiveMedia, "mapscene", i);
 
@@ -5059,6 +5179,7 @@ public class Game extends GameShell {
 			aClass50_Sub1_Sub1_Sub1_1086 = new ImageRGB(archiveMedia, "overlay_multiway", 0);
 			mapFlagMarker = new ImageRGB(archiveMedia, "mapmarker", 0);
 			aClass50_Sub1_Sub1_Sub1_1037 = new ImageRGB(archiveMedia, "mapmarker", 1);
+
 			for (int i = 0; i < 8; i++)
 				cursorCross[i] = new ImageRGB(archiveMedia, "cross", i);
 
@@ -5074,59 +5195,77 @@ public class Game extends GameShell {
 			aClass50_Sub1_Sub1_Sub3_882 = new IndexedImage(archiveMedia, "redstone3", 0);
 			aClass50_Sub1_Sub1_Sub3_883 = new IndexedImage(archiveMedia, "redstone1", 0);
 			aClass50_Sub1_Sub1_Sub3_883.flipHorizontal();
+
 			aClass50_Sub1_Sub1_Sub3_884 = new IndexedImage(archiveMedia, "redstone2", 0);
 			aClass50_Sub1_Sub1_Sub3_884.flipHorizontal();
+
 			aClass50_Sub1_Sub1_Sub3_983 = new IndexedImage(archiveMedia, "redstone1", 0);
 			aClass50_Sub1_Sub1_Sub3_983.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_984 = new IndexedImage(archiveMedia, "redstone2", 0);
 			aClass50_Sub1_Sub1_Sub3_984.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_985 = new IndexedImage(archiveMedia, "redstone3", 0);
 			aClass50_Sub1_Sub1_Sub3_985.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_986 = new IndexedImage(archiveMedia, "redstone1", 0);
 			aClass50_Sub1_Sub1_Sub3_986.flipHorizontal();
 			aClass50_Sub1_Sub1_Sub3_986.flipVertical();
+
 			aClass50_Sub1_Sub1_Sub3_987 = new IndexedImage(archiveMedia, "redstone2", 0);
 			aClass50_Sub1_Sub1_Sub3_987.flipHorizontal();
 			aClass50_Sub1_Sub1_Sub3_987.flipVertical();
+
 			for (int i = 0; i < 2; i++)
 				moderatorIcon[i] = new IndexedImage(archiveMedia, "mod_icons", i);
 
 			ImageRGB image = new ImageRGB(archiveMedia, "backleft1", 0);
 			aClass18_906 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backleft2", 0);
 			aClass18_907 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backright1", 0);
 			aClass18_908 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backright2", 0);
 			aClass18_909 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backtop1", 0);
 			aClass18_910 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backvmid1", 0);
 			aClass18_911 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backvmid2", 0);
 			aClass18_912 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backvmid3", 0);
 			aClass18_913 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
+
 			image = new ImageRGB(archiveMedia, "backhmid2", 0);
 			aClass18_914 = new ProducingGraphicsBuffer(image.width, image.height, getParentComponent());
 			image.drawInverse(0, 0);
-			int l5 = (int) (Math.random() * 21D) - 10;
-			int i6 = (int) (Math.random() * 21D) - 10;
-			int j6 = (int) (Math.random() * 21D) - 10;
-			int k6 = (int) (Math.random() * 41D) - 20;
-			for (int l6 = 0; l6 < 100; l6++) {
-				if (worldMapHintIcons[l6] != null)
-					worldMapHintIcons[l6].adjustRGB(l5 + k6, i6 + k6, j6 + k6);
-				if (aClass50_Sub1_Sub1_Sub3Array1153[l6] != null)
-					aClass50_Sub1_Sub1_Sub3Array1153[l6].mixPalette(l5 + k6, i6 + k6, j6 + k6);
+
+            int offset = (int) (Math.random() * 41D) - 20;
+			int red = (int) ((Math.random() * 21D) - 10) + offset;
+			int green = (int) ((Math.random() * 21D) - 10) + offset;
+            int blue = (int) ((Math.random() * 21D) - 10) + offset;
+
+			for (int i = 0; i < 100; i++) {
+				if (worldMapHintIcons[i] != null)
+					worldMapHintIcons[i].adjustRGB(red, green, blue);
+
+				if (aClass50_Sub1_Sub1_Sub3Array1153[i] != null)
+					aClass50_Sub1_Sub1_Sub3Array1153[i].mixPalette(red, green, blue);
 			}
 
 			drawLoadingText(83, "Unpacking textures");
@@ -5143,77 +5282,100 @@ public class Game extends GameShell {
 			SpotAnimation.load(configArchive);
 			Varp.load(configArchive);
 			Varbit.load(configArchive);
+
 			ItemDefinition.memberServer = memberServer;
+
 			if (!lowMemory) {
 				drawLoadingText(90, "Unpacking sounds");
-				byte bs[] = soundArchive.getFile("sounds.dat");
-				Buffer buffer = new Buffer(bs);
+
+				byte[] bytes = soundArchive.getFile("sounds.dat");
+				Buffer buffer = new Buffer(bytes);
+
 				SoundTrack.load(buffer);
 			}
+
 			drawLoadingText(95, "Unpacking interfaces");
-			TypeFace[] typefaces = {fontSmall,
-					fontNormal, fontBold, fontFancy};
+
+			TypeFace[] typefaces = {fontSmall, fontNormal, fontBold, fontFancy};
+
 			Widget.load(archiveInterface, typefaces, archiveMedia);
 			drawLoadingText(100, "Preparing game engine");
-			for (int i7 = 0; i7 < 33; i7++) {
-				int j7 = 999;
-				int l7 = 0;
-				for (int j8 = 0; j8 < 34; j8++) {
-					if (minimapBackgroundImage.pixels[j8 + i7 * minimapBackgroundImage.width] == 0) {
-						if (j7 == 999)
-							j7 = j8;
+
+			for (int y = 0; y < 33; y++) {
+				int minWidth = 999;
+				int maxWidth = 0;
+
+				for (int x = 0; x < 34; x++) {
+					if (minimapBackgroundImage.pixels[x + y * minimapBackgroundImage.width] == 0) {
+						if (minWidth == 999)
+							minWidth = x;
+
 						continue;
 					}
-					if (j7 == 999)
+
+					if (minWidth == 999)
 						continue;
-					l7 = j8;
+
+					maxWidth = x;
 					break;
 				}
 
-				anIntArray1180[i7] = j7;
-				anIntArray1286[i7] = l7 - j7;
+				anIntArray1180[y] = minWidth;
+				anIntArray1286[y] = maxWidth - minWidth;
 			}
 
-			for (int k7 = 5; k7 < 156; k7++) {
-				int i8 = 999;
-				int k8 = 0;
-				for (int i9 = 25; i9 < 172; i9++) {
-					if (minimapBackgroundImage.pixels[i9 + k7 * minimapBackgroundImage.width] == 0
-							&& (i9 > 34 || k7 > 34)) {
-						if (i8 == 999)
-							i8 = i9;
+			for (int y = 5; y < 156; y++) {
+				int minWidth = 999;
+				int maxWidth = 0;
+
+				for (int x = 25; x < 172; x++) {
+					if (minimapBackgroundImage.pixels[x + y * minimapBackgroundImage.width] == 0
+                            && (x > 34 || y > 34)) {
+						if (minWidth == 999)
+							minWidth = x;
+
 						continue;
 					}
-					if (i8 == 999)
+
+					if (minWidth == 999)
 						continue;
-					k8 = i9;
+
+					maxWidth = x;
 					break;
 				}
 
-				anIntArray1019[k7 - 5] = i8 - 25;
-				anIntArray920[k7 - 5] = k8 - i8;
+				anIntArray1019[y - 5] = minWidth - 25;
+				anIntArray920[y - 5] = maxWidth - minWidth;
 			}
 
 			Rasterizer3D.method494(765, 503);
 			anIntArray1003 = Rasterizer3D.lineOffsets;
+
 			Rasterizer3D.method494(479, 96);
 			chatboxLineOffsets = Rasterizer3D.lineOffsets;
+
 			Rasterizer3D.method494(190, 261);
 			anIntArray1001 = Rasterizer3D.lineOffsets;
+
 			Rasterizer3D.method494(512, 334);
 			anIntArray1002 = Rasterizer3D.lineOffsets;
+
 			int ai[] = new int[9];
-			for (int l8 = 0; l8 < 9; l8++) {
-				int j9 = 128 + l8 * 32 + 15;
+
+			for (int i = 0; i < 9; i++) { //TODO: Needs refactoring
+				int j9 = 128 + i * 32 + 15;
 				int k9 = 600 + j9 * 3;
 				int l9 = Rasterizer3D.SINE[j9];
-				ai[l8] = k9 * l9 >> 16;
+				ai[i] = k9 * l9 >> 16;
 			}
 
 			Scene.method277(500, 800, 512, 334, ai);
 			ChatCensor.load(chatArchive);
+
 			mouseCapturer = new MouseCapturer(this);
+
 			startRunnable(mouseCapturer, 10);
+
 			GameObject.client = this;
 			GameObjectDefinition.client = this;
 			ActorDefinition.client = this;
@@ -5221,6 +5383,7 @@ public class Game extends GameShell {
 		} catch (Exception exception) {
 			SignLink.reportError("loaderror " + aString1027 + " " + anInt1322);
 		}
+
 		aBoolean1283 = true;
 	}
 
@@ -5800,7 +5963,7 @@ public class Game extends GameShell {
 				}
 				if (!menuOpen) {
 					processRightClick(-521);
-					method34((byte) -79);
+					drawMenuTooltip();
 				} else {
 					method128(false);
 				}
@@ -6019,62 +6182,79 @@ public class Game extends GameShell {
 		}
 	}
 
-	public void method75(int i) {
-		packetSize += i;
+	private void renderSplitPrivateMessages() {
 		if (anInt1223 == 0)
 			return;
-		TypeFace class50_sub1_sub1_sub2 = fontNormal;
-		int j = 0;
-		if (systemUpdateTime != 0)
-			j = 1;
-		for (int k = 0; k < 100; k++)
-			if (chatMessages[k] != null) {
-				int l = chatTypes[k];
-				String s = chatPlayerNames[k];
-				byte byte0 = 0;
-				if (s != null && s.startsWith("@cr1@")) {
-					s = s.substring(5);
-					byte0 = 1;
-				}
-				if (s != null && s.startsWith("@cr2@")) {
-					s = s.substring(5);
-					byte0 = 2;
-				}
-				if ((l == 3 || l == 7) && (l == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, s))) {
-					int i1 = 329 - j * 13;
-					int l1 = 4;
-					class50_sub1_sub1_sub2.drawString("From", l1, i1, 0);
-					class50_sub1_sub1_sub2.drawString("From", l1, i1 - 1, 65535);
-					l1 += class50_sub1_sub1_sub2.getStringEffectWidth("From ");
-					if (byte0 == 1) {
-						moderatorIcon[0].drawImage(l1, i1 - 12);
-						l1 += 14;
-					}
-					if (byte0 == 2) {
-						moderatorIcon[1].drawImage(l1, i1 - 12);
-						l1 += 14;
-					}
-					class50_sub1_sub1_sub2.drawString(s + ": " + chatMessages[k], l1, i1, 0);
-					class50_sub1_sub1_sub2.drawString(s + ": " + chatMessages[k], l1, i1 - 1, 65535);
-					if (++j >= 5)
-						return;
-				}
-				if (l == 5 && privateChatMode < 2) {
-					int j1 = 329 - j * 13;
-					class50_sub1_sub1_sub2.drawString(chatMessages[k], 4, j1, 0);
-					class50_sub1_sub1_sub2.drawString(chatMessages[k], 4, j1 - 1, 65535);
-					if (++j >= 5)
-						return;
-				}
-				if (l == 6 && privateChatMode < 2) {
-					int k1 = 329 - j * 13;
-					class50_sub1_sub1_sub2.drawString("To " + s + ": " + chatMessages[k], 4, k1, 0);
-					class50_sub1_sub1_sub2.drawString("To " + s + ": " + chatMessages[k], 4, k1 - 1, 65535);
-					if (++j >= 5)
-						return;
-				}
-			}
 
+		TypeFace typeFace = fontNormal;
+		int line = 0;
+
+		if (systemUpdateTime != 0)
+			line = 1;
+
+		for (int i = 0; i < 100; i++) {
+            if (chatMessages[i] != null) {
+                int type = chatTypes[i];
+                String name = chatPlayerNames[i];
+                byte privilege = 0;
+
+                if (name != null && name.startsWith("@cr1@")) {
+                    name = name.substring(5);
+                    privilege = 1;
+                }
+
+                if (name != null && name.startsWith("@cr2@")) {
+                    name = name.substring(5);
+                    privilege = 2;
+                }
+
+                if ((type == 3 || type == 7) && (type == 7 || privateChatMode == 0 || privateChatMode == 1 && method148(13292, name))) {
+                    int y = 329 - line * 13;
+                    int x = 4;
+
+                    typeFace.drawString("From", x, y, 0);
+                    typeFace.drawString("From", x, y - 1, 65535);
+
+                    x += typeFace.getStringEffectWidth("From ");
+
+                    if (privilege == 1) {
+                        moderatorIcon[0].drawImage(x, y - 12);
+                        x += 14;
+                    }
+
+                    if (privilege == 2) {
+                        moderatorIcon[1].drawImage(x, y - 12);
+                        x += 14;
+                    }
+
+                    typeFace.drawString(name + ": " + chatMessages[i], x, y, 0);
+                    typeFace.drawString(name + ": " + chatMessages[i], x, y - 1, 65535);
+
+                    if (++line >= 5)
+                        return;
+                }
+
+                if (type == 5 && privateChatMode < 2) {
+                    int y = 329 - line * 13;
+
+                    typeFace.drawString(chatMessages[i], 4, y, 0);
+                    typeFace.drawString(chatMessages[i], 4, y - 1, 65535);
+
+                    if (++line >= 5)
+                        return;
+                }
+
+                if (type == 6 && privateChatMode < 2) {
+                    int y = 329 - line * 13;
+
+                    typeFace.drawString("To " + name + ": " + chatMessages[i], 4, y, 0);
+                    typeFace.drawString("To " + name + ": " + chatMessages[i], 4, y - 1, 65535);
+
+                    if (++line >= 5)
+                        return;
+                }
+            }
+        }
 	}
 
 	public void init() {
@@ -6594,65 +6774,67 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public void method81(byte byte0) {
-		char c = '\u0100';
-		for (int i = 10; i < 117; i++) {
-			int j = (int) (Math.random() * 100D);
-			if (j < 50)
-				anIntArray1084[i + (c - 2 << 7)] = 255;
+	private void calculateFlamePositions() { //TODO: Needs more refactoring
+		int c = 256;
+
+		for (int x = 10; x < 117; x++) {
+			int rand = (int) (Math.random() * 100D);
+
+			if (rand < 50)
+				anIntArray1084[x + (c - 2 << 7)] = 255;
 		}
 
-		for (int k = 0; k < 100; k++) {
-			int l = (int) (Math.random() * 124D) + 2;
-			int j1 = (int) (Math.random() * 128D) + 128;
-			int j2 = l + (j1 << 7);
-			anIntArray1084[j2] = 192;
+		for (int i = 0; i < 100; i++) {
+            int x = (int) (Math.random() * 124D) + 2;
+            int y = (int) (Math.random() * 128D) + 128;
+			int pixel = x + (y << 7);
+			anIntArray1084[pixel] = 192;
 		}
 
-		for (int i1 = 1; i1 < c - 1; i1++) {
-			for (int k1 = 1; k1 < 127; k1++) {
-				int k2 = k1 + (i1 << 7);
-				anIntArray1085[k2] = (anIntArray1084[k2 - 1] + anIntArray1084[k2 + 1] + anIntArray1084[k2 - 128] + anIntArray1084[k2 + 128]) / 4;
+		for (int y = 1; y < c - 1; y++) {
+			for (int x = 1; x < 127; x++) {
+				int pixel = x + (y << 7);
+				anIntArray1085[pixel] = (anIntArray1084[pixel - 1] + anIntArray1084[pixel + 1] + anIntArray1084[pixel - 128] + anIntArray1084[pixel + 128]) / 4;
 			}
-
 		}
 
 		anInt1238 += 128;
+
 		if (anInt1238 > anIntArray1176.length) {
 			anInt1238 -= anIntArray1176.length;
-			int l1 = (int) (Math.random() * 12D);
-			method83(titleFlameEmblem[l1], 0);
+			int rand = (int) (Math.random() * 12D);
+
+			method83(titleFlameEmblem[rand], 0);
 		}
-		for (int i2 = 1; i2 < c - 1; i2++) {
-			for (int l2 = 1; l2 < 127; l2++) {
-				int k3 = l2 + (i2 << 7);
-				int i4 = anIntArray1085[k3 + 128] - anIntArray1176[k3 + anInt1238 & anIntArray1176.length - 1] / 5;
+
+		for (int y = 1; y < c - 1; y++) {
+			for (int x = 1; x < 127; x++) {
+				int pixel = x + (y << 7);
+				int i4 = anIntArray1085[pixel + 128] - anIntArray1176[pixel + anInt1238 & anIntArray1176.length - 1] / 5;
+
 				if (i4 < 0)
 					i4 = 0;
-				anIntArray1084[k3] = i4;
+
+				anIntArray1084[pixel] = i4;
 			}
-
 		}
 
-		if (byte0 == 1) {
-			byte0 = 0;
-		} else {
-			for (int i3 = 1; i3 > 0; i3++);
-		}
-		for (int j3 = 0; j3 < c - 1; j3++)
-			anIntArray1166[j3] = anIntArray1166[j3 + 1];
+		for (int i = 0; i < c - 1; i++)
+			anIntArray1166[i] = anIntArray1166[i + 1];
 
 		anIntArray1166[c - 1] = (int) (Math.sin((double) pulseCycle / 14D) * 16D + Math.sin((double) pulseCycle / 15D)
 				* 14D + Math.sin((double) pulseCycle / 16D) * 12D);
+
 		if (anInt1047 > 0)
 			anInt1047 -= 4;
 		if (anInt1048 > 0)
 			anInt1048 -= 4;
 		if (anInt1047 == 0 && anInt1048 == 0) {
-			int l3 = (int) (Math.random() * 2000D);
-			if (l3 == 0)
+			int rand = (int) (Math.random() * 2000D);
+
+			if (rand == 0)
 				anInt1047 = 1024;
-			if (l3 == 1)
+			if (rand == 1)
 				anInt1048 = 1024;
 		}
 	}
@@ -7636,32 +7818,33 @@ public class Game extends GameShell {
 		return true;
 	}
 
-	public void updatePlayers(int packetSize, int j, Buffer vec) {
+	private void updatePlayers(int size, Buffer buffer) {
 		removePlayerCount = 0;
 		updatedPlayerCount = 0;
-		updateThisPlayerMovement(packetSize, aBoolean1274, vec);
-		updateOtherPlayerMovement(packetSize, vec);
-		j = 40 / j;
-		addNewPlayers(packetSize, vec);
-		parsePlayerBlocks(vec, packetSize);
-		for (int k = 0; k < removePlayerCount; k++) {
-			int l = removePlayers[k];
-			if (players[l].pulseCycle != pulseCycle)
-				players[l] = null;
+
+		updateLocalPlayerMovement(buffer);
+		updateOtherPlayerMovement(buffer);
+		addNewPlayers(size, buffer);
+		parsePlayerBlocks(buffer);
+
+		for (int i = 0; i < removePlayerCount; i++) {
+			int index = removePlayers[i];
+
+			if (players[index].pulseCycle != pulseCycle)
+				players[index] = null;
 		}
 
-		if (vec.currentPosition != packetSize) {
-			SignLink
-					.reportError("Error packet size mismatch in getplayer coord:" + vec.currentPosition + " psize:" + packetSize);
+		if (buffer.currentPosition != size) {
+			SignLink.reportError("Error packet size mismatch in getplayer coord:" + buffer.currentPosition + " psize:" + size);
 			throw new RuntimeException("eek");
 		}
-		for (int i1 = 0; i1 < localPlayerCount; i1++)
-			if (players[playerList[i1]] == null) {
-				SignLink.reportError(username + " null entry in pl list - coord:" + i1 + " size:"
-						+ localPlayerCount);
+
+		for (int i = 0; i < localPlayerCount; i++) {
+			if (players[playerList[i]] == null) {
+				SignLink.reportError(username + " null entry in pl list - coord:" + i + " size:" + localPlayerCount);
 				throw new RuntimeException("eek");
 			}
-
+		}
 	}
 
 	public void removeIgnore(int i, long l) {
@@ -7696,44 +7879,48 @@ public class Game extends GameShell {
 			return super.getParameter(s);
 	}
 
-	public void method98(int i) {
-		char c = '\u0100';
+	private void renderFlames() { //TODO: Needs more refactoring
+		int c = 256;
+
 		if (anInt1047 > 0) {
-			for (int j = 0; j < 256; j++)
+			for (int j = 0; j < 256; j++) {
 				if (anInt1047 > 768)
 					anIntArray1310[j] = method106(anIntArray1311[j], anIntArray1312[j], 1024 - anInt1047, 8);
 				else if (anInt1047 > 256)
 					anIntArray1310[j] = anIntArray1312[j];
 				else
 					anIntArray1310[j] = method106(anIntArray1312[j], anIntArray1311[j], 256 - anInt1047, 8);
-
+			}
 		} else if (anInt1048 > 0) {
-			for (int k = 0; k < 256; k++)
+			for (int k = 0; k < 256; k++) {
 				if (anInt1048 > 768)
 					anIntArray1310[k] = method106(anIntArray1311[k], anIntArray1313[k], 1024 - anInt1048, 8);
 				else if (anInt1048 > 256)
 					anIntArray1310[k] = anIntArray1313[k];
 				else
 					anIntArray1310[k] = method106(anIntArray1313[k], anIntArray1311[k], 256 - anInt1048, 8);
-
+			}
 		} else {
-			for (int l = 0; l < 256; l++)
-				anIntArray1310[l] = anIntArray1311[l];
-
+			System.arraycopy(anIntArray1311, 0, anIntArray1310, 0, 256);
 		}
-		for (int i1 = 0; i1 < 33920; i1++)
-			flameLeftBackground.pixels[i1] = anImageRGB1226.pixels[i1];
+
+		System.arraycopy(anImageRGB1226.pixels, 0, flameLeftBackground.pixels, 0, 33920);
 
 		int j1 = 0;
 		int k1 = 1152;
+
 		for (int l1 = 1; l1 < c - 1; l1++) {
 			int i2 = (anIntArray1166[l1] * (c - l1)) / c;
 			int k2 = 22 + i2;
+
 			if (k2 < 0)
 				k2 = 0;
+
 			j1 += k2;
+
 			for (int i3 = k2; i3 < 128; i3++) {
 				int k3 = anIntArray1084[j1++];
+
 				if (k3 != 0) {
 					int i4 = k3;
 					int k4 = 256 - k3;
@@ -7750,18 +7937,20 @@ public class Game extends GameShell {
 		}
 
 		flameLeftBackground.drawGraphics(0, 0, super.gameGraphics);
-		i = 66 / i;
-		for (int j2 = 0; j2 < 33920; j2++)
-			flameRightBackground.pixels[j2] = anImageRGB1227.pixels[j2];
+
+		System.arraycopy(anImageRGB1227.pixels, 0, flameRightBackground.pixels, 0, 33920);
 
 		j1 = 0;
 		k1 = 1176;
+
 		for (int l2 = 1; l2 < c - 1; l2++) {
 			int j3 = (anIntArray1166[l2] * (c - l2)) / c;
 			int l3 = 103 - j3;
 			k1 += j3;
+
 			for (int j4 = 0; j4 < l3; j4++) {
 				int l4 = anIntArray1084[j1++];
+
 				if (l4 != 0) {
 					int j5 = l4;
 					int k5 = 256 - l4;
@@ -8004,7 +8193,7 @@ public class Game extends GameShell {
 			if (anInt1034 == 0)
 				class13.disabledText = "\\nYou have not yet set any recovery questions.\\nIt is @lre@strongly@yel@ recommended that you do so.\\n\\nIf you don't you will be @lre@unable to recover your\\n@lre@password@yel@ if you forget it, or it is stolen.";
 			else if (anInt1034 <= anInt1170) {
-				class13.disabledText = "\\n\\nRecovery Questions Last Set:\\n@gre@" + method104(anInt1034, (byte) 83);
+				class13.disabledText = "\\n\\nRecovery Questions Last Set:\\n@gre@" + getDate(anInt1034);
 			} else {
 				int l1 = (anInt1170 + 14) - anInt1034;
 				String s2;
@@ -8016,7 +8205,7 @@ public class Game extends GameShell {
 					s2 = l1 + " days ago";
 				class13.disabledText = s2
 						+ " you requested@lre@ new recovery\\n@lre@questions.@yel@ The requested change will occur\\non: @lre@"
-						+ method104(anInt1034, (byte) 83)
+						+ getDate(anInt1034)
 						+ "\\n\\nIf you do not remember making this request\\ncancel it immediately, and change your password.";
 			}
 		if (i == 662) {
@@ -8033,7 +8222,7 @@ public class Game extends GameShell {
 			if (anInt1083 <= 0 || anInt1083 > anInt1170 + 10)
 				class13.disabledText = "Last password change:\\n@gre@Never changed";
 			else
-				class13.disabledText = "Last password change:\\n@gre@" + method104(anInt1083, (byte) 83);
+				class13.disabledText = "Last password change:\\n@gre@" + getDate(anInt1083);
 		if (i == 665)
 			if (anInt992 > 2 && !memberServer)
 				class13.disabledText = "This is a non-members\\nworld. To enjoy your\\nmembers benefits we\\nrecommend you play on a\\nmembers world instead.";
@@ -8061,20 +8250,22 @@ public class Game extends GameShell {
 		}
 	}
 
-	public String method104(int i, byte byte0) {
-		if (byte0 != 83)
-			opcode = buffer.getUnsignedByte();
-		if (i > anInt1170 + 10) {
+	private String getDate(int time) {
+		if (time > anInt1170 + 10) {
 			return "Unknown";
 		} else {
-			long l = ((long) i + 11745L) * 0x5265c00L;
+			long date = ((long) time + 11745L) * 0x5265c00L;
 			Calendar calendar = Calendar.getInstance();
-			calendar.setTime(new Date(l));
-			int j = calendar.get(5);
-			int k = calendar.get(2);
-			int i1 = calendar.get(1);
-			String as[] = { "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
-			return j + "-" + as[k] + "-" + i1;
+			
+			calendar.setTime(new Date(date));
+			
+			int day = calendar.get(Calendar.DAY_OF_MONTH);
+			int month = calendar.get(Calendar.MONTH);
+			int year = calendar.get(Calendar.YEAR);
+			String[] monthNames = { "Jan", "Feb", "Mar", "Apr", "May",
+                    "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" };
+			
+			return day + "-" + monthNames[month] + "-" + year;
 		}
 	}
 
@@ -8168,142 +8359,168 @@ public class Game extends GameShell {
 				+ ((i & 0xff00) * i1 + (j & 0xff00) * k & 0xff0000) >> 8;
 	}
 
-	public void method107(int i) {
-		anInt1246 = 0;
-		int j = (localPlayer.worldX >> 7) + nextTopLeftTileX;
-		int k;
-		for (k = (localPlayer.worldY >> 7) + nextTopRightTileY; i >= 0;)
-			return;
+	private void setTutorialIslandFlag() {
+		int x = (localPlayer.worldX >> 7) + nextTopLeftTileX;
+		int y = (localPlayer.worldY >> 7) + nextTopRightTileY;
+        inTutorialIsland = false;
 
-		if (j >= 3053 && j <= 3156 && k >= 3056 && k <= 3136)
-			anInt1246 = 1;
-		if (j >= 3072 && j <= 3118 && k >= 9492 && k <= 9535)
-			anInt1246 = 1;
-		if (anInt1246 == 1 && j >= 3139 && j <= 3199 && k >= 3008 && k <= 3062)
-			anInt1246 = 0;
+		if (x >= 3053 && x <= 3156 && y >= 3056 && y <= 3136)
+			inTutorialIsland = true;
+		if (x >= 3072 && x <= 3118 && y >= 9492 && y <= 9535)
+			inTutorialIsland = true;
+		if (inTutorialIsland && x >= 3139 && x <= 3199 && y >= 3008 && y <= 3062)
+			inTutorialIsland = false;
 	}
 
-	public void determineMenuSize(int i) {
-		int j = fontBold.getStringEffectWidth("Choose Option");
-		for (int k = 0; k < menuActionRow; k++) {
-			int l = fontBold.getStringEffectWidth(menuActionTexts[k]);
-			if (l > j)
-				j = l;
+	private void determineMenuSize() {
+		int width = fontBold.getStringEffectWidth("Choose Option");
+
+		for (int i = 0; i < menuActionRow; i++) {
+			int rowWidth = fontBold.getStringEffectWidth(menuActionTexts[i]);
+
+			if (rowWidth > width)
+				width = rowWidth;
 		}
 
-		j += 8;
-		if (i <= 0)
-			aBoolean1190 = !aBoolean1190;
-		int i1 = 15 * menuActionRow + 21;
+		width += 8;
+		int height = 15 * menuActionRow + 21;
+
 		if (super.clickX > 4 && super.clickY > 4 && super.clickX < 516 && super.clickY < 338) {
-			int j1 = super.clickX - 4 - j / 2;
-			if (j1 + j > 512)
-				j1 = 512 - j;
-			if (j1 < 0)
-				j1 = 0;
-			int i2 = super.clickY - 4;
-			if (i2 + i1 > 334)
-				i2 = 334 - i1;
-			if (i2 < 0)
-				i2 = 0;
+			int x = super.clickX - 4 - width / 2;
+
+			if (x + width > 512)
+				x = 512 - width;
+			if (x < 0)
+				x = 0;
+
+			int y = super.clickY - 4;
+
+			if (y + height > 334)
+				y = 334 - height;
+			if (y < 0)
+				y = 0;
+
 			menuOpen = true;
 			anInt1304 = 0;
-			menuClickX = j1;
-			menuClickY = i2;
-			anInt1307 = j;
-			anInt1308 = 15 * menuActionRow + 22;
+			menuClickX = x;
+			menuClickY = y;
+			anInt1307 = width;
+			anInt1308 = height + 1;
 		}
+
 		if (super.clickX > 553 && super.clickY > 205 && super.clickX < 743 && super.clickY < 466) {
-			int k1 = super.clickX - 553 - j / 2;
-			if (k1 < 0)
-				k1 = 0;
-			else if (k1 + j > 190)
-				k1 = 190 - j;
-			int j2 = super.clickY - 205;
-			if (j2 < 0)
-				j2 = 0;
-			else if (j2 + i1 > 261)
-				j2 = 261 - i1;
+			int x = super.clickX - 553 - width / 2;
+
+			if (x < 0)
+				x = 0;
+			else if (x + width > 190)
+				x = 190 - width;
+
+			int y = super.clickY - 205;
+
+			if (y < 0)
+				y = 0;
+			else if (y + height > 261)
+				y = 261 - height;
+
 			menuOpen = true;
 			anInt1304 = 1;
-			menuClickX = k1;
-			menuClickY = j2;
-			anInt1307 = j;
-			anInt1308 = 15 * menuActionRow + 22;
+			menuClickX = x;
+			menuClickY = y;
+			anInt1307 = width;
+			anInt1308 = height + 1;
 		}
+
 		if (super.clickX > 17 && super.clickY > 357 && super.clickX < 496 && super.clickY < 453) {
-			int l1 = super.clickX - 17 - j / 2;
-			if (l1 < 0)
-				l1 = 0;
-			else if (l1 + j > 479)
-				l1 = 479 - j;
-			int k2 = super.clickY - 357;
-			if (k2 < 0)
-				k2 = 0;
-			else if (k2 + i1 > 96)
-				k2 = 96 - i1;
+			int x = super.clickX - 17 - width / 2;
+
+			if (x < 0)
+				x = 0;
+			else if (x + width > 479)
+				x = 479 - width;
+
+			int y = super.clickY - 357;
+
+			if (y < 0)
+				y = 0;
+			else if (y + height > 96)
+				y = 96 - height;
+
 			menuOpen = true;
 			anInt1304 = 2;
-			menuClickX = l1;
-			menuClickY = k2;
-			anInt1307 = j;
-			anInt1308 = 15 * menuActionRow + 22;
+			menuClickX = x;
+			menuClickY = y;
+			anInt1307 = width;
+			anInt1308 = height + 1;
 		}
 	}
 
-	public void method109(int i) {
-		if (i != 30729)
-			anInt1056 = incomingRandom.nextInt();
-		method75(0);
+	private void renderGameView() {
+		renderSplitPrivateMessages();
+
 		if (crossType == 1)
 			cursorCross[crossIndex / 100].drawImage(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
 		if (crossType == 2)
 			cursorCross[4 + crossIndex / 100].drawImage(anInt1021 - 8 - 4, anInt1020 - 8 - 4);
+
 		if (anInt1279 != -1) {
 			method88(tickDelta, anInt1279, (byte) 5);
 			method142(0, 0, Widget.forId(anInt1279), 0, 8);
 		}
+
 		if (openInterfaceId != -1) {
 			method88(tickDelta, openInterfaceId, (byte) 5);
 			method142(0, 0, Widget.forId(openInterfaceId), 0, 8);
 		}
-		method107(-7);
+
+		setTutorialIslandFlag();
+
 		if (!menuOpen) {
 			processRightClick(-521);
-			method34((byte) -79);
-		} else if (anInt1304 == 0)
-			method128(false);
+			drawMenuTooltip();
+		} else if (anInt1304 == 0) {
+            method128(false);
+        }
+
 		if (anInt1319 == 1)
 			aClass50_Sub1_Sub1_Sub1_1086.drawImage(296, 472);
+
 		if (fps) {
-			char c = '\u01FB';
-			int k = 20;
-			int i1 = 0xffff00;
+            int y = 20;
+			int colour = 0xffff00;
+
 			if (super.fps < 30 && lowMemory)
-				i1 = 0xff0000;
+				colour = 0xff0000;
 			if (super.fps < 20 && !lowMemory)
-				i1 = 0xff0000;
-			fontNormal.drawStringRight("Fps:" + super.fps, c, k, i1);
-			k += 15;
+				colour = 0xff0000;
+
+			fontNormal.drawStringRight("Fps:" + super.fps, 507, y, colour);
+
+			y += 15;
 			Runtime runtime = Runtime.getRuntime();
-			int j1 = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
-			i1 = 0xffff00;
-			if (j1 > 0x2000000 && lowMemory)
-				i1 = 0xff0000;
-			if (j1 > 0x4000000 && !lowMemory)
-				i1 = 0xff0000;
-			fontNormal.drawStringRight("Mem:" + j1 + "k", c, k, 0xffff00);
-			k += 15;
+			int memoryUsed = (int) ((runtime.totalMemory() - runtime.freeMemory()) / 1024L);
+			colour = 0xffff00;
+
+			if (memoryUsed > 0x2000000 && lowMemory)
+				colour = 0xff0000;
+			if (memoryUsed > 0x4000000 && !lowMemory)
+				colour = 0xff0000;
+
+			fontNormal.drawStringRight("Mem:" + memoryUsed + "k", 507, y, colour);
 		}
+
 		if (systemUpdateTime != 0) {
-			int j = systemUpdateTime / 50;
-			int l = j / 60;
-			j %= 60;
-			if (j < 10)
-				fontNormal.drawString("System update in: " + l + ":0" + j, 4, 329, 0xffff00);
+			int seconds = systemUpdateTime / 50;
+			int minutes = seconds / 60;
+			seconds %= 60;
+
+			if (seconds < 10)
+				fontNormal.drawString("System update in: " + minutes + ":0" + seconds, 4, 329, 0xffff00);
 			else
-				fontNormal.drawString("System update in: " + l + ":" + j, 4, 329, 0xffff00);
+				fontNormal.drawString("System update in: " + minutes + ":" + seconds, 4, 329, 0xffff00);
+
 			anInt895++;
+
 			if (anInt895 > 112) {
 				anInt895 = 0;
 				outBuffer.putOpcode(197);
@@ -8480,54 +8697,67 @@ public class Game extends GameShell {
 
 	}
 
-	public void updateOtherPlayerMovement(int packetSize, Buffer buffer) {
+	private void updateOtherPlayerMovement(Buffer buffer) {
 		int playerCount = buffer.getBits(8);
-		if (playerCount < localPlayerCount) {
-			for (int l = playerCount; l < localPlayerCount; l++)
-				removePlayers[removePlayerCount++] = playerList[l];
 
+		if (playerCount < localPlayerCount) {
+			for (int i = playerCount; i < localPlayerCount; i++)
+				removePlayers[removePlayerCount++] = playerList[i];
 		}
+
 		if (playerCount > localPlayerCount) {
 			SignLink.reportError(username + " Too many players");
 			throw new RuntimeException("eek");
 		}
+
 		localPlayerCount = 0;
+
 		for (int i = 0; i < playerCount; i++) {
 			int id = playerList[i];
-			Player plr = players[id];
+			Player player = players[id];
 			int updated = buffer.getBits(1);
+
 			if (updated == 0) {
 				playerList[localPlayerCount++] = id;
-				plr.pulseCycle = pulseCycle;
+				player.pulseCycle = pulseCycle;
 			} else {
 				int moveType = buffer.getBits(2);
+
 				if (moveType == 0) {
 					playerList[localPlayerCount++] = id;
-					plr.pulseCycle = pulseCycle;
+					player.pulseCycle = pulseCycle;
 					updatedPlayers[updatedPlayerCount++] = id;
 				} else if (moveType == 1) {
 					playerList[localPlayerCount++] = id;
-					plr.pulseCycle = pulseCycle;
+					player.pulseCycle = pulseCycle;
 					int direction = buffer.getBits(3);
-					plr.move(direction, false);
+
+					player.move(direction, false);
+
 					int blockUpdateRequired = buffer.getBits(1);
+
 					if (blockUpdateRequired == 1)
 						updatedPlayers[updatedPlayerCount++] = id;
 				} else if (moveType == 2) {
 					playerList[localPlayerCount++] = id;
-					plr.pulseCycle = pulseCycle;
+					player.pulseCycle = pulseCycle;
 					int direction1 = buffer.getBits(3);
-					plr.move(direction1, true);
+
+					player.move(direction1, true);
+
 					int direction2 = buffer.getBits(3);
-					plr.move(direction2, true);
+
+					player.move(direction2, true);
+
 					int updateRequired = buffer.getBits(1);
+
 					if (updateRequired == 1)
 						updatedPlayers[updatedPlayerCount++] = id;
-				} else if (moveType == 3)
-					removePlayers[removePlayerCount++] = id;
+				} else if (moveType == 3) {
+                    removePlayers[removePlayerCount++] = id;
+                }
 			}
 		}
-
 	}
 
 	public void renderViewport(int plane) {
@@ -11621,7 +11851,7 @@ public class Game extends GameShell {
 		method121(false);
 		method127(true);
 		method65(l2);
-		method109(30729);
+		renderGameView();
 		aClass18_1158.drawGraphics(4, 4, super.gameGraphics);
 		cameraX = i1;
 		cameraZ = j1;
