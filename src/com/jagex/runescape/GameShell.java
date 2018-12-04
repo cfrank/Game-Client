@@ -18,6 +18,7 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
@@ -82,8 +83,18 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		getParentComponent().addMouseMotionListener(this);
 		getParentComponent().addKeyListener(this);
 		getParentComponent().addFocusListener(this);
-		if (gameFrame != null)
-			gameFrame.addWindowListener(this);
+
+		if (gameFrame != null) {
+			// Handle SIGTERM and exit 
+			gameFrame.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosing(WindowEvent event) {
+					System.out.println("Closing Client...");
+					System.exit(0);
+				}
+			});
+		}
+
 		drawLoadingText(0, "Loading...");
 		startup();
 		int opos = 0;
